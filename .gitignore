@@ -1,0 +1,5 @@
+# macOS
+.DS_Store
+
+# Aktif kullanılmayan arşiv (pazar araştırması + sunumlar) — repoya dahil değil
+/archive/
