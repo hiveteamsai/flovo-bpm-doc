@@ -12,7 +12,7 @@ Bu özellikler servisten bağımsızdır; bir kez tanımlanır, tüm servislerde
 | Doküman | İçerik |
 |---|---|
 | [`action.md`](./genel-ayarlar/action.md) | **Aksiyon şablonu** (model: `ActionDto`) — yeniden kullanılabilir aksiyon tanımı; adıma eklenince kopyalanır. |
-| [`style.md`](./genel-ayarlar/style.md) | **Style** — renk/görünüm varlığı (bg + font); aksiyon/durum/alanlarda kullanılır. |
+| [`style.md`](./genel-ayarlar/style.md) | **Style** — renk/görünüm varlığı (bg + font); **aksiyon/durum'da** kullanılır (form alanları kullanmaz). |
 | [`status.md`](./genel-ayarlar/status.md) | **Durum (status)** — kaydın aşaması (etiket). |
 | [`translation.md`](./genel-ayarlar/translation.md) | **Çeviri (translation)** — `code`-bazlı çok dilli metinler; ortak (Flovo) + organizasyon çevirileri, override çözümlemesi. |
 | [`organization.md`](./genel-ayarlar/organization.md) | **Organizasyon (tenant)** — Flovo'yu kullanan kurum; kullanıcı/servis/çevirilerin üst kapsayıcısı. |
@@ -32,6 +32,8 @@ Her servisin (formun) kendine ait ayarları.
 |---|---|
 | [`flovo-bpm-engine.md`](./flovo-bpm-engine.md) | **Motor çalışma prensibi** — mimari + yürütme algoritması (adımları nasıl çalıştırır). |
 | [`flovo-customer-api.md`](./flovo-customer-api.md) | **Flovo Customer API** — custom code için sağlanacak API (endpoint listesi + teorik iş). |
+| [`todo.md`](./todo.md) | **Açık sorular / TODO** — tüm dokümanlardaki açık kararlar, **önceliklendirilmiş** tek liste (Tier 0–3). |
+| [`models/`](./models/models.md) | **Veri modelleri (şema referansı)** — model dizini + ilişki haritası ([`models.md`](./models/models.md)) ve her model için alan-düzeyi ayrıntı dosyası. |
 | [`sampleProcess/`](./sampleProcess/sampleProcess.md) | **Örnek süreçler** — uçtan uca, görselli self-servis süreç örnekleri. |
 | [`research/compare/`](./research/compare/) | **Karşılaştırmalar** — hedef uygulama ↔ diğer platformlar farkları + başarılı/başarısız değerlendirmesi. |
 | `research/n8n/` | n8n referans/ilham analizleri. |

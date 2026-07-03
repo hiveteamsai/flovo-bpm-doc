@@ -38,7 +38,8 @@ Tipe-özel ayarlar → §3.
 ### 2.1 — Kimlik & bağlama
 | Alan | Tip | Açıklama |
 |---|---|---|
-| `propertyId` | int | Alan ID'si |
+| `id` | int | Alan ID'si (primary key) |
+| `serviceId` | int | Bağlı servis ID'si (FK) |
 | `code` | string | Alan kodu (benzersiz — binding key) |
 | `definition` | string | Alan tanımı / kullanıcıya görünen etiket |
 | `controlTypeId` | int | Kontrol tipi |
@@ -48,7 +49,7 @@ Tipe-özel ayarlar → §3.
 |---|---|
 | `hint` | Placeholder metni |
 | `helperText` | Yardımcı (alt) metin |
-| `leadingView` / `trealingView` (+pozisyon) | Sol/sağ ikon |
+| `leadingView` / `trailingView` (+pozisyon) | Sol/sağ ikon |
 
 > **Alana-özel görünüm alanları (çekirdekte değil):**
 > - `headerText` — **her alanda yoktur**; yalnız **pop-up açan alanlarda** (Combobox, Datepicker, Time Picker vb.)
@@ -164,9 +165,17 @@ Harita üzerinde **seçim ve görüntüleme** alanı.
 ### 3.13 — Form List
 Farklı bir **servis (süreç)** formlarının bu alan altında forma **eklenerek veya yenisi oluşturularak**
 ilişkilendirilip görüntülendiği **alt-servis** alanı.
-**Ayarlar (ilişki → §2.5):** `childServiceId` (alt servis) · `serviceItemControlId` · `addNewEnabled` (yeni oluştur) ·
-`addFromExistingRecordsIsActive` (mevcuttan ekle) · `selectedEnable` (seçim) · `reOrder` (sıralama) ·
+**Ayarlar (alan-düzeyi, `Property`'de — ilişki → §2.5):** `childServiceId` (alt servis) · `serviceItemControlId` ·
+`selectableModeActive` (satır **seçim/tik modu** aktif mi) · `reOrder` (sıralama) ·
 `parameterTransfer`/`propertyTransferParameters` (ana↔alt parametre aktarımı) · `editOnlyOwnPosition` · `lazyLoading`.
+
+**Profil bazında (görüntüleme profiline göre) ayarlar** → `view-profile.md` §5 / `../models/view-profile-property.md`
+(override; `ProcessViewProfilePropertySetting`):
+- `activeStartActions` (list\<ProcessStepAction id\>) — yeni kayıt oluştururken sunulacak **başlangıç aksiyonları**
+  (`childService` Süreç Başlangıcı'na bağlı aksiyonlardan seçilir; **boş = yeni oluşturma yok**). **`addNewEnabled`'in yerini alır.**
+- `addFromExistingStatusIds` (list\<Status id\>) — **var olandan ekle**'de hangi durumdaki formlar eklenebilir
+  (**boş = pasif**). **`addFromExistingRecordsIsActive`'in yerini alır.**
+- _(öneri)_ `selectedEditable` (bool) — `selectableModeActive` açıksa, **tikler bu profilde düzenlenebilir** mi (örn. yönetici ✓ / başlatan ✗).
 > Form List, **liste seçimi** yapan Combobox'tan farklıdır; **alt-servis kayıtları** bağlar/görüntüler.
 > **Açık konu:** alt-servisin **görüntülenecek alanları / seçilebilirliği** view-profile ile ayarlanacak
 > (→ `view-profile.md` §5). Süreç Adımı Tetikleme / Değer Atama bu alt-servisle çalışır.
@@ -215,11 +224,15 @@ olarak `value`'ye yazılır. Required ise en az bir nokta seçili olmalıdır.
 
 ## 4. Açık Kararlar / Sorular
 - [ ] **Çekirdek ↔ tipe-özel ayrımı** (§2/§3) nihai mi? Hangi alanlar çekirdekte, hangileri tipe-özel?
-- [ ] **Form List ayarları gözden geçirilecek** — `addNewEnabled` · `addFromExistingRecordsIsActive` · `parameterTransfer` ·
-  `propertyTransferParameters` · `editOnlyOwnPosition` alanları **yeni uygulamada nasıl yönetilecek** (korunur/birleştirilir/kaldırılır)? (→ §3.13)
+- [ ] **Form List — `reOrder` / `editOnlyOwnPosition` / `parameterTransfer` / `propertyTransferParameters`** nasıl yönetilecek;
+  bunlar da profil-bazlı mı olmalı? (→ §3.13) _(`addNewEnabled`→`activeStartActions`, `addFromExistingRecordsIsActive`→`addFromExistingStatusIds` (profil); `selectedEnable`→`selectableModeActive` (alan-düzeyi): **çözüldü**.)_
 - [ ] **Form List — alt-servis görüntülenecek alanları / seçilebilirliği** view-profile ile nasıl ayarlanır? (→ §3.13, `view-profile.md` §5)
+- [x] **Form List ayarlarının profil bazında değişmesi** — **KARAR (B2):** profil-bazlı override `ProcessViewProfilePropertySetting {key,value}`
+  (→ `../models/view-profile-property.md`). Form List: `addNewEnabled`→**`activeStartActions`**, `addFromExistingRecordsIsActive`→**`addFromExistingStatusIds`** (profil); `selectedEnable`→**`selectableModeActive`** (alan-düzeyi, `Property`).
 - [ ] **Combobox/Radiobutton seçenek kaynağı** — statik (`propertyItems`) ↔ dinamik (`dataSource`) modeli ve iş kuralı **`FillDataSource`** ile ilişkisi (→ `work-rule.md`).
 - [ ] **Form List ↔ alt-süreç** — veri/`changeList`/parametre nasıl akar? (→ §3.13)
+- [ ] **`dataSource` alan adı çift anlamlı** — Combobox/Radiobutton'da **dinamik veri kaynağı** (§2.4), Image Area
+  Selector'da (§3.19) **statik nokta listesi** (`code`·`x`·`y`·`isSelected`). Aynı ad iki farklı yapı; ayrıştırılsın/yeniden adlandırılsın mı? _(daha sonra incelenecek)_
 - [ ] Alan seti sabit mi, eklenebilir (custom alan tipi) mi?
 
 ---

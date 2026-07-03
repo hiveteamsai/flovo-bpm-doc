@@ -18,6 +18,8 @@ onaylayan için salt-okunur).
 ## 1. Profil Veri Modeli (`ProcessViewProfileDto`)
 | Alan | Tip | Açıklama |
 |---|---|---|
+| `id` | int | Profil ID'si (primary key) |
+| `serviceId` | int | Bağlı servis ID'si (servis-bazlı tanımlı) |
 | `code` | string | Profil kodu (benzersiz) |
 | `definition` | string | Profil adı |
 | `isDefault` | bool | Varsayılan profil mi |
@@ -63,11 +65,19 @@ yönetim ekranı olacak).
 ---
 
 ## 5. Açık Kararlar / Sorular
+- [x] **Alan-özel görünüm ayarlarının profil bazında yönetimi** — **KARAR (B2):** tipe-özel, profil-bazlı ayarlar
+      **`ProcessViewProfilePropertySetting {viewProfilePropertyId, key, value}`** ile tutulur (`propertyType`'a göre
+      **dictionary**); `Property` varsayılanını profil düzeyinde ezer. Genel `visible/enabled/required/order` birinci
+      sınıf kalır. Key kataloğu → `../models/view-profile-property.md` (Form List: `activeStartActions`,
+      `addFromExistingStatusIds`; öneri `selectedEditable`). `selectableModeActive` (tik modu) **alan-düzeyi** `Property`
+      ayarıdır. _Örn._ *süreç başlatan* yeni form ekler
+      ama *yönetici* ekleyemez; *yönetici* tik değiştirir, *başlatan* değiştiremez. **Kalan:** `reOrder`/`editOnlyOwnPosition`
+      da profil-bazlı mı? (→ `../todo.md`)
 - [ ] **Form List (alt-servis) alanında alt-servisin görüntülenecek alanları / seçilebilirliği** view-profile ile
-      nasıl ayarlanır? (→ `properties.md` §3.13 Form List ile birlikte tasarlanacak.)
+      nasıl ayarlanır? (Yukarıdaki **aynı override mekanizmasıyla**; → `properties.md` §3.13 ile birlikte tasarlanacak.)
 - [ ] **Raporlama** ayrı nasıl modellenecek? (ayrı doküman/özellik)
 - [ ] `ChangeViewProfile` ile çalışma-zamanı profil değişiminin akış (motor) ile etkileşimi.
-- [ ] Profiller servis-bazlı mı, paylaşımlı mı tanımlanır?
+- [x] Profiller **servis-bazlı** tanımlanır (bir servise ait — `serviceId`).
 
 ---
 

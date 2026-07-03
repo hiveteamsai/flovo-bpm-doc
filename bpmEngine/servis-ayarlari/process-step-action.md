@@ -12,7 +12,7 @@
 
 ## 0. Aksiyon Nedir?
 - **Adım ↔ Aksiyon ilişkisi:** Bir adımda birden çok aksiyon olabilir; her aksiyonun bir **türü (`actionType`, §3)**,
-  bir **görünümü (`style`, §4)** ve bir **veri aktarım modeli (§2)** vardır. Tanımı bir **şablondan** (`../genel-ayarlar/action.md`) gelir.
+  bir **görünümü (`styleId`, §4)** ve bir **veri aktarım modeli (§2)** vardır. Tanımı bir **şablondan** (`../genel-ayarlar/action.md`) gelir.
 - **Aksiyon kodu (action code):** Her aksiyonun bir **kod**u vardır; bir adım, ilerleyeceği aksiyonu bu **koda göre**
   seçer (örn. HTTP Request response'undaki `action` koduyla aynı kodlu aksiyon; Switch'te alandaki değere eşleşen kod;
   Karşılaştırma'da `true`/`false`). **Ayrılmış kodlar:** **`default`** = eşleşme yoksa / async / başarılı varsayılan
@@ -24,16 +24,21 @@
 
 ### 1.1 — Aksiyon Şablonu (`ActionDto`) → `../genel-ayarlar/action.md`
 Aksiyon **tanımı**, yeniden kullanılabilir bir **şablondur (`ActionDto`)**: `code` · `definition` · `icon` ·
-`style` · `actionType` · `defaultAction` · `validation` · `stayOnPage` · `showHistory` · `actionDisplayType`.
+`styleId` · `actionType` · `defaultAction` · `validation` · `stayOnPage` · `showHistory` · `actionDisplayType`.
 Bir süreç adımına aksiyon eklenirken, tanımlı ActionDto'lar arasından seçilir ve bu alanlar **kopyalanır**.
 **Detay → `../genel-ayarlar/action.md`.**
 
 ### 1.2 — Adım-Aksiyon Binding (`ProcessStepActionDto`)
-Bir aksiyon **bir adıma bağlandığında** ek alanlar tanımlanır. Şablon alanları (`code`/`definition`/`icon`/`style`/
-`actionType`) ActionDto'dan **kopyalanır**; aşağıda yalnız **adım-özel** alanlar tutulur.
+Bir aksiyon **bir adıma bağlandığında** ek alanlar tanımlanır. Şablon alanları (`code`/`definition`/`icon`/`styleId`/
+`actionType`) ActionDto'dan **bir kez kopyalanır** (snapshot); aşağıda yalnız **adım-özel** alanlar tutulur.
+
+> **Not:** Kopyalama **oluşturma anında bir kereliktir**; sonrasında ActionDto ile bu binding **bağımsızdır** (biri
+> değişince diğeri etkilenmez). Bu yüzden binding'de **`actionId` / canlı bağ tutulmaz.**
 
 | Alan | Açıklama |
 |---|---|
+| `id` | Binding kaydı ID'si (primary key) |
+| `processStepId` | Bağlı süreç adımı (FK → `process-step.md`) |
 | `targetProcessStepId` | Aksiyon çalışınca **ilerlenecek hedef süreç adımı** |
 | `changeStatusId` | Aksiyon sonrası atanacak **durum** (→ `../genel-ayarlar/status.md`) |
 | `authorizationLevel` | **Yetki seviyesi** (aksiyonu kim yürütebilir) |
@@ -106,9 +111,9 @@ ilerletir — async HTTP Request'in (→ `process-step.md` §3.2) **geri-dönü�
 
 ---
 
-## 4. `style` — Renk / Görünüm
-Aksiyonun `style` alanı, bir **Style** varlığına **referanstır** (renk/görünüm: bg + font). Style **çapraz-kesen** bir
-varlıktır (aksiyon, durum, alan...) ve **ayrı dokümanda** tanımlanır → **`../genel-ayarlar/style.md`**.
+## 4. `styleId` — Renk / Görünüm
+Aksiyonun `styleId` alanı, bir **Style** varlığına **referanstır** (renk/görünüm: bg + font). Style **çapraz-kesen** bir
+varlıktır (aksiyon, durum) ve **ayrı dokümanda** tanımlanır → **`../genel-ayarlar/style.md`**.
 
 ---
 

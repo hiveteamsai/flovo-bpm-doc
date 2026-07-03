@@ -44,7 +44,7 @@ Bir servis **yedi yapı taşından** oluşur ve bunlar **iki katmana** ayrılır
 | 4 | **Süreç Adımları** | **akış (motor)** | İş akışının rotası (adım tipleri) | `servis-ayarlari/process-step.md` |
 | 5 | **Aksiyonlar** | **akış (motor)** | Adımlar arası **geçiş birimi** (kod + veri taşır); şablonu **ActionDto** | `servis-ayarlari/process-step-action.md` · `genel-ayarlar/action.md` |
 | 6 | **Durumlar** | akış | Kaydın mevcut aşaması (etiket) | `genel-ayarlar/status.md` |
-| 7 | **Stiller** | çapraz-kesen | Renk/görünüm varlığı (aksiyon, durum, alan...) | `genel-ayarlar/style.md` |
+| 7 | **Stiller** | çapraz-kesen | Renk/görünüm varlığı (aksiyon, durum...) | `genel-ayarlar/style.md` |
 
 > **Katman ayrımı (kritik):** **form-mantığı** (property + profil + iş kuralı) **frontend'de, realtime** çalışır;
 > **akış-mantığı** (adım + aksiyon + durum) **motorda** çalışır. İş kuralları motoru doğrudan etkilemez
@@ -80,8 +80,8 @@ Bir servis **yedi yapı taşından** oluşur ve bunlar **iki katmana** ayrılır
 1. **Property'ler** — alanları tanımla (kontrol tipi, etiket, veri kaynağı, kısıtlar).
 2. **Görüntüleme Profilleri** — hangi alan nerede görünür/düzenlenir/zorunlu.
 3. **İş Kuralları** — koşul → anlık form davranışı (frontend).
-4. **Aksiyonlar** — şablon (**`ActionDto`**): kod, ikon, **actionType**, **style** (→ `genel-ayarlar/action.md`).
-5. **Durumlar** — `definition` + `style`.
+4. **Aksiyonlar** — şablon (**`ActionDto`**): kod, ikon, **actionType**, **styleId** (→ `genel-ayarlar/action.md`).
+5. **Durumlar** — `definition` + `styleId`.
 6. **Süreç Adımları** — adım sırası/tipi, kullanıcı atama, **aksiyonları adımlara bağlama**.
 
 > **[Hedef]** Bu sırayı **şablon + görsel akış editörü** ile **teknik-olmayan kullanıcıya** açmak; elle bağlama yükünü azaltmak (→ §1.4).
@@ -146,12 +146,15 @@ sonraki adıma ilerler; insan beklemez:
 | **Değer Atama** | işini yapar, ilerler |
 | **Timer** | süre dolunca **default action** |
 | **Bildirim** | bildirimi atar, ilerler |
+| **Processing** | frontende form/response döner; **manuel aksiyon beklemeden** `default` ile ilerler |
 | **Form Creator / Silme / Yönlendirme, Süreç Adımı Tetikleme, Custom ID Creator, Timer Start/End** | işini yapıp ilerler |
 
 **B) İnsan-tetiklemeli (human task) adımları** — süreç burada **durur ve bekler**; form **"aksiyon alınabilir"**
 hâle gelir:
-- **Kullanıcı / Kullanıcı Grubu** adımları (ve **Processing** — atama yapıp bekletir, ama işlem aldırmaz).
-- **`manuel` ve `withForm`** aksiyonları **kullanıcı tarafından frontend'de** tetiklenir.
+- **Kullanıcı / Kullanıcı Grubu** adımları. _(**Processing** de frontende form/response döndürür ama **beklemez**;
+  manuel aksiyon almadan `default` ile otomatik ilerler → A grubu. Krş. §6.1.)_
+- **`manuel`, `withForm`, `Fotoğraf Çek`, `Dosya Seç`, `Barcode Tara`** aksiyonları **kullanıcı tarafından
+  frontend'de** tetiklenir.
 - Kullanıcılar, **kendilerinin (kullanıcı veya kullanıcı grubu üyesi olarak) yer aldığı** ve **o süreç adımında
   bekleyen** formları kendi listelerinde görür.
 - Atanan kullanıcı, aksiyonlardan birini **manuel** seçerek tetikler → süreç ilerler (parametre/changeList taşınır).
@@ -211,10 +214,12 @@ while adım != SüreçBitişi:
 ## 6. Bekle / Devam Et ve Uzun-Soluklu Süreçler (İnsan-Döngüde)
 
 ### 6.1 — İnsan-tetiklemeli bekleme
-**Kullanıcı / Kullanıcı Grubu / Processing** adımları motorun **bekle/devam-et** noktalarıdır (→ §4.3):
+**Kullanıcı / Kullanıcı Grubu** adımları motorun **bekle/devam-et** noktalarıdır (→ §4.3):
 form **"aksiyon alınabilir"** hâle gelir, atanan kullanıcıların **bekleyen formlar** listesinde görünür ve
 süreç, kullanıcı bir **manuel / withForm aksiyonu** tetikleyene kadar **durur**. Süreç state'i **kalıcılaştırılıp
 günlerce** bekleyebilmelidir (→ §8; n8n dersi 8: kalıcılaştır-ve-devam-et).
+> **Processing** bir bekleme noktası **değildir**: frontende form/response döndürür (§6.3) ama manuel aksiyon
+> beklemeden **`default`** ile otomatik ilerler (→ `servis-ayarlari/process-step.md` §3.18).
 
 ### 6.2 — Zaman Aşımı (Timeout)
 Kullanıcı/grup adımlarında **timeout** tanımlanabilir; süre dolunca:
@@ -259,7 +264,7 @@ bir aksiyon kodu** olarak modellenir (`default` ↔ `onFail`).
 ---
 
 ## 9. Ölçekleme ve Çok-Kiracılık (Multi-tenancy)
-- İzolasyon **üç başlıkla**: `organizationId` (organizasyon/kiracı) · `solutionid` (çözüm) · `ServiceId` (servis).
+- İzolasyon **üç başlıkla**: `organizationId` (organizasyon/kiracı) · `solutionId` (çözüm) · `serviceId` (servis).
 - **Platform:** mobil (iOS/Android) + Web tek kod tabanı.
 > _(Doldurulacak: organizasyon-bazlı izolasyon, eşzamanlılık, yatay ölçekleme, kuyruk/worker (→ §2.2), on-prem ↔ bulut hibrit (→ §12).)_
 

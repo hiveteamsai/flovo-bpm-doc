@@ -22,16 +22,18 @@ metin göstermek gerektiğinde, ilgili **`code`** çeviri tablosundan çözülü
 ---
 
 ## 1. Çeviri Veri Modeli
+Her **dil için ayrı kayıt** tutulur (kolon-başına-dil değil, **kayıt-başına-dil**).
+
 | Alan | Tip | Zorunlu | Açıklama |
 |---|---|---|---|
 | `id` | int | Otomatik | Çeviri kaydı ID'si |
 | `code` | string | Evet | Çeviri kodu — **eşleştirme anahtarı** (serbest metin; istenirse `form.submit` gibi namespace'lenebilir) |
-| `organizationId` | string / null | Hayır | Sahibi organizasyon. **`null` = ortak (Flovo) çeviri.** |
-| `tr` | string | — | Türkçe metin |
-| `en` | string | — | İngilizce metin |
-| `de` | string | — | Almanca metin |
+| `organizationId` | int / null | Hayır | Sahibi organizasyon (FK → `organization.md` `id`). **`null` = ortak (Flovo) çeviri.** |
+| `languageCode` | string | Evet | **Dil kodu** — sabit dil seti (`tr` / `en` / `de`) içinden (krş. `organization.defaultLang`) |
+| `definition` | string | Evet | Bu **dildeki metin** (`languageCode` dilinde) |
 
-> Aktif dile göre `tr` / `en` / `de` alanlarından biri döndürülür.
+> Bir `code`'un her dili **ayrı satırdır**; aktif dile (`languageCode = userLang`) uyan kaydın `definition`'ı döndürülür.
+> Yeni dil eklemek artık **şema (kolon) değişikliği değil**, yeni **kayıt** eklemektir.
 
 ---
 
@@ -50,34 +52,35 @@ metin göstermek gerektiğinde, ilgili **`code`** çeviri tablosundan çözülü
 Frontende **`code` + `definition` içeren** veriler (property label, seçili combobox metni, durum/aksiyon tanımı vb.)
 iletilirken metin aşağıdaki gibi çözülür.
 
-**Temel varsayım — `definition` = varsayılan dildeki metin:** Bir kaydın `definition` alanı, **organizasyonun
-`defaultLang`** dilindeki metin kabul edilir (→ `organization.md`). Motor bunun üzerine kurulur:
+**Temel varsayım — kaynak `definition` = varsayılan dildeki metin:** Kaynak kaydın (property/durum/aksiyon)
+`definition` alanı, **organizasyonun `defaultLang`** dilindeki metin kabul edilir (→ `organization.md`). Diğer diller
+`Translation` kayıtlarında (`languageCode` + `definition`) tutulur. Motor bunun üzerine kurulur:
 
 - **Adım 1 — Kullanıcı dili = organizasyonun `defaultLang`'i:** `definition` zaten kullanıcının dilindedir →
   **translation tablosuna gidilmez**, doğrudan `definition` iletilir. _(varsayılan dildeki kullanıcıda sorgu maliyeti yok)_
-- **Adım 2 — Diller farklı:** `definition` kullanıcının dilinde **değildir** → **`code` ile translation tablosuna**
-  bakılır. Eşleşme **`code` + `organizationId` birlikte** yapılır:
-  1. **`organizationId` && `code`** eşleşen kayıt varsa → **ilk hedef**, o alınır (organizasyon override'ı).
-  2. Yoksa → **`organizationId = null` && `code`** (ortak/Flovo) kaydına düşülür.
-- **Adım 3 — Fallback:** Translation eşleşmesi **yoksa** *veya* bulunan kaydın **istenen dildeki değeri boşsa** →
-  translation kullanılmaz, **`definition`** iletilir.
+- **Adım 2 — Diller farklı:** kaynak `definition` kullanıcının dilinde **değildir** → **`code` ile translation
+  tablosuna** bakılır. Eşleşme **`code` + `languageCode`(=userLang) + `organizationId` birlikte** yapılır:
+  1. **`organizationId` && `code` && `languageCode`** eşleşen kayıt varsa → **ilk hedef** (organizasyon override'ı).
+  2. Yoksa → **`organizationId = null` && `code` && `languageCode`** (ortak/Flovo) kaydına düşülür.
+- **Adım 3 — Fallback:** Eşleşme **yoksa** *veya* bulunan kaydın **`definition`'ı boşsa** → translation kullanılmaz,
+  kaynak **`definition`** iletilir.
 
 ```
-resolveText(code, definition, organizationId, userLang, orgDefaultLang):
-  # 1) Kullanıcı dili = organizasyonun varsayılan dili → definition zaten o dilde
+resolveText(code, sourceDefinition, organizationId, userLang, orgDefaultLang):
+  # 1) Kullanıcı dili = organizasyonun varsayılan dili → kaynak definition zaten o dilde
   if (userLang == orgDefaultLang):
-      return definition
+      return sourceDefinition
 
-  # 2) Diller farklı → translation tablosu (önce organizasyon, sonra ortak)
-  t = find(x => x.code == code AND x.organizationId == organizationId)
+  # 2) Diller farklı → translation tablosu; dil = userLang (önce organizasyon, sonra ortak)
+  t = find(x => x.code == code AND x.languageCode == userLang AND x.organizationId == organizationId)
   if (t == null):
-      t = find(x => x.code == code AND x.organizationId == null)
+      t = find(x => x.code == code AND x.languageCode == userLang AND x.organizationId == null)
 
-  # 3) Kayıt yok VEYA istenen dildeki değer boş → definition'a düş
-  if (t == null OR isEmpty(t[userLang])):
-      return definition
+  # 3) Kayıt yok VEYA metin boş → kaynak definition'a düş
+  if (t == null OR isEmpty(t.definition)):
+      return sourceDefinition
 
-  return t[userLang]   # tr | en | de
+  return t.definition   # languageCode = userLang dilindeki metin
 ```
 
 **Sonuç:** Varsayılan dildeki kullanıcı **hiç tabloya gitmez** (performans); farklı dildeki kullanıcı önce
@@ -86,23 +89,25 @@ resolveText(code, definition, organizationId, userLang, orgDefaultLang):
 ---
 
 ## 4. Benzersizlik & Kısıtlar
-- **Bir organizasyonda aynı `code`'lu birden fazla çeviri olamaz** → `(organizationId, code)` **benzersiz**.
-- Aynı şekilde **ortak tarafta da** aynı `code`'tan **tek** kayıt olur → `organizationId = null` + `code` benzersiz.
-- Yani bir organizasyon, kendi içinde aynı koddan **çoğaltamaz**; ama bir **ortak (null) `code`** ile **aynı `code`'a
-  sahip 1 kayıt** oluşturabilir (bu, o organizasyon için ortak kaydı **ezer**).
+- **Bir organizasyonda bir `code`'un bir dili tek kayıttır** → `(organizationId, code, languageCode)` **benzersiz**.
+- Ortak tarafta da aynı: `organizationId = null` + `code` + `languageCode` benzersiz.
+- Bir organizasyon, bir **ortak (null) `code` + `languageCode`** için **kendi kaydını** oluşturarak o dili **ezebilir**
+  (override).
 
 **Örnek** (`code = "form.submit"`):
-| id | code | organizationId | tr | en | Kimin gördüğü |
+| id | code | organizationId | languageCode | definition | Kimin gördüğü |
 |---|---|---|---|---|---|
-| 1 | `form.submit` | `null` | Gönder | Submit | Kaydı olmayan **tüm** organizasyonlar (ortak) |
-| 2 | `form.submit` | `org-42` | İlet | Send | **Yalnız `org-42`** (ortak kaydı ezer) |
+| 1 | `form.submit` | `null` | `tr` | Gönder | Kaydı olmayan **tüm** organizasyonlar (ortak) |
+| 2 | `form.submit` | `null` | `en` | Submit | Ortak |
+| 3 | `form.submit` | `42` | `tr` | İlet | **Yalnız `organizationId=42`** (ortak `tr`'yi ezer) |
+| 4 | `form.submit` | `42` | `en` | Send | **Yalnız `organizationId=42`** (ortak `en`'i ezer) |
 
-`org-42` → "İlet/Send"; diğer tüm organizasyonlar → "Gönder/Submit".
+`organizationId=42` → "İlet/Send"; diğer tüm organizasyonlar → "Gönder/Submit".
 
 ---
 
 ## 5. Açık Kararlar / Sorular
-- [x] **Dil seti sabit** — `tr`/`en`/`de` **sabit kolonlardır** (dinamik dil eklenmez); yeni dil, modele **kolon eklenerek** yapılır.
+- [x] **Dil seti** — `languageCode` **sabit set** (`tr`/`en`/`de`) içinden (krş. `organization.defaultLang`). Model **kayıt-başına-dil** olduğu için yeni dil **kolon değil kayıt** ekler (şema değişmez).
 - [x] **Boş/eşleşmeyen davranışı** — istenen dildeki değer boşsa veya eşleşme yoksa **`definition`**'a düşülür (§3).
 - [x] **`code` serbest metin** — kod **serbest**tir; kullanıcı isterse **namespace** (örn. `form.submit`) ile alanlar arası ayrım yapabilir (zorunlu değil).
 - [ ] Ortak çeviri sonradan güncellenince, onu **ezmiş** organizasyon kayıtları etkilenmemeli — teyit.

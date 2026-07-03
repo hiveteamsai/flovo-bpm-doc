@@ -2,16 +2,19 @@
 
 > **Durum:** 🟢 DETAYLANIYOR
 > **Amaç:** Flovo'da **renk/görünüm (style)** varlığını tanımlamak. Style **çapraz-kesen** bir kavramdır: renk seçimi
-> yapılan **her yerde** (aksiyonlar, durumlar, alanlar...) kullanılır.
+> yapılan yerlerde (aksiyonlar, durumlar...) kullanılır.
 >
-> **İlişki:** `action.md` (aksiyonun `style` alanı) · `status.md` (durum stili) · `../servis-ayarlari/properties.md` (alan stili).
+> **İlişki:** `action.md` (aksiyonun `styleId`) · `status.md` (durum stili). _(Not: **form alanlarına bu Style
+> varlığı uygulanmaz**; iş kuralındaki `SetStyle` yalnız tekil görünüm niteliklerini —fontSize/titleColor gibi—
+> değiştirir, Style varlığı seçmez → `../servis-ayarlari/work-rule.md`.)_
 
 ---
 
 ## 0. Style Nedir?
 Bir **style**, bir öğenin **renk/görünümünü** tanımlayan yeniden-kullanılabilir bir varlıktır. En temel hâliyle bir
-**arka plan rengi (bg color)** + **yazı rengi (font color)** çiftidir. Renk seçimi yapılan her yerde (aksiyon butonu,
-durum etiketi, alan...) bir style **seçilerek** uygulanır.
+**arka plan rengi (bg color)** + **yazı rengi (font color)** çiftidir. Renk seçimi yapılan yerlerde (aksiyon butonu,
+durum etiketi...) bir style **seçilerek** uygulanır. Genel kural: `bgColor` = arka plan; **`fontColor` = metin ve ikon
+rengi** (örn. durum etiketinde `definition` + `icon`). _(Form alanları bu Style varlığını kullanmaz.)_
 
 ---
 
@@ -31,7 +34,7 @@ Renkler **dinamik** yönetilir; bunun için **ayrı bir Style yönetim sayfası*
 > organizasyon başka organizasyonun stillerini göremez. _(Aynı model → `translation.md` §2 · `organization.md`.)_
 
 ### 1.3 — Kullanım
-- Stiller, uygulamada **renk seçimi yapılan her yerde** seçilebilir (aksiyon, durum, alan...).
+- Stiller, uygulamada **renk seçimi yapılan yerlerde** seçilebilir (aksiyon, durum...).
 - Seçim, ilgili varlıkta **style referansı** (id/code) olarak tutulur.
 
 ---
@@ -43,7 +46,7 @@ Renkler **dinamik** yönetilir; bunun için **ayrı bir Style yönetim sayfası*
 | `name` | string | Stil adı (kullanıcıya görünen) |
 | `bgColor` | string (hex/renk) | Arka plan rengi |
 | `fontColor` | string (hex/renk) | Yazı rengi |
-| `organizationId` | string / null | Sahibi organizasyon. **`null` = sistem stili** (tüm organizasyonlarca kullanılır, salt-okunur). |
+| `organizationId` | int / null | Sahibi organizasyon (FK → `organization.md` `id`). **`null` = sistem stili** (tüm organizasyonlarca kullanılır, salt-okunur). |
 
 > _(Genişletilebilir — bkz. §4: fontSize, isBold, border, iconColor...)_
 
@@ -57,12 +60,12 @@ Renkler **dinamik** yönetilir; bunun için **ayrı bir Style yönetim sayfası*
 ---
 
 ## 4. Açık Kararlar / Sorular
-- [ ] Style yalnız **bg + font** mı, yoksa daha fazlasını mı (fontSize, isBold, textAlignment, border, iconColor) kapsar?
-      (`../servis-ayarlari/properties.md`'de bunlar ayrı alanlar — style ile birleşir mi?)
+- [ ] Style yalnız **bg + font** mı, yoksa daha fazlasını mı (fontSize, isBold, border, iconColor) kapsar? _(Form
+      alanı görünüm nitelikleri —fontSize/isBold vb.— **ayrıdır**; bu Style varlığıyla birleşmez.)_
 - [x] Style **kapsamı:** **organizasyon-bazlı** (`organizationId`) + **sistem** (`organizationId=null`, salt-okunur). Servis-bazlı ayrım yok.
+- [x] **Style tüketicileri:** aksiyon ✓ · durum ✓ · **alan ✗** (form alanları bu Style varlığını kullanmaz) · adım? (açık).
 - [ ] **Tema/dark mode** ile ilişki.
 - [ ] Erişilebilirlik: bg/font **kontrast** kontrolü zorunlu olsun mu?
-- [ ] Hangi varlıklar style kullanır? (aksiyon ✓ · durum ✓ · alan ✓ · adım? )
 
 ---
 

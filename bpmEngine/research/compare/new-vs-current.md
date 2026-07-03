@@ -23,9 +23,11 @@
 | 8 | **Raporlar** | View-profile içinde | **Ayrıldı** (ayrı özellik) |
 | 9 | **Şişman modeller** | PropertyDto ~60 alan | **İnce çekirdek + tipe-özel ayar** |
 | 10 | **Eba entegrasyonu** | Var (`ebaIntegratedFlovoApp`, `FromEba`) | **Tamamen kaldırıldı** |
-| 11 | **Çeviri (i18n)** | Dağınık/örtük | **`code`-bazlı çeviri motoru** (ortak+organizasyon, `definition`=varsayılan dil) |
-| 12 | **Organizasyon (kiracı)** | **Account** (`accountId`) + `solutionid` başlıkları | **Organization** (`organizationId`) varlığı (`defaultLang`, `idleTimeoutMinute`, `logoUrl`) |
+| 11 | **Çeviri (i18n)** | Dağınık/örtük | **`code`-bazlı çeviri motoru** (ortak+organizasyon; **kayıt-başına-dil**: `languageCode`+`definition`) |
+| 12 | **Organizasyon (kiracı)** | **Account** (`accountId`) + `solutionid` başlıkları | **Organization** (`organizationId` **int**) varlığı (`defaultLang`, `idleTimeoutMinute`, `logoUrl`) |
 | 13 | **Seçim öğesi** | `propertyItems` (değer=metin) | **`PropertyItem`** — `code` (çeviri) ile `value` **ayrıldı** |
+| 14 | **Hiyerarşi & havuz** | account/solution/service başlıkları | **Organization → Solution → Service**; Action/Status/Style/Translation = **organizasyon havuzu** (`organizationId`) |
+| 15 | **Profil-bazlı alan override** | Alan ayarları profilden bağımsız | **`ProcessViewProfilePropertySetting`** (key/value) — Form List ayarları görüntüleme profiline göre |
 
 ---
 
@@ -41,7 +43,7 @@
 - "Her şey backend / ince istemci" yaklaşımı yeniden değerlendirildi (iş kuralları frontend'e taşındı).
 
 **↔ Korundu**
-- Servis / Solution / **Organization** çok-kiracılık modeli (`organizationId`/`solutionid`/`ServiceId`) — model korundu, **Account → Organization** olarak yeniden adlandırıldı (`accountId`→`organizationId`).
+- Servis / Solution / **Organization** çok-kiracılık modeli (`organizationId`/`solutionId`/`serviceId`) — model korundu, **Account → Organization** olarak yeniden adlandırıldı. _(Eski `accountId` aslında **kod** niteliğindeydi → yeni **`organizationCode`** (string); yeni **`organizationId`** ise int primary key'dir.)_
 - Tasarım-zamanı 6-alan sırası (property → profil → kural → aksiyon → durum → adım).
 - Aksiyonun **`targetProcessStepId`**'si (aksiyon çalışınca hangi adıma ilerleneceği) — **korunur**; üstüne **aksiyon-kodu seçimi** formalize edildi.
 
@@ -70,13 +72,13 @@ Mevcut **15 adım tipi** (biri, `atama`, enum'da tanımlı ama **kullanılmayan*
 **🔧 Adım ortak yapısı (`ProcessStepDto`) değişiklikleri**
 - **Kaldırıldı:** `selectModalItemDeactive`, `canSelectExpenses` → görüntüleme/seçim profili konusu (Form List).
 - **Taşındı → Değer Atama:** `useRelatedService`, `relatedServiceId`, `targetInstancesFieldId` (→ `targetInstancesPropertyId`).
-- **Değer Atama:** `valueType` değeri `FormValue` → **`PropertyValue`**; `targetFieldId`→`targetPropertyId`, `fieldId`→`propertyId`.
+- **Değer Atama:** `valueType` değeri `FormValue` → **`PropertyValue`**; `targetFieldId`→`targetPropertyId`, `fieldId`→`propertyId`; ayrıca **`FromCalculation`** (+`expression`) değer kaynağı eklendi.
 
 ---
 
 ## 3. Aksiyonlar (`../../genel-ayarlar/action.md` + `../../servis-ayarlari/process-step-action.md`)
 **➕ Eklendi**
-- **ActionDto = aksiyon şablonu** (ayrı doküman); adıma eklenince `code`/`definition`/`icon`/`style`/`actionType` **kopyalanır**.
+- **ActionDto = aksiyon şablonu** (ayrı doküman); adıma eklenince `code`/`definition`/`icon`/`styleId`/`actionType` **bir kez kopyalanır** (canlı bağ/FK yok — `actionId` tutulmaz; iki taraf bağımsız).
 - **Sade actionType kataloğu:** **Manuel · withForm · Fotoğraf Çek · Dosya Seç · Barcode Tara · Webhook · Autoaction**.
 - **withForm** (reasonRequired'ın yerini alır) · **Webhook** · **Autoaction** (yeni türler).
 - **`parameters`/`changeList`/`action`** aktarım modeli.
@@ -85,15 +87,15 @@ Mevcut **15 adım tipi** (biri, `atama`, enum'da tanımlı ama **kullanılmayan*
 - `reasonRequired` → **withForm** karşılıyor.
 - **Custom per-job davranışları:** `fire-event`, `new-instance` / `-referenced` / `-other`, `take-photo`, `select-file`,
   `take-barcode`, `manuel-barcode-input`, `excel-export`, `expform-*`, `add-test-receipt` → genel türlere / başka mekanizmalara taşındı:
-  - `new-instance*` → **Form Creator** adımı + **Form List** `addNewEnabled`
-  - `expform-add-exist-expense` → **Form List** `addFromExistingRecordsIsActive`
+  - `new-instance*` → **Form Creator** adımı + **Form List** `activeStartActions` (profil override)
+  - `expform-add-exist-expense` → **Form List** `addFromExistingStatusIds` (profil override)
   - `excel-export` → **raporlama** (ayrı özellik)
   - `add-test-receipt` → kaldırıldı
 
 **✏️ Yeniden adlandırılan (DİKKAT — kavram takası)**
 | Eski alan | Eski anlam | Yeni |
 |---|---|---|
-| `actionType` (ProcessActionDto) | renk/stil (success/danger…) | **`style`** (dinamik Style varlığı) |
+| `actionType` (ProcessActionDto) | renk/stil (success/danger…) | **`styleId`** (dinamik Style varlığına FK) |
 | `action` (ProcessStepActionDto) | davranış (fire-event…) | **`actionType`** (tür: Manuel/withForm…) |
 
 **↔ Korundu (binding'de):** **`targetProcessStepId`** (hedef adım), `changeStatusId`, `authorizationLevel`, `actionDisplayAuthorizedUserGroupId`, `showInHistory`, `environmentRestriction`.
@@ -134,9 +136,20 @@ Mevcut **30 ControlType** → yeni **19 alan** (16 founder + **3 mevcuttan korun
 - `headerText` — artık **her alanda değil**; yalnız **pop-up açan alanlarda** (Combobox/Datepicker/Time Picker) pop-up başlığı.
 - `fontSize`·`iconSize`·`isBold`·`textAlignment`·`stiky` — çekirdekten çıkıp **Text (statik başlık)** alanına özel oldu.
 
+**🔀 Form List ayarları → görüntüleme profiline (yeni)**
+- `addNewEnabled` → **`activeStartActions`** (list; `childService` başlangıç aksiyonlarından seçim; **boş=oluşturma yok**) ·
+  `addFromExistingRecordsIsActive` → **`addFromExistingStatusIds`** (list; hangi durumdaki formlar) — ikisi de **profil-bazlı**
+  (`ProcessViewProfilePropertySetting`).
+- `selectedEnable` → **`selectableModeActive`** (Form List **alan-düzeyi**; tik modu) · öneri `selectedEditable` (profil-bazlı tik düzenlenebilirliği).
+
 ---
 
 ## 5. Görüntüleme Profilleri (`../../servis-ayarlari/view-profile.md`)
+**➕ Eklendi**
+- **`ProcessViewProfilePropertySetting`** (key/value) — alanın **tipe-özel** görünüm/davranış ayarlarını **profil bazında**
+  override eder (`propertyType`'a göre dictionary). Örn. Form List: `activeStartActions`, `addFromExistingStatusIds`, `selectedEditable`.
+- Profil ve profil-alan modellerine **DB anahtarları** netleştirildi (`id`, `serviceId`, `viewProfileId`, `propertyId`).
+
 **➖ Çıkarıldı**
 - **Raporlar ayrıldı:** `showOnDataGrid` + rapor objesi (`isUserReport`, `userGroupId`, `showAsManager`, `showToEveryone`).
 - `ProcessViewProfilePropertyDto`'dan: `showOnListingPage`, `subFieldsViewProfiles`, `deletableStatuses`,
@@ -166,34 +179,44 @@ Mevcut **30 ControlType** → yeni **19 alan** (16 founder + **3 mevcuttan korun
 ---
 
 ## 7. Durumlar (`../../genel-ayarlar/status.md`)
-**✏️ Yeniden adlandırılan:** `statusType` → **`style`** (yanlış adlandırılmıştı; aslında renk/görünüm).
+**✏️ Yeniden adlandırılan:** `statusType` → **`styleId`** (yanlış adlandırılmıştı; aslında Style'a FK).
+**🔧 Renk:** `definition` metni + `icon` rengi Style'ın **`fontColor`**'ından gelir (`bgColor` = etiket arka planı).
+**➕ DB anahtarları:** `id` (PK) + `organizationId` (havuz).
 **↔ Korundu:** `code`, `definition`, `icon`; aksiyonla durum değişimi (`changeStatusId`).
 
 ---
 
 ## 8. Stiller (`../../genel-ayarlar/style.md`) — YENİ KAVRAM
-**➕ Eklendi:** **Dinamik Style yönetimi** — sistem stilleri (`organizationId=null`, read-only) + organizasyon stilleri (bg/font); **çapraz-kesen** (aksiyon ✓ · durum ✓ · alan ✓).
+**➕ Eklendi:** **Dinamik Style yönetimi** — sistem stilleri (`organizationId=null`, read-only) + organizasyon stilleri (bg/font); **çapraz-kesen** (aksiyon ✓ · durum ✓ · **alan ✗** — form alanları Style **kullanmaz**). Referans **`styleId`** FK ile; `fontColor` = metin+ikon rengi.
 **➖ Değişti:** Statik Bootstrap renk sınıfları (`actionType`) → **dinamik Style varlığı** (referansla seçim).
 
 ---
 
 ## 9. Çeviri & Organizasyon (YENİ) — `../../genel-ayarlar/translation.md` · `../../genel-ayarlar/organization.md`
 **➕ Çeviri motoru** (yeni yapı)
-- **`code`-bazlı** çeviri: model `id`·`code`·`organizationId`·`tr`·`en`·`de`.
+- **`code`-bazlı** çeviri: model `id`·`code`·`organizationId`·**`languageCode`·`definition`** — **kayıt-başına-dil**
+  (`tr`/`en`/`de` kolonları yok); `(organizationId, code, languageCode)` benzersiz.
 - **İki katman:** ortak (Flovo, `organizationId=null`, salt-okunur) + organizasyon çevirileri (kendi kayıtlarını günceller).
 - **Çözümleme:** `definition` = organizasyonun `defaultLang` metni → dil eşleşince tabloya **gidilmez**; farklıysa
-  `code`+`organizationId` (override) → `code`+`null` (ortak) → yoksa/boşsa **`definition`** fallback.
+  `code`+**`languageCode`**+`organizationId` (override) → `code`+`languageCode`+`null` (ortak) → yoksa/boşsa **`definition`** fallback.
 
 **➕ Organizasyon (tenant) varlığı**
 - Model (başlangıç): `id`·`code`·`name`·`defaultLang`·`logoUrl`·`idleTimeoutMinute`.
 - `code` benzersiz + dış referans anahtarı; `idleTimeoutMinute` (0=disable); `defaultLang` sabit dil seti (`tr`/`en`/`de`).
+
+**➕ Hiyerarşi & havuz (yeni)**
+- **Organization → Solution → Service** hiyerarşisi netleşti (**Solution** ve **Service** ayrı model). `organizationId`
+  **int** PK; dış referans `organizationCode` (string).
+- **Action / Status / Style / Translation** = **organizasyon havuzu** (`organizationId`); o organizasyonun tüm
+  servislerinde kullanılır (Service'e bağlı **değil**).
 
 ---
 
 ## 10. Genel Adlandırma Kuralı
 - **field → property** (her yerde): `...FieldId` → `...PropertyId`, `fieldId`→`propertyId`, `FieldValue`/`FormValue`→`PropertyValue`.
 - **Account → Organization**: `accountId`→`organizationId`, `accountUserGroup*`→`organizationUserGroup*`, `accountRestriction`→`organizationRestriction`.
-- **function → HTTP Request** · **ModalList → Form List** · **statusType → style** · **(aksiyon) actionType → style** + **(aksiyon) action → actionType** · **onAfterChange → saveAndRefreshOnAfterChange**.
+- **function → HTTP Request** · **ModalList → Form List** · **statusType → styleId** · **(aksiyon) actionType → styleId** + **(aksiyon) action → actionType** · **onAfterChange → saveAndRefreshOnAfterChange**.
+- **Çeviri:** `tr`/`en`/`de` kolonları → **`languageCode` + `definition`** (kayıt-başına-dil). **Form List:** `addNewEnabled`→`activeStartActions`, `addFromExistingRecordsIsActive`→`addFromExistingStatusIds`, `selectedEnable`→`selectableModeActive`.
 
 ---
 
@@ -207,15 +230,16 @@ Mevcut **30 ControlType** → yeni **19 alan** (16 founder + **3 mevcuttan korun
 - **Ölü ağırlığın atılması:** Eba entegrasyonu, `add-test-receipt`, iş-bazlı custom aksiyonlar, çift ondalık alanı (`precition`) temizlendi.
 - **i18n motoru:** `code`↔`definition` ayrımı + `definition`=varsayılan dil kısa-devresi hem tutarlı hem performanslı (çoğu kullanıcı sorgusuz).
 - **Aksiyon-kodu + `targetProcessStepId` iki katmanı:** "hangi aksiyon" ile "hangi adım" ayrımı net formalize edildi.
+- **Kararlar netleşti:** Action→ProcessStepAction **bağımsız kopya** (FK yok); Form List ayarları **profil-bazlı override** (B2); Translation **kayıt-başına-dil**; kapsam kararı (havuz ↔ servis) çözüldü.
 
 ### ⚠️ Başarısız / riskli / henüz eksik
-- **Çıkarılan ama karşılığı netleşmemiş yetenekler:** view-profile'dan `subFieldsViewProfiles`/`cardViewProfile` kaldırıldı ama **Form List alt-servis görünümü** nasıl kurulacak açık.
+- **Form List alt-servis görünümü:** davranış ayarları artık **profil-bazlı override** (B2) ile yönetiliyor; ancak alt-servisin **görüntülenecek alanları / kart görünümü** (`subFieldsViewProfiles`/`cardViewProfile` karşılığı) hâlâ açık.
 - **`definition` = varsayılan dil kırılganlığı:** Bir organizasyon `defaultLang`'ini sonradan değiştirirse eski `definition`'lar yanlış dilde kalır; bu bir **veri-giriş kuralı** olarak garanti edilmeli (çeviri motorunun zayıf noktası).
 - **Motor iç mekaniği hâlâ yazılmadı:** `flovo-bpm-engine.md`'de yürütme durumu/kalıcılık, bekleme-noktası serileştirme, hata katmanları, döngü/join **placeholder**; mevcut projede de netti değildi — devralınan boşluk.
 - **`changeList` öğe yapısı belirsiz** (alan id + değer + tip?) — açık soru.
 - **İsim çakışması:** `actionType` (ActionDto tür) ↔ WorkRule `actionType` (etki tipi) — ayrı varlıklar ama karışma riski.
-- **ActionDto kopya ↔ canlı referans:** şablon değişince adımdaki kopyalar güncellensin mi — karar bekliyor.
 - **İki-katman tekrarı:** değer atama & karşılaştırma hem adımda hem iş kuralında var — sınır netleşmeli.
+- **`ProcessStep`/`WorkRule` denormalize `organizationId`:** asıl kapsayıcı `serviceId` iken kiracı için ayrıca `organizationId` tutulması — gözden geçirilecek.
 
 ---
 
@@ -223,9 +247,9 @@ Mevcut **30 ControlType** → yeni **19 alan** (16 founder + **3 mevcuttan korun
 - **Form List** alt-servis görüntülenecek alanları / seçilebilirliği view-profile ile nasıl ayarlanacak.
 - **Şişman model** sadeleştirmesinde hangi alanlar çekirdek, hangileri tipe-özel.
 - **`actionType` isim çakışması** (ActionDto ↔ WorkRule) — yeniden adlandırma opsiyonel.
-- **ActionDto kopya ↔ canlı referans** senkronu.
-- **Çeviri:** `definition`↔`defaultLang` tutarlılık garantisi; `du`→`de` gibi dil netliği.
+- **Çeviri:** `definition`↔`defaultLang` tutarlılık garantisi (organizasyon `defaultLang`'i değişirse eski `definition`'lar yanlış dilde kalır).
+- **Form List** alt-servis **görüntülenecek alanları / kart görünümü** (davranış ayarları B2 ile çözüldü).
 
 ---
 
-*Güncelleme: 2026-07-01 · Tasarım dokümanları ile `../current-flovo-bpm-engine/` karşılaştırılarak derlendi.*
+*Güncelleme: 2026-07-02 · Tasarım dokümanları ile `../current-flovo-bpm-engine/` karşılaştırılarak derlendi.*

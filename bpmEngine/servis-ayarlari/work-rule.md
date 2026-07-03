@@ -34,7 +34,7 @@ veri kaynağı doldurma, stil vb.
 | Alan | Tip | Açıklama |
 |---|---|---|
 | `id` | int | Kural ID'si |
-| `organizationId` | string | Organizasyon ID'si |
+| `organizationId` | int | Organizasyon ID'si (FK → `../genel-ayarlar/organization.md` `id`) |
 | `serviceId` | int | Servis ID'si |
 | `code` | string | Kural kodu |
 | `definition` | string | Kural adı/tanımı |
@@ -61,7 +61,7 @@ veri kaynağı doldurma, stil vb.
 | `AssignValueToProperty` | Bir property'nin **değerine** değer atar (§3.1) |
 | `FillDataSource` | Combobox / Form List gibi seçim alanlarının veri kaynağını doldurur |
 | `AssignValueToPropertyAttribute` | Property'nin **değerine değil, bir niteliğine** (attribute) değer atar _(⚠️ isim teyit — §6)_ |
-| `SetStyle` | Property/form **stilini** ayarlar — **Style** varlığından (→ `../genel-ayarlar/style.md`) |
+| `SetStyle` | Property/form'un **tekil görünüm niteliklerini** (örn. `fontSize`, `titleColor`) değiştirir. **`../genel-ayarlar/style.md` Style varlığını seçmez** — daha spesifik, tekil nitelik değişimidir |
 
 ### 3.1 — `AssignValueToProperty` değer kaynakları (`ValueAssignType`)
 `FixedValue` (sabit) · `PropertyValue` (başka bir property'nin değeri) · `FromCalculation` (expression) ·
@@ -76,7 +76,7 @@ Her koşul iki değerin bir **operatörle** karşılaştırılmasıdır; koşull
 |---|---|
 | `referenceValue` | Referans değer (sol taraf) — tip: `WorkRuleConditionCompareType` |
 | `valueToCompare` | Karşılaştırılacak değer (sağ taraf) |
-| `criteritionType` | Operatör (=, !=, boş, boş değil, >, >=, <, <=, başlar, biter, içerir, içermez) |
+| `criterionType` | Operatör (=, !=, boş, boş değil, >, >=, <, <=, başlar, biter, içerir, içermez) |
 | `isConditionList` | İç içe koşul grubu mu |
 | `workRuleConditionType` | Alt grup birleştirme (VE/VEYA) |
 | `workRuleConditions` | İç içe koşullar (recursive) |
@@ -103,10 +103,10 @@ profili) · `FixedValue` · `FromCalculate` (expression).
 - [ ] **İki-katman sınırı:** **değer atama** ve **karşılaştırma** hem **süreç adımı** (`process-step.md` §3.4 / §3.13)
       hem **iş kuralı** olarak var. Sınır net mi? Öneri: iş kuralı = **anlık form UX**, adım = **kalıcı/akış** kararı.
 - [ ] **`AssignValueToPropertyAttribute`** adı teyit — "property'nin niteliğine değer atama" doğru karşılık mı?
-- [ ] **`SetStyle`** stili `../genel-ayarlar/style.md` varlığından mı seçilir? (Evet varsayıldı.)
+- [x] **`SetStyle`** `style.md` Style varlığını **seçmez**; yalnız tekil görünüm niteliklerini (`fontSize`, `titleColor` vb.) değiştirir. _(Detay, iş kuralı en son şekillenince netleşecek → §7.)_
 - [ ] **`FillDataSource`** kaynak tipleri (Organization Data / User Data / API) nasıl modellenecek?
 - [ ] **Performans:** `always` kuralları her değişiklikte değil, **alan-bağımlı** (yalnız ilgili property değişince) tetiklensin mi?
-- [ ] İş kuralları servis-bazlı mı, paylaşımlı mı tanımlanır?
+- [x] İş kuralları **servis-bazlı** tanımlanır (bir servise ait — `serviceId`).
 
 ---
 

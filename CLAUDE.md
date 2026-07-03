@@ -33,6 +33,8 @@ Yeni BPM motoru tasarım dökümanları **doğrudan `bpmEngine/` altındadır.**
 | `flovo-bpm-engine.md` · `flovo-customer-api.md` | Motor çalışma prensibi · Customer API. |
 | `genel-ayarlar/` | Tüm servislerde kullanılan ayarlar (**action** · **style** · **status** · **translation** · **organization**). |
 | `servis-ayarlari/` | Servise bağlı ayarlar (**process-step** · **process-step-action** · **properties** · **work-rule** · **view-profile**). |
+| `models/` | **Veri modelleri (şema referansı)** — model dizini + ilişki haritası (`models.md`) + her model için alan-düzeyi dosya. |
+| `todo.md` | **Açık kararlar/sorular** — tüm dokümanların **önceliklendirilmiş** tek listesi (Tier 0–3). |
 | `sampleProcess/` | Uçtan uca **örnek süreçler** (görselli, self-servis). |
 | `research/` | **BPM referansları + karşılaştırmalar:** `current-flovo-bpm-engine/` (mevcut/eski Flovo BPM) · `n8n/` (referans analizleri) · `compare/` (**new-vs-current** · **new-vs-n8n** farkları + başarılı/başarısız). |
 

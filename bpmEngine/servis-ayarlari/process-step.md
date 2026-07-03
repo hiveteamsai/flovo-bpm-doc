@@ -17,8 +17,8 @@
 | Kategori | Flovo adımları |
 |---|---|
 | **Başlangıç / Bitiş** | Süreç Başlangıcı · Süreç Bitişi |
-| **İnsan görev (human task)** | Kullanıcı · Kullanıcı Grubu · Processing |
-| **Otomatik / sistem** | HTTP Request · Flovo AI · Değer Atama · Karşılaştırma · Switch · Bildirim · Custom ID Creator |
+| **İnsan görev (human task)** | Kullanıcı · Kullanıcı Grubu |
+| **Otomatik / sistem** | HTTP Request · Flovo AI · Değer Atama · Karşılaştırma · Switch · Bildirim · Custom ID Creator · **Processing** (frontende form döner ama `default` ile otomatik ilerler → §3.18) |
 | **Form & alt-servis** | Form Creator · Form Silme · Form Yönlendirme · Süreç Adımı Tetikleme |
 | **Zamanlayıcı** | Timer · Timer Start · Timer End |
 
@@ -33,7 +33,7 @@ Tip-bağımsız: bu alanlar **her adımda** ortaktır; tipe özel ayarlar bunun 
 | `definition` | string | Adımın adı/tanımı |
 | `environmentRestriction` | string | Ortam kısıtlaması |
 | `id` | int | Veritabanı ID'si |
-| `organizationId` | string | Organizasyon ID'si |
+| `organizationId` | int | Organizasyon ID'si (FK → `../genel-ayarlar/organization.md` `id`) |
 | `serviceId` | int | Bağlı servis ID'si |
 | `icon` | string | Adım ikonu |
 | `order` | int | Sıralama (sürükle-bırak) |
@@ -112,8 +112,9 @@ değer atamak için kullanılır.
 **Veri modeli (atama tanımı):**
 | Alan | Tip | Açıklama |
 |---|---|---|
-| `valueType` | enum | `FixedValue` (sabit) / `PropertyValue` (form property değeri) |
+| `valueType` | enum | `FixedValue` (sabit) / `PropertyValue` (form property değeri) / `FromCalculation` (expression ile hesaplanan değer) |
 | `fixedValue` | string | Sabit değer (`valueType=FixedValue`) |
+| `expression` | string | Değeri üreten ifade (`valueType=FromCalculation`) |
 | `useDisplay` | bool | Görüntü (display) değerini kullan |
 | `targetPropertyId` | int | Hedef property (değerin yazılacağı alan) |
 | `propertyId` | int | Kaynak property (`valueType=PropertyValue`) |
@@ -213,11 +214,15 @@ listesi** (form property'sinden) · **Dinamik kullanıcı grubu**.
 **Özet:** Sürecin **son adımıdır**; kimsenin onayında beklemez, sürecin **bittiği** anlamına gelir. Yetkili kullanıcılar
 altındaki aksiyonları **görüntüleyebilir** ve aksiyon alarak formu **önceki adımlara taşıyabilir**. Erişim:
 **raporlardan** veya **daha önce aksiyon alınan form listesinden**.
-**Ayarlar:** `processViewProfileDto` (bitişte görüntüleme profili) · `organizationUserGroupDtos` (bitiş sonrası erişebilecek gruplar).
+**Ayarlar:** `processViewProfileId` (bitişte görüntüleme profili) · `organizationUserGroupIds` (bitiş sonrası erişebilecek gruplar).
 
 ### 3.18 — Processing
 **Özet:** Form, **bir kullanıcıya** (Kullanıcı/Kullanıcı Grubu gibi) atanır; o kullanıcı bunu **"bu işlemin tamamlanmasını
 bekleyenler"** listesinde görür. Form üzerinde **işlem alınamaz**.
+
+**İlerleme (Kullanıcı/Kullanıcı Grubu'ndan farkı):** Bu adıma girildiğinde Kullanıcı/Kullanıcı Grubu gibi **frontende
+form/response döner**; **fakat manuel aksiyon beklenmez** — adım **`default`** aksiyonuyla **otomatik ilerler** (motorda
+otomatik adım gibi davranır → `../flovo-bpm-engine.md` §4.3 / §6.1).
 
 **Ayar — `showLoading` (bool):** Bu adımdayken formun **detayına girilmesi** veya **alan değerlerinin görüntülenmesi**
 istenmiyorsa **aktif edilir**; frontendde kullanıcı formu **"yükleniyor"** görür (giriş engellenir).

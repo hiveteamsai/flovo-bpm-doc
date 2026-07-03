@@ -11,7 +11,7 @@
 
 ## 0. Genel İlkeler (teorik)
 - **Kimlik:** custom code, bir **token** ile kimliklenir; kapsam **organization / solution / service** bazlıdır
-  (header'lar: `organizationId` / `solutionid` / `ServiceId`).
+  (header'lar: `organizationId` / `solutionId` / `serviceId`). _(**Geçici**: dış referans anahtarının int `organizationId` mi yoksa string `organizationCode` mi olacağı **açık** → §3.)_
 - **Birim:** çoğu uç **servis (form)** ve **form id** etrafında çalışır.
 - **Yön:** custom code → Flovo (okuma/yazma) **ve** custom code → Flovo (**webhook aksiyonu tetikleme**).
 
@@ -71,6 +71,7 @@
 
 ## 3. Açık Kararlar / Sorular
 - [ ] Kimlik/yetki modeli: token kapsamı, süresi, yenileme; per-service mi per-solution mı?
+- [ ] **Dış referans anahtarı:** API çağrılarında kiracı `organizationId` (int) ile mi yoksa `organizationCode` (string) ile mi belirtilmeli? (`genel-ayarlar/organization.md` §2 dış referanslarda `code` diyor.)
 - [ ] **Webhook tetikleme** güvenliği (secret/imza) ve **idempotency** (aynı webhook iki kez gelirse).
 - [ ] `POST /forms/search` sorgu dili (alan + operatör — `servis-ayarlari/properties.md` / `servis-ayarlari/work-rule.md` operatörleriyle hizalı mı?).
 - [ ] Rate limit / sayfalama / hata sözleşmesi (standart response zarfı).
