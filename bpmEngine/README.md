@@ -7,25 +7,26 @@
 
 ## 📁 Yapı
 
-### `genel-ayarlar/` — Genel Ayarlar (tüm servislerde kullanılır)
+### `organization-settings/` — Genel Ayarlar (tüm servislerde kullanılır)
 Bu özellikler servisten bağımsızdır; bir kez tanımlanır, tüm servislerde kullanılır.
 | Doküman | İçerik |
 |---|---|
-| [`action.md`](./genel-ayarlar/action.md) | **Aksiyon şablonu** (model: `ActionDto`) — yeniden kullanılabilir aksiyon tanımı; adıma eklenince kopyalanır. |
-| [`style.md`](./genel-ayarlar/style.md) | **Style** — renk/görünüm varlığı (bg + font); **aksiyon/durum'da** kullanılır (form alanları kullanmaz). |
-| [`status.md`](./genel-ayarlar/status.md) | **Durum (status)** — kaydın aşaması (etiket). |
-| [`translation.md`](./genel-ayarlar/translation.md) | **Çeviri (translation)** — `code`-bazlı çok dilli metinler; ortak (Flovo) + organizasyon çevirileri, override çözümlemesi. |
-| [`organization.md`](./genel-ayarlar/organization.md) | **Organizasyon (tenant)** — Flovo'yu kullanan kurum; kullanıcı/servis/çevirilerin üst kapsayıcısı. |
+| [`action.md`](./organization-settings/action.md) | **Aksiyon şablonu** (model: `ActionDto`) — yeniden kullanılabilir aksiyon tanımı; adıma eklenince kopyalanır. |
+| [`style.md`](./organization-settings/style.md) | **Style** — renk/görünüm varlığı (bg + font); **aksiyon/durum'da** kullanılır (form alanları kullanmaz). |
+| [`status.md`](./organization-settings/status.md) | **Durum (status)** — kaydın aşaması (etiket). |
+| [`translation.md`](./organization-settings/translation.md) | **Çeviri (translation)** — `code`-bazlı çok dilli metinler; ortak (Flovo) + organizasyon çevirileri, override çözümlemesi. |
+| [`organization.md`](./organization-settings/organization.md) | **Organizasyon (tenant)** — Flovo'yu kullanan kurum; kullanıcı/servis/çevirilerin üst kapsayıcısı. |
+| [`permissions.md`](./organization-settings/permissions.md) | **Yetkilendirme** — org-bazlı yetkiler: admin kullanıcılar + grup-bazlı (impersonation, org/servis ayarları erişimi, tüm raporlar). |
 
-### `servis-ayarlari/` — Servis Ayarları (bir servise bağlı)
+### `service-settings/` — Servis Ayarları (bir servise bağlı)
 Her servisin (formun) kendine ait ayarları.
 | Doküman | İçerik |
 |---|---|
-| [`process-step.md`](./servis-ayarlari/process-step.md) | **Süreç adımları** — adım tipleri katalogu (19 adım) + ortak yapı. |
-| [`process-step-action.md`](./servis-ayarlari/process-step-action.md) | **Süreç adımı aksiyonu** — aksiyonun adıma bağlanması (binding), veri aktarımı (`parameters`/`changeList`/`action`), actionType kataloğu. |
-| [`properties.md`](./servis-ayarlari/properties.md) | **Form alanları (property)** — alan tipleri (19) + ortak çekirdek. |
-| [`work-rule.md`](./servis-ayarlari/work-rule.md) | **İş kuralları** — frontend realtime form davranışı (koşul→aksiyon). |
-| [`view-profile.md`](./servis-ayarlari/view-profile.md) | **Görüntüleme profilleri** — formun adım-bazlı görünümü (görünür/düzenlenebilir/zorunlu). |
+| [`process-step.md`](./service-settings/process-step.md) | **Süreç adımları** — adım tipleri katalogu (19 adım) + ortak yapı. |
+| [`process-step-action.md`](./service-settings/process-step-action.md) | **Süreç adımı aksiyonu** — aksiyonun adıma bağlanması (binding), veri aktarımı (`parameters`/`changeList`/`action`), actionType kataloğu. |
+| [`properties.md`](./service-settings/properties.md) | **Form alanları (property)** — alan tipleri (19) + ortak çekirdek. |
+| [`work-rule.md`](./service-settings/work-rule.md) | **İş kuralları** — frontend realtime form davranışı (koşul→aksiyon). |
+| [`view-profile.md`](./service-settings/view-profile.md) | **Görüntüleme profilleri** — formun adım-bazlı görünümü (görünür/düzenlenebilir/zorunlu). |
 
 ### Kök (motor & referans)
 | Doküman | İçerik |

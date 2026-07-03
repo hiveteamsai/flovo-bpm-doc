@@ -60,4 +60,4 @@ gelen `pdfUrl` ile dinamik üretilir; `parameters: { formId, pdfUrl }` frontende
 ---
 
 > Senkron karşılığı: `../createPdf/process.md` (HTTP Request `async = false`, beklemeli).
-> İlgili tasarım: Webhook → `../../servis-ayarlari/process-step-action.md` §3.6 · API → `../../flovo-customer-api.md`.
+> İlgili tasarım: Webhook → `../../service-settings/process-step-action.md` §3.6 · API → `../../flovo-customer-api.md`.

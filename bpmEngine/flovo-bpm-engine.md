@@ -2,7 +2,7 @@
 
 > **Durum:** 🟢 DETAYLANIYOR — temel kavramlar / çalışma prensibi / yürütme algoritması dolduruldu; bazı bölümler (§2.2, §8.2, §10, §11) founder/teknik girdi bekliyor.
 > **Amaç:** Yeni Flovo'nun **BPM motorunun** nasıl çalışacağını (mimari + yürütme prensibi) tanımlamak.
-> Bu doküman "hangi adımlar var" değil (→ `servis-ayarlari/process-step.md`), "adımlar ne yapar" değil (→ `servis-ayarlari/process-step-action.md`);
+> Bu doküman "hangi adımlar var" değil (→ `service-settings/process-step.md`), "adımlar ne yapar" değil (→ `service-settings/process-step-action.md`);
 > **"motor bu adımları nasıl çalıştırır"** sorusunu cevaplar.
 >
 > **Referanslar:** n8n motoru nasıl çalışır → `research/n8n/n8n-motor-nasil-calisir.md` ·
@@ -15,7 +15,7 @@
 ## 0. Özet (bir paragraf)
 Flovo BPM motoru, **süreç adımlarından** oluşan bir akışı, adımdan adıma **aksiyon (action)** ile ilerleterek
 yürütür. Her adım, **kontrol kendisine geldiğinde** kendi işini yapar; işini bitirince **ürettiği parametreleri**
-ilerleyeceği **aksiyon ile birlikte** bir sonraki adıma taşır (→ `servis-ayarlari/process-step-action.md` §2 veri aktarım modeli).
+ilerleyeceği **aksiyon ile birlikte** bir sonraki adıma taşır (→ `service-settings/process-step-action.md` §2 veri aktarım modeli).
 Adımlar iki türdür: **otomatik (sistem) adımları** (HTTP Request, Switch, Karşılaştırma, Flovo AI, Değer Atama,
 Timer...) işlerini yapıp **uygun aksiyonla kendiliğinden** ilerler; **insan-tetiklemeli (human task) adımları**
 (Kullanıcı, Kullanıcı Grubu) süreci **durdurur**, formu atanan kullanıcıların **aksiyonuna** bırakır.
@@ -29,26 +29,26 @@ Timer...) işlerini yapıp **uygun aksiyonla kendiliğinden** ilerler; **insan-t
 - **Servis (Service / Form):** Motorun temel birimi; **bir iş sürecinin tamamı** (örn. İzin Talebi, Satın Alma,
   Masraf Formu). Her servisin kendi **property'leri, süreç adımları, aksiyonları, durumları, iş kuralları ve
   görüntüleme profilleri** vardır.
-- **Organization (Organizasyon):** Kiracıyı temsil eder (→ `genel-ayarlar/organization.md`).
+- **Organization (Organizasyon):** Kiracıyı temsil eder (→ `organization-settings/organization.md`).
 - **Solution (Çözüm):** Bir veya birden çok servisi barındıran paket.
 > Çok-kiracılık ve izolasyon → §9.
 
 ### 1.2 — Bileşenler (Building Blocks)
-Bir servis **yedi yapı taşından** oluşur ve bunlar **iki katmana** ayrılır (krş. `servis-ayarlari/work-rule.md` §0):
+Bir servis **yedi yapı taşından** oluşur ve bunlar **iki katmana** ayrılır (krş. `service-settings/work-rule.md` §0):
 
 | # | Bileşen | Katman | Ne işe yarar | Doküman |
 |---|---|---|---|---|
-| 1 | **Property'ler** (form alanları) | form | Formdaki giriş/görüntüleme elemanları | `servis-ayarlari/properties.md` |
-| 2 | **Görüntüleme Profilleri** | form | Formun adım-bazlı görünümü (görünür/düzenlenebilir/zorunlu) | `servis-ayarlari/view-profile.md` |
-| 3 | **İş Kuralları** | **form (frontend-realtime)** | Koşullu anlık form davranışı (göster/gizle, validasyon, değer, stil) | `servis-ayarlari/work-rule.md` |
-| 4 | **Süreç Adımları** | **akış (motor)** | İş akışının rotası (adım tipleri) | `servis-ayarlari/process-step.md` |
-| 5 | **Aksiyonlar** | **akış (motor)** | Adımlar arası **geçiş birimi** (kod + veri taşır); şablonu **ActionDto** | `servis-ayarlari/process-step-action.md` · `genel-ayarlar/action.md` |
-| 6 | **Durumlar** | akış | Kaydın mevcut aşaması (etiket) | `genel-ayarlar/status.md` |
-| 7 | **Stiller** | çapraz-kesen | Renk/görünüm varlığı (aksiyon, durum...) | `genel-ayarlar/style.md` |
+| 1 | **Property'ler** (form alanları) | form | Formdaki giriş/görüntüleme elemanları | `service-settings/properties.md` |
+| 2 | **Görüntüleme Profilleri** | form | Formun adım-bazlı görünümü (görünür/düzenlenebilir/zorunlu) | `service-settings/view-profile.md` |
+| 3 | **İş Kuralları** | **form (frontend-realtime)** | Koşullu anlık form davranışı (göster/gizle, validasyon, değer, stil) | `service-settings/work-rule.md` |
+| 4 | **Süreç Adımları** | **akış (motor)** | İş akışının rotası (adım tipleri) | `service-settings/process-step.md` |
+| 5 | **Aksiyonlar** | **akış (motor)** | Adımlar arası **geçiş birimi** (kod + veri taşır); şablonu **ActionDto** | `service-settings/process-step-action.md` · `organization-settings/action.md` |
+| 6 | **Durumlar** | akış | Kaydın mevcut aşaması (etiket) | `organization-settings/status.md` |
+| 7 | **Stiller** | çapraz-kesen | Renk/görünüm varlığı (aksiyon, durum...) | `organization-settings/style.md` |
 
 > **Katman ayrımı (kritik):** **form-mantığı** (property + profil + iş kuralı) **frontend'de, realtime** çalışır;
 > **akış-mantığı** (adım + aksiyon + durum) **motorda** çalışır. İş kuralları motoru doğrudan etkilemez
-> (→ `servis-ayarlari/work-rule.md` §0). **Style** çapraz-kesen bir bileşendir (→ `genel-ayarlar/style.md`).
+> (→ `service-settings/work-rule.md` §0). **Style** çapraz-kesen bir bileşendir (→ `organization-settings/style.md`).
 
 ### 1.3 — Bileşenler Arası İlişkiler
 | İlişki | Açıklama |
@@ -69,7 +69,7 @@ Bir servis **yedi yapı taşından** oluşur ve bunlar **iki katmana** ayrılır
 ### 1.4 — Tasarım Hedefleri (founder girdisi bekliyor)
 - [ ] **Self-servis olgunluk** — süreçleri teknik-olmayan kullanıcı kursun (→ §2.1).
 - [ ] **Hız/performans** — hızlı form/belge yükleme, hafif iş-kuralı değerlendirmesi.
-- [ ] **Sade katman sınırı** — değer atama & karşılaştırma hem adım hem iş kuralı; sınır net olmalı (→ `servis-ayarlari/work-rule.md` §6).
+- [ ] **Sade katman sınırı** — değer atama & karşılaştırma hem adım hem iş kuralı; sınır net olmalı (→ `service-settings/work-rule.md` §6).
 
 ---
 
@@ -80,7 +80,7 @@ Bir servis **yedi yapı taşından** oluşur ve bunlar **iki katmana** ayrılır
 1. **Property'ler** — alanları tanımla (kontrol tipi, etiket, veri kaynağı, kısıtlar).
 2. **Görüntüleme Profilleri** — hangi alan nerede görünür/düzenlenir/zorunlu.
 3. **İş Kuralları** — koşul → anlık form davranışı (frontend).
-4. **Aksiyonlar** — şablon (**`ActionDto`**): kod, ikon, **actionType**, **styleId** (→ `genel-ayarlar/action.md`).
+4. **Aksiyonlar** — şablon (**`ActionDto`**): kod, ikon, **actionType**, **styleId** (→ `organization-settings/action.md`).
 5. **Durumlar** — `definition` + `styleId`.
 6. **Süreç Adımları** — adım sırası/tipi, kullanıcı atama, **aksiyonları adımlara bağlama**.
 
@@ -101,7 +101,7 @@ Bir servis **yedi yapı taşından** oluşur ve bunlar **iki katmana** ayrılır
 
 - Veri birimi (öğe / token / vaka?):
 - Adımlar arası aktarım (komşu-akış + geri-eriş): **Aksiyon veri aktarım modeli** ile tanımlanır →
-  `servis-ayarlari/process-step-action.md` §2 (`parameters` = adıma taşınan veri · `changeList` = form alan güncellemeleri ·
+  `service-settings/process-step-action.md` §2 (`parameters` = adıma taşınan veri · `changeList` = form alan güncellemeleri ·
   `action` = HTTP Request response'undan zincirleme tetikleme).
 - Soy ağacı / lineage yaklaşımı (n8n dersi 5):
 
@@ -111,7 +111,7 @@ Bir servis **yedi yapı taşından** oluşur ve bunlar **iki katmana** ayrılır
 
 ### 4.1 — Temel prensip: adımlar + aksiyonla ilerleme
 Bir süreç, **süreç adımlarından** oluşan bir akıştır. Kontrol, adımdan adıma **aksiyon (action)** ile ilerler.
-Her süreç adımı, **kontrol kendisine geldiğinde** kendi işini yapar (→ işlerin özeti `servis-ayarlari/process-step.md` §3);
+Her süreç adımı, **kontrol kendisine geldiğinde** kendi işini yapar (→ işlerin özeti `service-settings/process-step.md` §3);
 işini tamamlayınca, **eğer bir parametre ürettiyse** bu parametreleri ilerleyeceği **aksiyon ile birlikte**
 bir sonraki süreç adımına aktarır.
 
@@ -120,7 +120,7 @@ bir sonraki süreç adımına aktarır.
 > ayıran temel tasarım kararıdır (n8n'de veri örtük akar; Flovo'da **niyetli/explicit** olarak action taşır).
 
 ### 4.2 — Her adımın giriş kuralı: önce `changeList` uygula
-Aksiyonlar bir **`changeList`** taşır (→ `servis-ayarlari/process-step-action.md` §2): formdaki alanların **yeni değerleri**,
+Aksiyonlar bir **`changeList`** taşır (→ `service-settings/process-step-action.md` §2): formdaki alanların **yeni değerleri**,
 aksiyonla birlikte bir sonraki adıma iletilebilir. **Tüm süreç adımları, kendi işini yapmadan ÖNCE** şu
 **evrensel kontrolü** uygular:
 
@@ -197,14 +197,14 @@ while adım != SüreçBitişi:
 ## 5. Tetikleme ve Zamanlama
 
 ### 5.1 — Süreç başlatma
-- Kullanıcı **yeni kayıt** oluşturduğunda süreç **Süreç Başlangıcı** adımından başlar (→ `servis-ayarlari/process-step.md` §3.1).
+- Kullanıcı **yeni kayıt** oluşturduğunda süreç **Süreç Başlangıcı** adımından başlar (→ `service-settings/process-step.md` §3.1).
 - **Süreç Başlangıcı**, altındaki **başlatma aksiyonlarının** frontend'de nasıl görüneceğini ayarlar (örn.
   "Fotoğraf Çek" aksiyonunun **"aksiyon bekleyen formlar"** listesinde görünmesi) — yani sürecin **kullanıcı
   tarafından nasıl başlatılacağını** tanımlar.
-- İlk **görüntüleme profili** yüklenir, form render edilir, **iş kuralları (frontend)** çalışır (→ §6.1, `servis-ayarlari/work-rule.md`).
+- İlk **görüntüleme profili** yüklenir, form render edilir, **iş kuralları (frontend)** çalışır (→ §6.1, `service-settings/work-rule.md`).
 
 ### 5.2 — Zaman-tabanlı tetikleme
-- **Timer** adımı (→ `servis-ayarlari/process-step.md` §3.7) süreçten bağımsız, **cron-benzeri** dinamik süre tanımlar; süre
+- **Timer** adımı (→ `service-settings/process-step.md` §3.7) süreçten bağımsız, **cron-benzeri** dinamik süre tanımlar; süre
   dolunca **default action** ile ilerler. **Timer Start / Timer End** ile yaşam döngüsü yönetilir.
 > _(Açık: olay-tabanlı (webhook/mesaj) ve alt-süreç tetikleme; çok-örneklilikte "en-fazla-bir-kez" / lider
 > seçimi — n8n dersi 3 → §12.)_
@@ -219,7 +219,7 @@ form **"aksiyon alınabilir"** hâle gelir, atanan kullanıcıların **bekleyen 
 süreç, kullanıcı bir **manuel / withForm aksiyonu** tetikleyene kadar **durur**. Süreç state'i **kalıcılaştırılıp
 günlerce** bekleyebilmelidir (→ §8; n8n dersi 8: kalıcılaştır-ve-devam-et).
 > **Processing** bir bekleme noktası **değildir**: frontende form/response döndürür (§6.3) ama manuel aksiyon
-> beklemeden **`default`** ile otomatik ilerler (→ `servis-ayarlari/process-step.md` §3.18).
+> beklemeden **`default`** ile otomatik ilerler (→ `service-settings/process-step.md` §3.18).
 
 ### 6.2 — Zaman Aşımı (Timeout)
 Kullanıcı/grup adımlarında **timeout** tanımlanabilir; süre dolunca:
@@ -236,8 +236,8 @@ Kullanıcı bir aksiyonu **manuel** tetiklediğinde frontend bir **HTTP request*
 **tetikleme isteğinin response'unda** kullanıcıya geri döner.
 
 > Yani bu **dört adım** = sürecin **kullanıcıya form döndürdüğü** duraklardır (formun gösterileceği adımlar). Processing'de
-> **`showLoading`** ile form "yükleniyor" gösterilip giriş engellenebilir (→ `servis-ayarlari/process-step.md` §3.18). Frontende ek
-> **veri itme**, **Bildirim**'in parametre seçeneğiyle de yapılabilir (→ `servis-ayarlari/process-step.md` §3.6).
+> **`showLoading`** ile form "yükleniyor" gösterilip giriş engellenebilir (→ `service-settings/process-step.md` §3.18). Frontende ek
+> **veri itme**, **Bildirim**'in parametre seçeneğiyle de yapılabilir (→ `service-settings/process-step.md` §3.6).
 
 ---
 
@@ -290,7 +290,7 @@ bir aksiyon kodu** olarak modellenir (`default` ↔ `onFail`).
 - [ ] **Çalışma-zamanı mimarisi:** tek-süreç mi, kuyruk-tabanlı dağıtık worker mı? (→ §2.2)
 - [ ] **Olay/mesaj-tabanlı tetikleme** ve uyuyan sürecin uyandırılması (→ §5 / §6)
 - [ ] **Denetim izi** + **dosya/binary depolama performansı** (mevcut "yavaş belge yükleme" şikâyeti → §8)
-- [ ] **İki-katman tekrarı:** değer atama & karşılaştırma hem adım hem iş kuralı — sınır nasıl çizilir? (→ `servis-ayarlari/work-rule.md` §6)
+- [ ] **İki-katman tekrarı:** değer atama & karşılaştırma hem adım hem iş kuralı — sınır nasıl çizilir? (→ `service-settings/work-rule.md` §6)
 
 ---
 

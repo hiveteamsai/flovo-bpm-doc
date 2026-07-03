@@ -4,8 +4,8 @@
 > **Amaç:** **Form value'larının nasıl tutulacağına** (depolama modeli) karar vermeden önce, bu değerlerin **nerede ve
 > nasıl** okunup yazıldığını **eksiksiz ve örnekli** toplamak. Depolama kararı **en sonda** bu senaryolara göre verilecek.
 >
-> **İlgili:** `servis-ayarlari/properties.md` · `servis-ayarlari/process-step-action.md` §2 (`changeList`) ·
-> `genel-ayarlar/translation.md` (dil çözümleme) · `flovo-bpm-engine.md` · `flovo-customer-api.md` · `todo.md`.
+> **İlgili:** `service-settings/properties.md` · `service-settings/process-step-action.md` §2 (`changeList`) ·
+> `organization-settings/translation.md` (dil çözümleme) · `flovo-bpm-engine.md` · `flovo-customer-api.md` · `todo.md`.
 
 ---
 

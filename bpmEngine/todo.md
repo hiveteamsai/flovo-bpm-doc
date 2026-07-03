@@ -53,7 +53,7 @@
 - [ ] **Form List / alt-servis yaşam döngüsü** — 3 dokümanda ortak: alt-servisin görüntülenecek alanları/seçilebilirliği
   view-profile ile nasıl; veri/`changeList`/parametre nasıl akar. _(properties §3.13 · process-step §4 · view-profile §5)_
 - [x] **Alan-özel görünüm ayarlarının profil bazında yönetimi** — **KARAR (B2):** `ProcessViewProfilePropertySetting
-  {viewProfilePropertyId, key, value}` (propertyType'a göre **dictionary**; katalog → `models/view-profile-property.md`).
+  {viewProfilePropertyId, key, value}` (propertyType'a göre **dictionary**; katalog → `models/service-settings/view-profile-property.md`).
   Form List: `addNewEnabled`→**`activeStartActions`** (ProcessStepAction id listesi), `addFromExistingRecordsIsActive`→
   **`addFromExistingStatusIds`** (Status id listesi) profil'e taşındı; `selectedEnable`→**`selectableModeActive`** (alan-düzeyi, `Property`).
   **Kalan:** `reOrder`/`editOnlyOwnPosition`/`selectedEditable` de profil-bazlı mı? _(view-profile §5 · properties §4)_
@@ -106,8 +106,8 @@
   _(properties §4)_
 - [ ] **Customer API dış referans anahtarı** — API'de kiracı `organizationId` (int) mi, `organizationCode` (string) mi
   ile belirtilmeli? (organization §2 dış referanslarda `code` diyor.) _(flovo-customer-api §3)_
-- [x] **Solution & Service modellendi** — hiyerarşi `Organization → Solution → Service` netleşti; `models/solution.md`
-  ve `models/service.md` oluşturuldu. Alan ayrıntıları (ikon/versiyon/yetki vb.) daha sonra detaylandırılacak.
+- [x] **Solution & Service modellendi** — hiyerarşi `Organization → Solution → Service` netleşti; `models/service-settings/solution.md`
+  ve `models/service-settings/service.md` oluşturuldu. Alan ayrıntıları (ikon/versiyon/yetki vb.) daha sonra detaylandırılacak.
 
 ### 🔎 Tutarlılık denetiminden (2026-07-02)
 - [ ] **`skipWithThisActionId` referansı** — atlamayı tetikleyen aksiyon: action `code` mi, `ProcessStepAction` mı,
@@ -134,7 +134,7 @@
 - **Yazım/casing:** `trealingView`→`trailingView`, `criteritionType`→`criterionType`, `solutionid`/`ServiceId`→`solutionId`/`serviceId`.
 - **Hiyerarşi tanımlandı:** `Organization → Solution → Service → {Property · ProcessViewProfile · ProcessStep · WorkRule}`;
   `ProcessStepAction → ProcessStep`; **Action/Status/Style/Translation → Organization** (havuz). `models/` klasörü ve
-  `genel-ayarlar/action.md`·`status.md` buna göre revize edildi (Action/Status `serviceId`→`organizationId`).
+  `organization-settings/action.md`·`status.md` buna göre revize edildi (Action/Status `serviceId`→`organizationId`).
 - **Translation kayıt-başına-dil:** `tr`/`en`/`de` kolonları kaldırıldı → **`languageCode` + `definition`** eklendi;
   benzersizlik `(organizationId, code, languageCode)`; çözümleme `code` + `languageCode` + `organizationId` ile.
 - **Action → ProcessStepAction bağımsız kopya:** `actionId` FK **kaldırıldı**; alanlar oluşturmada **bir kez** kopyalanır,

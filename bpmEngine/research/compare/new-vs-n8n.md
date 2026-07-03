@@ -3,7 +3,7 @@
 > **Amaç:** Yeni Flovo BPM motoru tasarımını, olgun ve iyi belgelenmiş bir referans motor olan **n8n** ile
 > kıyaslamak; **nerede örtüşüyor, nerede ayrışıyor, n8n neyi kanıtlamış ve bizde hangi konu başarılı/eksik.**
 >
-> **Kaynak:** Tasarım dokümanları → `../../flovo-bpm-engine.md`, `../../servis-ayarlari/*`, `../../genel-ayarlar/*` ·
+> **Kaynak:** Tasarım dokümanları → `../../flovo-bpm-engine.md`, `../../service-settings/*`, `../../organization-settings/*` ·
 > n8n analizleri → `../n8n/n8n-motor-nasil-calisir.md`, `../n8n/n8n-surec-adimlari-analizi.md`.
 >
 > **Uyarı — kategori farkı:** n8n **genel amaçlı entegrasyon/otomasyon** aracıdır (400+ konektör, item-dizi veri akışı);
@@ -160,8 +160,8 @@ resume URL** ilkelinin karşılığıdır.
 ## Kaynaklar
 - n8n motor iç yapısı → `../n8n/n8n-motor-nasil-calisir.md`
 - n8n adım/node envanteri → `../n8n/n8n-surec-adimlari-analizi.md`
-- Flovo motor → `../../flovo-bpm-engine.md` · adımlar → `../../servis-ayarlari/process-step.md` · aksiyon → `../../servis-ayarlari/process-step-action.md`
-- Flovo Customer API → `../../flovo-customer-api.md` · çeviri → `../../genel-ayarlar/translation.md` · organizasyon → `../../genel-ayarlar/organization.md`
+- Flovo motor → `../../flovo-bpm-engine.md` · adımlar → `../../service-settings/process-step.md` · aksiyon → `../../service-settings/process-step-action.md`
+- Flovo Customer API → `../../flovo-customer-api.md` · çeviri → `../../organization-settings/translation.md` · organizasyon → `../../organization-settings/organization.md`
 
 ---
 

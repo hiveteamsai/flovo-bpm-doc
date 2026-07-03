@@ -2,8 +2,8 @@
 
 > **Durum:** 🟡 TASLAK — şimdilik **endpoint listesi + teorik iş özeti**; request/response detayları sonra.
 > **Amaç:** Müşterilerin/kullanıcıların **custom code** geliştirebilmesi için Flovo'nun sağlayacağı **API servisi.**
-> Süreç adımlarındaki **HTTP Request** (→ `servis-ayarlari/process-step.md` §3.2) müşteri sunucusundaki custom code'a istek atar;
-> custom code da **Flovo Customer API** ile Flovo formlarını okur/yazar ve **Webhook** aksiyonlarını (→ `servis-ayarlari/process-step-action.md` §3.6) tetikler.
+> Süreç adımlarındaki **HTTP Request** (→ `service-settings/process-step.md` §3.2) müşteri sunucusundaki custom code'a istek atar;
+> custom code da **Flovo Customer API** ile Flovo formlarını okur/yazar ve **Webhook** aksiyonlarını (→ `service-settings/process-step-action.md` §3.6) tetikler.
 >
 > **İlişki:** Örnekler → `sampleProcess/` (createPdf, createPdfAsync, integration, scanBarcode bu API'ye dayanır).
 
@@ -38,7 +38,7 @@
 |---|---|
 | `POST /forms` | **Yeni form oluşturur** (servis + başlangıç alan değerleri). |
 | `PATCH /forms/{formId}` | Formun **alan değerlerini günceller** (`changeList` benzeri). |
-| `POST /forms/{formId}/status` | Formun **durumunu** değiştirir (→ `genel-ayarlar/status.md`). |
+| `POST /forms/{formId}/status` | Formun **durumunu** değiştirir (→ `organization-settings/status.md`). |
 | `DELETE /forms/{formId}` | Formu **siler** (`deleted` durumuna çeker). |
 
 ### Dosya
@@ -71,9 +71,9 @@
 
 ## 3. Açık Kararlar / Sorular
 - [ ] Kimlik/yetki modeli: token kapsamı, süresi, yenileme; per-service mi per-solution mı?
-- [ ] **Dış referans anahtarı:** API çağrılarında kiracı `organizationId` (int) ile mi yoksa `organizationCode` (string) ile mi belirtilmeli? (`genel-ayarlar/organization.md` §2 dış referanslarda `code` diyor.)
+- [ ] **Dış referans anahtarı:** API çağrılarında kiracı `organizationId` (int) ile mi yoksa `organizationCode` (string) ile mi belirtilmeli? (`organization-settings/organization.md` §2 dış referanslarda `code` diyor.)
 - [ ] **Webhook tetikleme** güvenliği (secret/imza) ve **idempotency** (aynı webhook iki kez gelirse).
-- [ ] `POST /forms/search` sorgu dili (alan + operatör — `servis-ayarlari/properties.md` / `servis-ayarlari/work-rule.md` operatörleriyle hizalı mı?).
+- [ ] `POST /forms/search` sorgu dili (alan + operatör — `service-settings/properties.md` / `service-settings/work-rule.md` operatörleriyle hizalı mı?).
 - [ ] Rate limit / sayfalama / hata sözleşmesi (standart response zarfı).
 - [ ] Request/response **şemalarının** detayı (sonraki aşama).
 

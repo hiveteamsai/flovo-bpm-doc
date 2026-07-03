@@ -80,5 +80,5 @@ Geri dönüşte (`transferFail`) hata mesajı kullanıcıya görünür.
 
 ---
 
-> İlgili tasarım: Processing → `../../servis-ayarlari/process-step.md` §3.18 · Webhook →
-> `../../servis-ayarlari/process-step-action.md` §3.6 · API → `../../flovo-customer-api.md`.
+> İlgili tasarım: Processing → `../../service-settings/process-step.md` §3.18 · Webhook →
+> `../../service-settings/process-step-action.md` §3.6 · API → `../../flovo-customer-api.md`.

@@ -3,7 +3,7 @@
 > **Amaç:** Mevcut (eski) Flovo BPM tarafı ile **yeni proje tasarımı** arasındaki farkları tek yerde toplamak —
 > **neler eklendi, neler çıkarıldı, neler yeniden adlandırıldı / taşındı** — ve sonda **başarılı/başarısız değerlendirmesi.**
 >
-> **Kaynak:** Tasarım dokümanları (`../../flovo-bpm-engine.md`, `../../servis-ayarlari/*`, `../../genel-ayarlar/*`) ·
+> **Kaynak:** Tasarım dokümanları (`../../flovo-bpm-engine.md`, `../../service-settings/*`, `../../organization-settings/*`) ·
 > Mevcut proje referansı → `../current-flovo-bpm-engine/`.
 >
 > **Not:** Bu **canlı özet**tir; her maddenin gerekçesi/detayı ilgili tasarım dosyasındadır. Çakışınca **ilgili doküman esastır.**
@@ -28,6 +28,9 @@
 | 13 | **Seçim öğesi** | `propertyItems` (değer=metin) | **`PropertyItem`** — `code` (çeviri) ile `value` **ayrıldı** |
 | 14 | **Hiyerarşi & havuz** | account/solution/service başlıkları | **Organization → Solution → Service**; Action/Status/Style/Translation = **organizasyon havuzu** (`organizationId`) |
 | 15 | **Profil-bazlı alan override** | Alan ayarları profilden bağımsız | **`ProcessViewProfilePropertySetting`** (key/value) — Form List ayarları görüntüleme profiline göre |
+| 16 | **Organizasyon ayarları (yapısal)** | "Account Settings" DTO'ları (`accountId` string) | **13 DB modeli** (Company/User/Department/Profession…) — `organizationId` **int**; **Title→Profession**; typed/combobox ek nitelik |
+| 17 | **Yetkilendirme** | Kullanıcı bazında **sayısal `authorizationLevel`** (dinamik değil) | **Org-bazlı**: `adminUsers` + grup-bazlı yetkiler (kullanıcı yerine geçme · org/servis ayarları erişimi · tüm raporlar) |
+| 18 | **Master-veri yaşam döngüsü** | `status` (bool) | **`active` + `deleted`** (soft-delete); `(organizationId, code)` **benzersiz** |
 
 ---
 
@@ -49,7 +52,7 @@
 
 ---
 
-## 2. Süreç Adımları (`../../servis-ayarlari/process-step.md`)
+## 2. Süreç Adımları (`../../service-settings/process-step.md`)
 Mevcut **15 adım tipi** (biri, `atama`, enum'da tanımlı ama **kullanılmayan**) → yeni **19 adım** (korunan + yeni;
 çıkarılan: **Adım İptali** · **Eba Entegre** · kullanılmayan **`atama`**).
 
@@ -76,7 +79,7 @@ Mevcut **15 adım tipi** (biri, `atama`, enum'da tanımlı ama **kullanılmayan*
 
 ---
 
-## 3. Aksiyonlar (`../../genel-ayarlar/action.md` + `../../servis-ayarlari/process-step-action.md`)
+## 3. Aksiyonlar (`../../organization-settings/action.md` + `../../service-settings/process-step-action.md`)
 **➕ Eklendi**
 - **ActionDto = aksiyon şablonu** (ayrı doküman); adıma eklenince `code`/`definition`/`icon`/`styleId`/`actionType` **bir kez kopyalanır** (canlı bağ/FK yok — `actionId` tutulmaz; iki taraf bağımsız).
 - **Sade actionType kataloğu:** **Manuel · withForm · Fotoğraf Çek · Dosya Seç · Barcode Tara · Webhook · Autoaction**.
@@ -102,7 +105,7 @@ Mevcut **15 adım tipi** (biri, `atama`, enum'da tanımlı ama **kullanılmayan*
 
 ---
 
-## 4. Form Alanları (`../../servis-ayarlari/properties.md`)
+## 4. Form Alanları (`../../service-settings/properties.md`)
 Mevcut **30 ControlType** → yeni **19 alan** (16 founder + **3 mevcuttan korunan**; bazıları birleştirildi/çıkarıldı).
 
 **➕ Eklendi**
@@ -144,7 +147,7 @@ Mevcut **30 ControlType** → yeni **19 alan** (16 founder + **3 mevcuttan korun
 
 ---
 
-## 5. Görüntüleme Profilleri (`../../servis-ayarlari/view-profile.md`)
+## 5. Görüntüleme Profilleri (`../../service-settings/view-profile.md`)
 **➕ Eklendi**
 - **`ProcessViewProfilePropertySetting`** (key/value) — alanın **tipe-özel** görünüm/davranış ayarlarını **profil bazında**
   override eder (`propertyType`'a göre dictionary). Örn. Form List: `activeStartActions`, `addFromExistingStatusIds`, `selectedEditable`.
@@ -160,7 +163,7 @@ Mevcut **30 ControlType** → yeni **19 alan** (16 founder + **3 mevcuttan korun
 
 ---
 
-## 6. İş Kuralları (`../../servis-ayarlari/work-rule.md`)
+## 6. İş Kuralları (`../../service-settings/work-rule.md`)
 **🔧 Konumlandırma:** İş kuralları = **frontend realtime katman** (motoru doğrudan etkilemez) — netleştirildi.
 
 **➖ Çıkarıldı:** `FromEba` (değer kaynağı) — Eba kaldırıldı.
@@ -178,7 +181,7 @@ Mevcut **30 ControlType** → yeni **19 alan** (16 founder + **3 mevcuttan korun
 
 ---
 
-## 7. Durumlar (`../../genel-ayarlar/status.md`)
+## 7. Durumlar (`../../organization-settings/status.md`)
 **✏️ Yeniden adlandırılan:** `statusType` → **`styleId`** (yanlış adlandırılmıştı; aslında Style'a FK).
 **🔧 Renk:** `definition` metni + `icon` rengi Style'ın **`fontColor`**'ından gelir (`bgColor` = etiket arka planı).
 **➕ DB anahtarları:** `id` (PK) + `organizationId` (havuz).
@@ -186,13 +189,13 @@ Mevcut **30 ControlType** → yeni **19 alan** (16 founder + **3 mevcuttan korun
 
 ---
 
-## 8. Stiller (`../../genel-ayarlar/style.md`) — YENİ KAVRAM
+## 8. Stiller (`../../organization-settings/style.md`) — YENİ KAVRAM
 **➕ Eklendi:** **Dinamik Style yönetimi** — sistem stilleri (`organizationId=null`, read-only) + organizasyon stilleri (bg/font); **çapraz-kesen** (aksiyon ✓ · durum ✓ · **alan ✗** — form alanları Style **kullanmaz**). Referans **`styleId`** FK ile; `fontColor` = metin+ikon rengi.
 **➖ Değişti:** Statik Bootstrap renk sınıfları (`actionType`) → **dinamik Style varlığı** (referansla seçim).
 
 ---
 
-## 9. Çeviri & Organizasyon (YENİ) — `../../genel-ayarlar/translation.md` · `../../genel-ayarlar/organization.md`
+## 9. Çeviri & Organizasyon (YENİ) — `../../organization-settings/translation.md` · `../../organization-settings/organization.md`
 **➕ Çeviri motoru** (yeni yapı)
 - **`code`-bazlı** çeviri: model `id`·`code`·`organizationId`·**`languageCode`·`definition`** — **kayıt-başına-dil**
   (`tr`/`en`/`de` kolonları yok); `(organizationId, code, languageCode)` benzersiz.
@@ -212,15 +215,57 @@ Mevcut **30 ControlType** → yeni **19 alan** (16 founder + **3 mevcuttan korun
 
 ---
 
-## 10. Genel Adlandırma Kuralı
+## 10. Organizasyon Ayarları (yapısal veri) — YENİ MODELLER (`../../models/organization-settings/`)
+Eski uygulamanın **"Account Settings"** DTO'ları (`../current-flovo-bpm-engine/organizations/`) yeni **DB modellerine** dönüştürüldü.
+
+**➕ Modellenen (13):** Company · Department · **Profession** (eski "Ünvan/Title") · User · UserGroup · AdditionalQualification ·
+CostCenter · WorkerLevel · WorkingSchedule · VacationDay · CreditCard · ProcessTransfer · SchedulerJob.
+
+**✏️ Dönüşüm kuralları**
+- **Account → Organization:** `account*`→`organization*`; **`accountId` (string) → `organizationId` (int)** — her modelde.
+- **Türkçe → İngilizce alan:** `kod`/`tanim`→`code`/`definition`; `departmanYoneticiUserId`→`managerUserId`; `unvanId`→`professionId`;
+  string FK'ler → int; `selectedCompanyIds`→`companyIds` (List\<int\>).
+- **Title → Profession** (model adı · FK'ler · enum değeri).
+- UI-yardımcı koleksiyonlar (`accountCompanyDtos` vb.) DB modeline alınmadı; `id` PK + FK'ler eklendi; `User` org bağlantıları
+  **nullable**, `UserExpenseLimit` **kaldırıldı** (aktif değil).
+
+**🔧 Master-veri ortak alanları (yeni)**
+- **`active` + `deleted`** (soft-delete) — eski `status`(bool) → **`active`**; ikisi de **not-null** (vars. `active=true`, `deleted=false`).
+  BPM workflow motoru **`deleted=true` VEYA `active=false`** kayıtları **kullanmaz**; `deleted=true` frontend'de gizli/salt, `active=false` görünür+düzenlenebilir.
+- **`(organizationId, code)` benzersiz** (`deleted=true` hariç) — 10 master model + havuz Status/Action/Style. İstisna: Translation `(…, languageCode)`; Organization `code` global.
+- **User:** `userName` → **`email`** (giriş) + **`phone`**; benzersizlik `(organizationId, code/email/phone)` (aynı e-posta farklı org'larda olabilir); `UserExpenseLimit` kaldırıldı.
+
+**🔐 Yetkilendirme (yeni)**
+- Eski **kullanıcı bazında sayısal `User.authorizationLevel`** (dinamik ayarlanamıyordu) **kaldırıldı**.
+- **Org-bazlı**: `Organization.adminUserIds` (**en az 1 aktif** admin; tüm yetkiler + yetki config'ini düzenleyen tek grup) + **4 grup alanı**
+  (`impersonationUserGroupId` · `organizationSettingsUserGroupId` · `serviceSettingsUserGroupId` · `viewAllReportsUserGroupId`; her biri tek `UserGroup`).
+  Detay → `../../organization-settings/permissions.md`.
+
+**🔧 Ek Nitelik (AdditionalQualification) — yeniden yapılandırıldı**
+- `RelationalSetting` → **`RelationalType`** (Users/Departments/Professions/CostCenters/WorkerLevels).
+- **`QualificationValueType`** enum: `String` · `Double` · `DateTime` · **`Combobox`**.
+- Değer alt modelleri: tek `value` → **typed sütunlar** (`stringValue`/`doubleValue`/`datetimeValue`) + combobox
+  (`comboboxItemId` + kopya `comboboxCode`/`comboboxDefinition`).
+- **QualificationItem** alt modeli (combobox seçenekleri) — `PropertyItem`'dan türetildi ama **`Property`'siz** (`additionalQualificationId`).
+
+**➖ Kapsam dışı (referans dokümanı):** para birimi, pozisyon, vergi oranları (ExpenseType/Currency/Position/Tax) — modellenmedi.
+
+**↔ BPM tüketimi:** User/UserGroup → onay merci/atama · WorkingSchedule+VacationDay → Timer/zaman aşımı ·
+Department/Profession → yönetici atama tipleri · CostCenter/CreditCard → masraf.
+
+---
+
+## 11. Genel Adlandırma Kuralı
 - **field → property** (her yerde): `...FieldId` → `...PropertyId`, `fieldId`→`propertyId`, `FieldValue`/`FormValue`→`PropertyValue`.
 - **Account → Organization**: `accountId`→`organizationId`, `accountUserGroup*`→`organizationUserGroup*`, `accountRestriction`→`organizationRestriction`.
 - **function → HTTP Request** · **ModalList → Form List** · **statusType → styleId** · **(aksiyon) actionType → styleId** + **(aksiyon) action → actionType** · **onAfterChange → saveAndRefreshOnAfterChange**.
 - **Çeviri:** `tr`/`en`/`de` kolonları → **`languageCode` + `definition`** (kayıt-başına-dil). **Form List:** `addNewEnabled`→`activeStartActions`, `addFromExistingRecordsIsActive`→`addFromExistingStatusIds`, `selectedEnable`→`selectableModeActive`.
+- **Organizasyon ayarları:** **Title → Profession** · `RelationalSetting → RelationalType` · `account*`→`organization*` · `accountId`(string)→`organizationId`(int) · `kod`/`tanim`→`code`/`definition`.
+- **Master-veri & yetki:** `status`(bool) → **`active`** (+ `deleted`) · `User.userName` → `email`/`phone` · `User.authorizationLevel` **kaldırıldı** (→ org-bazlı yetki).
 
 ---
 
-## 11. Başarılı / Başarısız Değerlendirme (mevcut projeye göre)
+## 12. Başarılı / Başarısız Değerlendirme (mevcut projeye göre)
 
 ### ✅ Başarılı (mevcuda göre net iyileşme)
 - **Açık veri sözleşmesi:** `parameters`/`changeList`/`action` ile adımlar arası akış **örtük server-driven**'dan çıkıp okunur/öngörülebilir hale geldi.
@@ -231,6 +276,8 @@ Mevcut **30 ControlType** → yeni **19 alan** (16 founder + **3 mevcuttan korun
 - **i18n motoru:** `code`↔`definition` ayrımı + `definition`=varsayılan dil kısa-devresi hem tutarlı hem performanslı (çoğu kullanıcı sorgusuz).
 - **Aksiyon-kodu + `targetProcessStepId` iki katmanı:** "hangi aksiyon" ile "hangi adım" ayrımı net formalize edildi.
 - **Kararlar netleşti:** Action→ProcessStepAction **bağımsız kopya** (FK yok); Form List ayarları **profil-bazlı override** (B2); Translation **kayıt-başına-dil**; kapsam kararı (havuz ↔ servis) çözüldü.
+- **Organizasyon altyapısı modellendi:** eski Account Settings (kullanıcı/departman/ünvan/şirket/takvim…) **13 DB modeline** dönüştürüldü (account→organization, **Title→Profession**, typed+combobox ek nitelik değerleri).
+- **Yetki modeli modernize edildi:** sabit **sayısal `authorizationLevel`** → **dinamik org-bazlı** (admin + kullanıcı grubu bazlı yetkiler); ayrıca master-verilerde `active`/`deleted` (soft-delete) ve `(organizationId, code)` benzersizlik standardı.
 
 ### ⚠️ Başarısız / riskli / henüz eksik
 - **Form List alt-servis görünümü:** davranış ayarları artık **profil-bazlı override** (B2) ile yönetiliyor; ancak alt-servisin **görüntülenecek alanları / kart görünümü** (`subFieldsViewProfiles`/`cardViewProfile` karşılığı) hâlâ açık.
@@ -243,13 +290,15 @@ Mevcut **30 ControlType** → yeni **19 alan** (16 founder + **3 mevcuttan korun
 
 ---
 
-## 12. Açık / Karara Bağlı Konular (özet)
+## 13. Açık / Karara Bağlı Konular (özet)
 - **Form List** alt-servis görüntülenecek alanları / seçilebilirliği view-profile ile nasıl ayarlanacak.
 - **Şişman model** sadeleştirmesinde hangi alanlar çekirdek, hangileri tipe-özel.
 - **`actionType` isim çakışması** (ActionDto ↔ WorkRule) — yeniden adlandırma opsiyonel.
 - **Çeviri:** `definition`↔`defaultLang` tutarlılık garantisi (organizasyon `defaultLang`'i değişirse eski `definition`'lar yanlış dilde kalır).
 - **Form List** alt-servis **görüntülenecek alanları / kart görünümü** (davranış ayarları B2 ile çözüldü).
+- **Organizasyon ayarları ↔ BPM entegrasyonu** ve kapsam-dışı varlıklar (ExpenseType/Currency/Position/Tax) modellensin mi.
+- **Yetkilendirme:** `ProcessStepAction.authorizationLevel` (aksiyon-düzeyi sayısal yetki) yeni org-yetki modeliyle nasıl uyumlanır; impersonation kapsamı/denetimi.
 
 ---
 
-*Güncelleme: 2026-07-02 · Tasarım dokümanları ile `../current-flovo-bpm-engine/` karşılaştırılarak derlendi.*
+*Güncelleme: 2026-07-03 · Tasarım dokümanları ile `../current-flovo-bpm-engine/` karşılaştırılarak derlendi.*

@@ -149,5 +149,5 @@ olarak görür; frontend `formId` ile **loading formu kaldırır**.
 
 ---
 
-> İlgili tasarım: adımlar → `../../servis-ayarlari/process-step.md` · aksiyon/veri aktarımı →
-> `../../servis-ayarlari/process-step-action.md` · Flovo Customer API → `../../flovo-customer-api.md`.
+> İlgili tasarım: adımlar → `../../service-settings/process-step.md` · aksiyon/veri aktarımı →
+> `../../service-settings/process-step-action.md` · Flovo Customer API → `../../flovo-customer-api.md`.

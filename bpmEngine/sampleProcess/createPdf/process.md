@@ -63,4 +63,4 @@ aksiyonu tetikleyen isteğe response olarak iletilir; kullanıcı formu (ve PDF 
 ---
 
 > Asenkron karşılığı: `../createPdfAsync/process.md` (HTTP Request `async = true` + **Webhook** ile geri dönüş).
-> İlgili tasarım: `../../servis-ayarlari/process-step.md` (HTTP Request) · `../../flovo-customer-api.md`.
+> İlgili tasarım: `../../service-settings/process-step.md` (HTTP Request) · `../../flovo-customer-api.md`.

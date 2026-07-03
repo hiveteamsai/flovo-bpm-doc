@@ -4,8 +4,8 @@
 > göstermek. Her örnek bir klasördedir: **`<ad>.jpg`** (görsel) + **`process.md`** (**detaylı spec:** amaç → diyagram →
 > adım adım görev/ayar/aksiyon + **parametre akışı**). Bu örnekleri **bpm-engine'i iyileştirmek** için kullanırız.
 >
-> **Tasarım dokümanları:** adımlar → `../servis-ayarlari/process-step.md` · aksiyonlar → `../servis-ayarlari/process-step-action.md` / `../genel-ayarlar/action.md` ·
-> alanlar → `../servis-ayarlari/properties.md` · motor → `../flovo-bpm-engine.md`.
+> **Tasarım dokümanları:** adımlar → `../service-settings/process-step.md` · aksiyonlar → `../service-settings/process-step-action.md` / `../organization-settings/action.md` ·
+> alanlar → `../service-settings/properties.md` · motor → `../flovo-bpm-engine.md`.
 
 ---
 
@@ -49,16 +49,16 @@ yanıt **`action=yonlendir`** ise **Form Yönlendirme** (var olan form açılır
 ## Motor için Çıkarımlar (bpm-engine'i iyileştirmek)
 Örneklerden çıkan, tasarım dokümanlarında **netleştirilmesi/eklenmesi** gereken davranışlar:
 
-1. ✅ **Processing `showLoading`** — `../servis-ayarlari/process-step.md` §3.18'e **işlendi:** bu adımda formun **detayı/değerleri**
+1. ✅ **Processing `showLoading`** — `../service-settings/process-step.md` §3.18'e **işlendi:** bu adımda formun **detayı/değerleri**
    görünmesin isteniyorsa **aktif** edilir (frontend "yükleniyor" gösterir, girişi engeller). `false` = normal görünüm
    (+ genelde durum güncelleme). _(Açık kalan: Processing'de durum değişimi alanı nasıl tutulacak.)_
 2. ✅ **Aksiyonu tetikleyen HTTP isteğine response** — `../flovo-bpm-engine.md` **§6.3**'e işlendi: süreç **Kullanıcı /
    Kullanıcı Grubu / Processing / Süreç Bitişi** adımlarına geldiğinde **form bilgileri** tetikleme isteğinin response'unda döner.
-3. ✅ **Bildirim kanalları + parametre** — `../servis-ayarlari/process-step.md` **§3.6**'ya işlendi: **3 kanal** (Mail / Bildirim-Push / Toast);
+3. ✅ **Bildirim kanalları + parametre** — `../service-settings/process-step.md` **§3.6**'ya işlendi: **3 kanal** (Mail / Bildirim-Push / Toast);
    **parametre yalnız Push ve Toast**'ta (UI'da görünmez, runtime veri güncelleme). Mail'de parametre yok.
-4. ✅ **Webhook** — `../servis-ayarlari/process-step-action.md` **§3.6**'ya işlendi: **uygulama dışından HTTP request ile** (müşteri sunucusu →
+4. ✅ **Webhook** — `../service-settings/process-step-action.md` **§3.6**'ya işlendi: **uygulama dışından HTTP request ile** (müşteri sunucusu →
    Flovo Customer API) tetiklenen aksiyon; async geri-dönüş kolu.
-5. ✅ **Form Creator init değerleri** — `../servis-ayarlari/process-step.md` **§3.12**'ye işlendi: alana karşılık değer veya thumbnail url;
+5. ✅ **Form Creator init değerleri** — `../service-settings/process-step.md` **§3.12**'ye işlendi: alana karşılık değer veya thumbnail url;
    aksiyon `parameters`'ı ile eşleşip alanlara initial değer atanır.
 6. **`response.action` zinciri** (scanBarcode): custom kodlar (`createForm`/`yonlendir`) → aynı kodlu aksiyon → her
    aksiyonun **`targetProcessStepId`**'si hedef adıma götürür. §1.2 modelini doğrular. _(zaten modelde — onay.)_
