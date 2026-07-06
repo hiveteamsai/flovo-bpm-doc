@@ -12,6 +12,7 @@
 | `organizationId` | int | FK → `organization.md` | Sahibi organizasyon. |
 | `code` | string | — | Grup kodu. |
 | `definition` | string | — | Grup adı/tanımı. |
+| `groupApprovalRequired` | bool | — | **Grup onayı gerekli mi?** Bu grup bir formu beklerken (`FormAwaitingUser.userGroupId`) `true` ise, onaylayan üyeler `UserGroupApprovedUser` tablosundan tespit edilir. |
 | `active` | bool | — | Aktif/pasif — **null olamaz**, varsayılan `true`. `false` = frontend'de **görünür/düzenlenebilir** ama BPM işlemede kullanılmaz. |
 | `deleted` | bool | — | Soft-delete — **null olamaz**, varsayılan `false`. `true` = frontend'de **gizli/aktarılmaz/salt** + BPM işlemede kullanılmaz. |
 | `companyIds` | List\<int\> | FK → `company.md` (N–N) | İlişkili şirketler. |
@@ -31,5 +32,6 @@
 - **N – 1** → `Organization` · **N – N** → `Company`.
 - **1 – N** ← `UserGroupMember` (`userGroupId`).
 - **BPM kullanımı:** "Kullanıcı Grubu" adımı (grup onayı) · `ProcessStepAction.actionDisplayAuthorizedUserGroupId` · bildirim hedefi · rapor erişimi.
+- **1 – N** ← `UserGroupApprovedUser` (dolaylı, `FormAwaitingUser` üzerinden) — yalnız `groupApprovalRequired=true` iken onaylayan üyeler tutulur → `../workFlows/user-group-approved-user.md`.
 
 *Oluşturma: 2026-07-03.*

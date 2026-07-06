@@ -237,6 +237,13 @@ açılması istendiğinde kullanılır.
 ---
 
 ## 4. Açık Kararlar / Sorular
+- [ ] **Webhook/Triggered süreç adımı türü (yeni)** — Bugün **Webhook**, bir adıma bağlı bir **aksiyon** olarak modelleniyor;
+  ancak `ProcessStepExecution` kaydı `processStepId` gerektirir ve dışarıdan (Customer API) tetiklenen webhook, süreçten
+  bağımsız bir **child süreçte** çalıştığında aksiyon bir process-step'e bağlı olmadığı için **kayıt doğru atılamıyor**.
+  **Öneri:** Yeni bir süreç adımı türü eklensin (**"Webhook"** veya **"Triggered"** — biri seçilecek); API ile bir *aksiyon*
+  değil, **bu süreç adımı** tetiklensin. Böylece webhook'u tutan adımdaki aksiyon **`default`**'a dönüşür ve hedef olarak bu
+  **Webhook/Triggered** adımına bağlanır. **Karar sonraya.** _(Uyuşmazlık örneği: `../sampleProcess/createPdfAsync/process.md`
+  `pdfReady` webhook'u · Webhook aksiyonu → `process-step-action.md` §3.6 · `../models/workFlows/process-step-execution.md`.)_
 - [ ] **default action** kavramı — her adımda var mı, yoksa yalnız HTTP Request(async)/Timer gibi adımlarda mı? Tanım netleşmeli.
 - [ ] **Timer** üçlüsü (Timer / Timer Start / Timer End) yaşam döngüsü ve birbirine bağlanması (global timer kayıtları?).
 - [ ] **Süreç Bitişi** "önceki adıma taşıma" — yeniden-açma (re-open) mı, ayrı akış mı? Denetim izine etkisi?

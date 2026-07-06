@@ -78,6 +78,19 @@
 | **ProcessTransfer** | [`process-transfer.md`](./organization-settings/process-transfer.md) | Görev devri (operasyon). |
 | **SchedulerJob** | [`scheduler-job.md`](./organization-settings/scheduler-job.md) | Cron arka plan görevi (+ log). |
 
+### İş akışı / çalıştırma (runtime — `workFlows/`)
+> 🟢 **TANIMLI** — ayarlardan (`Service`/`ProcessStep`/`Property`…) motor tarafından üretilen **çalışma-zamanı**
+> kayıtları. 6 modelin alanları netleşti. _(Açık: `Form` **property value depolaması** sonraya bırakıldı → `../todo.md`.)_
+
+| Model | Dosya | Kısa açıklama |
+|---|---|---|
+| **WorkFlow** | [`work-flow.md`](./workFlows/work-flow.md) | Bir servis sürecinin çalıştırma örneği. |
+| **ProcessStepExecution** | [`process-step-execution.md`](./workFlows/process-step-execution.md) | Tek bir adımın çalıştırılması (aksiyon/tetikleyici/zaman). |
+| **Form** | [`form.md`](./workFlows/form.md) | Doldurulmuş form / süreç örneği; mevcut `statusId`. |
+| **FormAwaitingUser** | [`form-awaiting-user.md`](./workFlows/form-awaiting-user.md) | Formu bekleyen kullanıcı/grup (onay kuyruğu). |
+| **UserGroupApprovedUser** | [`user-group-approved-user.md`](./workFlows/user-group-approved-user.md) | Grup onayında onaylayan üye + zamanı. |
+| **RelatedForm** | [`related-form.md`](./workFlows/related-form.md) | Formlar arası ilişki (property boyutuyla). |
+
 ---
 
 ## 2. İlişki Haritası
@@ -104,11 +117,23 @@ Organization (id)
       └─< Status                     ─────> ProcessStepAction.changeStatusId
 ```
 
+**İş akışı / çalıştırma (runtime — `workFlows/`):** ayarlardan üretilen instance/execution verisi.
+
+```
+WorkFlow (id; createdByUserId → User · createdByApiKeyId → ApiKey[geçici] · serviceId → Service)
+ ├─< ProcessStepExecution (workFlowId; formId → Form · processStepId → ProcessStep ·
+ │        │                 processStepActionId → ProcessStepAction · atUserId/atDelegateUserId → User · atApiKeyId → ApiKey[geçici])
+ │        └─< FormAwaitingUser (processStepExecutionId; formId → Form · userId → User · userGroupId → UserGroup)
+ │                 └─< UserGroupApprovedUser (formAwaitingUserId; userId → User)   # yalnız grup onayı
+ └─< Form (workFlowId; serviceId → Service · creatorUserId → User · statusId → Status)
+      └─< RelatedForm (formId → Form · relatedFormId → Form · relatedPropertyId → Property)
+```
+
 ---
 
 ## 3. İlişki Tablosu
-> Kapsam: **süreç hiyerarşisi + havuz + yetki** ilişkileri. Organizasyon-ayarı modellerinin (Company/User/Department…
-> **arası**) FK'leri için ilgili model dosyalarının "İlişkiler" bölümlerine bakın.
+> Kapsam: **süreç hiyerarşisi + havuz + yetki** ilişkileri + **runtime (`workFlows/`)** (tablonun altında). Organizasyon-ayarı
+> modellerinin (Company/User/Department… **arası**) FK'leri için ilgili model dosyalarının "İlişkiler" bölümlerine bakın.
 
 | Kaynak | Alan | Hedef | Kardinalite | Not |
 |---|---|---|---|---|
@@ -139,6 +164,28 @@ Organization (id)
 | WorkRuleCondition | `workRuleId` | WorkRule.id | N–1 | |
 | WorkRuleCondition | `parentConditionId` | WorkRuleCondition.id | N–1 | iç içe (recursive) |
 | Translation | `code` | (kod eşleşmesi) | — | FK değil; `code` + `languageCode` + `organizationId` ile çözülür |
+| **— İş akışı / çalıştırma (runtime — `workFlows/`) —** | | | | |
+| WorkFlow | `createdByUserId` | User.id | N–1 | null olabilir (kullanıcı **ya da** API) |
+| WorkFlow | `createdByApiKeyId` | ApiKey | N–1 | null olabilir; **ApiKey geçici** |
+| WorkFlow | `serviceId` | Service.id | N–1 | |
+| ProcessStepExecution | `workFlowId` | WorkFlow.id | N–1 | |
+| ProcessStepExecution | `formId` | Form.id | N–1 | null olabilir (form yönlendirme) |
+| ProcessStepExecution | `processStepId` | ProcessStep.id | N–1 | |
+| ProcessStepExecution | `processStepActionId` | ProcessStepAction.id | N–1 | aksiyon tetiklenince dolar |
+| ProcessStepExecution | `atUserId` · `atDelegateUserId` | User.id | N–1 | tetikleyen · vekaleten onaylayan |
+| ProcessStepExecution | `atApiKeyId` | ApiKey | N–1 | null olabilir; **ApiKey geçici** |
+| Form | `workFlowId` | WorkFlow.id | N–1 | |
+| Form | `serviceId` | Service.id | N–1 | |
+| Form | `creatorUserId` | User.id | N–1 | |
+| Form | `statusId` | Status.id | N–1 | formun mevcut durumu (havuz) |
+| FormAwaitingUser | `processStepExecutionId` | ProcessStepExecution.id | N–1 | |
+| FormAwaitingUser | `formId` | Form.id | N–1 | |
+| FormAwaitingUser | `userId` | User.id | N–1 | `userId` **veya** `userGroupId` (biri) |
+| FormAwaitingUser | `userGroupId` | UserGroup.id | N–1 | |
+| UserGroupApprovedUser | `formAwaitingUserId` | FormAwaitingUser.id | N–1 | yalnız grup onayı |
+| UserGroupApprovedUser | `userId` | User.id | N–1 | onaylayan üye |
+| RelatedForm | `formId` · `relatedFormId` | Form.id | N–1 | formlar arası ilişki |
+| RelatedForm | `relatedPropertyId` | Property.id | N–1 | `relatedFormId`'nin formundaki property |
 
 ---
 
@@ -146,8 +193,11 @@ Organization (id)
 
 | Varlık | Nerede geçiyor | Not |
 |---|---|---|
-| **Form / Instance** (çalıştırma kaydı) | `formId` (Customer API), süreç state | Doldurulmuş form + süreç örneği (runtime durum). |
+| **ApiKey** (Customer API anahtarı) | `WorkFlow.createdByApiKeyId`, `ProcessStepExecution.atApiKeyId` | API üzerinden başlatım/tetikleme kimliği (oluşturan `User` değilken "kim yaptı"). **Ad geçici**; Customer API erişim mekanizması kesinleşince doğrulanacak → `../todo.md`. |
 | **ExpenseType / Currency / Position / Tax** | Masraf süreçleri | Masraf tipi, para birimi, pozisyon, vergi — referans dokümanında **kapsam dışı**. |
+
+> **Form / Instance artık modellendi** → `workFlows/` (WorkFlow · Form · ProcessStepExecution · FormAwaitingUser ·
+> UserGroupApprovedUser · RelatedForm). 🟢 TANIMLI — yalnız `Form` **property value depolaması** açık (→ `../todo.md`).
 
 > **Not:** **User** ve **UserGroup** artık modellendi (→ §1 "Organizasyon ayarları"). `organizationUserGroupId` /
 > `actionDisplayAuthorizedUserGroupId` gibi BPM referansları `UserGroup`'a, kullanıcı atamaları `User`'a bağlanır.

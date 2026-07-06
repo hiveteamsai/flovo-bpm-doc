@@ -29,8 +29,9 @@
 | 14 | **Hiyerarşi & havuz** | account/solution/service başlıkları | **Organization → Solution → Service**; Action/Status/Style/Translation = **organizasyon havuzu** (`organizationId`) |
 | 15 | **Profil-bazlı alan override** | Alan ayarları profilden bağımsız | **`ProcessViewProfilePropertySetting`** (key/value) — Form List ayarları görüntüleme profiline göre |
 | 16 | **Organizasyon ayarları (yapısal)** | "Account Settings" DTO'ları (`accountId` string) | **13 DB modeli** (Company/User/Department/Profession…) — `organizationId` **int**; **Title→Profession**; typed/combobox ek nitelik |
-| 17 | **Yetkilendirme** | Kullanıcı bazında **sayısal `authorizationLevel`** (dinamik değil) | **Org-bazlı**: `adminUsers` + grup-bazlı yetkiler (kullanıcı yerine geçme · org/servis ayarları erişimi · tüm raporlar) |
+| 17 | **Yetkilendirme** | Kullanıcı bazında **sayısal `authorizationLevel`** (dinamik değil) | **Org-bazlı**: `adminUserIds` + grup-bazlı yetkiler (kullanıcı yerine geçme · org/servis ayarları erişimi · tüm raporlar) |
 | 18 | **Master-veri yaşam döngüsü** | `status` (bool) | **`active` + `deleted`** (soft-delete); `(organizationId, code)` **benzersiz** |
+| 19 | **İş akışı / çalıştırma (runtime)** | `ServiceInstances` · `ServiceInstanceRequests` (+ dağınık alanlar) | **`workFlows/` 6 model**: `WorkFlow` · `ProcessStepExecution` · `Form` · `FormAwaitingUser` · `UserGroupApprovedUser` · `RelatedForm` |
 
 ---
 
@@ -255,7 +256,35 @@ Department/Profession → yönetici atama tipleri · CostCenter/CreditCard → m
 
 ---
 
-## 11. Genel Adlandırma Kuralı
+## 11. İş Akışı / Runtime Modelleri (`../../models/workFlows/`) — YENİ KATMAN
+Motorun **çalışma-zamanı** kayıtları (ayarlardan üretilen instance/execution verisi). 6 model; **tam isim eşlemesi** →
+[`new-vs-current-names.md §15`](./new-vs-current-names.md).
+
+**✏️ Eski modelden yeniden adlandırılan**
+- `ServiceInstanceRequests` → **`ProcessStepExecution`** (adım çalıştırma kaydı): `RequestDate`→`executionDate` ·
+  `responsaDate`→`actionTriggerDate` · `InstanceId`→`formId` · `ProxyApproverUserId`→`atDelegateUserId`;
+  **çıkarılan** `Description`/`IsItSkipped`/`SentBack`/`IsItCanceled`/`UserId`; **eklenen** `workFlowId`/`atUserId`/`atApiKeyId`/`processStepActionParameter`.
+- `ServiceInstances` → **`Form`** (doldurulmuş form / süreç örneği): `UserId`→`creatorUserId` · `ProcessStatusId`→`statusId`;
+  **çıkarılan** `acountId`/`StateId`/`ParentInstanceId`/`isTest`/`ProcessStepId`; **eklenen** `createdDate`/`workFlowId`.
+
+**➕ Tamamen yeni (eski karşılığı yok)**
+- **`WorkFlow`** — bir servis sürecinin çalıştırma örneği (başlatan `createdByUserId` **veya** `createdByApiKeyId`).
+- **`FormAwaitingUser`** — form üzerinde **atanan/aksiyon alabilecek** kullanıcı-grup kümesi; maliyet için doğrudan tutulur
+  (aksiyon alabilecekleri `ProcessStepExecution` filtrelemeden bu tablodan tespit) ve adım geçişlerinde **sync** (eklenir/silinir).
+- **`UserGroupApprovedUser`** — grup onayında onaylayan üye + zaman (yalnız `UserGroup.groupApprovalRequired=true`).
+- **`RelatedForm`** — formlar arası ilişki (property boyutuyla; `relatedPropertyId`, `relatedFormId`'nin formundaki alan).
+
+**🔧 İlgili yeni alan**
+- **`UserGroup.groupApprovalRequired`** (bool) — grup onayı gerekli mi (yeni).
+
+**⚠️ Ortaya çıkan açık konu:** Webhook bir **aksiyon** olarak modelli ama `ProcessStepExecution.processStepId` gerektiğinden,
+dışarıdan tetiklenen webhook bir adıma bağlı değil → yeni **Webhook/Triggered** adım türü önerisi (→ §14, `../../todo.md`).
+
+---
+
+## 12. Genel Adlandırma Kuralı
+> **Tüm isim değişikliklerinin** (model + alan) taranabilir tam listesi ayrı dosyada: [`new-vs-current-names.md`](./new-vs-current-names.md)
+> (`eski > yeni` · `-- silinen` · `eklenen ++`).
 - **field → property** (her yerde): `...FieldId` → `...PropertyId`, `fieldId`→`propertyId`, `FieldValue`/`FormValue`→`PropertyValue`.
 - **Account → Organization**: `accountId`→`organizationId`, `accountUserGroup*`→`organizationUserGroup*`, `accountRestriction`→`organizationRestriction`.
 - **function → HTTP Request** · **ModalList → Form List** · **statusType → styleId** · **(aksiyon) actionType → styleId** + **(aksiyon) action → actionType** · **onAfterChange → saveAndRefreshOnAfterChange**.
@@ -265,7 +294,7 @@ Department/Profession → yönetici atama tipleri · CostCenter/CreditCard → m
 
 ---
 
-## 12. Başarılı / Başarısız Değerlendirme (mevcut projeye göre)
+## 13. Başarılı / Başarısız Değerlendirme (mevcut projeye göre)
 
 ### ✅ Başarılı (mevcuda göre net iyileşme)
 - **Açık veri sözleşmesi:** `parameters`/`changeList`/`action` ile adımlar arası akış **örtük server-driven**'dan çıkıp okunur/öngörülebilir hale geldi.
@@ -278,6 +307,7 @@ Department/Profession → yönetici atama tipleri · CostCenter/CreditCard → m
 - **Kararlar netleşti:** Action→ProcessStepAction **bağımsız kopya** (FK yok); Form List ayarları **profil-bazlı override** (B2); Translation **kayıt-başına-dil**; kapsam kararı (havuz ↔ servis) çözüldü.
 - **Organizasyon altyapısı modellendi:** eski Account Settings (kullanıcı/departman/ünvan/şirket/takvim…) **13 DB modeline** dönüştürüldü (account→organization, **Title→Profession**, typed+combobox ek nitelik değerleri).
 - **Yetki modeli modernize edildi:** sabit **sayısal `authorizationLevel`** → **dinamik org-bazlı** (admin + kullanıcı grubu bazlı yetkiler); ayrıca master-verilerde `active`/`deleted` (soft-delete) ve `(organizationId, code)` benzersizlik standardı.
+- **Runtime/instance katmanı modellendi:** eski dağınık `ServiceInstances`/`ServiceInstanceRequests` → **`workFlows/` 6 model** (WorkFlow · ProcessStepExecution · Form · FormAwaitingUser · UserGroupApprovedUser · RelatedForm); aksiyon-alabilenler ayrı tablo (maliyet), grup onayı + formlar-arası ilişki netleşti.
 
 ### ⚠️ Başarısız / riskli / henüz eksik
 - **Form List alt-servis görünümü:** davranış ayarları artık **profil-bazlı override** (B2) ile yönetiliyor; ancak alt-servisin **görüntülenecek alanları / kart görünümü** (`subFieldsViewProfiles`/`cardViewProfile` karşılığı) hâlâ açık.
@@ -290,7 +320,17 @@ Department/Profession → yönetici atama tipleri · CostCenter/CreditCard → m
 
 ---
 
-## 13. Açık / Karara Bağlı Konular (özet)
+## 14. Açık / Karara Bağlı Konular (özet)
+- **Webhook/Triggered süreç adımı türü (yeni):** Webhook **aksiyon** olarak modelli ama `ProcessStepExecution.processStepId`
+  gerektiğinden dışarıdan tetiklenen webhook bir adıma bağlı değil → yeni adım türü (Webhook/Triggered); API ile *aksiyon* değil
+  **bu adım** tetiklenir. (→ `../../todo.md`, `../../service-settings/process-step.md §4`.)
+- **`apiKeyId` içeriği/adı:** Customer API ile oluşturulan kayıtlarda "kim yaptı" için `WorkFlow.createdByApiKeyId` /
+  `ProcessStepExecution.atApiKeyId`; **ad geçici**, `ApiKey` henüz modellenmedi — erişim mekanizması kesinleşince doğrulanacak.
+- **Property value (form alan değerleri) depolaması:** `Form`'un alan değerleri nerede/nasıl tutulacak (Form modelinde mi, ayrı
+  value tablolarında mı) — daha detaylı araştırma sonrası kararlaştırılacak (→ `../../form-value-scenarios.md §12`).
+- **Grup onayı `groupApproval` (adım) ↔ `groupApprovalRequired` (UserGroup):** eşik ve gereklilik alanlarının sahibi/ilişkisi netleşmeli.
+- **Form validasyon durumu:** validasyonları workflow'dan sürekli tekrar yapmamak + iş kuralı (`ApplyValidation`) validasyonlarıyla
+  tutarsızlığı önlemek için `Form.validated` (bool) mü, ayrı `FormValidation` tablosu mu? (→ `../../todo.md`.)
 - **Form List** alt-servis görüntülenecek alanları / seçilebilirliği view-profile ile nasıl ayarlanacak.
 - **Şişman model** sadeleştirmesinde hangi alanlar çekirdek, hangileri tipe-özel.
 - **`actionType` isim çakışması** (ActionDto ↔ WorkRule) — yeniden adlandırma opsiyonel.
@@ -301,4 +341,4 @@ Department/Profession → yönetici atama tipleri · CostCenter/CreditCard → m
 
 ---
 
-*Güncelleme: 2026-07-03 · Tasarım dokümanları ile `../current-flovo-bpm-engine/` karşılaştırılarak derlendi.*
+*Güncelleme: 2026-07-06 · Tasarım dokümanları ile `../current-flovo-bpm-engine/` karşılaştırılarak derlendi (runtime/workFlows katmanı eklendi).*

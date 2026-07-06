@@ -31,6 +31,10 @@
   soy ağacı (lineage). _(flovo-bpm-engine §3 / §12)_
 - [ ] **Kalıcılık & durum** — ne saklanır (süreç tanımı · instance/state · veri · dosya/binary); durum yaşam döngüsü
   (new/running/waiting/done); saklama/pruning. _(flovo-bpm-engine §8)_
+- [ ] **Property value (form alan değerleri) depolaması** — `Form`'un alan değerleri **nerede/nasıl** tutulacak: `Form`
+  modelinde mi, ayrı value tablo(lar)ında mı; tip-bazlı sütun mu, referans mı? Daha detaylı araştırma sonrası
+  kararlaştırılacak; alan-düzeyi tanımlar ayrı **değer dokümantasyonunda** yapılacak.
+  _(form-value-scenarios §12 · models/workFlows/form.md)_
 - [ ] **Denetim izi (audit) + dosya/binary depolama performansı** — mevcut "yavaş belge yükleme" şikâyetiyle doğrudan
   bağlı; KVKK. _(flovo-bpm-engine §8 / §12)_
 - [ ] **Güvenlik** — expression/kod değerlendirme **sandbox**'ı (sert sınır), credential şifreleme/paylaşım,
@@ -106,6 +110,24 @@
   _(properties §4)_
 - [ ] **Customer API dış referans anahtarı** — API'de kiracı `organizationId` (int) mi, `organizationCode` (string) mi
   ile belirtilmeli? (organization §2 dış referanslarda `code` diyor.) _(flovo-customer-api §3)_
+- [ ] **`apiKeyId` içeriği/adı (Customer API kimliği)** — Customer API ile oluşturulan kayıtlarda oluşturan **User**
+  olmadığından işlemi kimin yaptığını kaydetmek için `apiKeyId` alanları var (`WorkFlow.createdByApiKeyId`,
+  `ProcessStepExecution.atApiKeyId`). **Ad geçici**; içine gelecek veri Customer API **erişim mekanizması** kesinleşince
+  doğrulanacak. _(flovo-customer-api §3 · models/workFlows/work-flow.md · process-step-execution.md)_
+- [ ] **Webhook/Triggered süreç adımı türü (yeni)** — Webhook bugün bir **aksiyon** olarak modelli; ama `ProcessStepExecution`
+  `processStepId` gerektirdiğinden, süreçten bağımsız **child süreçte** dışarıdan (API) tetiklenen webhook aksiyonu bir
+  process-step'e bağlı olmadığı için **kayıt doğru atılamıyor**. **Öneri:** yeni adım türü (**Webhook** *veya* **Triggered** —
+  biri seçilecek); API ile *aksiyon* değil **bu adım** tetiklensin; webhook'u tutan adımdaki aksiyon **`default`**'a dönüşüp bu
+  yeni adıma bağlansın. **Karar sonraya.** _(process-step §4 · process-step-action §3.6 · sampleProcess/createPdfAsync ·
+  models/workFlows/process-step-execution.md)_
+- [ ] **Grup onayı: `groupApproval` (adım) ↔ `groupApprovalRequired` (UserGroup) ilişkisi** — eşik (**hepsi/biri**) adım-düzeyi
+  `groupApproval`'da (process-step §3.16), "grup onayı gerekli mi" ise `UserGroup.groupApprovalRequired` (bool) alanında. İki alanın
+  yakın adı + kapsam örtüşmesi netleştirilmeli (eşiğin ve gerekliliğin tek sahibi kim; opsiyon seti hepsi/biri). _(process-step §3.16 ·
+  models/organization-settings/user-group.md · models/workFlows/user-group-approved-user.md)_
+- [ ] **Form validasyon durumu — `Form.validated` (bool) mü, `FormValidation` tablosu mu?** Workflow'dan validasyonları **sürekli
+  tekrar yapmamak** ve **iş kuralı** (WorkRule `ApplyValidation`) ile oluşturulan validasyonlarla **tutarsızlık yaşamamak** için:
+  `Form` modeline **`validated` (bool)** alanı mı eklenmeli, yoksa ayrı bir **`FormValidation`** tablosu mu oluşturulmalı? Karar
+  sonraya. _(models/workFlows/form.md · work-rule.md `ApplyValidation` · flovo-bpm-engine.md)_
 - [x] **Solution & Service modellendi** — hiyerarşi `Organization → Solution → Service` netleşti; `models/service-settings/solution.md`
   ve `models/service-settings/service.md` oluşturuldu. Alan ayrıntıları (ikon/versiyon/yetki vb.) daha sonra detaylandırılacak.
 

@@ -36,7 +36,7 @@ Yeni BPM motoru tasarım dökümanları **doğrudan `bpmEngine/` altındadır.**
 | `models/` | **Veri modelleri (şema referansı)** — model dizini + ilişki haritası (`models.md`) + her model için alan-düzeyi dosya. |
 | `todo.md` | **Açık kararlar/sorular** — tüm dokümanların **önceliklendirilmiş** tek listesi (Tier 0–3). |
 | `sampleProcess/` | Uçtan uca **örnek süreçler** (görselli, self-servis). |
-| `research/` | **BPM referansları + karşılaştırmalar:** `current-flovo-bpm-engine/` (mevcut/eski Flovo BPM) · `n8n/` (referans analizleri) · `compare/` (**new-vs-current** · **new-vs-n8n** farkları + başarılı/başarısız). |
+| `research/` | **BPM referansları + karşılaştırmalar:** `current-flovo-bpm-engine/` (mevcut/eski Flovo BPM) · `n8n/` (referans analizleri) · `compare/` (**new-vs-current** · **new-vs-current-names** [isim değişiklikleri] · **new-vs-n8n** farkları + başarılı/başarısız). |
 
 ### `archive/` (ana dizin) — Önceki Araştırma & Sunum (arşiv)
 Daha önce yapılan **pazar/ürün araştırmaları, ESN vakaları, vizyon ve sunum** çıktıları burada durur.

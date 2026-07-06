@@ -61,3 +61,8 @@ gelen `pdfUrl` ile dinamik üretilir; `parameters: { formId, pdfUrl }` frontende
 
 > Senkron karşılığı: `../createPdf/process.md` (HTTP Request `async = false`, beklemeli).
 > İlgili tasarım: Webhook → `../../service-settings/process-step-action.md` §3.6 · API → `../../flovo-customer-api.md`.
+>
+> **⚠️ Açık (karar sonraya):** `pdfReady`'nin bir **aksiyon** olarak modellenmesi, `ProcessStepExecution`'ın
+> `processStepId` gereksinimiyle çelişiyor (süreçten bağımsız child süreçte dışarıdan tetiklenen webhook bir adıma bağlı
+> değil → kayıt doğru atılamaz). Öneri: yeni **Webhook/Triggered süreç adımı** türü; API ile *aksiyon* değil **bu adım**
+> tetiklenir ve buradaki aksiyon **`default`**'a dönüşür. → `../../service-settings/process-step.md` §4 · `../../todo.md`.
