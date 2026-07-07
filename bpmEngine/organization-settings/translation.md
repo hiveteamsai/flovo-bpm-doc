@@ -107,10 +107,14 @@ resolveText(code, sourceDefinition, organizationId, userLang, orgDefaultLang):
 ---
 
 ## 5. Açık Kararlar / Sorular
+> **Açık sorular tek yerde:** Bu dokümanın açık kararları/soruları, tutarsızlığı önlemek için **yalnız** merkezi
+> [`todo.md`](../todo.md) dosyasında toplanır (önceliklendirilmiş tüm-doküman listesi). İlgili maddeler orada `(translation §..)`
+> atfıyla bulunur; verilen kararlar bu dokümanın **gövdesinde** anlatılır.
+
+> **Çözülenler (yerel karar log'u):**
 - [x] **Dil seti** — `languageCode` **sabit set** (`tr`/`en`/`de`) içinden (krş. `organization.defaultLang`). Model **kayıt-başına-dil** olduğu için yeni dil **kolon değil kayıt** ekler (şema değişmez).
 - [x] **Boş/eşleşmeyen davranışı** — istenen dildeki değer boşsa veya eşleşme yoksa **`definition`**'a düşülür (§3).
 - [x] **`code` serbest metin** — kod **serbest**tir; kullanıcı isterse **namespace** (örn. `form.submit`) ile alanlar arası ayrım yapabilir (zorunlu değil).
-- [ ] Ortak çeviri sonradan güncellenince, onu **ezmiş** organizasyon kayıtları etkilenmemeli — teyit.
 
 ---
 

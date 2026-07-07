@@ -54,11 +54,12 @@
 ---
 
 ## 2. Süreç Adımları (`../../service-settings/process-step.md`)
-Mevcut **15 adım tipi** (biri, `atama`, enum'da tanımlı ama **kullanılmayan**) → yeni **19 adım** (korunan + yeni;
+Mevcut **15 adım tipi** (biri, `atama`, enum'da tanımlı ama **kullanılmayan**) → yeni **20 adım** (korunan + yeni;
 çıkarılan: **Adım İptali** · **Eba Entegre** · kullanılmayan **`atama`**).
 
 **➕ Eklenen (mevcutta yok)**
-- **Flovo AI** · **Switch** · **Processing** · **Form Creator** · **Form Silme** · **Form Yönlendirme** · **Süreç Adımı Tetikleme**
+- **Flovo AI** · **Switch** · **Processing** · **Form Creator** · **Form Silme** · **Form Yönlendirme** · **Süreç Adımı Tetikleme** ·
+  **Alt Süreç Başlangıcı** (bağımsız alt sürecin **giriş düğümü**; webhook **veya** Süreç Adımı Tetikleme ile tetiklenir → §11 not)
 
 **➖ Çıkarılan**
 - **Adım İptali** (`stepCancellation`) — kaldırıldı.
@@ -268,7 +269,8 @@ Motorun **çalışma-zamanı** kayıtları (ayarlardan üretilen instance/execut
   **çıkarılan** `acountId`/`StateId`/`ParentInstanceId`/`isTest`/`ProcessStepId`; **eklenen** `createdDate`/`workFlowId`.
 
 **➕ Tamamen yeni (eski karşılığı yok)**
-- **`WorkFlow`** — bir servis sürecinin çalıştırma örneği (başlatan `createdByUserId` **veya** `createdByApiKeyId`).
+- **`WorkFlow`** — bir servis sürecinin çalıştırma örneği (başlatan `createdByUserId` **veya** `createdByApiKeyId`;
+  **`parentWorkFlowId`** self-link ile alt süreç → ana süreç bağı).
 - **`FormAwaitingUser`** — form üzerinde **atanan/aksiyon alabilecek** kullanıcı-grup kümesi; maliyet için doğrudan tutulur
   (aksiyon alabilecekleri `ProcessStepExecution` filtrelemeden bu tablodan tespit) ve adım geçişlerinde **sync** (eklenir/silinir).
 - **`UserGroupApprovedUser`** — grup onayında onaylayan üye + zaman (yalnız `UserGroup.groupApprovalRequired=true`).
@@ -277,8 +279,11 @@ Motorun **çalışma-zamanı** kayıtları (ayarlardan üretilen instance/execut
 **🔧 İlgili yeni alan**
 - **`UserGroup.groupApprovalRequired`** (bool) — grup onayı gerekli mi (yeni).
 
-**⚠️ Ortaya çıkan açık konu:** Webhook bir **aksiyon** olarak modelli ama `ProcessStepExecution.processStepId` gerektiğinden,
-dışarıdan tetiklenen webhook bir adıma bağlı değil → yeni **Webhook/Triggered** adım türü önerisi (→ §14, `../../todo.md`).
+**✅ Çözülen açık konu:** Webhook bir **aksiyon** olduğundan bağımsız alt süreçte bağlanacağı adım yoktu
+(`ProcessStepExecution.processStepId` zorunlu). Çözüm: yeni **Alt Süreç Başlangıcı** süreç adımı (→
+`../../service-settings/process-step.md` §3.20) — bağımsız alt sürecin **giriş düğümü**; webhook **veya** Süreç Adımı Tetikleme
+ile tetiklenir, webhook aksiyonu bu adıma bağlı **`default`**'a dönüşür. Alt süreç ana süreçten **bağımsız, yeni bir `WorkFlow`**
+olarak çalışır; **`WorkFlow.parentWorkFlowId`** ile ana sürece bağlanır.
 
 ---
 
@@ -307,7 +312,8 @@ dışarıdan tetiklenen webhook bir adıma bağlı değil → yeni **Webhook/Tri
 - **Kararlar netleşti:** Action→ProcessStepAction **bağımsız kopya** (FK yok); Form List ayarları **profil-bazlı override** (B2); Translation **kayıt-başına-dil**; kapsam kararı (havuz ↔ servis) çözüldü.
 - **Organizasyon altyapısı modellendi:** eski Account Settings (kullanıcı/departman/ünvan/şirket/takvim…) **13 DB modeline** dönüştürüldü (account→organization, **Title→Profession**, typed+combobox ek nitelik değerleri).
 - **Yetki modeli modernize edildi:** sabit **sayısal `authorizationLevel`** → **dinamik org-bazlı** (admin + kullanıcı grubu bazlı yetkiler); ayrıca master-verilerde `active`/`deleted` (soft-delete) ve `(organizationId, code)` benzersizlik standardı.
-- **Runtime/instance katmanı modellendi:** eski dağınık `ServiceInstances`/`ServiceInstanceRequests` → **`workFlows/` 6 model** (WorkFlow · ProcessStepExecution · Form · FormAwaitingUser · UserGroupApprovedUser · RelatedForm); aksiyon-alabilenler ayrı tablo (maliyet), grup onayı + formlar-arası ilişki netleşti.
+- **Runtime/instance katmanı modellendi:** eski dağınık `ServiceInstances`/`ServiceInstanceRequests` → **`workFlows/` 6 model** (WorkFlow · ProcessStepExecution · Form · FormAwaitingUser · UserGroupApprovedUser · RelatedForm); aksiyon-alabilenler ayrı tablo (maliyet), grup onayı + formlar-arası ilişki netleşti;
+  bağımsız alt süreçler ayrı `WorkFlow` (**`parentWorkFlowId`** ile ana sürece bağlı).
 
 ### ⚠️ Başarısız / riskli / henüz eksik
 - **Form List alt-servis görünümü:** davranış ayarları artık **profil-bazlı override** (B2) ile yönetiliyor; ancak alt-servisin **görüntülenecek alanları / kart görünümü** (`subFieldsViewProfiles`/`cardViewProfile` karşılığı) hâlâ açık.
@@ -320,25 +326,11 @@ dışarıdan tetiklenen webhook bir adıma bağlı değil → yeni **Webhook/Tri
 
 ---
 
-## 14. Açık / Karara Bağlı Konular (özet)
-- **Webhook/Triggered süreç adımı türü (yeni):** Webhook **aksiyon** olarak modelli ama `ProcessStepExecution.processStepId`
-  gerektiğinden dışarıdan tetiklenen webhook bir adıma bağlı değil → yeni adım türü (Webhook/Triggered); API ile *aksiyon* değil
-  **bu adım** tetiklenir. (→ `../../todo.md`, `../../service-settings/process-step.md §4`.)
-- **`apiKeyId` içeriği/adı:** Customer API ile oluşturulan kayıtlarda "kim yaptı" için `WorkFlow.createdByApiKeyId` /
-  `ProcessStepExecution.atApiKeyId`; **ad geçici**, `ApiKey` henüz modellenmedi — erişim mekanizması kesinleşince doğrulanacak.
-- **Property value (form alan değerleri) depolaması:** `Form`'un alan değerleri nerede/nasıl tutulacak (Form modelinde mi, ayrı
-  value tablolarında mı) — daha detaylı araştırma sonrası kararlaştırılacak (→ `../../form-value-scenarios.md §12`).
-- **Grup onayı `groupApproval` (adım) ↔ `groupApprovalRequired` (UserGroup):** eşik ve gereklilik alanlarının sahibi/ilişkisi netleşmeli.
-- **Form validasyon durumu:** validasyonları workflow'dan sürekli tekrar yapmamak + iş kuralı (`ApplyValidation`) validasyonlarıyla
-  tutarsızlığı önlemek için `Form.validated` (bool) mü, ayrı `FormValidation` tablosu mu? (→ `../../todo.md`.)
-- **Form List** alt-servis görüntülenecek alanları / seçilebilirliği view-profile ile nasıl ayarlanacak.
-- **Şişman model** sadeleştirmesinde hangi alanlar çekirdek, hangileri tipe-özel.
-- **`actionType` isim çakışması** (ActionDto ↔ WorkRule) — yeniden adlandırma opsiyonel.
-- **Çeviri:** `definition`↔`defaultLang` tutarlılık garantisi (organizasyon `defaultLang`'i değişirse eski `definition`'lar yanlış dilde kalır).
-- **Form List** alt-servis **görüntülenecek alanları / kart görünümü** (davranış ayarları B2 ile çözüldü).
-- **Organizasyon ayarları ↔ BPM entegrasyonu** ve kapsam-dışı varlıklar (ExpenseType/Currency/Position/Tax) modellensin mi.
-- **Yetkilendirme:** `ProcessStepAction.authorizationLevel` (aksiyon-düzeyi sayısal yetki) yeni org-yetki modeliyle nasıl uyumlanır; impersonation kapsamı/denetimi.
+## 14. Açık / Karara Bağlı Konular
+> **Açık sorular tek yerde:** Bu karşılaştırmadan doğan açık kararlar/sorular, tutarsızlığı önlemek için **yalnız** merkezi
+> [`todo.md`](../../todo.md) dosyasında toplanır (önceliklendirilmiş tüm-doküman listesi; ilgili maddeler kaynak doküman
+> atıflarıyla bulunur). Bu bölüm artık ayrı bir açık-soru listesi tutmaz.
 
 ---
 
-*Güncelleme: 2026-07-06 · Tasarım dokümanları ile `../current-flovo-bpm-engine/` karşılaştırılarak derlendi (runtime/workFlows katmanı eklendi).*
+*Güncelleme: 2026-07-07 · Tasarım dokümanları ile `../current-flovo-bpm-engine/` karşılaştırılarak derlendi (Alt Süreç Başlangıcı adımı eklendi).*

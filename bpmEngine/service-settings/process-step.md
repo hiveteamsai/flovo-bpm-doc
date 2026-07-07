@@ -16,7 +16,7 @@
 ## 1. Adım Taksonomisi (kategoriler)
 | Kategori | Flovo adımları |
 |---|---|
-| **Başlangıç / Bitiş** | Süreç Başlangıcı · Süreç Bitişi |
+| **Başlangıç / Bitiş** | Süreç Başlangıcı · **Alt Süreç Başlangıcı** · Süreç Bitişi |
 | **İnsan görev (human task)** | Kullanıcı · Kullanıcı Grubu |
 | **Otomatik / sistem** | HTTP Request · Flovo AI · Değer Atama · Karşılaştırma · Switch · Bildirim · Custom ID Creator · **Processing** (frontende form döner ama `default` ile otomatik ilerler → §3.18) |
 | **Form & alt-servis** | Form Creator · Form Silme · Form Yönlendirme · Süreç Adımı Tetikleme |
@@ -59,7 +59,7 @@ Aksiyon türleri: **Manuel · withForm · Fotoğraf Çek · Dosya Seç · Barcod
 
 ---
 
-## 3. Adım Kataloğu (19 adım)
+## 3. Adım Kataloğu (20 adım)
 > Aşağıda her adımın **özeti** + (varsa) **detay ayarları** vardır. Sıra, kurucunun verdiği sıradır.
 >
 > **Tekrarlayan kavramlar:** **default action** (adımın varsayılan ilerleme aksiyonu) · **action modeli**
@@ -67,12 +67,22 @@ Aksiyon türleri: **Manuel · withForm · Fotoğraf Çek · Dosya Seç · Barcod
 > human task) · **alt servis** (form altındaki ilişkili süreç/form → `properties.md` §3.13 Form List).
 
 ### 3.1 — Süreç Başlangıcı
-**Özet:** Sürecin başlama noktası. Altında yer alan **aksiyonların frontend'de nasıl başlatılabileceğini** ayarlamak
-için oluşturulur.
-- Örn. altında bir **"Fotoğraf Çek"** aksiyonu var; bu aksiyonun **"aksiyon bekleyen formlar" listesi** sayfasında
-  görünmesini istiyorsak, aksiyonu bu şekilde işaretleyerek frontend **manuel aksiyon görünümünü** aktif ederiz.
-- Yani Süreç Başlangıcı, sürecin **kullanıcı tarafından nasıl başlatılacağını** tanımlar. Altındaki aksiyon türleri →
-  `process-step-action.md` §3.
+**Özet:** **Ana sürecin** başlama noktası (servis başına **1 zorunlu**). Altında yer alan **aksiyonların nasıl
+başlatılabileceğini** ayarlamak için oluşturulur.
+- **Manuel (frontend) başlatma:** Örn. altında bir **"Fotoğraf Çek"** aksiyonu var; bu aksiyonun **"aksiyon bekleyen
+  formlar" listesi** sayfasında görünmesini istiyorsak, aksiyonu bu şekilde işaretleyerek frontend **manuel aksiyon
+  görünümünü** aktif ederiz.
+- **Dış (webhook) başlatma:** Süreç Başlangıcı **yalnız manuel değil**; altına eklenen bir **Webhook aksiyonu**
+  (`process-step-action.md` §3.6) ile **uygulama dışından** da başlatılabilir — dış çağrı **yeni bir ana süreç çalıştırması
+  (`WorkFlow`)** başlatır. Süreç Başlangıcı bir süreç adımı olduğundan bu aksiyon **ona bağlıdır**
+  (`ProcessStepExecution.processStepId` sorunsuz atılır).
+- Yani Süreç Başlangıcı, sürecin **nasıl başlatılacağını** (manuel **ve/veya** dış webhook) tanımlar. Altındaki aksiyon
+  türleri → `process-step-action.md` §3.
+> **Ayrım (anlam karmaşasını önle):** Hem **Süreç Başlangıcı** hem **§3.20 Alt Süreç Başlangıcı** dışarıdan **webhook** ile
+> tetiklenebilir; **farkları:**
+> - **Süreç Başlangıcı** = **ana süreci** başlatır (servis başına **1**); **manuel veya** webhook aksiyonu ile.
+> - **Alt Süreç Başlangıcı** = ana süreçten **bağımsız bir alt süreci** başlatır (servis başına **N**; **manuel yok**;
+>   webhook **veya** Süreç Adımı Tetikleme ile; insan-görev / süreç-bitişi **içermez**).
 
 ### 3.2 — HTTP Request
 **Özet:** Bir dış endpoint'e (kullanıcının kendi sunucusu olabilir) HTTP isteği atan **otomatik** adım.
@@ -234,24 +244,67 @@ istenmiyorsa **aktif edilir**; frontendde kullanıcı formu **"yükleniyor"** g�
 açılması istendiğinde kullanılır.
 > Örn. `../sampleProcess/scanBarcode` (barkodla var olan formu açma).
 
+### 3.20 — Alt Süreç Başlangıcı
+**Özet:** Ana süreçten **bağımsız**, aynı servise hizmet eden fakat ana akışın içinde yer **almayan** bir **alt sürecin
+başlangıç/giriş düğümü**. Kısa ömürlü, tek bir işi yapıp kapanan yardımcı akışlar içindir (örn. dışarıda hazırlanan bir
+PDF geldiğinde bildirim gönderen kol). **Servis başına birden fazla** olabilir.
+
+**Süreç Başlangıcı'ndan (§3.1) farkı:**
+| | Süreç Başlangıcı (§3.1) | Alt Süreç Başlangıcı (§3.20) |
+|---|---|---|
+| Servis başına | **1 zorunlu** | **N (opsiyonel)** |
+| Ne başlatır | **Ana süreç** (yeni `WorkFlow`) | **Bağımsız alt süreç** (yardımcı kol) |
+| Nasıl başlar | Manuel (frontend) **veya** webhook aksiyonu | **Tetiklenerek** — webhook / Süreç Adımı Tetikleme (**manuel yok**) |
+| Konum | Ana akış | Ana akıştan **bağımsız** alt akış |
+
+**Nasıl tetiklenir (2 yol):**
+1. **Dış — Webhook:** Uygulama dışından, **Flovo Customer API** ile tetiklenir (örn. müşteri sunucusu işini bitirince).
+   "Kim tetikledi" → `ProcessStepExecution.atApiKeyId` (→ `../models/workFlows/process-step-execution.md`).
+2. **İç — Süreç Adımı Tetikleme:** Başka bir sürecin **Süreç Adımı Tetikleme** (§3.5) adımı tarafından tetiklenir.
+
+**Kısıtlar (alt süreç):**
+- **Bağımsızlık:** Alt süreç ana sürecin **içinde yer almaz**; ana akıştan ayrık kurulur.
+- **İçeremeyeceği adımlar:** **Kullanıcı (§3.15) · Kullanıcı Grubu (§3.16) · Processing (§3.18) · Süreç Bitişi (§3.17)** —
+  insan-görev/bekleme veya "süreç sonu" içermez; kısa ömürlü, **otomatik ilerleyen** bir akıştır.
+- Bir alt süreç kendi **tek** Alt Süreç Başlangıcı giriş düğümüyle başlar.
+
+**Çalışma prensibi:**
+- Adım **tetiklendiğinde**, kullanıcı eylemi beklenmeden **otomatik** olarak **`default`** aksiyonu çalışır ve **bir sonraki
+  süreç adımına** ilerler.
+- Tetikleme **girdisi bir `ActionTransfer` modelidir** (`parameters` · `changeList` · `action` → `process-step-action.md` §2).
+  Bu girdi, **`default`** aksiyonu ile **bir sonraki adıma taşınır** (`changeList`, evrensel giriş kuralı gereği adım işini
+  yapmadan **önce** forma uygulanır → `../flovo-bpm-engine.md` §4.2).
+- **Yeni `WorkFlow` (bağımsız çalıştırma):** Tetiklenen alt süreç, ana süreçten **bağımsız, yeni bir `WorkFlow`** olarak
+  çalışır; `WorkFlow.parentWorkFlowId`'ye **tetikleyen ana sürecin `WorkFlow` id'si** yazılır (→ `../models/workFlows/work-flow.md`).
+> Örn. `../sampleProcess/createPdfAsync`: webhook `parameters: { pdfUrl }` ile `pdfReady` (Alt Süreç Başlangıcı) tetiklenir;
+> **`default`**, `parameters: { formId, pdfUrl }`'i `notifyPdf` adımına taşır.
+
+**Neden bu adım tipi (motor gerekçesi):** Webhook, önceden yalnızca bir **aksiyon** (`process-step-action.md` §3.6) olarak
+modellendiğinden, süreçten bağımsız bir alt süreçte **bağlanacağı bir süreç adımı yoktu**; `ProcessStepExecution.processStepId`
+**zorunlu** olduğu için yürütme kaydı doğru atılamıyordu. Alt Süreç Başlangıcı **bir süreç adımı** olduğundan, dışarıdan/başka
+süreçten tetiklenen alt sürecin yürütmesi artık **geçerli `processStepId` ile** kaydedilir. Böylece webhook'u tutan aksiyon,
+bu adıma bağlı **`default`** aksiyonuna dönüşür (örn. `../sampleProcess/createPdfAsync`).
+
+**Ayarlar:** _(sonra detaylandırılacak — tetikleme kaynağı (webhook / iç tetikleme) · webhook güvenliği (secret/imza) +
+idempotency → `process-step-action.md` §3.6 / `../flovo-customer-api.md`.)_
+
 ---
 
 ## 4. Açık Kararlar / Sorular
-- [ ] **Webhook/Triggered süreç adımı türü (yeni)** — Bugün **Webhook**, bir adıma bağlı bir **aksiyon** olarak modelleniyor;
-  ancak `ProcessStepExecution` kaydı `processStepId` gerektirir ve dışarıdan (Customer API) tetiklenen webhook, süreçten
-  bağımsız bir **child süreçte** çalıştığında aksiyon bir process-step'e bağlı olmadığı için **kayıt doğru atılamıyor**.
-  **Öneri:** Yeni bir süreç adımı türü eklensin (**"Webhook"** veya **"Triggered"** — biri seçilecek); API ile bir *aksiyon*
-  değil, **bu süreç adımı** tetiklensin. Böylece webhook'u tutan adımdaki aksiyon **`default`**'a dönüşür ve hedef olarak bu
-  **Webhook/Triggered** adımına bağlanır. **Karar sonraya.** _(Uyuşmazlık örneği: `../sampleProcess/createPdfAsync/process.md`
-  `pdfReady` webhook'u · Webhook aksiyonu → `process-step-action.md` §3.6 · `../models/workFlows/process-step-execution.md`.)_
-- [ ] **default action** kavramı — her adımda var mı, yoksa yalnız HTTP Request(async)/Timer gibi adımlarda mı? Tanım netleşmeli.
-- [ ] **Timer** üçlüsü (Timer / Timer Start / Timer End) yaşam döngüsü ve birbirine bağlanması (global timer kayıtları?).
-- [ ] **Süreç Bitişi** "önceki adıma taşıma" — yeniden-açma (re-open) mı, ayrı akış mı? Denetim izine etkisi?
-- [ ] **Kullanıcı / Kullanıcı Grubu / Processing** — insan görev (human task) ailesi; ortak "aksiyon alınabilir durum" + atama + bekleme modeli.
-- [ ] **Form Creator / Form Silme / Form Yönlendirme / Süreç Adımı Tetikleme** — form & alt-servis yaşam döngüsü; `properties.md` Form List + Parent Property ile birlikte tasarlanmalı.
-- [ ] **Form List (alt-servis) görüntüleme/seçim** — alt-servis öğelerinin seçilebilirliği ve görüntülenecek alanları view-profile ile nasıl ayarlanacak? (→ `view-profile.md` §5, `properties.md` §3.13)
-- [ ] **Processing'de durum değişimi** alanı nasıl tutulacak.
-- [ ] Adım seti sabit mi, eklenebilir (plugin/SDK) mi? Müşteriye/sektöre özel adımlar nasıl eklenir?
+> **Açık sorular tek yerde:** Bu dokümanın açık kararları/soruları, tutarsızlığı önlemek için **yalnız** merkezi
+> [`todo.md`](../todo.md) dosyasında toplanır (önceliklendirilmiş tüm-doküman listesi). İlgili maddeler orada `(process-step §..)`
+> atfıyla bulunur; verilen kararlar bu dokümanın **gövdesinde** anlatılır.
+
+> **Çözülenler (yerel karar log'u):**
+- [x] **Alt Süreç Başlangıcı adım türü — ÇÖZÜLDÜ** (eski "Webhook/Triggered" açık sorusu): Bağımsız alt süreçlerin **giriş
+  düğümü** için yeni **§3.20 Alt Süreç Başlangıcı** adımı eklendi. ("webhook" adı dar kaldığından — webhook **ve** Süreç Adımı
+  Tetikleme (§3.5) ile tetiklenir.) Webhook'u tutan aksiyon artık bu adıma bağlı **`default`**'a dönüşür; Alt Süreç Başlangıcı
+  bir **süreç adımı** olduğundan `ProcessStepExecution.processStepId` doğru atılır. **Ana süreç içinde** API ile ilerleme
+  gerekiyorsa **Webhook aksiyonu** (`process-step-action.md` §3.6) kullanımı **korunur**. _(Örnek:
+  `../sampleProcess/createPdfAsync/process.md` · `../models/workFlows/process-step-execution.md`.)_
+- [x] **Alt süreç yürütmesinin runtime temsili — ÇÖZÜLDÜ:** Bağımsız alt süreç (Alt Süreç Başlangıcı ile başlayan) tetiklenince
+  **ayrı, yeni bir `WorkFlow`** oluşur; **`WorkFlow.parentWorkFlowId`**'ye tetikleyen **ana sürecin `WorkFlow` id'si** yazılır
+  (ana süreçlerde null). _(../models/workFlows/work-flow.md · process-step-execution.md · models.md)_
 
 ---
 

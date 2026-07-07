@@ -223,17 +223,13 @@ olarak `value`'ye yazılır. Required ise en az bir nokta seçili olmalıdır.
 ---
 
 ## 4. Açık Kararlar / Sorular
-- [ ] **Çekirdek ↔ tipe-özel ayrımı** (§2/§3) nihai mi? Hangi alanlar çekirdekte, hangileri tipe-özel?
-- [ ] **Form List — `reOrder` / `editOnlyOwnPosition` / `parameterTransfer` / `propertyTransferParameters`** nasıl yönetilecek;
-  bunlar da profil-bazlı mı olmalı? (→ §3.13) _(`addNewEnabled`→`activeStartActions`, `addFromExistingRecordsIsActive`→`addFromExistingStatusIds` (profil); `selectedEnable`→`selectableModeActive` (alan-düzeyi): **çözüldü**.)_
-- [ ] **Form List — alt-servis görüntülenecek alanları / seçilebilirliği** view-profile ile nasıl ayarlanır? (→ §3.13, `view-profile.md` §5)
+> **Açık sorular tek yerde:** Bu dokümanın açık kararları/soruları, tutarsızlığı önlemek için **yalnız** merkezi
+> [`todo.md`](../todo.md) dosyasında toplanır (önceliklendirilmiş tüm-doküman listesi). İlgili maddeler orada `(properties §..)`
+> atfıyla bulunur; verilen kararlar bu dokümanın **gövdesinde** anlatılır.
+
+> **Çözülenler (yerel karar log'u):**
 - [x] **Form List ayarlarının profil bazında değişmesi** — **KARAR (B2):** profil-bazlı override `ProcessViewProfilePropertySetting {key,value}`
   (→ `../models/service-settings/view-profile-property.md`). Form List: `addNewEnabled`→**`activeStartActions`**, `addFromExistingRecordsIsActive`→**`addFromExistingStatusIds`** (profil); `selectedEnable`→**`selectableModeActive`** (alan-düzeyi, `Property`).
-- [ ] **Combobox/Radiobutton seçenek kaynağı** — statik (`propertyItems`) ↔ dinamik (`dataSource`) modeli ve iş kuralı **`FillDataSource`** ile ilişkisi (→ `work-rule.md`).
-- [ ] **Form List ↔ alt-süreç** — veri/`changeList`/parametre nasıl akar? (→ §3.13)
-- [ ] **`dataSource` alan adı çift anlamlı** — Combobox/Radiobutton'da **dinamik veri kaynağı** (§2.4), Image Area
-  Selector'da (§3.19) **statik nokta listesi** (`code`·`x`·`y`·`isSelected`). Aynı ad iki farklı yapı; ayrıştırılsın/yeniden adlandırılsın mı? _(daha sonra incelenecek)_
-- [ ] Alan seti sabit mi, eklenebilir (custom alan tipi) mi?
 
 ---
 

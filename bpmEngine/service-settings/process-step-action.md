@@ -101,7 +101,16 @@ Aksiyon alınırken bir **form / pop-up** gösterir; kullanıcı bunu doldurarak
 **Uygulama dışından bir HTTP request ile tetiklenebilen** aksiyon türü. Frontend'de elle tetiklenmez; örn. **müşteri
 sunucusundaki custom code**, **Flovo Customer API** ile bu Webhook aksiyonunu (**`parameters`** ile) tetikler ve süreci
 ilerletir — async HTTP Request'in (→ `process-step.md` §3.2) **geri-dönüş kolu** olarak yaygın kullanılır.
-> Örn. `../sampleProcess/createPdfAsync`, `../sampleProcess/integration`. İlgili: **`../flovo-customer-api.md`**.
+
+> **Webhook aksiyonu nereye bağlanır (anlam karmaşasını önle):**
+> - **Ana süreci başlatmak (dışarıdan):** Webhook aksiyonu **Süreç Başlangıcı**'na (`process-step.md` §3.1) eklenir → dış
+>   çağrı **yeni bir ana süreç çalıştırması** başlatır.
+> - **Ana süreç içinde bir adımı ilerletmek:** Webhook aksiyonu ilgili **var olan adıma** eklenir → o adımı ilerletir.
+> - **Bağımsız bir alt süreci tetiklemek:** Aksiyon değil, **Alt Süreç Başlangıcı** adımı (`process-step.md` §3.20) hedeflenir;
+>   oradaki webhook o adıma bağlı **`default`** aksiyonuna dönüşür (aksiyonun bağlanacağı bir adım olmama sorunu böyle çözülür).
+>
+> Üç durumda da webhook **bir süreç adımına** bağlıdır → `ProcessStepExecution.processStepId` sorunsuz atılır. Örn.
+> `../sampleProcess/createPdfAsync` (bağımsız alt süreç), `../sampleProcess/integration`. İlgili: **`../flovo-customer-api.md`**.
 > _(Detaylandırılacak: webhook URL/secret, payload → `parameters`/`changeList` eşlemesi, güvenlik, idempotency.)_
 
 ### 3.7 — Autoaction
@@ -118,14 +127,16 @@ varlıktır (aksiyon, durum) ve **ayrı dokümanda** tanımlanır → **`../orga
 ---
 
 ## 5. Adım-Ortak Aksiyon Ayarları (her adımda bulunabilecek özellikler)
-> _(Doldurulacak — "yazım ve güvenilirlik deneyimini" tanımlar.)_
-- [ ] **İfade (expression) motoru** — alanları dinamik doldurma, önceki adıma erişim
-- [ ] **Veri eşleme (sürükle-bırak)**
-- [ ] **Yeniden deneme (retry on fail)** — max deneme + bekleme
-- [ ] **Hata davranışı** — `onFail` aksiyonu (§0)
-- [ ] **Koşullu çalışma** — adım yalnız X koşulunda çalışsın
-- [ ] **Yetki/rol kısıtı** — aksiyonu kim yürütebilir (`authorizationLevel`, `actionDisplayAuthorizedUserGroupId`)
-- [ ] **Credential / kimlik yönetimi** (ayrı, şifreli, paylaşılabilir)
+> _(Doldurulacak — "yazım ve güvenilirlik deneyimini" tanımlar.)_ Bu başlıkların **açık kararları** merkezi `todo.md`'de
+> izlenir (retry/onFail → "Hata yönetimi" · expression/veri eşleme/koşullu → "Aksiyon parametrelerinde ifade/kod desteği" ·
+> credential → "Güvenlik" · yetki/rol → "Yetkilendirme").
+- **İfade (expression) motoru** — alanları dinamik doldurma, önceki adıma erişim
+- **Veri eşleme (sürükle-bırak)**
+- **Yeniden deneme (retry on fail)** — max deneme + bekleme
+- **Hata davranışı** — `onFail` aksiyonu (§0)
+- **Koşullu çalışma** — adım yalnız X koşulunda çalışsın
+- **Yetki/rol kısıtı** — aksiyonu kim yürütebilir (`authorizationLevel`, `actionDisplayAuthorizedUserGroupId`)
+- **Credential / kimlik yönetimi** (ayrı, şifreli, paylaşılabilir)
 
 ---
 
@@ -145,13 +156,9 @@ varlıktır (aksiyon, durum) ve **ayrı dokümanda** tanımlanır → **`../orga
 ---
 
 ## 7. Açık Kararlar / Sorular
-- [ ] **`defaultAction` bool ↔ `default` kodu** — ikisi de "varsayılan"ı işaret ediyor; nasıl birleşsin? (→ `../organization-settings/action.md`)
-- [ ] **`withForm` formu** — serbest bir pop-up form mu, yoksa formun bir **görüntüleme profili** mi? (→ `view-profile.md`)
-- [ ] **`changeList` öğesinin yapısı** (form alanı id + yeni değer + tip?)
-- [ ] **`action` nesnesinin şekli** (tetiklenecek sonraki aksiyon kodu mu?)
-- [ ] `action` zinciri (HTTP Request → action → ...) **sonsuz döngüye** karşı nasıl korunur?
-- [ ] Aksiyonlar sabit set mi, iş ortağı/müşteri tarafından eklenebilir mi?
-- [ ] Aksiyon parametreleri ne kadar "ifade" (kod) destekler (no-code ↔ pro-code dengesi)?
+> **Açık sorular tek yerde:** Bu dokümanın açık kararları/soruları, tutarsızlığı önlemek için **yalnız** merkezi
+> [`todo.md`](../todo.md) dosyasında toplanır (önceliklendirilmiş tüm-doküman listesi). İlgili maddeler orada `(process-step-action §..)`
+> atfıyla bulunur; verilen kararlar bu dokümanın **gövdesinde** anlatılır.
 
 ---
 

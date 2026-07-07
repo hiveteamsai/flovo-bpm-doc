@@ -39,6 +39,11 @@ Adım **bir aksiyon tetiklenerek** ilerlediğinde şu alanlar birlikte dolar:
   adımlarda oluşan iş akışında **yeni form create edilmez**; `formId`'si olan **farklı bir workflow'a** yönlendirilir; bu
   yüzden bu execution kaydında `formId` boş kalır. Örnek: `../../sampleProcess/scanBarcode/` — `redirect` (Form Yönlendirme) adımı.
 - **`AT` ön eki** = **ActionTrigger**.
+- **Bağımsız alt süreç & `processStepId`:** Dışarıdan (webhook / Customer API) veya **Süreç Adımı Tetikleme** ile başlayan
+  bağımsız alt süreçlerin giriş düğümü bir **süreç adımıdır** (**Alt Süreç Başlangıcı** → `../../service-settings/process-step.md`
+  §3.20); bu sayede alt süreç yürütmesi de **geçerli bir `processStepId` ile** kaydedilir (webhook'un bir adıma bağlı
+  olmama sorunu çözüldü). Alt süreç ana süreçten **bağımsız, yeni bir `WorkFlow`** olarak çalışır (`workFlowId` = o yeni akış;
+  `WorkFlow.parentWorkFlowId` = tetikleyen ana süreç → `work-flow.md`).
 - **`ActionTransfer`** = aksiyonla sonraki adıma taşınan **veri aktarım paketi** (`parameters`/`changeList`/`action`);
   `processStepActionParameter` bu paketin JSON kaydıdır → `../../service-settings/process-step-action.md` §2.
 - `atDelegateUserId` ↔ yetkilendirme **impersonation/vekalet** ilişkisi → `../../organization-settings/permissions.md`.

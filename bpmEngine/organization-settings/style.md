@@ -60,12 +60,13 @@ Renkler **dinamik** yönetilir; bunun için **ayrı bir Style yönetim sayfası*
 ---
 
 ## 4. Açık Kararlar / Sorular
-- [ ] Style yalnız **bg + font** mı, yoksa daha fazlasını mı (fontSize, isBold, border, iconColor) kapsar? _(Form
-      alanı görünüm nitelikleri —fontSize/isBold vb.— **ayrıdır**; bu Style varlığıyla birleşmez.)_
+> **Açık sorular tek yerde:** Bu dokümanın açık kararları/soruları, tutarsızlığı önlemek için **yalnız** merkezi
+> [`todo.md`](../todo.md) dosyasında toplanır (önceliklendirilmiş tüm-doküman listesi). İlgili maddeler orada `(style §..)`
+> atfıyla bulunur; verilen kararlar bu dokümanın **gövdesinde** anlatılır.
+
+> **Çözülenler (yerel karar log'u):**
+- [x] **Style tüketicisi = Action + Status**; form alanları Style **kullanmaz**, adımlar Style **tüketmez** (→ `../../models/models.md` §5).
 - [x] Style **kapsamı:** **organizasyon-bazlı** (`organizationId`) + **sistem** (`organizationId=null`, salt-okunur). Servis-bazlı ayrım yok.
-- [x] **Style tüketicileri:** aksiyon ✓ · durum ✓ · **alan ✗** (form alanları bu Style varlığını kullanmaz) · adım? (açık).
-- [ ] **Tema/dark mode** ile ilişki.
-- [ ] Erişilebilirlik: bg/font **kontrast** kontrolü zorunlu olsun mu?
 
 ---
 

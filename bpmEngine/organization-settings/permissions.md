@@ -70,11 +70,9 @@ Model → `../models/organization-settings/organization.md`.
 ---
 
 ## 5. Açık Kararlar / Sorular
-- [ ] **Eski `authorizationLevel` bağımlılıkları:** `ProcessStepAction.authorizationLevel` (sayısal aksiyon yetkisi) bu
-  modelle nasıl uyumlanacak? (Aksiyon görünürlüğü zaten `actionDisplayAuthorizedUserGroupId` ile grup-bazlı.)
-- [ ] **Impersonation** kapsamı/denetimi (kimin yerine geçilebilir, log/audit).
-- [ ] Yetki setinin **genişletilebilirliği** (yeni yetki = Organization'a yeni `*UserGroupId` alanı).
-- [ ] "Organizasyon ayarları sayfası"nda **admin-only yetki yapılandırması** ↔ `OrganizationSettings` grubu erişimi sınırı netleşmeli.
+> **Açık sorular tek yerde:** Bu dokümanın açık kararları/soruları, tutarsızlığı önlemek için **yalnız** merkezi
+> [`todo.md`](../todo.md) dosyasında toplanır (önceliklendirilmiş tüm-doküman listesi). İlgili maddeler orada `(permissions §..)`
+> atfıyla bulunur; verilen kararlar bu dokümanın **gövdesinde** anlatılır.
 
 ---
 

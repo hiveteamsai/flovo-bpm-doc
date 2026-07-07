@@ -155,20 +155,18 @@ Liste-içeren alandaki kalemleri bir boyuta göre **grupla + topla**, **birden �
 ---
 
 ## 12. Değerlendirme / açık depolama soruları (SONRA)
-> Senaryolardan çıkan, depolama modelini belirleyecek başlıca sorular:
-- [ ] **Şema modeli:** EAV (property-value satırları) mı · kolon-bazlı mı · JSON belge mi · hibrit mi?
-- [ ] **Yansıma alanları (§5):** kopya+senkron (A) mı, on-read (B) mi; A ise **snapshot ↔ canlı**? (tip başına farklı olabilir.)
-- [ ] **Çeviri-bağımlı sorgu (§6c/§8.4):** value ⋈ translation, `languageCode`'a göre filtre/sıralama nasıl indekslenir?
-- [ ] **List-of-model (§8.2–8.5):** kalem-bazlı rapor, unnest filtre/sıralama, **cross-form gruplama/toplama** için depolama nasıl?
-- [ ] **Binary ayrımı (§7):** dosya/görsel value'ları ayrı mı (performans)?
-- [ ] **Geçmiş/sürüm (§7):** value değişiklik geçmişi nasıl (audit/KVKK)?
-- [ ] **Instance state (§7):** uzun-bekleyen süreçte value serileştirme/kalıcılık.
+> **Açık sorular tek yerde:** Bu bölümdeki depolama soruları, tutarsızlığı önlemek için merkezi
+> [`todo.md`](todo.md)'de **"Property value depolaması"** (Tier 1) maddesinin **7 alt-sorusu** olarak toplanmıştır:
+> **(1)** EAV ↔ kolon ↔ JSON ↔ hibrit; **(2)** yansıma alanları (§5) A (kopya+senkron) ↔ B (on-read), snapshot ↔ canlı;
+> **(3)** çeviri-bağımlı sorgu/indeksleme (§6c/§8.4); **(4)** list-of-model unnest / cross-form (§8.2–8.5); **(5)** binary
+> ayrımı (§7); **(6)** value geçmişi/sürüm (§7); **(7)** instance state serileştirme (§7). Karar, buradaki senaryolar
+> (§1–§11) ışığında verilecek.
 
 ---
 
 ## 13. Eklenecekler / eksikler (KULLANICI DOLDURACAK)
 > _(Eksik gördüğün senaryoları buraya yaz; sonra ilgili kategoriye işlenecek.)_
-- [ ] …
+- _(henüz eklenmedi)_
 
 ---
 

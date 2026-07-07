@@ -120,7 +120,7 @@ Organization (id)
 **İş akışı / çalıştırma (runtime — `workFlows/`):** ayarlardan üretilen instance/execution verisi.
 
 ```
-WorkFlow (id; createdByUserId → User · createdByApiKeyId → ApiKey[geçici] · serviceId → Service)
+WorkFlow (id; createdByUserId → User · createdByApiKeyId → ApiKey[geçici] · serviceId → Service · parentWorkFlowId → WorkFlow[self, alt süreç])
  ├─< ProcessStepExecution (workFlowId; formId → Form · processStepId → ProcessStep ·
  │        │                 processStepActionId → ProcessStepAction · atUserId/atDelegateUserId → User · atApiKeyId → ApiKey[geçici])
  │        └─< FormAwaitingUser (processStepExecutionId; formId → Form · userId → User · userGroupId → UserGroup)
@@ -168,6 +168,7 @@ WorkFlow (id; createdByUserId → User · createdByApiKeyId → ApiKey[geçici] 
 | WorkFlow | `createdByUserId` | User.id | N–1 | null olabilir (kullanıcı **ya da** API) |
 | WorkFlow | `createdByApiKeyId` | ApiKey | N–1 | null olabilir; **ApiKey geçici** |
 | WorkFlow | `serviceId` | Service.id | N–1 | |
+| WorkFlow | `parentWorkFlowId` | WorkFlow.id | N–1 | **self**; null olabilir (alt süreç → ana süreç akışı; ana süreçte null) |
 | ProcessStepExecution | `workFlowId` | WorkFlow.id | N–1 | |
 | ProcessStepExecution | `formId` | Form.id | N–1 | null olabilir (form yönlendirme) |
 | ProcessStepExecution | `processStepId` | ProcessStep.id | N–1 | |

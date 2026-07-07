@@ -100,12 +100,12 @@ profili) · `FixedValue` · `FromCalculate` (expression).
 ---
 
 ## 6. Açık Kararlar / Sorular
-- [ ] **İki-katman sınırı:** **değer atama** ve **karşılaştırma** hem **süreç adımı** (`process-step.md` §3.4 / §3.13)
-      hem **iş kuralı** olarak var. Sınır net mi? Öneri: iş kuralı = **anlık form UX**, adım = **kalıcı/akış** kararı.
-- [ ] **`AssignValueToPropertyAttribute`** adı teyit — "property'nin niteliğine değer atama" doğru karşılık mı?
+> **Açık sorular tek yerde:** Bu dokümanın açık kararları/soruları, tutarsızlığı önlemek için **yalnız** merkezi
+> [`todo.md`](../todo.md) dosyasında toplanır (önceliklendirilmiş tüm-doküman listesi). İlgili maddeler orada `(work-rule §..)`
+> atfıyla bulunur; verilen kararlar bu dokümanın **gövdesinde** anlatılır.
+
+> **Çözülenler (yerel karar log'u):**
 - [x] **`SetStyle`** `style.md` Style varlığını **seçmez**; yalnız tekil görünüm niteliklerini (`fontSize`, `titleColor` vb.) değiştirir. _(Detay, iş kuralı en son şekillenince netleşecek → §7.)_
-- [ ] **`FillDataSource`** kaynak tipleri (Organization Data / User Data / API) nasıl modellenecek?
-- [ ] **Performans:** `always` kuralları her değişiklikte değil, **alan-bağımlı** (yalnız ilgili property değişince) tetiklensin mi?
 - [x] İş kuralları **servis-bazlı** tanımlanır (bir servise ait — `serviceId`).
 
 ---

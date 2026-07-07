@@ -51,7 +51,7 @@ yanıt **`action=yonlendir`** ise **Form Yönlendirme** (var olan form açılır
 
 1. ✅ **Processing `showLoading`** — `../service-settings/process-step.md` §3.18'e **işlendi:** bu adımda formun **detayı/değerleri**
    görünmesin isteniyorsa **aktif** edilir (frontend "yükleniyor" gösterir, girişi engeller). `false` = normal görünüm
-   (+ genelde durum güncelleme). _(Açık kalan: Processing'de durum değişimi alanı nasıl tutulacak.)_
+   (+ genelde durum güncelleme). _(→ açık soru merkezi listede: Processing durum değişimi, ../todo.md)_
 2. ✅ **Aksiyonu tetikleyen HTTP isteğine response** — `../flovo-bpm-engine.md` **§6.3**'e işlendi: süreç **Kullanıcı /
    Kullanıcı Grubu / Processing / Süreç Bitişi** adımlarına geldiğinde **form bilgileri** tetikleme isteğinin response'unda döner.
 3. ✅ **Bildirim kanalları + parametre** — `../service-settings/process-step.md` **§3.6**'ya işlendi: **3 kanal** (Mail / Bildirim-Push / Toast);
@@ -66,10 +66,14 @@ yanıt **`action=yonlendir`** ise **Form Yönlendirme** (var olan form açılır
    sunucusundaki custom code'un Flovo formlarını okuyup/yazıp **Webhook** tetiklemesi için).
 
 ## Açık Noktalar
+
+> **Açık sorular tek yerde:** Bu dokümanın açık kararları/soruları, tutarsızlığı önlemek için **yalnız** merkezi
+> [`todo.md`](../todo.md) dosyasında toplanır (önceliklendirilmiş tüm-doküman listesi). İlgili maddeler orada `(sampleProcess §..)`
+> atfıyla bulunur; verilen kararlar bu dokümanın **gövdesinde** anlatılır.
+
+> **Çözülenler (yerel karar log'u):**
 - ✅ **integration** ikinci webhook'u **modellendi:** `transferFail` (Webhook) → başlatıcıya (`integrationStart`) geri dönüş;
   `transferOk` → `processEnd`. Aynı bekleme noktasında **webhook koduna göre dallanma** (→ `integration/process.md`).
-- **Adlandırma:** Detaylı spec'lerde actionType **isim** (Fotoğraf Çek / Dosya Seç / Barcode Tara) + aksiyon **kodu**
-  (`takePhoto`/`selectFile`/`scanBarcode`...) ayrı kullanıldı; kod adlandırması örnekler arası tutarlı tutulmalı.
 
 ---
 

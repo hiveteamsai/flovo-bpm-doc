@@ -66,10 +66,11 @@ Bir servis **yedi yapı taşından** oluşur ve bunlar **iki katmana** ayrılır
 > **`targetProcessStepId`**'si **hangi adıma** ilerleneceğini belirler. **Kod = aksiyon seçimi · `targetProcessStepId`
 > = adım yönlendirmesi** (`targetProcessStepId` **korunur** → §4).
 
-### 1.4 — Tasarım Hedefleri (founder girdisi bekliyor)
-- [ ] **Self-servis olgunluk** — süreçleri teknik-olmayan kullanıcı kursun (→ §2.1).
-- [ ] **Hız/performans** — hızlı form/belge yükleme, hafif iş-kuralı değerlendirmesi.
-- [ ] **Sade katman sınırı** — değer atama & karşılaştırma hem adım hem iş kuralı; sınır net olmalı (→ `service-settings/work-rule.md` §6).
+### 1.4 — Tasarım Hedefleri
+> Ürün hedefleri (bağlam). Bunlara bağlı **açık kararlar** merkezi `todo.md`'de izlenir.
+- **Self-servis olgunluk** — süreçleri teknik-olmayan kullanıcı kursun (→ §2.1).
+- **Hız/performans** — hızlı form/belge yükleme, hafif iş-kuralı değerlendirmesi.
+- **Sade katman sınırı** — değer atama & karşılaştırma hem adım hem iş kuralı; sınır kararı → `todo.md` (Tier 0 "İki-katman sınırı") · `service-settings/work-rule.md` §6.
 
 ---
 
@@ -283,14 +284,10 @@ bir aksiyon kodu** olarak modellenir (`default` ↔ `onFail`).
 ---
 
 ## 12. Açık Kararlar / Çözülecek Sorular
-> _(Doldurulacak — tasarım boyunca biriken ikilemler.)_
 
-- [ ] Koleksiyon-tabanlı (n8n) mı token-tabanlı (klasik BPMN) mı?
-- [ ] On-prem ↔ merkezi sosyal/kimlik çelişkisi nasıl çözülür (hibrit dağıtım)?
-- [ ] **Çalışma-zamanı mimarisi:** tek-süreç mi, kuyruk-tabanlı dağıtık worker mı? (→ §2.2)
-- [ ] **Olay/mesaj-tabanlı tetikleme** ve uyuyan sürecin uyandırılması (→ §5 / §6)
-- [ ] **Denetim izi** + **dosya/binary depolama performansı** (mevcut "yavaş belge yükleme" şikâyeti → §8)
-- [ ] **İki-katman tekrarı:** değer atama & karşılaştırma hem adım hem iş kuralı — sınır nasıl çizilir? (→ `service-settings/work-rule.md` §6)
+> **Açık sorular tek yerde:** Bu dokümanın açık kararları/soruları, tutarsızlığı önlemek için **yalnız** merkezi
+> [`todo.md`](todo.md) dosyasında toplanır (önceliklendirilmiş tüm-doküman listesi). İlgili maddeler orada `(flovo-bpm-engine §..)`
+> atfıyla bulunur; verilen kararlar bu dokümanın **gövdesinde** anlatılır.
 
 ---
 

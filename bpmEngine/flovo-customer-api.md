@@ -70,12 +70,10 @@
 ---
 
 ## 3. Açık Kararlar / Sorular
-- [ ] Kimlik/yetki modeli: token kapsamı, süresi, yenileme; per-service mi per-solution mı?
-- [ ] **Dış referans anahtarı:** API çağrılarında kiracı `organizationId` (int) ile mi yoksa `organizationCode` (string) ile mi belirtilmeli? (`organization-settings/organization.md` §2 dış referanslarda `code` diyor.)
-- [ ] **Webhook tetikleme** güvenliği (secret/imza) ve **idempotency** (aynı webhook iki kez gelirse).
-- [ ] `POST /forms/search` sorgu dili (alan + operatör — `service-settings/properties.md` / `service-settings/work-rule.md` operatörleriyle hizalı mı?).
-- [ ] Rate limit / sayfalama / hata sözleşmesi (standart response zarfı).
-- [ ] Request/response **şemalarının** detayı (sonraki aşama).
+
+> **Açık sorular tek yerde:** Bu dokümanın açık kararları/soruları, tutarsızlığı önlemek için **yalnız** merkezi
+> [`todo.md`](todo.md) dosyasında toplanır (önceliklendirilmiş tüm-doküman listesi). İlgili maddeler orada `(flovo-customer-api §..)`
+> atfıyla bulunur; verilen kararlar bu dokümanın **gövdesinde** anlatılır.
 
 ---
 

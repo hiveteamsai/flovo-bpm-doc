@@ -64,10 +64,13 @@ ActionDto (şablon)            Süreç Adımı'na ekleme
 ---
 
 ## 3. Açık Kararlar / Sorular
+> **Açık sorular tek yerde:** Bu dokümanın açık kararları/soruları, tutarsızlığı önlemek için **yalnız** merkezi
+> [`todo.md`](../todo.md) dosyasında toplanır (önceliklendirilmiş tüm-doküman listesi). İlgili maddeler orada `(action §..)`
+> atfıyla bulunur; verilen kararlar bu dokümanın **gövdesinde** anlatılır.
+
+> **Çözülenler (yerel karar log'u):**
 - [x] **Kopya ↔ canlı referans:** **Karar** — ActionDto adıma eklenince alanları **bir kez kopyalanır**; kopya
       **bağımsızdır** — ActionDto sonradan değişince mevcut adım-aksiyonları **güncellenmez** (canlı referans/FK yok).
-- [ ] **`defaultAction` bool ↔ `default` kodu** — ikisi de "varsayılan"ı işaret ediyor; nasıl birleşir? (→ `../service-settings/process-step-action.md` §7)
-- [ ] **`actionDisplayType`** gözden geçirilecek (`invisible`/`everywhere`/`onlyFormDetail`/`onlyFastApprove`).
 - [x] ActionDto'lar **organizasyon-bazlı** (havuz) tanımlanır; organizasyonun tüm servislerinde kullanılır.
 
 ---

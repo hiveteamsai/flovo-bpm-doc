@@ -49,8 +49,12 @@ tetiklendiğinde kaydın durumu değişebilir.
 ---
 
 ## 4. Açık Kararlar / Sorular
+> **Açık sorular tek yerde:** Bu dokümanın açık kararları/soruları, tutarsızlığı önlemek için **yalnız** merkezi
+> [`todo.md`](../todo.md) dosyasında toplanır (önceliklendirilmiş tüm-doküman listesi). İlgili maddeler orada `(status §..)`
+> atfıyla bulunur; verilen kararlar bu dokümanın **gövdesinde** anlatılır.
+
+> **Çözülenler (yerel karar log'u):**
 - [x] **`icon` ↔ `styleId`** — `icon` **ve** `definition` frontend'de `styleId`'nin **`fontColor`**'ını kullanır (`bgColor` = etiket arka planı). Ayrı renk alanı yok.
-- [ ] Raporlama/filtreleme için bir **kategori/grup** boyutu gerekir mi, yoksa `code`/`definition` yeterli mi?
 - [x] Durumlar **organizasyon-bazlı** (havuz) tanımlanır; organizasyonun tüm servislerinde kullanılır.
 
 ---

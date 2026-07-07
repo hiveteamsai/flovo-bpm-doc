@@ -65,6 +65,11 @@ yönetim ekranı olacak).
 ---
 
 ## 5. Açık Kararlar / Sorular
+> **Açık sorular tek yerde:** Bu dokümanın açık kararları/soruları, tutarsızlığı önlemek için **yalnız** merkezi
+> [`todo.md`](../todo.md) dosyasında toplanır (önceliklendirilmiş tüm-doküman listesi). İlgili maddeler orada `(view-profile §..)`
+> atfıyla bulunur; verilen kararlar bu dokümanın **gövdesinde** anlatılır.
+
+> **Çözülenler (yerel karar log'u):**
 - [x] **Alan-özel görünüm ayarlarının profil bazında yönetimi** — **KARAR (B2):** tipe-özel, profil-bazlı ayarlar
       **`ProcessViewProfilePropertySetting {viewProfilePropertyId, key, value}`** ile tutulur (`propertyType`'a göre
       **dictionary**); `Property` varsayılanını profil düzeyinde ezer. Genel `visible/enabled/required/order` birinci
@@ -73,10 +78,6 @@ yönetim ekranı olacak).
       ayarıdır. _Örn._ *süreç başlatan* yeni form ekler
       ama *yönetici* ekleyemez; *yönetici* tik değiştirir, *başlatan* değiştiremez. **Kalan:** `reOrder`/`editOnlyOwnPosition`
       da profil-bazlı mı? (→ `../todo.md`)
-- [ ] **Form List (alt-servis) alanında alt-servisin görüntülenecek alanları / seçilebilirliği** view-profile ile
-      nasıl ayarlanır? (Yukarıdaki **aynı override mekanizmasıyla**; → `properties.md` §3.13 ile birlikte tasarlanacak.)
-- [ ] **Raporlama** ayrı nasıl modellenecek? (ayrı doküman/özellik)
-- [ ] `ChangeViewProfile` ile çalışma-zamanı profil değişiminin akış (motor) ile etkileşimi.
 - [x] Profiller **servis-bazlı** tanımlanır (bir servise ait — `serviceId`).
 
 ---

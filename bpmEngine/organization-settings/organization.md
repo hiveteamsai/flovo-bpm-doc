@@ -61,9 +61,9 @@ Yetkiler **organizasyon bazında** yönetilir; eski **kullanıcı bazında `auth
 ---
 
 ## 5. Açık Kararlar / Sorular
-- [ ] **`idleTimeoutMinute`** — alt/üst sınır var mı? Oturum kilitlenince davranış: yeniden giriş mi, yalnız parola mı?
-- [ ] Sonraki alanlar: plan/abonelik, zaman dilimi (timezone), para birimi, bölge, güvenlik politikaları?
-- [ ] **Yetkilendirme:** `permissions.md` açık soruları (impersonation kapsamı; yeni yetki = yeni `*UserGroupId` alanı; eski `authorizationLevel` bağımlılıkları — `ProcessStepAction.authorizationLevel`).
+> **Açık sorular tek yerde:** Bu dokümanın açık kararları/soruları, tutarsızlığı önlemek için **yalnız** merkezi
+> [`todo.md`](../todo.md) dosyasında toplanır (önceliklendirilmiş tüm-doküman listesi). İlgili maddeler orada `(organization §..)`
+> atfıyla bulunur; verilen kararlar bu dokümanın **gövdesinde** anlatılır.
 
 ---
 
