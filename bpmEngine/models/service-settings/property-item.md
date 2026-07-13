@@ -1,7 +1,7 @@
 # Model — PropertyItem (seçim öğesi)
 
 > **Durum:** 🟡 TASLAK (ilk çıkarım — gözden geçirilecek)
-> **Amaç:** Seçim alanlarının (Combobox, Radiobutton List) **statik seçeneği**. Bir `Property`'nin `propertyItems`
+> **Amaç:** Seçim alanlarının (`combobox`, `radiobuttonList`) **statik seçeneği**. Bir `Property`'nin `propertyItems`
 > listesindeki tek eleman.
 > **Davranış/kullanım:** → `../../service-settings/properties.md` §2.6
 

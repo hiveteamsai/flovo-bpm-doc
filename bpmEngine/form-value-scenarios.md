@@ -32,7 +32,7 @@ Ayrımlar: **ham değer (raw)** ↔ **gösterim (display)** (çeviriye bağlı) 
 5. **[R/W][FE]** `expenseType`: **value=`2` saklanır**, ekranda display "Ulaşım" (tr) gösterilir (bkz. §6).
 6. **[R/W][FE]** Özel alan value şekilleri: `groupByTax` = `[{giderTürü,vergiOranı:18,tutar:1000},{…:8,tutar:500}]` · Barcode=`"8690…"` · Map=`{lat,lng}` · Image Area Selector = JSON nokta seçimi.
 
-## 2. İş kuralları (frontend realtime — `work-rule.md`)
+## 2. İş kuralları (frontend realtime — `business-rule.md`)
 7. **[R][FE]** Koşul: `expenseType == 1 (Konaklama)` → `nightsCount` alanını **göster + zorunlu** yap.
 8. **[W][FE]** `AssignValueToProperty` (`FromCalculation`): `taxAmount = amount * (vergiOranı/100)` hesapla ve yaz.
 9. **[R/W][FE]** `FillDataSource`: `city` seçilince `district` combobox veri kaynağını doldur (değere bağlı).
@@ -47,7 +47,7 @@ Ayrımlar: **ham değer (raw)** ↔ **gösterim (display)** (çeviriye bağlı) 
 ## 4. Değer yazma (motor)
 15. **[W][M]** Değer Atama: `status`'a "Onaylandı" yaz **veya** `groupByTax` **alt-kalemlerine** KDV oranı yaz (`targetInstancesPropertyId`).
 16. **[W][M]** Custom ID Creator: `MSR-2026-0001` üret → `expenseNo` alanına yaz.
-17. **[W][M]** Flovo AI (fatura): `receipt` file'ından `amount`/`vendor`/`date` çıkar → **Form Creator init** ile alanlara yaz.
+17. **[W][M]** Flovo AI (fatura): `receipt` file'ından `amount`/`vendor`/`date` çıkar → **Instance Creator init** ile alanlara yaz.
 18. **[R/W][M]** HTTP Request: body'de `{amount,currency}` gönder; response `{approvedAmount}` → `changeList` ile `approvedAmount` güncelle.
 
 ## 5. Yansıma (reflection) alanları — **Parent Property · User Info · Flow Info** ⭐ (DEĞERLENDİRME)
@@ -129,11 +129,11 @@ Liste-içeren alandaki kalemleri bir boyuta göre **grupla + topla**, **birden �
 → Tüm instance'ların list-of-model value'larını **açıp gruplayıp topla** (ağır sorgu). Gruplama boyutu çeviriye bağlıysa §8.4 kuralı da geçerli. [R][RPT]
 
 ## 9. Dış / API / entegrasyon (`flovo-customer-api.md`)
-24. **[R][API]** `GET /forms/{id}` — tüm alan value + meta okuma (PDF üretimi).
-25. **[W][API]** `PATCH /forms/{id}` — value güncelleme (`changeList` benzeri).
+24. **[R][API]** `GET /instances/{id}` — tüm alan value + meta okuma (PDF üretimi).
+25. **[W][API]** `PATCH /instances/{id}` — value güncelleme (`changeList` benzeri).
 26. **[R][API]** `GET /services/{id}/schema` — custom code'un alan adı/tipini bilmesi (value yorumlama).
 27. **[R/W][API]** Webhook — `parameters` ile value taşıma.
-28. **[R][API]** `POST /forms/search` — **alan value'suna göre arama** (`barcode = X`).
+28. **[R][API]** `POST /instances/search` — **alan value'suna göre arama** (`barcode = X`).
 
 ## 10. İlişkisel / alt-servis
 29. **[R/W][M]** Form List — ana ↔ alt-servis value **aktarımı** (`parameterTransfer`/`propertyTransferParameters`).

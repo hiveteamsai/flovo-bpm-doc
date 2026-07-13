@@ -30,7 +30,7 @@ olarak taşınır.
 **Aksiyonlar:**
 - **`scanBarcode` (Barcode Tara):** Barkod okuyucu açılır; okunan değer alınır. Hedef adım `lookup`. Taşıdığı veri:
   `parameters: { barcode }`.
-- **`enterBarcode` (withForm):** Açılan pop-up formda **`barcode`** adında **required textbox** vardır; kullanıcı elle girer.
+- **`enterBarcode` (eventForm):** Açılan pop-up formda **`barcode`** adında **required textbox** vardır; kullanıcı elle girer.
   Hedef adım `lookup`. Taşıdığı veri: `parameters: { barcode }`.
 
 ---
@@ -41,38 +41,38 @@ olarak taşınır.
 **Ayarlar ve çalışma:**
 - `endpoint`: müşteri sunucusu barkod sorgu ucu · `method`: `POST` · `body`: `{ barcode }`
 - **`async = false`** → dönüş **beklenir**.
-- Müşteri sunucusu, **Flovo Customer API** (`POST /forms/search`) ile barkodu var olan formlarda arar ve bir **action
+- Müşteri sunucusu, **Flovo Customer API** (`POST /instances/search`) ile barkodu var olan formlarda arar ve bir **action
   modeli** döner:
-  - **Form varsa** → `action = "yonlendir"`, `parameters: { formId }`.
+  - **Form varsa** → `action = "yonlendir"`, `parameters: { instanceId }`.
   - **Form yoksa** → `action = "createForm"`, `parameters: { barcode }`.
 - Adım, response'taki **`action` koduna** göre **kendi altındaki aynı kodlu aksiyonu** tetikler.
-**Adımın ürettiği parametre:** response'tan gelen `action` + `parameters` (`formId` ya da `barcode`).
+**Adımın ürettiği parametre:** response'tan gelen `action` + `parameters` (`instanceId` ya da `barcode`).
 
 **Aksiyonlar:**
-- **`createForm` (Autoaction):** response `action = createForm` ise tetiklenir. Hedef adım `createForm`. Taşıdığı veri:
+- **`createForm` (`autoAction`):** response `action = createForm` ise tetiklenir. Hedef adım `createForm`. Taşıdığı veri:
   `parameters: { barcode }`.
-- **`yonlendir` (Autoaction):** response `action = yonlendir` ise tetiklenir. Hedef adım `redirect`. Taşıdığı veri:
-  `parameters: { formId }`.
+- **`yonlendir` (`autoAction`):** response `action = yonlendir` ise tetiklenir. Hedef adım `redirect`. Taşıdığı veri:
+  `parameters: { instanceId }`.
 
 ---
 
-### 3. Barkodlu Form Oluştur (`createForm`) — Form Creator
+### 3. Barkodlu Form Oluştur (`createForm`) — Instance Creator
 **Görev:** Barkodu içeren **yeni bir form** üretmek.
 **Bu adıma gelen parametre:** `parameters: { barcode }`.
-**Ayarlar ve çalışma:** Form Creator ayarında **init değer**: `barcode` form alanına, gelen `parameters.barcode`
+**Ayarlar ve çalışma:** Instance Creator ayarında **init değer**: `barcode` form alanına, gelen `parameters.barcode`
 eşlenir. Yeni **form id** ve alanlar üretilir; barcode alanı bu değerle dolu gelir.
-**Adımın ürettiği parametre:** `formId`.
+**Adımın ürettiği parametre:** `instanceId`.
 
 **Aksiyonlar:**
-- **`default` (Autoaction):** Hedef adım `user`. Taşıdığı veri: `parameters: { formId }`.
+- **`default` (`autoAction`):** Hedef adım `user`. Taşıdığı veri: `parameters: { instanceId }`.
   → Tetikleyen HTTP isteğine response olarak form bilgileri döner; frontendde yeni form görüntülenir.
 
 ---
 
 ### 4. Var Olan Formu Aç (`redirect`) — Form Yönlendirme
 **Görev:** Barkodla eşleşen **daha önce oluşturulmuş formu** açmak (yeni form oluşturmadan).
-**Bu adıma gelen parametre:** `parameters: { formId }` (var olan formun id'si).
-**Ayarlar ve çalışma:** Yeni form **oluşturulmaz**; `formId` ile var olan formun bilgileri, aksiyonu tetikleyen
+**Bu adıma gelen parametre:** `parameters: { instanceId }` (var olan formun id'si).
+**Ayarlar ve çalışma:** Yeni form **oluşturulmaz**; `instanceId` ile var olan formun bilgileri, aksiyonu tetikleyen
 kullanıcıya iletilir ve o form açılır. Bu kol burada **biter** (kullanıcı var olan formun kendi sürecine geçer).
 **Adımın ürettiği parametre:** — .
 **Aksiyonlar:** — (terminal; var olan formu açar).
@@ -81,7 +81,7 @@ kullanıcıya iletilir ve o form açılır. Bu kol burada **biter** (kullanıcı
 
 ### 5. Form Detayı (`user`) — Kullanıcı
 **Görev:** Yeni oluşturulan barkodlu formu kullanıcıya göstermek (insan görev noktası).
-**Bu adıma gelen parametre:** `parameters: { formId }`.
+**Bu adıma gelen parametre:** `parameters: { instanceId }`.
 **Ayarlar ve çalışma:** Form "aksiyon alınabilir" durumda gösterilir; kullanıcı formu görüntüler/düzenler.
 **Adımın ürettiği parametre:** — .
 **Aksiyonlar:** — (insan-tetiklemeli; bu örneğin kapsamı dışında).

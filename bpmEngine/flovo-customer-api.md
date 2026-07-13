@@ -3,7 +3,7 @@
 > **Durum:** 🟡 TASLAK — şimdilik **endpoint listesi + teorik iş özeti**; request/response detayları sonra.
 > **Amaç:** Müşterilerin/kullanıcıların **custom code** geliştirebilmesi için Flovo'nun sağlayacağı **API servisi.**
 > Süreç adımlarındaki **HTTP Request** (→ `service-settings/process-step.md` §3.2) müşteri sunucusundaki custom code'a istek atar;
-> custom code da **Flovo Customer API** ile Flovo formlarını okur/yazar ve **Webhook** aksiyonlarını (→ `service-settings/process-step-action.md` §3.6) tetikler.
+> custom code da **Flovo Customer API** ile Flovo **instance**'larını (doldurulmuş form kayıtları) okur/yazar ve **Webhook** aksiyonlarını (→ `service-settings/process-step-action.md` §3.6) tetikler.
 >
 > **İlişki:** Örnekler → `sampleProcess/` (createPdf, createPdfAsync, integration, scanBarcode bu API'ye dayanır).
 
@@ -12,7 +12,7 @@
 ## 0. Genel İlkeler (teorik)
 - **Kimlik:** custom code, bir **token** ile kimliklenir; kapsam **organization / solution / service** bazlıdır
   (header'lar: `organizationId` / `solutionId` / `serviceId`). _(**Geçici**: dış referans anahtarının int `organizationId` mi yoksa string `organizationCode` mi olacağı **açık** → §3.)_
-- **Birim:** çoğu uç **servis (form)** ve **form id** etrafında çalışır.
+- **Birim:** çoğu uç **servis (form)** ve **instance id** etrafında çalışır.
 - **Yön:** custom code → Flovo (okuma/yazma) **ve** custom code → Flovo (**webhook aksiyonu tetikleme**).
 
 ---
@@ -25,21 +25,21 @@
 |---|---|
 | `POST /auth/token` | Custom code için **erişim token'ı** üretir (organization/solution/service kapsamlı). |
 
-### Form okuma
+### Instance okuma
 | Uç (temsilî) | Ne yapar |
 |---|---|
-| `GET /forms/{formId}` | Bir formun **tüm alan değerlerini + meta**'sını (durum, oluşturan, tarih) getirir. _(PDF üretimi form bilgisini buradan çeker.)_ |
-| `POST /forms/search` | Bir serviste **alan değerine göre form arar** (örn. `barcode = X` olan form var mı). _(scanBarcode.)_ |
-| `GET /services/{serviceId}/forms` | Bir servisin formlarını **listeler** (filtre/sayfalama). |
+| `GET /instances/{instanceId}` | Bir instance'ın **tüm alan değerlerini + meta**'sını (durum, oluşturan, tarih) getirir. _(PDF üretimi instance bilgisini buradan çeker.)_ |
+| `POST /instances/search` | Bir serviste **alan değerine göre instance arar** (örn. `barcode = X` olan instance var mı). _(scanBarcode.)_ |
+| `GET /services/{serviceId}/instances` | Bir servisin instance'larını **listeler** (filtre/sayfalama). |
 | `GET /services/{serviceId}/schema` | Servisin **alan (property) şemasını** getirir (custom code alan adlarını/tiplerini bilsin). |
 
-### Form yazma
+### Instance yazma
 | Uç (temsilî) | Ne yapar |
 |---|---|
-| `POST /forms` | **Yeni form oluşturur** (servis + başlangıç alan değerleri). |
-| `PATCH /forms/{formId}` | Formun **alan değerlerini günceller** (`changeList` benzeri). |
-| `POST /forms/{formId}/status` | Formun **durumunu** değiştirir (→ `organization-settings/status.md`). |
-| `DELETE /forms/{formId}` | Formu **siler** (`deleted` durumuna çeker). |
+| `POST /instances` | **Yeni instance oluşturur** (servis + başlangıç alan değerleri). |
+| `PATCH /instances/{instanceId}` | Instance'ın **alan değerlerini günceller** (`changeList` benzeri). |
+| `POST /instances/{instanceId}/status` | Instance'ın **durumunu** değiştirir (→ `organization-settings/status.md`). |
+| `DELETE /instances/{instanceId}` | Instance'ı **siler** (`deleted` durumuna çeker). |
 
 ### Dosya
 | Uç (temsilî) | Ne yapar |
@@ -50,7 +50,7 @@
 ### Aksiyon / Webhook tetikleme
 | Uç (temsilî) | Ne yapar |
 |---|---|
-| `POST /forms/{formId}/actions/{actionCode}` | Bir formda **aksiyon tetikler** (Webhook aksiyonu) — **`parameters`** ile. Süreci ilerletir. _(createPdfAsync, integration.)_ |
+| `POST /instances/{instanceId}/actions/{actionCode}` | Bir instance'ta **aksiyon tetikler** (Webhook aksiyonu) — **`parameters`** ile. Süreci ilerletir. _(createPdfAsync, integration.)_ |
 
 ### Kullanıcı / organizasyon
 | Uç (temsilî) | Ne yapar |
@@ -63,9 +63,9 @@
 ## 2. Örneklerle Eşleşme
 | Örnek | Kullanılan uç(lar) (teorik) |
 |---|---|
-| **createPdf / createPdfAsync** | `GET /forms/{id}` (form bilgisi) · `POST /files` (PDF) · `POST .../actions/{code}` (async'te webhook) |
-| **integration** | `GET /forms/{id}` / `PATCH /forms/{id}` (aktarım) · `POST .../actions/{code}` (webhook → süreç bitişi) |
-| **scanBarcode** | `POST /forms/search` (barcode'la form ara) |
+| **createPdf / createPdfAsync** | `GET /instances/{id}` (instance bilgisi) · `POST /files` (PDF) · `POST .../actions/{code}` (async'te webhook) |
+| **integration** | `GET /instances/{id}` / `PATCH /instances/{id}` (aktarım) · `POST .../actions/{code}` (webhook → süreç bitişi) |
+| **scanBarcode** | `POST /instances/search` (barcode'la instance ara) |
 
 ---
 

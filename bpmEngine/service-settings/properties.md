@@ -5,7 +5,7 @@
 >
 > **İlişki:** Bu alanlar `process-step-action.md` §2'deki **`changeList`** ile güncellenir; **zorunluluk / görünürlük /
 > düzenlenebilirlik** alanın kendisinde değil, **görüntüleme profilinde** tutulur (→ `view-profile.md`); alanlar
-> `process-step.md`'deki **Form Creator / Form Silme / Değer Atama** adımlarıyla yönetilir. **Form List** (§3.13) bir
+> `process-step.md`'deki **Instance Creator / Instance Deleter / Değer Atama** adımlarıyla yönetilir. **Form List** (§3.13) bir
 > alt-servis alanıdır.
 
 ---
@@ -100,50 +100,50 @@ Listedeki her eleman bir **PropertyItem**'dir:
 
 ## 3. Alan Kataloğu (form alan tipleri)
 
-### 3.1 — Textbox
+### 3.1 — `textbox` (Textbox)
 Yazı yazılabilen alan. `minLine`/`maxLine` ile **tek satır** ya da **çok satırlı** metin girişi yapılır (ayrı bir
 çok-satır alanı yoktur).
 **Ayarlar:** `minLine` / `maxLine` (satır sayısı — 1 = tek satır, >1 = çok satır) · `charMaxLength` (maks. karakter) ·
 `showCharCount` (sayaç) · `keyboardType` (klavye) · **maske** · `hint` · `defaultValue`.
 
-### 3.2 — Numeric Textbox
+### 3.2 — `numericTextbox` (Numeric Textbox)
 Sadece sayı girilen alan.
 **Ayarlar:** `maxDecimalDigits` (ondalık basamak sayısı — maks.) · `enableNegative` (negatif) ·
 `enableGroupSeperator` (binlik ayraç) · `integerActive` (tam sayı) · `defaultValue`.
 
-### 3.3 — Combobox
+### 3.3 — `combobox` (Combobox)
 Listeden seçim yapmak için olan alan.
 **Ayarlar (veri kaynağı → §2.4):** `propertyItems` (statik öğeler) · `dataSource`/`dataSourceId`/`dataSourceValue`
 (dinamik) · `isMultiSelect` (çoklu) · `manuelEntry` (serbest giriş) · `lazyLoading` · `headerText` (seçim pop-up'ının başlığı).
 > Combobox yalnız **liste seçimi** yapar; alt-servis bağlamaz (alt-servis için → §3.13 Form List).
 
-### 3.4 — Datepicker
+### 3.4 — `datepicker` (Datepicker)
 Tarih seçim alanı (tarih+saat opsiyonu).
 **Ayarlar:** `minimumDate` · `maximumDate` · `setAsToday` (bugünü varsayılan yap) · `format` · `headerText` (takvim pop-up'ının başlığı).
 
-### 3.5 — Time Picker
+### 3.5 — `timePicker` (Time Picker)
 Saat seçim alanı.
 **Ayarlar:** `format` (saat formatı) · `defaultValue` · `headerText` (saat seçim pop-up'ının başlığı).
 
-### 3.6 — Checkbox
+### 3.6 — `checkbox` (Checkbox)
 Tikleme alanı.
 **Ayarlar:** `defaultValue` (bool — başlangıçta işaretli mi).
 
-### 3.7 — Radiobutton List
+### 3.7 — `radiobuttonList` (Radiobutton List)
 Birden fazla seçimden birini seçmek için olan alan.
 **Ayarlar (veri kaynağı → §2.4):** `propertyItems` (statik) veya `dataSource*` (dinamik) · varsayılan seçim.
 
-### 3.8 — File
+### 3.8 — `file` (File)
 Dosya seçimi yapılan alan.
 **Ayarlar:** `allowMultiple` (çoklu dosya) · `isCropActive` (fotoğraf kırpma) · `savePropertyToDb` · `lazyLoading`.
 > Flovo AI (`process-step.md` §3.3) dosyayı bu alandan veya form thumbnail'inden alır.
 
-### 3.9 — Text
+### 3.9 — `text` (Text statik)
 Başlık, açıklama vb. gibi **statik label** alanı (girdi değildir).
 **Ayarlar (bu alana özel tipografi/yerleşim):** `defaultValue` (gösterilecek statik metin) · `fontSize` (yazı boyutu) ·
 `iconSize` (ikon boyutu) · `isBold` (kalın) · `textAlignment` (hizalama) · `stiky` (yapışkan/sabit başlık).
 
-### 3.10 — Barcode
+### 3.10 — `barcode` (Barcode)
 Barcode görseli yer alan alan. **`value`** olarak bir **string** değer tutar ve `barcodeFormat`'a göre bu değeri form
 üzerinde **barkod görseline render eder**.
 **Yerleşim:** Barkod görselinin **altında bir text alanı**, text alanının **sağında kamerayı açan bir ikon** bulunur.
@@ -152,22 +152,22 @@ Barcode görseli yer alan alan. **`value`** olarak bir **string** değer tutar v
 - **kamera ile barkod tarayarak** `value` güncellenir (ikon kamerayı açar).
 - `value` her değiştiğinde barkod görseli **yeniden render edilir**.
 **Ayarlar:** `barcodeFormat` (hem render hem okuma) · `scannerActive` (kamera/tarayıcı ile okuma aktif).
-> İlgili: Custom ID Creator `createWithBarcode` (→ `process-step.md` §3.11); Barcode Tara aksiyonu (`process-step-action.md` §3.5).
+> İlgili: Custom ID Creator `createWithBarcode` (→ `process-step.md` §3.11); `scanBarcode` (Barcode Tara) aksiyonu (`process-step-action.md` §3.5).
 
-### 3.11 — Phone
+### 3.11 — `phone` (Phone)
 Telefon numarası girilen alan.
 **Ayarlar:** `format`/maske (ülke/numara) · `keyboardType` (telefon klavyesi).
 
-### 3.12 — Map Viewer
+### 3.12 — `mapViewer` (Map Viewer)
 Harita üzerinde **seçim ve görüntüleme** alanı.
 **Ayarlar:** konum **seçimi** + **görüntüleme**; koordinat/adres değeri.
 
-### 3.13 — Form List
+### 3.13 — `formList` (Form List)
 Farklı bir **servis (süreç)** formlarının bu alan altında forma **eklenerek veya yenisi oluşturularak**
 ilişkilendirilip görüntülendiği **alt-servis** alanı.
 **Ayarlar (alan-düzeyi, `Property`'de — ilişki → §2.5):** `childServiceId` (alt servis) · `serviceItemControlId` ·
-`selectableModeActive` (satır **seçim/tik modu** aktif mi) · `reOrder` (sıralama) ·
-`parameterTransfer`/`propertyTransferParameters` (ana↔alt parametre aktarımı) · `editOnlyOwnPosition` · `lazyLoading`.
+`reOrder` (sıralama) · `parameterTransfer`/`propertyTransferParameters` (ana↔alt parametre aktarımı) ·
+`editOnlyOwnPosition` · `lazyLoading`.
 
 **Profil bazında (görüntüleme profiline göre) ayarlar** → `view-profile.md` §5 / `../models/service-settings/view-profile-property.md`
 (override; `ProcessViewProfilePropertySetting`):
@@ -175,27 +175,29 @@ ilişkilendirilip görüntülendiği **alt-servis** alanı.
   (`childService` Süreç Başlangıcı'na bağlı aksiyonlardan seçilir; **boş = yeni oluşturma yok**). **`addNewEnabled`'in yerini alır.**
 - `addFromExistingStatusIds` (list\<Status id\>) — **var olandan ekle**'de hangi durumdaki formlar eklenebilir
   (**boş = pasif**). **`addFromExistingRecordsIsActive`'in yerini alır.**
-- _(öneri)_ `selectedEditable` (bool) — `selectableModeActive` açıksa, **tikler bu profilde düzenlenebilir** mi (örn. yönetici ✓ / başlatan ✗).
+- `selectableVisible` (bool) — satır **seçim/tik kutusu** bu profilde **görünür** mü (seçim modu profil bazında açılır/kapanır;
+  **boş/false = kapalı**). **Eski alan-düzeyi `selectableModeActive`'in yerini alır.**
+- _(öneri)_ `selectedEditable` (bool) — `selectableVisible` açıksa, **tikler bu profilde düzenlenebilir** mi (örn. yönetici ✓ / başlatan ✗).
 > Form List, **liste seçimi** yapan Combobox'tan farklıdır; **alt-servis kayıtları** bağlar/görüntüler.
 > **Açık konu:** alt-servisin **görüntülenecek alanları / seçilebilirliği** view-profile ile ayarlanacak
 > (→ `view-profile.md` §5). Süreç Adımı Tetikleme / Değer Atama bu alt-servisle çalışır.
 
-### 3.14 — Flow Info
+### 3.14 — `flowInfo` (Flow Info)
 **Akış (süreç) ile ilgili bilgileri** forma getirmek için kullanılır — oluşturulma tarihi (createdDate), oluşturan
 kullanıcı (creator user), durum (status) vb. **Salt-okunur** akış metadata'sı.
 **Ayarlar:** `flowInfoValue` (hangi akış bilgisi getirilecek). Girdi değildir. _(Kullanıcı bilgisi → §3.16 User Info.)_
 
-### 3.15 — Parent Property
+### 3.15 — `parentProperty` (Parent Property)
 **Düzenlenebilir bir alan değildir.** Bağlı olduğu **parent**'taki (üst süreç/form) hangi alanın forma getirilmesi
 isteniyorsa seçim yapılır; parent'ın **seçilmiş alanının kopyasını** bu alana getirir (salt-okunur yansıma).
 **Modelleme (ilişki → §2.5):** `parentPropertyId` (üst alan) · `refPropertyId` (referans alınan alan) · `relatedPropertyIds`.
 
-### 3.16 — User Info
+### 3.16 — `userInfo` (User Info)
 **Kullanıcı bilgilerini** forma getirmek için kullanılır — örn. **giriş yapan kullanıcının** adı, e-postası, departmanı,
 ünvanı, yöneticisi vb. **Salt-okunur** kullanıcı metadata'sı (Flow Info'nun **kullanıcı karşılığı**).
 **Ayarlar:** `userInfoValue` (hangi kullanıcı bilgisi getirilecek). Girdi değildir.
 
-### 3.17 — Group By Tax Receipt
+### 3.17 — `groupByTaxReceipt` (Group By Tax Receipt)
 Masraf/fiş kalemlerini **vergiye göre gruplandıran** özel alan (masraf süreçleri). Kullanıcı **satır satır** kalem ekler;
 her satırda **gider türü** (ExpenseType), **vergi oranı** (Tax) ve **tutar** seçilir/girilir; kalem ve vergi toplamları
 otomatik hesaplanır.
@@ -204,7 +206,7 @@ edilmeyen gider eki aktif).
 **Çalışma:** Değer, kalemlerin listesi (gider türü + vergi + tutar) olarak saklanır. Required ise **en az bir** dolu
 satır ve **her satırın tamamlanmış** olması zorunludur.
 
-### 3.18 — Key-Value List
+### 3.18 — `keyValueList` (Key-Value List)
 **Anahtar-değer** çiftleri listesini gösteren/giren alan. İki sütun (**Key** / **Value**) halinde, kullanıcı **artı**
 butonuyla satır ekler; **Value** bir **combobox** ile seçilir.
 **Ayarlar:** `addNewEnabled` (yeni satır ekleme) · `deleteEnabled` (satır silme) · `keyDescription` / `valueDescription`
@@ -212,7 +214,7 @@ butonuyla satır ekler; **Value** bir **combobox** ile seçilir.
 **Çalışma:** Her satır `key` (metin) + `value` (combobox seçimi) taşır. Required ise en az bir satır ve **tüm satırların
 dolu** (key boş değil, value seçili) olması zorunludur.
 
-### 3.19 — Image Area Selector
+### 3.19 — `imageAreaSelector` (Image Area Selector)
 Bir **görsel üzerinde nokta/bölge seçimi** yapılan özel alan (örn. ürün/araç fotoğrafında hasar noktası işaretleme).
 Görselin üstünde önceden tanımlı **işaretlenebilir noktalar** bulunur; kullanıcı bir noktaya dokunarak **seçer/kaldırır**.
 **Ayarlar:** `imageUrl` (arka plan görseli) · `aspectRatio` (en-boy oranı: 1:1 · 4:3 · 16:9 · 2:1 · 2:3) · `dataSource`
@@ -229,7 +231,7 @@ olarak `value`'ye yazılır. Required ise en az bir nokta seçili olmalıdır.
 
 > **Çözülenler (yerel karar log'u):**
 - [x] **Form List ayarlarının profil bazında değişmesi** — **KARAR (B2):** profil-bazlı override `ProcessViewProfilePropertySetting {key,value}`
-  (→ `../models/service-settings/view-profile-property.md`). Form List: `addNewEnabled`→**`activeStartActions`**, `addFromExistingRecordsIsActive`→**`addFromExistingStatusIds`** (profil); `selectedEnable`→**`selectableModeActive`** (alan-düzeyi, `Property`).
+  (→ `../models/service-settings/view-profile-property.md`). Form List: `addNewEnabled`→**`activeStartActions`**, `addFromExistingRecordsIsActive`→**`addFromExistingStatusIds`** (profil); `selectedEnable`→**`selectableVisible`** (profil-bazlı; eski alan-düzeyi `selectableModeActive` **kaldırıldı**).
 
 ---
 

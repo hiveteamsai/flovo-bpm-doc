@@ -78,26 +78,29 @@ Bir aksiyon tetiklendiğinde taşıdığı veri modeli **3 alandan** oluşur. **
 ## 3. `actionType` — Aksiyon Türleri (kataloğu)
 `actionType` = aksiyonun **türü / tetiklenme-davranış biçimi**.
 
-### 3.1 — Manuel
+### 3.1 — `manual` (Manuel)
 Kullanıcı frontend'de **elle** tetikler (ek form/pop-up yok). İnsan-tetiklemeli adımlarda kullanılır.
 
-### 3.2 — withForm
-Aksiyon alınırken bir **form / pop-up** gösterir; kullanıcı bunu doldurarak aksiyonu tamamlar (neden/ek bilgi girişi).
-> _(Açık: gösterilen form serbest pop-up mı, formun bir görüntüleme profili mi? → §7)_
+### 3.2 — `eventForm`
+Aksiyon alınırken bir **pop-up form** gösterir; kullanıcı doldurarak aksiyonu tamamlar (neden/ek bilgi girişi).
+- Aksiyon tanımlanırken **`formType = eventForm`** olan servislerin **görüntüleme profilleri** listelenir; seçili profildeki
+  **alanlar (property) pop-up** olarak çıkar, **iş kuralları (`BusinessRule`)** ile alanlara özellik kazandırılabilir.
+- Pop-up'ta girilen değerler **aksiyon parametresi (`parameters`)** ile taşınır; bu yüzden eventForm için **`Instance`
+  oluşturulmaz / akış gerekmez** (→ `../models/service-settings/service.md` `formType = eventForm`).
 
-### 3.3 — Fotoğraf Çek
+### 3.3 — `takePhoto` (Fotoğraf Çek)
 **Kamerayı açar**; çekilen fotoğrafı bir **file property**'sine yazar/forma ekler (insan-tetiklemeli). İlgili alan → `properties.md` §3.8.
 > _(Detaylandırılacak: hedef file property, kırpma.)_
 
-### 3.4 — Dosya Seç
+### 3.4 — `selectFile` (Dosya Seç)
 **Dosya seçiciyi açar**; seçilen dosyayı bir **file property**'sine ekler. İlgili alan → `properties.md` §3.8.
 > _(Detaylandırılacak: çoklu dosya, hedef property.)_
 
-### 3.5 — Barcode Tara
+### 3.5 — `scanBarcode` (Barcode Tara)
 **Barkod okuyucuyu açar**; okunan değeri bir **property**'ye yazar (manuel giriş opsiyonludur). İlgili alan → `properties.md` §3.10.
 > _(Detaylandırılacak: hedef property, barkod formatı.)_
 
-### 3.6 — Webhook
+### 3.6 — `webhook` (Webhook)
 **Uygulama dışından bir HTTP request ile tetiklenebilen** aksiyon türü. Frontend'de elle tetiklenmez; örn. **müşteri
 sunucusundaki custom code**, **Flovo Customer API** ile bu Webhook aksiyonunu (**`parameters`** ile) tetikler ve süreci
 ilerletir — async HTTP Request'in (→ `process-step.md` §3.2) **geri-dönüş kolu** olarak yaygın kullanılır.
@@ -109,11 +112,11 @@ ilerletir — async HTTP Request'in (→ `process-step.md` §3.2) **geri-dönü�
 > - **Bağımsız bir alt süreci tetiklemek:** Aksiyon değil, **Alt Süreç Başlangıcı** adımı (`process-step.md` §3.20) hedeflenir;
 >   oradaki webhook o adıma bağlı **`default`** aksiyonuna dönüşür (aksiyonun bağlanacağı bir adım olmama sorunu böyle çözülür).
 >
-> Üç durumda da webhook **bir süreç adımına** bağlıdır → `ProcessStepExecution.processStepId` sorunsuz atılır. Örn.
+> Üç durumda da webhook **bir süreç adımına** bağlıdır → `ProcessStepInstance.processStepId` sorunsuz atılır. Örn.
 > `../sampleProcess/createPdfAsync` (bağımsız alt süreç), `../sampleProcess/integration`. İlgili: **`../flovo-customer-api.md`**.
 > _(Detaylandırılacak: webhook URL/secret, payload → `parameters`/`changeList` eşlemesi, güvenlik, idempotency.)_
 
-### 3.7 — Autoaction
+### 3.7 — `autoAction` (Autoaction)
 **Kullanıcı eylemi olmadan otomatik** tetiklenen aksiyon (örn. adıma gelince / koşul sağlanınca). Otomatik adımların
 "kendiliğinden ilerleme"sini aksiyon düzeyinde ifade eder.
 > _(Detaylandırılacak: tetikleme koşulu, `default` ile ilişkisi.)_
@@ -146,7 +149,7 @@ varlıktır (aksiyon, durum) ve **ayrı dokümanda** tanımlanır → **`../orga
 
 ```
 ### <actionType Adı>
-- **actionType:** (Manuel / withForm / Fotoğraf Çek / ...)
+- **actionType:** (`manual` / `eventForm` / `takePhoto` / ...)
 - **Tetiklenme:** (manuel / otomatik / dış çağrı)
 - **Hangi adımlarda kullanılır:**
 - **Veri aktarımı:** (parameters / changeList / action — hangileri dolar)

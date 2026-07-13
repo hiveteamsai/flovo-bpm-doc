@@ -13,6 +13,10 @@ görüneceğini belirler: hangi alanlar **görünür**, hangileri **düzenlenebi
 **sırada**. Böylece tek form, farklı adımlarda farklı şekillerde sunulur (örn. talep eden için düzenlenebilir,
 onaylayan için salt-okunur).
 
+> **`eventForm` servislerinde:** `formType = eventForm` olan servislerin görüntüleme profilleri, bir **`eventForm` aksiyonu**
+> tanımlanırken listelenir; aksiyon alınırken seçili profildeki alanlar **pop-up** olarak çıkar (form/akış/`Instance` olmadan;
+> sonuç `parameters` ile taşınır). → `process-step-action.md` §3.2 · `../models/service-settings/service.md`.
+
 ---
 
 ## 1. Profil Veri Modeli (`ProcessViewProfileDto`)
@@ -60,7 +64,7 @@ yönetim ekranı olacak).
    - `enabled: false` → alan salt-okunur
    - `required: true` → alan zorunlu
    - alanlar `order` değerine göre sıralanır
-5. Çalışma zamanında profil, iş kuralı **`ChangeViewProfile`** ile değiştirilebilir (→ `work-rule.md` §4).
+5. Çalışma zamanında profil, iş kuralı **`ChangeViewProfile`** ile değiştirilebilir (→ `business-rule.md` §4).
 
 ---
 
@@ -74,8 +78,8 @@ yönetim ekranı olacak).
       **`ProcessViewProfilePropertySetting {viewProfilePropertyId, key, value}`** ile tutulur (`propertyType`'a göre
       **dictionary**); `Property` varsayılanını profil düzeyinde ezer. Genel `visible/enabled/required/order` birinci
       sınıf kalır. Key kataloğu → `../models/service-settings/view-profile-property.md` (Form List: `activeStartActions`,
-      `addFromExistingStatusIds`; öneri `selectedEditable`). `selectableModeActive` (tik modu) **alan-düzeyi** `Property`
-      ayarıdır. _Örn._ *süreç başlatan* yeni form ekler
+      `addFromExistingStatusIds`, `selectableVisible`; öneri `selectedEditable`). Satır **seçim/tik** görünürlüğü
+      (`selectableVisible`) artık **profil bazında**dır; eski alan-düzeyi `selectableModeActive` **kaldırıldı**. _Örn._ *süreç başlatan* yeni form ekler
       ama *yönetici* ekleyemez; *yönetici* tik değiştirir, *başlatan* değiştiremez. **Kalan:** `reOrder`/`editOnlyOwnPosition`
       da profil-bazlı mı? (→ `../todo.md`)
 - [x] Profiller **servis-bazlı** tanımlanır (bir servise ait — `serviceId`).

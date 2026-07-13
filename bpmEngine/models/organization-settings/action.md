@@ -14,16 +14,22 @@
 | `definition` | string | — | Aksiyon adı/etiketi (çeviri: `code` → Translation). |
 | `icon` | string | — | İkon. |
 | `styleId` | int | FK → Style.id | Renk/görünüm (bg + font). |
-| `actionType` | enum | — | Aksiyonun **türü** (aşağıda). |
+| `actionType` | enum | — | Aksiyonun **türü** (aşağıda) — [`../enums/action-type.md`](../enums/action-type.md). |
 | `defaultAction` | bool | — | Varsayılan aksiyon mu (↔ `default` kodu; birleşim açık → `../../todo.md`). |
 | `validation` | bool | — | Form validasyonu gerekli mi. |
 | `stayOnPage` | bool | — | Aksiyon sonrası sayfada kal. |
 | `showHistory` | bool | — | Süreç geçmişini göster. |
-| `actionDisplayType` | enum | — | Görünürlük: `invisible` / `everywhere` / `onlyFormDetail` / `onlyFastApprove`. |
+| `actionDisplayType` | enum | — | Görünürlük — [`../enums/action-display-type.md`](../enums/action-display-type.md): `invisible` / `everywhere` / `onlyFormDetail` / `onlyFastApprove`. |
 
-### `actionType` değerleri
-`Manuel` · `withForm` · `Fotoğraf Çek` · `Dosya Seç` · `Barcode Tara` · `Webhook` · `Autoaction`
-_(katalog → `../../service-settings/process-step-action.md` §3.)_
+### `actionType` değerleri (bu modeldeki rol)
+Enum tanımı → [`../enums/action-type.md`](../enums/action-type.md). Bu modelde aksiyonun tetiklenme davranışını belirler:
+- `manual` (Manuel) — kullanıcının elle bastığı standart aksiyon.
+- `eventForm` — aksiyon anında `formType=eventForm` servisin profili pop-up açılır; sonuç `parameters` ile döner.
+- `takePhoto` (Fotoğraf Çek) / `selectFile` (Dosya Seç) / `scanBarcode` (Barcode Tara) — aksiyon cihaz eylemini (kamera/dosya/tarayıcı) tetikler.
+- `webhook` (Webhook) — aksiyon dış uç noktaya HTTP çağrısı yapar.
+- `autoAction` (Autoaction) — koşul sağlanınca kullanıcı etkileşimi olmadan otomatik çalışır.
+
+_(davranış kataloğu → `../../service-settings/process-step-action.md` §3.)_
 
 ## Benzersizlik
 > `(organizationId, code)` **benzersiz** — aynı organizasyonda aynı `code`'lu iki aksiyon şablonu olamaz.

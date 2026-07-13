@@ -22,10 +22,10 @@ Bu özellikler servisten bağımsızdır; bir kez tanımlanır, tüm servislerde
 Her servisin (formun) kendine ait ayarları.
 | Doküman | İçerik |
 |---|---|
-| [`process-step.md`](./service-settings/process-step.md) | **Süreç adımları** — adım tipleri katalogu (19 adım) + ortak yapı. |
+| [`process-step.md`](./service-settings/process-step.md) | **Süreç adımları** — adım tipleri katalogu (20 adım) + ortak yapı. |
 | [`process-step-action.md`](./service-settings/process-step-action.md) | **Süreç adımı aksiyonu** — aksiyonun adıma bağlanması (binding), veri aktarımı (`parameters`/`changeList`/`action`), actionType kataloğu. |
 | [`properties.md`](./service-settings/properties.md) | **Form alanları (property)** — alan tipleri (19) + ortak çekirdek. |
-| [`work-rule.md`](./service-settings/work-rule.md) | **İş kuralları** — frontend realtime form davranışı (koşul→aksiyon). |
+| [`business-rule.md`](./service-settings/business-rule.md) | **İş kuralları** — frontend realtime form davranışı (koşul→aksiyon). |
 | [`view-profile.md`](./service-settings/view-profile.md) | **Görüntüleme profilleri** — formun adım-bazlı görünümü (görünür/düzenlenebilir/zorunlu). |
 
 ### Kök (motor & referans)

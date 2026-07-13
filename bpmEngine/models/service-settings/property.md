@@ -16,7 +16,7 @@
 | `serviceId` | int | FK → Service | Bağlı servis. |
 | `code` | string | benzersiz (binding key) | Alanın veriye bağlandığı anahtar; çeviri eşleşmesi için de kullanılır. |
 | `definition` | string | — | Alan tanımı / kullanıcıya görünen etiket (çeviri: `code` → Translation). |
-| `controlTypeId` | int | — | Kontrol tipi (§3 tipe-özel alanları belirler). |
+| `controlTypeId` | int | — | Kontrol tipi (§2 tipe-özel alanları belirler) — [`../enums/control-type.md`](../enums/control-type.md). |
 
 ### 1.2 Görünüm & yardım
 | Alan | Tip | Açıklama / amaç |
@@ -61,28 +61,29 @@
 
 ## 2. Tipe-özel alanlar (`controlTypeId`'ye göre — özet)
 > Tam açıklama → `../../service-settings/properties.md` §3.
+> **Enum'lar:** kontrol tipi → [`../enums/control-type.md`](../enums/control-type.md) · `keyboardType` (Textbox/Phone) → [`../enums/keyboard-type.md`](../enums/keyboard-type.md) · `barcodeFormat` (Barcode) → [`../enums/barcode-format.md`](../enums/barcode-format.md).
 
 | Kontrol tipi | Alanlar |
 |---|---|
-| Textbox | `minLine` · `maxLine` · `charMaxLength` · `showCharCount` · `keyboardType` · maske |
-| Numeric Textbox | `maxDecimalDigits` · `enableNegative` · `enableGroupSeperator` · `integerActive` |
-| Combobox | `propertyItems`/`dataSource*` · `isMultiSelect` · `manuelEntry` · `lazyLoading` · `headerText` |
-| Datepicker | `minimumDate` · `maximumDate` · `setAsToday` · `format` · `headerText` |
-| Time Picker | `format` · `defaultValue` · `headerText` |
-| Checkbox | `defaultValue` (bool) |
-| Radiobutton List | `propertyItems`/`dataSource*` · varsayılan seçim |
-| File | `allowMultiple` · `isCropActive` · `savePropertyToDb` · `lazyLoading` |
-| Text (statik) | `defaultValue` · `fontSize` · `iconSize` · `isBold` · `textAlignment` · `stiky` |
-| Barcode | `barcodeFormat` · `scannerActive` (`value` = string) |
-| Phone | `format`/maske · `keyboardType` |
-| Map Viewer | konum seçimi/görüntüleme; koordinat/adres |
-| Form List | `childServiceId` · `serviceItemControlId` · `selectableModeActive` · `reOrder` · `parameterTransfer`/`propertyTransferParameters` · `editOnlyOwnPosition` · `lazyLoading` · **profil-bazlı ayarlar → `view-profile-property.md`:** `activeStartActions`, `addFromExistingStatusIds` |
-| Flow Info | `flowInfoValue` (salt-okunur akış metadata) |
-| Parent Property | `parentPropertyId` · `refPropertyId` · `relatedPropertyIds` (salt-okunur) |
-| User Info | `userInfoValue` (salt-okunur kullanıcı metadata) |
-| Group By Tax Receipt | `disableTaxAttachmentView` · `isActiveKkegAttachment` |
-| Key-Value List | `addNewEnabled` · `deleteEnabled` · `keyDescription` · `valueDescription` · `comboBoxItems` · `keyValueItems` |
-| Image Area Selector | `imageUrl` · `aspectRatio` · `dataSource` (nokta: `code`·`x`·`y`·`isSelected`) |
+| `textbox` | `minLine` · `maxLine` · `charMaxLength` · `showCharCount` · `keyboardType` · maske |
+| `numericTextbox` | `maxDecimalDigits` · `enableNegative` · `enableGroupSeperator` · `integerActive` |
+| `combobox` | `propertyItems`/`dataSource*` · `isMultiSelect` · `manuelEntry` · `lazyLoading` · `headerText` |
+| `datepicker` | `minimumDate` · `maximumDate` · `setAsToday` · `format` · `headerText` |
+| `timePicker` | `format` · `defaultValue` · `headerText` |
+| `checkbox` | `defaultValue` (bool) |
+| `radiobuttonList` | `propertyItems`/`dataSource*` · varsayılan seçim |
+| `file` | `allowMultiple` · `isCropActive` · `savePropertyToDb` · `lazyLoading` |
+| `text` (statik) | `defaultValue` · `fontSize` · `iconSize` · `isBold` · `textAlignment` · `stiky` |
+| `barcode` | `barcodeFormat` · `scannerActive` (`value` = string) |
+| `phone` | `format`/maske · `keyboardType` |
+| `mapViewer` | konum seçimi/görüntüleme; koordinat/adres |
+| `formList` | `childServiceId` · `serviceItemControlId` · `reOrder` · `parameterTransfer`/`propertyTransferParameters` · `editOnlyOwnPosition` · `lazyLoading` · **profil-bazlı ayarlar → `view-profile-property.md`:** `activeStartActions`, `addFromExistingStatusIds`, `selectableVisible`, `selectedEditable` |
+| `flowInfo` | `flowInfoValue` (salt-okunur akış metadata) |
+| `parentProperty` | `parentPropertyId` · `refPropertyId` · `relatedPropertyIds` (salt-okunur) |
+| `userInfo` | `userInfoValue` (salt-okunur kullanıcı metadata) |
+| `groupByTaxReceipt` | `disableTaxAttachmentView` · `isActiveKkegAttachment` |
+| `keyValueList` | `addNewEnabled` · `deleteEnabled` · `keyDescription` · `valueDescription` · `comboBoxItems` · `keyValueItems` |
+| `imageAreaSelector` | `imageUrl` · `aspectRatio` · `dataSource` (nokta: `code`·`x`·`y`·`isSelected`) |
 
 ## İlişkiler
 - **N – 1** → `Service` (`serviceId`).

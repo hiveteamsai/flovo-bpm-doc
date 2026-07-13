@@ -17,7 +17,7 @@
 | 2 | **Adımlar arası veri** | Örtük/server-driven | **Explicit `parameters` · `changeList` · `action`** modeli |
 | 3 | **İş kuralı katmanı** | Motorla iç içe | **Frontend realtime katman**; motoru doğrudan etkilemez |
 | 4 | **Renk/stil** | Statik Bootstrap (`actionType`) | **Dinamik Style** varlığı (ayrı yönetim) |
-| 5 | **Aksiyon türleri** | İş-bazlı custom (`expform-*`, `new-instance*`...) | **Sade genel türler** (Manuel/withForm/Fotoğraf Çek/...) |
+| 5 | **Aksiyon türleri** | İş-bazlı custom (`expform-*`, `new-instance*`...) | **Sade genel türler** (`manual`/`eventForm`/`takePhoto`/...) |
 | 6 | **Aksiyon tanımı** | Tek DTO | **ActionDto = şablon** + adıma kopyalanan binding |
 | 7 | **Adlandırma** | "field" | **"property"** (`...FieldId → ...PropertyId`) |
 | 8 | **Raporlar** | View-profile içinde | **Ayrıldı** (ayrı özellik) |
@@ -31,7 +31,7 @@
 | 16 | **Organizasyon ayarları (yapısal)** | "Account Settings" DTO'ları (`accountId` string) | **13 DB modeli** (Company/User/Department/Profession…) — `organizationId` **int**; **Title→Profession**; typed/combobox ek nitelik |
 | 17 | **Yetkilendirme** | Kullanıcı bazında **sayısal `authorizationLevel`** (dinamik değil) | **Org-bazlı**: `adminUserIds` + grup-bazlı yetkiler (kullanıcı yerine geçme · org/servis ayarları erişimi · tüm raporlar) |
 | 18 | **Master-veri yaşam döngüsü** | `status` (bool) | **`active` + `deleted`** (soft-delete); `(organizationId, code)` **benzersiz** |
-| 19 | **İş akışı / çalıştırma (runtime)** | `ServiceInstances` · `ServiceInstanceRequests` (+ dağınık alanlar) | **`workFlows/` 6 model**: `WorkFlow` · `ProcessStepExecution` · `Form` · `FormAwaitingUser` · `UserGroupApprovedUser` · `RelatedForm` |
+| 19 | **İş akışı / çalıştırma (runtime)** | `ServiceInstances` · `ServiceInstanceRequests` (+ dağınık alanlar) | **`processInstances/` 6 model**: `ProcessInstance` · `ProcessStepInstance` · `Instance` · `InstanceAwaitingUser` · `UserGroupApprovedUser` · `RelatedInstance` |
 
 ---
 
@@ -58,7 +58,7 @@ Mevcut **15 adım tipi** (biri, `atama`, enum'da tanımlı ama **kullanılmayan*
 çıkarılan: **Adım İptali** · **Eba Entegre** · kullanılmayan **`atama`**).
 
 **➕ Eklenen (mevcutta yok)**
-- **Flovo AI** · **Switch** · **Processing** · **Form Creator** · **Form Silme** · **Form Yönlendirme** · **Süreç Adımı Tetikleme** ·
+- **Flovo AI** · **Switch** · **Processing** · **Instance Creator** · **Instance Deleter** · **Form Yönlendirme** · **Süreç Adımı Tetikleme** ·
   **Alt Süreç Başlangıcı** (bağımsız alt sürecin **giriş düğümü**; webhook **veya** Süreç Adımı Tetikleme ile tetiklenir → §11 not)
 
 **➖ Çıkarılan**
@@ -84,15 +84,15 @@ Mevcut **15 adım tipi** (biri, `atama`, enum'da tanımlı ama **kullanılmayan*
 ## 3. Aksiyonlar (`../../organization-settings/action.md` + `../../service-settings/process-step-action.md`)
 **➕ Eklendi**
 - **ActionDto = aksiyon şablonu** (ayrı doküman); adıma eklenince `code`/`definition`/`icon`/`styleId`/`actionType` **bir kez kopyalanır** (canlı bağ/FK yok — `actionId` tutulmaz; iki taraf bağımsız).
-- **Sade actionType kataloğu:** **Manuel · withForm · Fotoğraf Çek · Dosya Seç · Barcode Tara · Webhook · Autoaction**.
-- **withForm** (reasonRequired'ın yerini alır) · **Webhook** · **Autoaction** (yeni türler).
+- **Sade actionType kataloğu:** **`manual` · `eventForm` · `takePhoto` · `selectFile` · `scanBarcode` · `webhook` · `autoAction`**.
+- **`eventForm`** (reasonRequired'ın yerini alır) · **`webhook`** · **`autoAction`** (yeni türler).
 - **`parameters`/`changeList`/`action`** aktarım modeli.
 
 **➖ Çıkarıldı**
-- `reasonRequired` → **withForm** karşılıyor.
+- `reasonRequired` → **eventForm** karşılıyor.
 - **Custom per-job davranışları:** `fire-event`, `new-instance` / `-referenced` / `-other`, `take-photo`, `select-file`,
   `take-barcode`, `manuel-barcode-input`, `excel-export`, `expform-*`, `add-test-receipt` → genel türlere / başka mekanizmalara taşındı:
-  - `new-instance*` → **Form Creator** adımı + **Form List** `activeStartActions` (profil override)
+  - `new-instance*` → **Instance Creator** adımı + **Form List** `activeStartActions` (profil override)
   - `expform-add-exist-expense` → **Form List** `addFromExistingStatusIds` (profil override)
   - `excel-export` → **raporlama** (ayrı özellik)
   - `add-test-receipt` → kaldırıldı
@@ -101,7 +101,7 @@ Mevcut **15 adım tipi** (biri, `atama`, enum'da tanımlı ama **kullanılmayan*
 | Eski alan | Eski anlam | Yeni |
 |---|---|---|
 | `actionType` (ProcessActionDto) | renk/stil (success/danger…) | **`styleId`** (dinamik Style varlığına FK) |
-| `action` (ProcessStepActionDto) | davranış (fire-event…) | **`actionType`** (tür: Manuel/withForm…) |
+| `action` (ProcessStepActionDto) | davranış (fire-event…) | **`actionType`** (tür: `manual`/`eventForm`…) |
 
 **↔ Korundu (binding'de):** **`targetProcessStepId`** (hedef adım), `changeStatusId`, `authorizationLevel`, `actionDisplayAuthorizedUserGroupId`, `showInHistory`, `environmentRestriction`.
 
@@ -128,31 +128,31 @@ Mevcut **30 ControlType** → yeni **19 alan** (16 founder + **3 mevcuttan korun
 - `GroupByTaxReceiptController` · `KeyValueListControl` · `ImageAreaSelector` (§3.17–§3.19) — davranış+ayarları kaynaktan çıkarıldı.
 
 **✏️ Yeniden adlandırılan**
-- **ModalList → Form List** (alt-servis alanı; **Combobox değil**).
+- **ModalList → `formList`** (Form List; alt-servis alanı; **`combobox` değil**).
 - **`onAfterChange` → `saveAndRefreshOnAfterChange`** (anlam netleşti: değer değişince kaydet+formu yenile).
 - **`maximumNumberDecimalDigits` → `maxDecimalDigits`** (Numeric; `precition` ile birleşik).
 
 **🔗 Birleştirilen (alanın opsiyonu olarak)**
-- `MaskedEntry` → **Textbox** (maske) · **`Entry` + `Editor` → Textbox** (`minLine`/`maxLine`; ayrı çok-satır alanı yok) ·
-  `NumericUpDown` → **Numeric Textbox** · `MultiSelect` → **Combobox** · `DateTimePicker` → **Datepicker** ·
-  `Photo` / `ImageList` → **File** · `DataGrid` görünümü → (kaldırıldı).
+- `MaskedEntry` → **`textbox`** (maske) · **`Entry` + `Editor` → `textbox`** (`minLine`/`maxLine`; ayrı çok-satır alanı yok) ·
+  `NumericUpDown` → **`numericTextbox`** · `MultiSelect` → **`combobox`** · `DateTimePicker` → **`datepicker`** ·
+  `Photo` / `ImageList` → **`file`** · `DataGrid` görünümü → (kaldırıldı).
 
 **🔧 Görünüm alanlarının kapsamı daraltıldı**
-- `headerText` — artık **her alanda değil**; yalnız **pop-up açan alanlarda** (Combobox/Datepicker/Time Picker) pop-up başlığı.
-- `fontSize`·`iconSize`·`isBold`·`textAlignment`·`stiky` — çekirdekten çıkıp **Text (statik başlık)** alanına özel oldu.
+- `headerText` — artık **her alanda değil**; yalnız **pop-up açan alanlarda** (`combobox`/`datepicker`/`timePicker`) pop-up başlığı.
+- `fontSize`·`iconSize`·`isBold`·`textAlignment`·`stiky` — çekirdekten çıkıp **`text` (statik başlık)** alanına özel oldu.
 
 **🔀 Form List ayarları → görüntüleme profiline (yeni)**
 - `addNewEnabled` → **`activeStartActions`** (list; `childService` başlangıç aksiyonlarından seçim; **boş=oluşturma yok**) ·
   `addFromExistingRecordsIsActive` → **`addFromExistingStatusIds`** (list; hangi durumdaki formlar) — ikisi de **profil-bazlı**
   (`ProcessViewProfilePropertySetting`).
-- `selectedEnable` → **`selectableModeActive`** (Form List **alan-düzeyi**; tik modu) · öneri `selectedEditable` (profil-bazlı tik düzenlenebilirliği).
+- `selectedEnable` → **`selectableVisible`** (Form List **profil-bazlı**; tik/seçim görünürlüğü) · öneri `selectedEditable` (profil-bazlı tik düzenlenebilirliği). _(Eski alan-düzeyi `selectableModeActive` kaldırıldı.)_
 
 ---
 
 ## 5. Görüntüleme Profilleri (`../../service-settings/view-profile.md`)
 **➕ Eklendi**
 - **`ProcessViewProfilePropertySetting`** (key/value) — alanın **tipe-özel** görünüm/davranış ayarlarını **profil bazında**
-  override eder (`propertyType`'a göre dictionary). Örn. Form List: `activeStartActions`, `addFromExistingStatusIds`, `selectedEditable`.
+  override eder (`propertyType`'a göre dictionary). Örn. Form List: `activeStartActions`, `addFromExistingStatusIds`, `selectableVisible`, `selectedEditable`.
 - Profil ve profil-alan modellerine **DB anahtarları** netleştirildi (`id`, `serviceId`, `viewProfileId`, `propertyId`).
 
 **➖ Çıkarıldı**
@@ -165,7 +165,7 @@ Mevcut **30 ControlType** → yeni **19 alan** (16 founder + **3 mevcuttan korun
 
 ---
 
-## 6. İş Kuralları (`../../service-settings/work-rule.md`)
+## 6. İş Kuralları (`../../service-settings/business-rule.md`)
 **🔧 Konumlandırma:** İş kuralları = **frontend realtime katman** (motoru doğrudan etkilemez) — netleştirildi.
 
 **➖ Çıkarıldı:** `FromEba` (değer kaynağı) — Eba kaldırıldı.
@@ -257,33 +257,33 @@ Department/Profession → yönetici atama tipleri · CostCenter/CreditCard → m
 
 ---
 
-## 11. İş Akışı / Runtime Modelleri (`../../models/workFlows/`) — YENİ KATMAN
+## 11. İş Akışı / Runtime Modelleri (`../../models/processInstances/`) — YENİ KATMAN
 Motorun **çalışma-zamanı** kayıtları (ayarlardan üretilen instance/execution verisi). 6 model; **tam isim eşlemesi** →
 [`new-vs-current-names.md §15`](./new-vs-current-names.md).
 
 **✏️ Eski modelden yeniden adlandırılan**
-- `ServiceInstanceRequests` → **`ProcessStepExecution`** (adım çalıştırma kaydı): `RequestDate`→`executionDate` ·
-  `responsaDate`→`actionTriggerDate` · `InstanceId`→`formId` · `ProxyApproverUserId`→`atDelegateUserId`;
-  **çıkarılan** `Description`/`IsItSkipped`/`SentBack`/`IsItCanceled`/`UserId`; **eklenen** `workFlowId`/`atUserId`/`atApiKeyId`/`processStepActionParameter`.
-- `ServiceInstances` → **`Form`** (doldurulmuş form / süreç örneği): `UserId`→`creatorUserId` · `ProcessStatusId`→`statusId`;
-  **çıkarılan** `acountId`/`StateId`/`ParentInstanceId`/`isTest`/`ProcessStepId`; **eklenen** `createdDate`/`workFlowId`.
+- `ServiceInstanceRequests` → **`ProcessStepInstance`** (adım çalıştırma kaydı): `RequestDate`→`executionDate` ·
+  `responsaDate`→`actionTriggerDate` · `InstanceId`→`instanceId` · `ProxyApproverUserId`→`atDelegateUserId`;
+  **çıkarılan** `Description`/`IsItSkipped`/`SentBack`/`IsItCanceled`/`UserId`; **eklenen** `processInstanceId`/`atUserId`/`atApiKeyId`/`processStepActionParameter`.
+- `ServiceInstances` → **`Instance`** (doldurulmuş form / süreç örneği): `UserId`→`creatorUserId` · `ProcessStatusId`→`statusId`;
+  **çıkarılan** `acountId`/`StateId`/`ParentInstanceId`/`isTest`/`ProcessStepId`; **eklenen** `createdDate`/`processInstanceId`.
 
 **➕ Tamamen yeni (eski karşılığı yok)**
-- **`WorkFlow`** — bir servis sürecinin çalıştırma örneği (başlatan `createdByUserId` **veya** `createdByApiKeyId`;
-  **`parentWorkFlowId`** self-link ile alt süreç → ana süreç bağı).
-- **`FormAwaitingUser`** — form üzerinde **atanan/aksiyon alabilecek** kullanıcı-grup kümesi; maliyet için doğrudan tutulur
-  (aksiyon alabilecekleri `ProcessStepExecution` filtrelemeden bu tablodan tespit) ve adım geçişlerinde **sync** (eklenir/silinir).
+- **`ProcessInstance`** — bir servis sürecinin çalıştırma örneği (başlatan `createdByUserId` **veya** `createdByApiKeyId`;
+  **`parentProcessInstanceId`** self-link ile alt süreç → ana süreç bağı).
+- **`InstanceAwaitingUser`** — form üzerinde **atanan/aksiyon alabilecek** kullanıcı-grup kümesi; maliyet için doğrudan tutulur
+  (aksiyon alabilecekleri `ProcessStepInstance` filtrelemeden bu tablodan tespit) ve adım geçişlerinde **sync** (eklenir/silinir).
 - **`UserGroupApprovedUser`** — grup onayında onaylayan üye + zaman (yalnız `UserGroup.groupApprovalRequired=true`).
-- **`RelatedForm`** — formlar arası ilişki (property boyutuyla; `relatedPropertyId`, `relatedFormId`'nin formundaki alan).
+- **`RelatedInstance`** — formlar arası ilişki (property boyutuyla; `relatedPropertyId`, `relatedInstanceId`'nin formundaki alan).
 
 **🔧 İlgili yeni alan**
 - **`UserGroup.groupApprovalRequired`** (bool) — grup onayı gerekli mi (yeni).
 
 **✅ Çözülen açık konu:** Webhook bir **aksiyon** olduğundan bağımsız alt süreçte bağlanacağı adım yoktu
-(`ProcessStepExecution.processStepId` zorunlu). Çözüm: yeni **Alt Süreç Başlangıcı** süreç adımı (→
+(`ProcessStepInstance.processStepId` zorunlu). Çözüm: yeni **Alt Süreç Başlangıcı** süreç adımı (→
 `../../service-settings/process-step.md` §3.20) — bağımsız alt sürecin **giriş düğümü**; webhook **veya** Süreç Adımı Tetikleme
-ile tetiklenir, webhook aksiyonu bu adıma bağlı **`default`**'a dönüşür. Alt süreç ana süreçten **bağımsız, yeni bir `WorkFlow`**
-olarak çalışır; **`WorkFlow.parentWorkFlowId`** ile ana sürece bağlanır.
+ile tetiklenir, webhook aksiyonu bu adıma bağlı **`default`**'a dönüşür. Alt süreç ana süreçten **bağımsız, yeni bir `ProcessInstance`**
+olarak çalışır; **`ProcessInstance.parentProcessInstanceId`** ile ana sürece bağlanır.
 
 ---
 
@@ -292,8 +292,8 @@ olarak çalışır; **`WorkFlow.parentWorkFlowId`** ile ana sürece bağlanır.
 > (`eski > yeni` · `-- silinen` · `eklenen ++`).
 - **field → property** (her yerde): `...FieldId` → `...PropertyId`, `fieldId`→`propertyId`, `FieldValue`/`FormValue`→`PropertyValue`.
 - **Account → Organization**: `accountId`→`organizationId`, `accountUserGroup*`→`organizationUserGroup*`, `accountRestriction`→`organizationRestriction`.
-- **function → HTTP Request** · **ModalList → Form List** · **statusType → styleId** · **(aksiyon) actionType → styleId** + **(aksiyon) action → actionType** · **onAfterChange → saveAndRefreshOnAfterChange**.
-- **Çeviri:** `tr`/`en`/`de` kolonları → **`languageCode` + `definition`** (kayıt-başına-dil). **Form List:** `addNewEnabled`→`activeStartActions`, `addFromExistingRecordsIsActive`→`addFromExistingStatusIds`, `selectedEnable`→`selectableModeActive`.
+- **function → HTTP Request** · **ModalList → `formList`** · **statusType → styleId** · **(aksiyon) actionType → styleId** + **(aksiyon) action → actionType** · **onAfterChange → saveAndRefreshOnAfterChange**.
+- **Çeviri:** `tr`/`en`/`de` kolonları → **`languageCode` + `definition`** (kayıt-başına-dil). **Form List:** `addNewEnabled`→`activeStartActions`, `addFromExistingRecordsIsActive`→`addFromExistingStatusIds`, `selectedEnable`→`selectableVisible` (profil-bazlı).
 - **Organizasyon ayarları:** **Title → Profession** · `RelationalSetting → RelationalType` · `account*`→`organization*` · `accountId`(string)→`organizationId`(int) · `kod`/`tanim`→`code`/`definition`.
 - **Master-veri & yetki:** `status`(bool) → **`active`** (+ `deleted`) · `User.userName` → `email`/`phone` · `User.authorizationLevel` **kaldırıldı** (→ org-bazlı yetki).
 
@@ -312,17 +312,17 @@ olarak çalışır; **`WorkFlow.parentWorkFlowId`** ile ana sürece bağlanır.
 - **Kararlar netleşti:** Action→ProcessStepAction **bağımsız kopya** (FK yok); Form List ayarları **profil-bazlı override** (B2); Translation **kayıt-başına-dil**; kapsam kararı (havuz ↔ servis) çözüldü.
 - **Organizasyon altyapısı modellendi:** eski Account Settings (kullanıcı/departman/ünvan/şirket/takvim…) **13 DB modeline** dönüştürüldü (account→organization, **Title→Profession**, typed+combobox ek nitelik değerleri).
 - **Yetki modeli modernize edildi:** sabit **sayısal `authorizationLevel`** → **dinamik org-bazlı** (admin + kullanıcı grubu bazlı yetkiler); ayrıca master-verilerde `active`/`deleted` (soft-delete) ve `(organizationId, code)` benzersizlik standardı.
-- **Runtime/instance katmanı modellendi:** eski dağınık `ServiceInstances`/`ServiceInstanceRequests` → **`workFlows/` 6 model** (WorkFlow · ProcessStepExecution · Form · FormAwaitingUser · UserGroupApprovedUser · RelatedForm); aksiyon-alabilenler ayrı tablo (maliyet), grup onayı + formlar-arası ilişki netleşti;
-  bağımsız alt süreçler ayrı `WorkFlow` (**`parentWorkFlowId`** ile ana sürece bağlı).
+- **Runtime/instance katmanı modellendi:** eski dağınık `ServiceInstances`/`ServiceInstanceRequests` → **`processInstances/` 6 model** (ProcessInstance · ProcessStepInstance · Instance · InstanceAwaitingUser · UserGroupApprovedUser · RelatedInstance); aksiyon-alabilenler ayrı tablo (maliyet), grup onayı + formlar-arası ilişki netleşti;
+  bağımsız alt süreçler ayrı `ProcessInstance` (**`parentProcessInstanceId`** ile ana sürece bağlı).
 
 ### ⚠️ Başarısız / riskli / henüz eksik
 - **Form List alt-servis görünümü:** davranış ayarları artık **profil-bazlı override** (B2) ile yönetiliyor; ancak alt-servisin **görüntülenecek alanları / kart görünümü** (`subFieldsViewProfiles`/`cardViewProfile` karşılığı) hâlâ açık.
 - **`definition` = varsayılan dil kırılganlığı:** Bir organizasyon `defaultLang`'ini sonradan değiştirirse eski `definition`'lar yanlış dilde kalır; bu bir **veri-giriş kuralı** olarak garanti edilmeli (çeviri motorunun zayıf noktası).
 - **Motor iç mekaniği hâlâ yazılmadı:** `flovo-bpm-engine.md`'de yürütme durumu/kalıcılık, bekleme-noktası serileştirme, hata katmanları, döngü/join **placeholder**; mevcut projede de netti değildi — devralınan boşluk.
 - **`changeList` öğe yapısı belirsiz** (alan id + değer + tip?) — açık soru.
-- **İsim çakışması:** `actionType` (ActionDto tür) ↔ WorkRule `actionType` (etki tipi) — ayrı varlıklar ama karışma riski.
+- **İsim çakışması (çözüldü, v0.7):** `actionType` (ActionDto tür) ↔ BusinessRule etki tipi — karışmayı önlemek için BusinessRule tarafı **`businessRuleActionType`** olarak yeniden adlandırıldı.
 - **İki-katman tekrarı:** değer atama & karşılaştırma hem adımda hem iş kuralında var — sınır netleşmeli.
-- **`ProcessStep`/`WorkRule` denormalize `organizationId`:** asıl kapsayıcı `serviceId` iken kiracı için ayrıca `organizationId` tutulması — gözden geçirilecek.
+- **`ProcessStep`/`BusinessRule` denormalize `organizationId`:** asıl kapsayıcı `serviceId` iken kiracı için ayrıca `organizationId` tutulması — gözden geçirilecek.
 
 ---
 
@@ -333,4 +333,4 @@ olarak çalışır; **`WorkFlow.parentWorkFlowId`** ile ana sürece bağlanır.
 
 ---
 
-*Güncelleme: 2026-07-07 · Tasarım dokümanları ile `../current-flovo-bpm-engine/` karşılaştırılarak derlendi (Alt Süreç Başlangıcı adımı eklendi).*
+*Güncelleme: 2026-07-10 · Tasarım dokümanları ile `../current-flovo-bpm-engine/` karşılaştırılarak derlendi (Alt Süreç Başlangıcı adımı eklendi; v0.7 — runtime & iş-kuralı model adları güncellendi: WorkFlow→ProcessInstance · ProcessStepExecution→ProcessStepInstance · Form→Instance · RelatedForm→RelatedInstance · FormAwaitingUser→InstanceAwaitingUser · WorkRule→BusinessRule).*

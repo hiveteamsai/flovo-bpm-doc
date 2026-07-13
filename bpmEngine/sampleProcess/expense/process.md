@@ -39,9 +39,9 @@ tetiklediğinde, o aksiyonun türüne göre native bir araç açılır (kamera/d
 
 | Aksiyon (`code`) | actionType | Hedef adım | Taşıdığı veri |
 |---|---|---|---|
-| `takePhoto` — Fotoğraf Çek | Fotoğraf Çek | `createFormDoc` | `parameters: { thumbnailUrl }` |
-| `selectFile` — Dosya Seç | Dosya Seç | `createFormDoc` | `parameters: { thumbnailUrl }` |
-| `createPlain` — Belgesiz Form Oluştur | Manuel | `createFormPlain` | — (parametre taşımaz) |
+| `takePhoto` — Fotoğraf Çek | `takePhoto` | `createFormDoc` | `parameters: { thumbnailUrl }` |
+| `selectFile` — Dosya Seç | `selectFile` | `createFormDoc` | `parameters: { thumbnailUrl }` |
+| `createPlain` — Belgesiz Form Oluştur | `manual` | `createFormPlain` | — (parametre taşımaz) |
 
 - **`takePhoto` / `selectFile`:** Native kamera/dosya aracı açılır; seçilen görsel **yüklenir** ve erişim **url'i**
   alınır. Bu url, `parameters.thumbnailUrl` olarak `createFormDoc` adımına taşınır.
@@ -49,66 +49,66 @@ tetiklediğinde, o aksiyonun türüne göre native bir araç açılır (kamera/d
 
 ---
 
-### 2. Belgeli Form Oluştur (`createFormDoc`) — Form Creator
+### 2. Belgeli Form Oluştur (`createFormDoc`) — Instance Creator
 **Görev:** Masraf görselinden yeni bir masraf formu üretmek.
 **Bu adıma gelen parametre:** `parameters.thumbnailUrl` (seçilen masraf görselinin url'i).
-**Ayarlar ve çalışma:** Form Creator ayarında **init değer** olarak, gelen `thumbnailUrl` formun **thumbnail url'ine**
+**Ayarlar ve çalışma:** Instance Creator ayarında **init değer** olarak, gelen `thumbnailUrl` formun **thumbnail url'ine**
 eşlenir. Adım çalıştığında yeni bir **form id** ve boş masraf alanları üretilir; formun thumbnail'i bu görsel olur.
-**Adımın ürettiği parametre:** `formId` (yeni oluşturulan form).
+**Adımın ürettiği parametre:** `instanceId` (yeni oluşturulan form).
 
 **Aksiyonlar:**
-- **`default` (otomatik):** actionType **Autoaction**. Hedef adım `aiProcessing`. Taşıdığı veri:
-  `parameters: { formId, thumbnailUrl }`. → Sonraki adım form id ile çalışacağı için formId taşınır.
+- **`default` (otomatik):** actionType **`autoAction`**. Hedef adım `aiProcessing`. Taşıdığı veri:
+  `parameters: { instanceId, thumbnailUrl }`. → Sonraki adım form id ile çalışacağı için instanceId taşınır.
 
 ---
 
 ### 3. AI İşleniyor (`aiProcessing`) — Processing
 **Görev:** AI tarama sürerken kullanıcıya formu **"yükleniyor"** olarak göstermek; arka planda AI adımına ilerlemek.
-**Bu adıma gelen parametre:** `parameters: { formId, thumbnailUrl }`.
+**Bu adıma gelen parametre:** `parameters: { instanceId, thumbnailUrl }`.
 **Ayarlar ve çalışma:** **`showLoading = true`**. Süreç başlatan = aksiyonu tetikleyen kullanıcı. Adıma gelindiğinde
-**`formId` + showLoading**, aksiyonu tetikleyen frontend HTTP isteğine **response** olarak döner; kullanıcı formu
+**`instanceId` + showLoading**, aksiyonu tetikleyen frontend HTTP isteğine **response** olarak döner; kullanıcı formu
 **loading kartı** olarak görür (forma giremez). Aynı anda otomatik olarak AI adımına ilerler.
-**Adımın ürettiği parametre:** — (yeni parametre üretmez; `formId`'yi taşır).
+**Adımın ürettiği parametre:** — (yeni parametre üretmez; `instanceId`'yi taşır).
 
 **Aksiyonlar:**
-- **`default` (otomatik):** actionType **Autoaction**. Hedef adım `expenseAi`. Taşıdığı veri:
-  `parameters: { formId }`. → AI adımı, formId ile formun thumbnail'ine erişip dosyayı işler.
+- **`default` (otomatik):** actionType **`autoAction`**. Hedef adım `expenseAi`. Taşıdığı veri:
+  `parameters: { instanceId }`. → AI adımı, instanceId ile formun thumbnail'ine erişip dosyayı işler.
 
 ---
 
 ### 4. Masraf Tarama AI (`expenseAi`) — Flovo AI
 **Görev:** Masraf görselini AI ile tarayıp form alanlarını (tutar, tarih, satıcı, KDV...) çıkarmak.
-**Bu adıma gelen parametre:** `parameters: { formId }`.
-**Ayarlar ve çalışma:** AI türü = **Masraf**. Dosya kaynağı = **formun thumbnail url'i** (formId üzerinden). AI çalışır,
+**Bu adıma gelen parametre:** `parameters: { instanceId }`.
+**Ayarlar ve çalışma:** AI türü = **Masraf**. Dosya kaynağı = **formun thumbnail url'i** (instanceId üzerinden). AI çalışır,
 alan değerlerini üretir.
 **Adımın ürettiği parametre:**
 - Başarılı: `extractedFields` (alan→değer eşlemesi).
 - Hata: `errorMessage`.
 
 **Aksiyonlar:**
-- **`default` — başarı (Autoaction):** Hedef adım `notifyOk`. Taşıdığı veri:
-  `changeList: [ extractedFields → form alanları ]` **+** `parameters: { formId }`.
+- **`default` — başarı (`autoAction`):** Hedef adım `notifyOk`. Taşıdığı veri:
+  `changeList: [ extractedFields → form alanları ]` **+** `parameters: { instanceId }`.
   → `changeList`, bir sonraki adım (notifyOk) iş yapmadan **önce forma uygulanır** (alanlar AI değerleriyle güncellenir).
-- **`onFail` — hata (Autoaction):** Hedef adım `notifyErr`. Taşıdığı veri: `parameters: { formId, errorMessage }`.
+- **`onFail` — hata (`autoAction`):** Hedef adım `notifyErr`. Taşıdığı veri: `parameters: { instanceId, errorMessage }`.
 
 ---
 
 ### 5. Sonuç Bildirimi (`notifyOk`) — Bildirim
 **Görev:** AI'nin doldurduğu formu frontende **veri-itme bildirimi** ile göndererek loading kartını gerçek forma çevirmek.
-**Bu adıma gelen parametre:** `changeList` (forma uygulanır) + `parameters: { formId }`.
+**Bu adıma gelen parametre:** `changeList` (forma uygulanır) + `parameters: { instanceId }`.
 **Ayarlar ve çalışma:** Kanal **Toast** (veya Push), **mesaj yok** — yalnız **`parameters` modu**. Adıma girişte
-`changeList` forma uygulanır (alanlar güncellenir). Ardından `parameters: { formId, güncel alan değerleri }` frontende
-**bildirim** olarak gönderilir. Frontend `formId` ile **loading formu bulur**, normal görünüme AI değerleriyle günceller.
+`changeList` forma uygulanır (alanlar güncellenir). Ardından `parameters: { instanceId, güncel alan değerleri }` frontende
+**bildirim** olarak gönderilir. Frontend `instanceId` ile **loading formu bulur**, normal görünüme AI değerleriyle günceller.
 **Adımın ürettiği parametre:** — .
 
 **Aksiyonlar:**
-- **`default` (Autoaction):** Hedef adım `expenseDetail`. Taşıdığı veri: `parameters: { formId }`.
+- **`default` (`autoAction`):** Hedef adım `expenseDetail`. Taşıdığı veri: `parameters: { instanceId }`.
 
 ---
 
 ### 6. Masraf Detayı (`expenseDetail`) — Kullanıcı
 **Görev:** Masrafı, oluşturan kullanıcının önünde **aksiyon alınabilir** form olarak göstermek (insan görev noktası).
-**Bu adıma gelen parametre:** `parameters: { formId }`.
+**Bu adıma gelen parametre:** `parameters: { instanceId }`.
 **Ayarlar ve çalışma:** Süreç burada **durur ve bekler**; form "aksiyon alınabilir" olur. Kullanıcı formu görüntüler/
 düzenler, sonraki onay aksiyonlarını manuel alır (bu örnekte sonrası tanımlanmadı).
 **Adımın ürettiği parametre:** — (kullanıcı aksiyonuna bağlı).
@@ -118,33 +118,33 @@ düzenler, sonraki onay aksiyonlarını manuel alır (bu örnekte sonrası tanı
 
 ### 7. Hata Bildirimi (`notifyErr`) — Bildirim
 **Görev:** AI hatasını kullanıcıya **toast** ile bildirmek ve loading kartını kaldırmak.
-**Bu adıma gelen parametre:** `parameters: { formId, errorMessage }`.
-**Ayarlar ve çalışma:** Kanal **Toast**. **Mesaj = `errorMessage`** + **`parameters: { formId }`**. Kullanıcı hatayı toast
-olarak görür; frontend `formId` ile **loading formu kaldırır**.
+**Bu adıma gelen parametre:** `parameters: { instanceId, errorMessage }`.
+**Ayarlar ve çalışma:** Kanal **Toast**. **Mesaj = `errorMessage`** + **`parameters: { instanceId }`**. Kullanıcı hatayı toast
+olarak görür; frontend `instanceId` ile **loading formu kaldırır**.
 **Adımın ürettiği parametre:** — .
 
 **Aksiyonlar:**
-- **`default` (Autoaction):** Hedef adım `deleteForm`. Taşıdığı veri: `parameters: { formId }`.
+- **`default` (`autoAction`):** Hedef adım `deleteForm`. Taşıdığı veri: `parameters: { instanceId }`.
 
 ---
 
-### 8. Formu Sil (`deleteForm`) — Form Silme
+### 8. Formu Sil (`deleteForm`) — Instance Deleter
 **Görev:** AI başarısız olduğu için **yarım kalan formu** silmek (telafi).
-**Bu adıma gelen parametre:** `parameters: { formId }`.
-**Ayarlar ve çalışma:** `formId`'li form **`deleted`** durumuna çekilir. Bu, hata kolunun **son adımıdır** (süreç biter).
+**Bu adıma gelen parametre:** `parameters: { instanceId }`.
+**Ayarlar ve çalışma:** `instanceId`'li form **`deleted`** durumuna çekilir. Bu, hata kolunun **son adımıdır** (süreç biter).
 **Adımın ürettiği parametre:** — .
 **Aksiyonlar:** — (terminal).
 
 ---
 
-### 9. Belgesiz Form Oluştur (`createFormPlain`) — Form Creator
+### 9. Belgesiz Form Oluştur (`createFormPlain`) — Instance Creator
 **Görev:** Belge olmadan **boş bir masraf formu** üretmek.
 **Bu adıma gelen parametre:** — (yok).
 **Ayarlar ve çalışma:** Init değer/thumbnail yoktur; yeni **form id** ve boş alanlar üretilir.
-**Adımın ürettiği parametre:** `formId`.
+**Adımın ürettiği parametre:** `instanceId`.
 
 **Aksiyonlar:**
-- **`default` (Autoaction):** Hedef adım `expenseDetail`. Taşıdığı veri: `parameters: { formId }`.
+- **`default` (`autoAction`):** Hedef adım `expenseDetail`. Taşıdığı veri: `parameters: { instanceId }`.
   → Tetikleyen HTTP isteğine response olarak form bilgileri döner; frontendde form doğrudan görüntülenir.
 
 ---

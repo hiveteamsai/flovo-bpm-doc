@@ -1,4 +1,4 @@
-# Flovo — İş Kuralları (Work Rules) Tasarımı
+# Flovo — İş Kuralları (Business Rules) Tasarımı
 
 > **Durum:** 🟡 TASLAK — temel model tanımlı; detaylar sonra.
 > **Amaç:** Form üzerinde **gerçek zamanlı (realtime) frontend davranışlarını** koşul-aksiyon tabanlı tanımlamak
@@ -30,7 +30,7 @@ veri kaynağı doldurma, stil vb.
 
 ---
 
-## 2. Veri Modeli (`WorkRuleDto`)
+## 2. Veri Modeli (`BusinessRuleDto`)
 | Alan | Tip | Açıklama |
 |---|---|---|
 | `id` | int | Kural ID'si |
@@ -40,16 +40,16 @@ veri kaynağı doldurma, stil vb.
 | `definition` | string | Kural adı/tanımı |
 | `icon` | string | İkon |
 | `environmentRestriction` | string | Ortam kısıtlaması |
-| `actionType` | enum | Kural aksiyon tipi (§3) |
-| `workRuleRuntimeType` | enum | Çalışma zamanı: `always` / `firstOpening` / `whenChanging` |
-| `workRuleConditionType` | enum | Koşul birleştirme (VE/VEYA) |
-| `workRuleConditions` | List | Koşul listesi (recursive) (§4) |
+| `businessRuleActionType` | enum | Kural aksiyon tipi (§3) |
+| `businessRuleRuntimeType` | enum | Çalışma zamanı: `always` / `firstOpening` / `whenChanging` |
+| `businessRuleConditionType` | enum | Koşul birleştirme (`and`/`or`) |
+| `businessRuleConditions` | List | Koşul listesi (recursive) (§4) |
 | `activeViewProfiles` | List\<int\> | Sadece bu görüntüleme profillerinde çalış (→ `view-profile.md`) |
 | `shouldNotWorkInReadonlyMode` | bool | Salt-okunur modda çalışmasın |
 
 ---
 
-## 3. Aksiyon Tipleri (`actionType`)
+## 3. Aksiyon Tipleri (`businessRuleActionType`)
 İş kuralı tetiklendiğinde **frontend'de** ne yapacağını belirler.
 
 | Aksiyon | Ne yapar |
@@ -69,31 +69,31 @@ veri kaynağı doldurma, stil vb.
 
 ---
 
-## 4. Koşul Yapısı (`WorkRuleConditionDto`)
-Her koşul iki değerin bir **operatörle** karşılaştırılmasıdır; koşullar **iç içe** (recursive) gruplanabilir (VE/VEYA).
+## 4. Koşul Yapısı (`BusinessRuleConditionDto`)
+Her koşul iki değerin bir **operatörle** karşılaştırılmasıdır; koşullar **iç içe** (recursive) gruplanabilir (`and`/`or`).
 
 | Alan | Açıklama |
 |---|---|
-| `referenceValue` | Referans değer (sol taraf) — tip: `WorkRuleConditionCompareType` |
+| `referenceValue` | Referans değer (sol taraf) — tip: `BusinessRuleConditionCompareType` |
 | `valueToCompare` | Karşılaştırılacak değer (sağ taraf) |
-| `criterionType` | Operatör (=, !=, boş, boş değil, >, >=, <, <=, başlar, biter, içerir, içermez) |
+| `criterionType` | Operatör: `equals` · `notEquals` · `isEmpty` · `isNotEmpty` · `greaterThan` · `greaterThanOrEqual` · `lessThan` · `lessThanOrEqual` · `startsWith` · `endsWith` · `contains` · `notContains` (→ `../models/enums/criterion-type.md`) |
 | `isConditionList` | İç içe koşul grubu mu |
-| `workRuleConditionType` | Alt grup birleştirme (VE/VEYA) |
-| `workRuleConditions` | İç içe koşullar (recursive) |
+| `businessRuleConditionType` | Alt grup birleştirme (`and`/`or`) |
+| `businessRuleConditions` | İç içe koşullar (recursive) |
 
-**Karşılaştırma değer tipleri (`WorkRuleConditionCompareType`):** `PropertyValue` · `ViewProfile` (aktif görüntüleme
+**Karşılaştırma değer tipleri (`BusinessRuleConditionCompareType`):** `PropertyValue` · `ViewProfile` (aktif görüntüleme
 profili) · `FixedValue` · `FromCalculate` (expression).
 
 ---
 
 ## 5. Çalışma Prensibi (frontend realtime)
 1. **Form açılır** veya **bir property değişir** (frontend olayı).
-2. `workRuleRuntimeType` kontrolü: `always` (açılış + her değişiklik) / `firstOpening` (yalnız açılış) /
+2. `businessRuleRuntimeType` kontrolü: `always` (açılış + her değişiklik) / `firstOpening` (yalnız açılış) /
    `whenChanging` (yalnız değişimde).
 3. `shouldNotWorkInReadonlyMode` → salt-okunur modda atlanır.
 4. `activeViewProfiles` doluysa, **aktif profil** listede mi kontrol edilir.
-5. Koşullar **recursive** değerlendirilir (VE/VEYA).
-6. Koşul **TRUE** → ilgili `actionType` **frontend'de anlık** çalışır; **FALSE** → çalışmaz.
+5. Koşullar **recursive** değerlendirilir (`and`/`or`).
+6. Koşul **TRUE** → ilgili `businessRuleActionType` **frontend'de anlık** çalışır; **FALSE** → çalışmaz.
 
 > Tümü **istemci tarafında**, motoru beklemeden olur — anlık UX içindir. Kalıcı/akış kararları motorun işidir (§0).
 

@@ -51,9 +51,9 @@ resume URL** ilkelinin karşılığıdır.
 | **Veri işleme** | Set/Edit Fields, Aggregate, Sort, Split Out, Code, AI Transform | **Değer Atama** (≈Set) ✅ · ⚠️ toplama/sıralama/split, **Code adımı yok** (kasıtlı: no-code odak) |
 | **Entegrasyon** | **HTTP Request** + 400+ konektör | **HTTP Request** ✅ (+ **Flovo Customer API** ile çift yön) · ⚠️ hazır konektör kataloğu yok (kasıtlı) |
 | **AI** | Agent, Chain, Extractor, Classifier + cluster alt-node'ları | **Flovo AI** + **Flovo AI (Masraf)** ✅ (domain-özel) · ⚠️ takılabilir model/memory/tool mimarisi yok |
-| **Form/insan** | Form Trigger, Wait(form), Send&Wait | **Kullanıcı / Kullanıcı Grubu**, **withForm** aksiyon, **Form Creator/Yönlendirme/Silme** ✅ (Flovo burada **daha zengin**) |
+| **Form/insan** | Form Trigger, Wait(form), Send&Wait | **Kullanıcı / Kullanıcı Grubu**, **eventForm** aksiyon, **Instance Creator/Yönlendirme/Silme** ✅ (Flovo burada **daha zengin**) |
 
-> **Flovo'nun güçlü tarafı:** form/kayıt yaşam döngüsü adımları (**Form Creator/Silme/Yönlendirme**, withForm, barkod init).
+> **Flovo'nun güçlü tarafı:** form/kayıt yaşam döngüsü adımları (**Instance Creator/Silme/Yönlendirme**, eventForm, barkod init).
 > n8n'de bunlar yok; n8n form'u yalnız tetikleyici/onay olarak görür. **Flovo'nun zayıf tarafı:** genel akış-kontrol
 > ilkelleri (join, loop, filter) ve veri-şekillendirme node'ları henüz yok.
 
@@ -126,7 +126,7 @@ resume URL** ilkelinin karşılığıdır.
 ## 8. Başarılı / Başarısız Değerlendirme (n8n'e göre)
 
 ### ✅ Başarılı / n8n'e göre güçlü olduğumuz alanlar
-- **Form/kayıt yaşam döngüsü birinci sınıf:** Form Creator/Silme/Yönlendirme, withForm, barkod init — n8n'de karşılığı yok.
+- **Form/kayıt yaşam döngüsü birinci sınıf:** Instance Creator/Silme/Yönlendirme, eventForm, barkod init — n8n'de karşılığı yok.
 - **İnsan görevi + yetki + durum** modeli olgun (Kullanıcı/Kullanıcı Grubu, authorizationLevel, changeStatusId) — kurumsal onay/denetim için n8n'den daha uygun.
 - **Yerleşik i18n:** organizasyon-seviye çeviri motoru (`code`/`definition`/override) — n8n'de form/kayıt çevirisi yok. **Net üstünlük.**
 - **Çok-kiracılık:** `Organization` + ortak/organizasyon çevirisi ayrımı; n8n org-seviye i18n sunmaz.

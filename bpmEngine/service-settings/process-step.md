@@ -19,7 +19,7 @@
 | **Başlangıç / Bitiş** | Süreç Başlangıcı · **Alt Süreç Başlangıcı** · Süreç Bitişi |
 | **İnsan görev (human task)** | Kullanıcı · Kullanıcı Grubu |
 | **Otomatik / sistem** | HTTP Request · Flovo AI · Değer Atama · Karşılaştırma · Switch · Bildirim · Custom ID Creator · **Processing** (frontende form döner ama `default` ile otomatik ilerler → §3.18) |
-| **Form & alt-servis** | Form Creator · Form Silme · Form Yönlendirme · Süreç Adımı Tetikleme |
+| **Form & alt-servis** | Instance Creator · Instance Deleter · Form Yönlendirme · Süreç Adımı Tetikleme |
 | **Zamanlayıcı** | Timer · Timer Start · Timer End |
 
 ---
@@ -44,7 +44,7 @@ Tip-bağımsız: bu alanlar **her adımda** ortaktır; tipe özel ayarlar bunun 
 
 ### 2.1 — Adım ↔ Aksiyon ilişkisi
 Her adıma bir veya birden fazla **aksiyon** tanımlanır; aksiyon, kontrolün bir sonraki adıma **nasıl geçeceğini** taşır.
-Aksiyon türleri: **Manuel · withForm · Fotoğraf Çek · Dosya Seç · Barcode Tara · Webhook · Autoaction**
+Aksiyon türleri: **`manual` · `eventForm` · `takePhoto` · `selectFile` · `scanBarcode` · `webhook` · `autoAction`**
 (→ `process-step-action.md` §3). Detay → `process-step-action.md` / `../organization-settings/action.md`.
 
 ### 2.2 — Detay şablonu (her adım tipini tarif ederken)
@@ -69,13 +69,13 @@ Aksiyon türleri: **Manuel · withForm · Fotoğraf Çek · Dosya Seç · Barcod
 ### 3.1 — Süreç Başlangıcı
 **Özet:** **Ana sürecin** başlama noktası (servis başına **1 zorunlu**). Altında yer alan **aksiyonların nasıl
 başlatılabileceğini** ayarlamak için oluşturulur.
-- **Manuel (frontend) başlatma:** Örn. altında bir **"Fotoğraf Çek"** aksiyonu var; bu aksiyonun **"aksiyon bekleyen
+- **Manuel (frontend) başlatma:** Örn. altında bir **`takePhoto` (Fotoğraf Çek)** aksiyonu var; bu aksiyonun **"aksiyon bekleyen
   formlar" listesi** sayfasında görünmesini istiyorsak, aksiyonu bu şekilde işaretleyerek frontend **manuel aksiyon
   görünümünü** aktif ederiz.
 - **Dış (webhook) başlatma:** Süreç Başlangıcı **yalnız manuel değil**; altına eklenen bir **Webhook aksiyonu**
   (`process-step-action.md` §3.6) ile **uygulama dışından** da başlatılabilir — dış çağrı **yeni bir ana süreç çalıştırması
-  (`WorkFlow`)** başlatır. Süreç Başlangıcı bir süreç adımı olduğundan bu aksiyon **ona bağlıdır**
-  (`ProcessStepExecution.processStepId` sorunsuz atılır).
+  (`ProcessInstance`)** başlatır. Süreç Başlangıcı bir süreç adımı olduğundan bu aksiyon **ona bağlıdır**
+  (`ProcessStepInstance.processStepId` sorunsuz atılır).
 - Yani Süreç Başlangıcı, sürecin **nasıl başlatılacağını** (manuel **ve/veya** dış webhook) tanımlar. Altındaki aksiyon
   türleri → `process-step-action.md` §3.
 > **Ayrım (anlam karmaşasını önle):** Hem **Süreç Başlangıcı** hem **§3.20 Alt Süreç Başlangıcı** dışarıdan **webhook** ile
@@ -144,7 +144,7 @@ kullanıcılara, girilen **dinamik mesaj** ile bildirim gönderilir.
 **Kanallar (3 seçenek):** **Mail** · **Bildirim (Push)** · **Toast**. Başlık/mesaj **TR ve EN** ayrı girilir.
 
 **Parametreler (yalnız Bildirim/Push ve Toast):** Bildirimle birlikte **`parameters`** gönderilebilir. Bu parametreler
-**UI'da gösterilmez**; **çalışma zamanında veriyi güncellemek** için kullanılır (örn. `formId` + yeni alan değerleri →
+**UI'da gösterilmez**; **çalışma zamanında veriyi güncellemek** için kullanılır (örn. `instanceId` + yeni alan değerleri →
 frontend formu günceller). **Mail'de parametre yoktur.** _(örn. `../sampleProcess/expense`.)_
 
 **Alıcılar:** Süreci başlatan · Sabit kullanıcı(lar) · Değişken kullanıcılar (önceki adımlardan) · Form property'sinden ·
@@ -171,7 +171,7 @@ Kullanıcı grubu · Daha önce aksiyon alanlar.
 ### 3.9 — Timer End
 **Özet:** Bir timer seçilir ve **daha önce başlatılmış** olanı **sonlandırır** (`selectedTimerProcessStepId`). İşini yapıp **`default`** ile ilerler.
 
-### 3.10 — Form Silme
+### 3.10 — Instance Deleter
 **Özet:** Formu siler (örn. `deleted` durumuna çeker).
 > _(Detay sonra eklenecek.)_
 
@@ -184,7 +184,7 @@ Kullanıcı grubu · Daha önce aksiyon alanlar.
 | `createWithBarcode` | Barkod ile oluştur (bool) |
 | `targetFilePropertyId` | Barkod görselinin yazılacağı **file property** |
 
-### 3.12 — Form Creator
+### 3.12 — Instance Creator
 **Özet:** Form id'si, alanları vb. oluşturur (yeni form üretir).
 
 **Ayar — başlangıç (init) değerleri:** oluşturulacak forma **init değerler** girilebilir:
@@ -197,8 +197,8 @@ Kullanıcı grubu · Daha önce aksiyon alanlar.
 **Özet:** Girilen **koşullara göre** aksiyon tetikler. Koşullar **doğruysa `true`**, **sağlanmıyorsa `false`** aksiyonunu
 tetikler (IF benzeri iki dallı).
 - **`conditions`** — koşul listesi (referans değer · operatör · karşılaştırılan değer; **iç içe** gruplanabilir).
-- **`conditionType`** — koşulların birleştirilmesi: **VE** (tümü) / **VEYA** (en az biri).
-- **Operatörler:** `=` · `!=` · boş · boş değil · `>` · `>=` · `<` · `<=` · ile başlar · ile biter · içerir · içermez.
+- **`conditionType`** — koşulların birleştirilmesi: **`and`** (VE, tümü) / **`or`** (VEYA, en az biri).
+- **Operatörler (`criterionType`):** `equals` · `notEquals` · `isEmpty` · `isNotEmpty` · `greaterThan` · `greaterThanOrEqual` · `lessThan` · `lessThanOrEqual` · `startsWith` · `endsWith` · `contains` · `notContains` (→ `../models/enums/criterion-type.md`).
 
 ### 3.14 — Switch
 **Özet:** Bir alan seçilir; o alandaki **değere göre** aksiyon tetiklenir. **Default aksiyon zorunludur**; eşleşen değer
@@ -253,13 +253,13 @@ PDF geldiğinde bildirim gönderen kol). **Servis başına birden fazla** olabil
 | | Süreç Başlangıcı (§3.1) | Alt Süreç Başlangıcı (§3.20) |
 |---|---|---|
 | Servis başına | **1 zorunlu** | **N (opsiyonel)** |
-| Ne başlatır | **Ana süreç** (yeni `WorkFlow`) | **Bağımsız alt süreç** (yardımcı kol) |
+| Ne başlatır | **Ana süreç** (yeni `ProcessInstance`) | **Bağımsız alt süreç** (yardımcı kol) |
 | Nasıl başlar | Manuel (frontend) **veya** webhook aksiyonu | **Tetiklenerek** — webhook / Süreç Adımı Tetikleme (**manuel yok**) |
 | Konum | Ana akış | Ana akıştan **bağımsız** alt akış |
 
 **Nasıl tetiklenir (2 yol):**
 1. **Dış — Webhook:** Uygulama dışından, **Flovo Customer API** ile tetiklenir (örn. müşteri sunucusu işini bitirince).
-   "Kim tetikledi" → `ProcessStepExecution.atApiKeyId` (→ `../models/workFlows/process-step-execution.md`).
+   "Kim tetikledi" → `ProcessStepInstance.atApiKeyId` (→ `../models/processInstances/process-step-instance.md`).
 2. **İç — Süreç Adımı Tetikleme:** Başka bir sürecin **Süreç Adımı Tetikleme** (§3.5) adımı tarafından tetiklenir.
 
 **Kısıtlar (alt süreç):**
@@ -274,13 +274,13 @@ PDF geldiğinde bildirim gönderen kol). **Servis başına birden fazla** olabil
 - Tetikleme **girdisi bir `ActionTransfer` modelidir** (`parameters` · `changeList` · `action` → `process-step-action.md` §2).
   Bu girdi, **`default`** aksiyonu ile **bir sonraki adıma taşınır** (`changeList`, evrensel giriş kuralı gereği adım işini
   yapmadan **önce** forma uygulanır → `../flovo-bpm-engine.md` §4.2).
-- **Yeni `WorkFlow` (bağımsız çalıştırma):** Tetiklenen alt süreç, ana süreçten **bağımsız, yeni bir `WorkFlow`** olarak
-  çalışır; `WorkFlow.parentWorkFlowId`'ye **tetikleyen ana sürecin `WorkFlow` id'si** yazılır (→ `../models/workFlows/work-flow.md`).
+- **Yeni `ProcessInstance` (bağımsız çalıştırma):** Tetiklenen alt süreç, ana süreçten **bağımsız, yeni bir `ProcessInstance`** olarak
+  çalışır; `ProcessInstance.parentProcessInstanceId`'ye **tetikleyen ana sürecin `ProcessInstance` id'si** yazılır (→ `../models/processInstances/process-instance.md`).
 > Örn. `../sampleProcess/createPdfAsync`: webhook `parameters: { pdfUrl }` ile `pdfReady` (Alt Süreç Başlangıcı) tetiklenir;
-> **`default`**, `parameters: { formId, pdfUrl }`'i `notifyPdf` adımına taşır.
+> **`default`**, `parameters: { instanceId, pdfUrl }`'i `notifyPdf` adımına taşır.
 
 **Neden bu adım tipi (motor gerekçesi):** Webhook, önceden yalnızca bir **aksiyon** (`process-step-action.md` §3.6) olarak
-modellendiğinden, süreçten bağımsız bir alt süreçte **bağlanacağı bir süreç adımı yoktu**; `ProcessStepExecution.processStepId`
+modellendiğinden, süreçten bağımsız bir alt süreçte **bağlanacağı bir süreç adımı yoktu**; `ProcessStepInstance.processStepId`
 **zorunlu** olduğu için yürütme kaydı doğru atılamıyordu. Alt Süreç Başlangıcı **bir süreç adımı** olduğundan, dışarıdan/başka
 süreçten tetiklenen alt sürecin yürütmesi artık **geçerli `processStepId` ile** kaydedilir. Böylece webhook'u tutan aksiyon,
 bu adıma bağlı **`default`** aksiyonuna dönüşür (örn. `../sampleProcess/createPdfAsync`).
@@ -299,12 +299,12 @@ idempotency → `process-step-action.md` §3.6 / `../flovo-customer-api.md`.)_
 - [x] **Alt Süreç Başlangıcı adım türü — ÇÖZÜLDÜ** (eski "Webhook/Triggered" açık sorusu): Bağımsız alt süreçlerin **giriş
   düğümü** için yeni **§3.20 Alt Süreç Başlangıcı** adımı eklendi. ("webhook" adı dar kaldığından — webhook **ve** Süreç Adımı
   Tetikleme (§3.5) ile tetiklenir.) Webhook'u tutan aksiyon artık bu adıma bağlı **`default`**'a dönüşür; Alt Süreç Başlangıcı
-  bir **süreç adımı** olduğundan `ProcessStepExecution.processStepId` doğru atılır. **Ana süreç içinde** API ile ilerleme
+  bir **süreç adımı** olduğundan `ProcessStepInstance.processStepId` doğru atılır. **Ana süreç içinde** API ile ilerleme
   gerekiyorsa **Webhook aksiyonu** (`process-step-action.md` §3.6) kullanımı **korunur**. _(Örnek:
-  `../sampleProcess/createPdfAsync/process.md` · `../models/workFlows/process-step-execution.md`.)_
+  `../sampleProcess/createPdfAsync/process.md` · `../models/processInstances/process-step-instance.md`.)_
 - [x] **Alt süreç yürütmesinin runtime temsili — ÇÖZÜLDÜ:** Bağımsız alt süreç (Alt Süreç Başlangıcı ile başlayan) tetiklenince
-  **ayrı, yeni bir `WorkFlow`** oluşur; **`WorkFlow.parentWorkFlowId`**'ye tetikleyen **ana sürecin `WorkFlow` id'si** yazılır
-  (ana süreçlerde null). _(../models/workFlows/work-flow.md · process-step-execution.md · models.md)_
+  **ayrı, yeni bir `ProcessInstance`** oluşur; **`ProcessInstance.parentProcessInstanceId`**'ye tetikleyen **ana sürecin `ProcessInstance` id'si** yazılır
+  (ana süreçlerde null). _(../models/processInstances/process-instance.md · process-step-instance.md · models.md)_
 
 ---
 

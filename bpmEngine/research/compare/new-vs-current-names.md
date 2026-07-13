@@ -8,8 +8,15 @@
 > - **`-- ad`** — kaldırılan (silinen).
 > - **`ad ++`** — eklenen (yeni).
 >
-> **Not:** Yeni **runtime (`workFlows/`)** modellerinin bir kısmının eski uygulamada karşılığı vardır
-> (ör. `ProcessStepExecution` ← `ServiceInstanceRequests`, §15.1); diğerleri yenidir. Kaynak (eski DTO'lar) → `../current-flovo-bpm-engine/`.
+> **Not:** Yeni **runtime (`processInstances/`)** modellerinin bir kısmının eski uygulamada karşılığı vardır
+> (ör. `ProcessStepInstance` ← `ServiceInstanceRequests`, §15.1); diğerleri yenidir. Kaynak (eski DTO'lar) → `../current-flovo-bpm-engine/`.
+>
+> **v0.7 — proje-içi ad netleştirmesi:** runtime & iş-kuralı model adları güncellendi (bu dosyada **yeni** sütun bunları
+> yansıtır): `WorkFlow`>**`ProcessInstance`** · `ProcessStepExecution`>**`ProcessStepInstance`** · `Form`>**`Instance`** ·
+> `RelatedForm`>**`RelatedInstance`** · `FormAwaitingUser`>**`InstanceAwaitingUser`** · `WorkRule`>**`BusinessRule`** ·
+> `WorkRuleCondition`>**`BusinessRuleCondition`**; FK'ler: `workFlowId`>**`processInstanceId`** · `parentWorkFlowId`>**`parentProcessInstanceId`** ·
+> `processStepExecutionId`>**`processStepInstanceId`** · `formId`>**`instanceId`** · `relatedFormId`>**`relatedInstanceId`** ·
+> `formAwaitingUserId`>**`instanceAwaitingUserId`** · `workRuleId`>**`businessRuleId`**. Klasör `workFlows/`>**`processInstances/`**.
 
 ---
 
@@ -36,10 +43,10 @@
 ## 3. Aksiyon (`Action` / `ProcessStepAction`)
 > ⚠️ **Kavram takası** (dikkat):
 - `actionType` (renk/stil: success/danger…) > **`styleId`** (dinamik Style'a FK)
-- `action` (davranış: fire-event…) > **`actionType`** (tür: Manuel/withForm…)
-- `reasonRequired` > **`withForm`** (tür)
+- `action` (davranış: fire-event…) > **`actionType`** (tür: `manual`/`eventForm`…)
+- `reasonRequired` > **`eventForm`** (tür)
 - `-- actionId` (ProcessStepAction'da **canlı FK yok**; alanlar bir kez kopyalanır)
-- **Yeni türler:** `withForm ++` · `Webhook ++` · `Autoaction ++`
+- **Yeni türler:** `eventForm ++` · `webhook ++` · `autoAction ++`
 - **Kaldırılan iş-bazlı custom davranışlar:** `-- fire-event` · `-- new-instance` · `-- new-instance-referenced` ·
   `-- new-instance-other` · `-- take-photo` · `-- select-file` · `-- take-barcode` · `-- manuel-barcode-input` ·
   `-- excel-export` · `-- expform-*` · `-- add-test-receipt`
@@ -63,14 +70,14 @@
 
 ## 6. Form Alanları (`Property`)
 **Yeniden adlandırılan**
-- `ModalList` > **`Form List`**
+- `ModalList` > **`formList`** (Form List)
 - `onAfterChange` > **`saveAndRefreshOnAfterChange`**
 - `maximumNumberDecimalDigits` > **`maxDecimalDigits`**
 
 **Birleştirilen (tür → tür/opsiyon)**
-- `MaskedEntry` > **`Textbox`** (maske) · `Entry` + `Editor` > **`Textbox`** (`minLine`/`maxLine`) ·
-  `NumericUpDown` > **`Numeric Textbox`** · `MultiSelect` > **`Combobox`** · `DateTimePicker` > **`Datepicker`** ·
-  `Photo` / `ImageList` > **`File`**
+- `MaskedEntry` > **`textbox`** (maske) · `Entry` + `Editor` > **`textbox`** (`minLine`/`maxLine`) ·
+  `NumericUpDown` > **`numericTextbox`** · `MultiSelect` > **`combobox`** · `DateTimePicker` > **`datepicker`** ·
+  `Photo` / `ImageList` > **`file`**
 
 **Kaldırılan**
 - `-- DataGrid` · `-- DataGridControl` · `-- ObjectAccessController` · `-- TableFieldDisplayController`
@@ -80,14 +87,14 @@
 - `-- required` · `-- visible` · `-- enabled` (property'den çıkıp **görüntüleme profiline** taşındı)
 
 **Eklenen**
-- `User Info ++` (Flow Info'dan ayrıldı)
+- `userInfo ++` (User Info; `flowInfo`'dan ayrıldı)
 - **`PropertyItem` alt modeli ++:** `id` · `propertyId` · `value` · `code ++` · `definition ++`
   (**`value` ↔ `code` ayrıldı**; `(propertyId, value)` benzersiz)
 
 **Form List ayarları → görüntüleme profiline**
 - `addNewEnabled` > **`activeStartActions`**
 - `addFromExistingRecordsIsActive` > **`addFromExistingStatusIds`**
-- `selectedEnable` > **`selectableModeActive`** (alan-düzeyi)
+- `selectedEnable` > **`selectableVisible`** (profil-bazlı; eski `selectableModeActive` alan-düzeyiydi — kaldırıldı)
 - `selectedEditable ++` (öneri; profil-bazlı)
 
 ---
@@ -104,7 +111,7 @@
 
 ---
 
-## 8. İş Kuralı (`WorkRule`)
+## 8. İş Kuralı (`BusinessRule`)
 - `SetViewForFields` > **`SetViewForProperties`**
 - `AssignValueToField` > **`AssignValueToProperty`**
 - `AssignValueToPropertyField` > **`AssignValueToPropertyAttribute`** _(⚠️ teyit)_
@@ -121,7 +128,7 @@
 - (Değer Atama) `valueType = FormValue` > **`PropertyValue`** · `targetFieldId` > **`targetPropertyId`** · `fieldId` > **`propertyId`**
 
 **Eklenen adımlar**
-- `Flovo AI ++` · `Switch ++` · `Processing ++` · `Form Creator ++` · `Form Silme ++` · `Form Yönlendirme ++` · `Süreç Adımı Tetikleme ++`
+- `Flovo AI ++` · `Switch ++` · `Processing ++` · `Instance Creator ++` · `Instance Deleter ++` · `Form Yönlendirme ++` · `Süreç Adımı Tetikleme ++`
 - (Değer kaynağı) `FromCalculation ++` (+ `expression ++`)
 
 **Kaldırılan adımlar / alanlar**
@@ -190,32 +197,32 @@
 ---
 
 ## 14. Kullanıcı Grubu (`UserGroup`)
-- `groupApprovalRequired ++` (grup onayı gerekli mi? — bkz. `../../models/workFlows/user-group-approved-user.md`)
+- `groupApprovalRequired ++` (grup onayı gerekli mi? — bkz. `../../models/processInstances/user-group-approved-user.md`)
 
 ---
 
-## 15. İş Akışı / Runtime Modelleri (`workFlows/`)
+## 15. İş Akışı / Runtime Modelleri (`processInstances/`)
 > Motorun **çalışma-zamanı** kayıtları. Bir kısmının eski uygulamada karşılığı vardır (aşağıda eşlendi); diğerleri yeni.
 
-### 15.1 ProcessStepExecution (eski: `ServiceInstanceRequests`)
-- `ServiceInstanceRequests` > **`ProcessStepExecution`** (model)
+### 15.1 ProcessStepInstance (eski: `ServiceInstanceRequests`)
+- `ServiceInstanceRequests` > **`ProcessStepInstance`** (model)
 - `RequestDate` > **`executionDate`**
 - `responsaDate` > **`actionTriggerDate`**
-- `InstanceId` > **`formId`**
+- `InstanceId` > **`instanceId`**
 - `ProxyApproverUserId` > **`atDelegateUserId`**
 - `-- Description`
 - `-- IsItSkipped`
 - `-- SentBack`
 - `-- IsItCanceled`
 - `-- UserId`
-- `workFlowId ++`
+- `processInstanceId ++`
 - `atUserId ++`
 - `atApiKeyId ++`
 - `processStepActionParameter ++`
 - **↔ Korunan (casing normalize):** `Id` > `id` · `ProcessStepId` > `processStepId` · `ProcessStepActionId` > `processStepActionId`
 
-### 15.2 Form (eski: `ServiceInstances`)
-- `ServiceInstances` > **`Form`** (model)
+### 15.2 Instance (eski: `ServiceInstances`)
+- `ServiceInstances` > **`Instance`** (model)
 - `UserId` > **`creatorUserId`**
 - `ProcessStatusId` > **`statusId`**
 - `-- acountId`
@@ -224,15 +231,15 @@
 - `-- isTest`
 - `-- ProcessStepId`
 - `createdDate ++`
-- `workFlowId ++`
+- `processInstanceId ++`
 - **↔ Korunan:** `Id` > `id` · `ServiceId` > `serviceId` · `delete` (soft-delete; org-ayarı modellerindeki `deleted` ile aynı amaç, farklı ad)
 
 ### 15.3 Diğer runtime modelleri — YENİ (eski karşılığı yok)
 > Bu 4 model tamamen yenidir; eski uygulamada birebir karşılığı yoktur.
-- `WorkFlow ++` · `FormAwaitingUser ++` · `UserGroupApprovedUser ++` · `RelatedForm ++`
-- **Alan adı normalizasyonu (taslak görsel → proje kuralı):** `Id` > `id` · `FormId` > `formId` · `ProcessStepId` > `processStepId`
-  (PK `id`, FK `...Id` camelCase) · `FormAwaitingUser-Id` > `formAwaitingUserId`
+- `ProcessInstance ++` · `InstanceAwaitingUser ++` · `UserGroupApprovedUser ++` · `RelatedInstance ++`
+- **Alan adı normalizasyonu (taslak görsel → proje kuralı):** `Id` > `id` · `FormId` > `instanceId` · `ProcessStepId` > `processStepId`
+  (PK `id`, FK `...Id` camelCase) · `FormAwaitingUser-Id` > `instanceAwaitingUserId`
 
 ---
 
-*Oluşturma: 2026-07-06 · Kaynak: `new-vs-current.md` + `../../models/` + depo kökü `commitNotes/`.*
+*Oluşturma: 2026-07-06 · Güncelleme: 2026-07-10 (v0.7 — runtime & iş-kuralı model adları: ProcessInstance · ProcessStepInstance · Instance · RelatedInstance · InstanceAwaitingUser · BusinessRule). Kaynak: `new-vs-current.md` + `../../models/` + depo kökü `commitNotes/`.*

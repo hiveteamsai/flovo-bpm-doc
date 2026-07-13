@@ -12,7 +12,7 @@
 | `organizationId` | int | FK → `organization.md` | Sahibi organizasyon. |
 | `code` | string | — | Nitelik kodu. |
 | `definition` | string | — | Nitelik tanımı. |
-| `valueType` | enum | — | Değerin **tipi** — `QualificationValueType` (String/Double/DateTime/Combobox); değerin hangi **typed sütuna** yazılacağını belirler. |
+| `valueType` | enum | — | Değerin **tipi** — `QualificationValueType` ([`../enums/qualification-value-type.md`](../enums/qualification-value-type.md)) (String/Double/DateTime/Combobox); değerin hangi **typed sütuna** yazılacağını belirler. |
 | `active` | bool | — | Aktif/pasif — **null olamaz**, varsayılan `true`. `false` = frontend'de **görünür/düzenlenebilir** ama BPM işlemede kullanılmaz. |
 | `deleted` | bool | — | Soft-delete — **null olamaz**, varsayılan `false`. `true` = frontend'de **gizli/aktarılmaz/salt** + BPM işlemede kullanılmaz. |
 | `companyIds` | List\<int\> | FK → `company.md` (N–N) | Nitelik kapsamındaki şirketler. |
@@ -22,10 +22,11 @@
 |---|---|---|---|
 | `id` | int | PK | Kayıt ID'si. |
 | `additionalQualificationId` | int | FK → AdditionalQualification | Bağlı nitelik. |
-| `relationalType` | enum | — | İlişkilendirilen varlık türü (aşağıda). |
+| `relationalType` | enum | — | İlişkilendirilen varlık türü (aşağıda) — [`../enums/relational-type.md`](../enums/relational-type.md). |
 | `required` | bool | — | Bu varlık için zorunlu mu. |
 
 ### Enum — RelationalType
+Enum tanımı → [`../enums/relational-type.md`](../enums/relational-type.md). Bu modelde niteliğin hangi varlığa uygulandığını ve değerin hangi `...QualificationValue` alt modeline yazılacağını belirler.
 | Index | Değer | Hedef varlık |
 |---|---|---|
 | 0 | `Users` | `user.md` |
@@ -35,7 +36,7 @@
 | 4 | `WorkerLevels` | `worker-level.md` |
 
 ### Enum — QualificationValueType
-Niteliğin **değer tipi**; value modelinde hangi **typed sütunun** kullanılacağını belirler.
+Enum tanımı → [`../enums/qualification-value-type.md`](../enums/qualification-value-type.md). Niteliğin **değer tipi**; value modelinde hangi **typed sütunun** kullanılacağını belirler.
 | Index | Değer | Depolanan sütun |
 |---|---|---|
 | 0 | `String` | `stringValue` (string) |

@@ -1,4 +1,4 @@
-# Model — ProcessStepExecution (adım çalıştırma kaydı)
+# Model — ProcessStepInstance (adım çalıştırma kaydı)
 
 > **Durum:** 🟢 TANIMLI (alanlar netleşti)
 > **Amaç:** Bir iş akışında **tek bir süreç adımının çalıştırılması**. Hangi adımın, hangi aksiyonla, kim/ne tarafından,
@@ -9,8 +9,8 @@
 | Alan | Tip | Anahtar | Açıklama / amaç |
 |---|---|---|---|
 | `id` | int | PK | Adım çalıştırma ID'si. |
-| `workFlowId` | int | FK → WorkFlow.id | Ait olduğu iş akışı. |
-| `formId` | int (null olabilir) | FK → Form.id | İlgili form. **Null olabilir:** yeni form oluşturulmadan başka bir workflow'a yönlendiren adımlarda (bkz. aşağıdaki not — Form Yönlendirme). |
+| `processInstanceId` | int | FK → ProcessInstance.id | Ait olduğu iş akışı. |
+| `instanceId` | int (null olabilir) | FK → Instance.id | İlgili form. **Null olabilir:** yeni form oluşturulmadan başka bir iş akışına yönlendiren adımlarda (bkz. aşağıdaki not — Form Yönlendirme). |
 | `processStepId` | int | FK → ProcessStep.id | Çalıştırılan tasarım adımı. |
 | `atUserId` | int (null olabilir) | FK → User.id | **Aksiyonu tetikleyen kullanıcı** (AT = ActionTrigger). Aksiyon tetiklendiğinde dolar. |
 | `atApiKeyId` | int (null olabilir) | FK → ApiKey | **Aksiyonu tetikleyen API anahtarı** (kullanıcı yerine API başlatımı). Aksiyon tetiklendiğinde dolar. |
@@ -21,9 +21,9 @@
 | `atDelegateUserId` | int (null olabilir) | FK → User.id | **Vekaleten** aksiyon alınması durumunda, **vekaleten onaylayan** kişi. |
 
 ## İlişkiler
-- **N – 1** → `WorkFlow` (`workFlowId`), `Form` (`formId`), `ProcessStep` (`processStepId`),
+- **N – 1** → `ProcessInstance` (`processInstanceId`), `Instance` (`instanceId`), `ProcessStep` (`processStepId`),
   `ProcessStepAction` (`processStepActionId`), `User` (`atUserId`, `atDelegateUserId`), `ApiKey` (`atApiKeyId`).
-- **1 – N** ← `FormAwaitingUser.processStepExecutionId`.
+- **1 – N** ← `InstanceAwaitingUser.processStepInstanceId`.
 
 ## Aksiyon tetiklendiğinde dolan alanlar
 Adım **bir aksiyon tetiklenerek** ilerlediğinde şu alanlar birlikte dolar:
@@ -35,15 +35,15 @@ Adım **bir aksiyon tetiklenerek** ilerlediğinde şu alanlar birlikte dolar:
 - **`atDelegateUserId`** — yalnız **vekaleten** aksiyon alındıysa (vekaleten onaylayan kişi).
 
 ## Notlar / açık noktalar
-- **`formId` neden null olabilir:** Yeni form oluşturmak istemediğimizde, **daha önce oluşturulmuş bir forma yönlendiren**
-  adımlarda oluşan iş akışında **yeni form create edilmez**; `formId`'si olan **farklı bir workflow'a** yönlendirilir; bu
-  yüzden bu execution kaydında `formId` boş kalır. Örnek: `../../sampleProcess/scanBarcode/` — `redirect` (Form Yönlendirme) adımı.
+- **`instanceId` neden null olabilir:** Yeni form oluşturmak istemediğimizde, **daha önce oluşturulmuş bir forma yönlendiren**
+  adımlarda oluşan iş akışında **yeni form create edilmez**; `instanceId`'si olan **farklı bir iş akışına** yönlendirilir; bu
+  yüzden bu execution kaydında `instanceId` boş kalır. Örnek: `../../sampleProcess/scanBarcode/` — `redirect` (Form Yönlendirme) adımı.
 - **`AT` ön eki** = **ActionTrigger**.
 - **Bağımsız alt süreç & `processStepId`:** Dışarıdan (webhook / Customer API) veya **Süreç Adımı Tetikleme** ile başlayan
   bağımsız alt süreçlerin giriş düğümü bir **süreç adımıdır** (**Alt Süreç Başlangıcı** → `../../service-settings/process-step.md`
   §3.20); bu sayede alt süreç yürütmesi de **geçerli bir `processStepId` ile** kaydedilir (webhook'un bir adıma bağlı
-  olmama sorunu çözüldü). Alt süreç ana süreçten **bağımsız, yeni bir `WorkFlow`** olarak çalışır (`workFlowId` = o yeni akış;
-  `WorkFlow.parentWorkFlowId` = tetikleyen ana süreç → `work-flow.md`).
+  olmama sorunu çözüldü). Alt süreç ana süreçten **bağımsız, yeni bir `ProcessInstance`** olarak çalışır (`processInstanceId` = o yeni akış;
+  `ProcessInstance.parentProcessInstanceId` = tetikleyen ana süreç → `process-instance.md`).
 - **`ActionTransfer`** = aksiyonla sonraki adıma taşınan **veri aktarım paketi** (`parameters`/`changeList`/`action`);
   `processStepActionParameter` bu paketin JSON kaydıdır → `../../service-settings/process-step-action.md` §2.
 - `atDelegateUserId` ↔ yetkilendirme **impersonation/vekalet** ilişkisi → `../../organization-settings/permissions.md`.

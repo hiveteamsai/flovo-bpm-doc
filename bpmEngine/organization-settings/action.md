@@ -29,7 +29,7 @@ yetki...) ise **binding**'de tutulur → `../service-settings/process-step-actio
 | `definition` | string | Aksiyon adı/etiketi |
 | `icon` | string | İkon |
 | `styleId` | int | Renk/görünüm (bg + font) — **Style** varlığına FK referans (→ `style.md`) |
-| `actionType` | enum | Aksiyonun **türü** (Manuel / withForm / Fotoğraf Çek / Dosya Seç / Barcode Tara / Webhook / Autoaction); tür kataloğu → `../service-settings/process-step-action.md` §3 |
+| `actionType` | enum | Aksiyonun **türü** (`manual` / `eventForm` / `takePhoto` / `selectFile` / `scanBarcode` / `webhook` / `autoAction`); tür kataloğu → `../service-settings/process-step-action.md` §3 |
 | `defaultAction` | bool | Varsayılan aksiyon mu _(↔ `default` kodu — `../service-settings/process-step-action.md` §7)_ |
 | `validation` | bool | Form validasyonu gerekli mi |
 | `stayOnPage` | bool | Aksiyon sonrası sayfada kal |

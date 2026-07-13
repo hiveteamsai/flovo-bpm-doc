@@ -29,18 +29,19 @@ ile tutulur. `viewProfilePropertyId` altındaki kayıtlar bir **dictionary** olu
 `Property` varsayılanı. _(Eski uygulamada bu ayarlar **Property**'de —profil-bağımsız— yönetiliyordu; **görüntüleme
 bazında** olması gerektiği için buraya taşındı.)_
 
-### Form List
+### `formList` (Form List)
 | key | value tipi | Ne yapar |
 |---|---|---|
 | `activeStartActions` | list\<int\> (ProcessStepAction id) | Yeni kayıt oluştururken **hangi başlangıç aksiyonlarının** sunulacağı. `childService`'in **Süreç Başlangıcı** adımına bağlı `ProcessStepAction`'lardan seçilenler aktif olur. **Boş liste = yeni oluşturma yok.** _(`addNewEnabled` bool'unun yerini alır.)_ |
 | `addFromExistingStatusIds` | list\<int\> (Status id) | **Var olandan ekle**: hangi **durumdaki** formlar bu listeye eklenebilir. **Boş liste = "var olandan ekle" pasif.** _(`addFromExistingRecordsIsActive` bool'unun yerini alır.)_ |
-| `selectedEditable` _(öneri)_ | bool | `Property.selectableModeActive` açıksa, tikler bu profilde **değiştirilebilir** mi (örn. yönetici ✓, süreç başlatan ✗). |
+| `selectableVisible` | bool | Satır **seçim/tik kutusunun** bu profilde **görünür** olup olmadığı. **Boş/false = seçim modu kapalı.** _(Eski **alan-düzeyi** `Property.selectableModeActive`'in yerini alır — artık **profil bazında**.)_ |
+| `selectedEditable` _(öneri)_ | bool | `selectableVisible` açıksa, tikler bu profilde **değiştirilebilir** mi (örn. yönetici ✓, süreç başlatan ✗). |
 
-> **Not:** Satır **seçim/tik modunun** aktif olup olmadığı (`selectableModeActive`) **alan-düzeyi** ayardır (`Property`,
-> Form List); profil bazında değişen yalnız **düzenlenebilirlik** (`selectedEditable`) olabilir.
+> **Not:** Satır **seçim/tik** görünürlüğü (`selectableVisible`) ve **düzenlenebilirliği** (`selectedEditable`) artık
+> **profil bazında** (görüntüleme profili) yönetilir; eski **alan-düzeyi** `selectableModeActive` **kaldırıldı**.
 
 > Diğer Form List ayarları (`reOrder`, `editOnlyOwnPosition`) da profil-bazlı yönetilecekse aynı katalogla eklenir
-> (şimdilik `Property`'de → `../../todo.md`). Diğer alan tipleri (Combobox, File, Key-Value List…) için override key'leri
+> (şimdilik `Property`'de → `../../todo.md`). Diğer alan tipleri (`combobox`, `file`, `keyValueList`…) için override key'leri
 > **ihtiyaç doğdukça** buraya eklenir.
 
 ## Notlar / açık noktalar

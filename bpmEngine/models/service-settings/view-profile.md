@@ -18,7 +18,7 @@
 ## İlişkiler
 - **N – 1** → `Service` (`serviceId`).
 - **1 – N** ← `ProcessViewProfileProperty` (`viewProfileId`).
-- **Referans:** `ProcessStep`'lerde `processViewProfileId` ile atanır; `WorkRule.activeViewProfiles` ile kısıtlanır;
+- **Referans:** `ProcessStep`'lerde `processViewProfileId` ile atanır; `BusinessRule.activeViewProfiles` ile kısıtlanır;
   iş kuralı `ChangeViewProfile` ile çalışma-zamanı değiştirilebilir.
 
 ## Notlar / açık noktalar

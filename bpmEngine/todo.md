@@ -13,13 +13,13 @@
 
 - [x] **Kapsam kararı — servis-bazlı mı, paylaşımlı mı?** **ÇÖZÜLDÜ** (hiyerarşi ile): **organizasyon havuzu** =
   Translation / Style / Status / Action (organizasyona bağlı, tüm servislerde kullanılır); **servis-bazlı** =
-  Property / ProcessViewProfile / ProcessStep / WorkRule. _(action §3 · status §4 · work-rule §6 · view-profile §5)_
+  Property / ProcessViewProfile / ProcessStep / BusinessRule. _(action §3 · status §4 · work-rule §6 · view-profile §5)_
 - [ ] **Genişletilebilirlik — sabit set mi, plugin/SDK ile eklenebilir mi?** Adım / aksiyon / alan setleri.
   _(process-step §4 · process-step-action §7 · properties §4)_
 - [ ] **İki-katman sınırı** — **değer atama & karşılaştırma** hem süreç adımı hem iş kuralı olarak var. Sınır:
   iş kuralı = anlık form UX (frontend), adım = kalıcı/akış kararı (motor). Netleşince #Tier1 veri/motor ve
   tutarlılık kalemleri de oturur. _(flovo-bpm-engine §1.4/§12 · work-rule §6 · process-step §3.4/§3.13)_
-  - **Not:** İş kuralı (`work-rule.md`) motordan bağımsız frontend'de çalıştığı için **en son** şekillenecek.
+  - **Not:** İş kuralı (`business-rule.md`) motordan bağımsız frontend'de çalıştığı için **en son** şekillenecek.
 
 ---
 
@@ -32,10 +32,10 @@
   soy ağacı (lineage). _(flovo-bpm-engine §3 / §12)_
 - [ ] **Kalıcılık & durum** — ne saklanır (süreç tanımı · instance/state · veri · dosya/binary); durum yaşam döngüsü
   (new/running/waiting/done); saklama/pruning. _(flovo-bpm-engine §8)_
-- [ ] **Property value (form alan değerleri) depolaması** — `Form`'un alan değerleri **nerede/nasıl** tutulacak: `Form`
+- [ ] **Property value (form alan değerleri) depolaması** — `Instance`'un alan değerleri **nerede/nasıl** tutulacak: `Instance`
   modelinde mi, ayrı value tablo(lar)ında mı; tip-bazlı sütun mu, referans mı? Daha detaylı araştırma sonrası
   kararlaştırılacak; alan-düzeyi tanımlar ayrı **değer dokümantasyonunda** yapılacak.
-  _(form-value-scenarios §5/§12 · models/workFlows/form.md)_
+  _(form-value-scenarios §5/§12 · models/processInstances/instance.md)_
   - Alt-sorular (form-value-scenarios §12): **(1)** EAV ↔ kolon ↔ JSON ↔ hibrit; **(2)** yansıma alanları A (kopya+senkron)
     ↔ B (on-read), snapshot ↔ canlı; **(3)** çeviri-bağımlı sorgu/indeksleme; **(4)** list-of-model (alt-servis) unnest /
     cross-form; **(5)** binary/dosya ayrımı; **(6)** value geçmişi/sürümleme; **(7)** instance/state serileştirme.
@@ -67,25 +67,26 @@
 - [x] **Alan-özel görünüm ayarlarının profil bazında yönetimi** — **KARAR (B2):** `ProcessViewProfilePropertySetting
   {viewProfilePropertyId, key, value}` (propertyType'a göre **dictionary**; katalog → `models/service-settings/view-profile-property.md`).
   Form List: `addNewEnabled`→**`activeStartActions`** (ProcessStepAction id listesi), `addFromExistingRecordsIsActive`→
-  **`addFromExistingStatusIds`** (Status id listesi) profil'e taşındı; `selectedEnable`→**`selectableModeActive`** (alan-düzeyi, `Property`).
-  **Kalan:** `reOrder`/`editOnlyOwnPosition`/`selectedEditable` de profil-bazlı mı? _(view-profile §5 · properties §4)_
+  **`addFromExistingStatusIds`** (Status id listesi) profil'e taşındı; `selectedEnable`→**`selectableVisible`** (profil-bazlı;
+  eski alan-düzeyi `selectableModeActive` **kaldırıldı**) + öneri `selectedEditable` (profil).
+  **Kalan:** `reOrder`/`editOnlyOwnPosition` de profil-bazlı mı? _(view-profile §5 · properties §4)_
 - [ ] **Form List ayarları gözden geçir** — `reOrder` · `parameterTransfer` · `propertyTransferParameters` ·
   `editOnlyOwnPosition` nasıl yönetilecek (profil-bazlı mı)? _(properties §4 / §3.13)_ · _(`addNewEnabled`→`activeStartActions`,
-  `addFromExistingRecordsIsActive`→`addFromExistingStatusIds` (profil), `selectedEnable`→`selectableModeActive` (alan): **çözüldü**.)_
+  `addFromExistingRecordsIsActive`→`addFromExistingStatusIds` (profil), `selectedEnable`→`selectableVisible` (profil): **çözüldü**.)_
 - [ ] **Combobox/Radiobutton seçenek kaynağı** — statik (`propertyItems`) ↔ dinamik (`dataSource`) modeli ve iş kuralı
   `FillDataSource` ile ilişkisi; `FillDataSource` kaynak tipleri (Organization/User/API). _(properties §4 · work-rule §6)_
 - [ ] **Timer üçlüsü** (Timer / Timer Start / Timer End) yaşam döngüsü ve bağlanması; global timer kayıtları?
   _(process-step §4)_
 - [ ] **Süreç Bitişi "önceki adıma taşıma"** — yeniden-açma (re-open) mı, ayrı akış mı? Denetim izine etkisi.
   _(process-step §4)_
-- [ ] **Form yaşam döngüsü** — Form Creator / Form Silme / Form Yönlendirme / Süreç Adımı Tetikleme; Parent Property
+- [ ] **Form yaşam döngüsü** — Instance Creator / Instance Deleter / Form Yönlendirme / Süreç Adımı Tetikleme; Parent Property
   ile birlikte. _(process-step §4)_
 - [ ] **`default action` kavramı** — her adımda mı, yoksa yalnız HTTP Request(async)/Timer gibi adımlarda mı?
   _(process-step §4)_
 - [ ] **Raporlama** ayrı özellik olarak nasıl modellenecek? _(view-profile §3 / §5)_
 - [ ] **`ChangeViewProfile`** çalışma-zamanı profil değişiminin akış (motor) ile etkileşimi. _(view-profile §5)_
 - [ ] **Customer API** — kimlik/yetki (token kapsam/süre/yenileme); webhook güvenliği (secret/imza) + **idempotency**;
-  `POST /forms/search` sorgu dili; rate limit/sayfalama/hata sözleşmesi; request/response şemaları. _(flovo-customer-api §3)_
+  `POST /instances/search` sorgu dili; rate limit/sayfalama/hata sözleşmesi; request/response şemaları. _(flovo-customer-api §3)_
 - [ ] **Yetkilendirme (permissions) — açık kalanlar:** **(a)** `ProcessStepAction.authorizationLevel` (aksiyon-düzeyi sayısal
   yetki) yeni **org-bazlı** yetki modeliyle nasıl uyumlanır; **(b)** **impersonation** kapsamı/denetimi (kimin yerine
   geçilebilir; log/audit); **(c)** yetki setinin **genişletilebilirliği** (yeni yetki = Organization'a yeni `*UserGroupId`
@@ -100,22 +101,22 @@
 - [ ] **Kapsam-dışı varlıklar + Org ↔ BPM entegrasyonu** — ExpenseType / Currency / Position / Tax modellensin mi;
   organizasyon ayarlarının BPM ile entegrasyon derinliği. _(models.md §4 · new-vs-current §14)_
 - [ ] **ActionTransfer'e `user` alanı + API-başlatımlı `creatorUserId` tespiti** — `ActionTransfer` (parameters/changeList/
-  action → process-step-action §2) modeline bir **user** property'si eklenmeli mi? **API ile başlatılan** süreçlerde **Form
-  Creator** (§3.12), kullanıcı olmadığından `Form.creatorUserId`'yi **nasıl tespit edecek**? _(process-step-action §2 ·
-  process-step §3.12 · models/workFlows/form.md · `apiKeyId` açık sorusuyla bağlantılı)_
+  action → process-step-action §2) modeline bir **user** property'si eklenmeli mi? **API ile başlatılan** süreçlerde **Instance
+  Creator** (§3.12), kullanıcı olmadığından `Instance.creatorUserId`'yi **nasıl tespit edecek**? _(process-step-action §2 ·
+  process-step §3.12 · models/processInstances/instance.md · `apiKeyId` açık sorusuyla bağlantılı)_
 - [ ] **Alt-servis süreçlerinde `parentViewProfile` seçeneği** — Kullanıcı/Kullanıcı Grubu adımlarında `processViewProfileId`
   **statik** seçiliyor. Alt-servis olarak çalışan süreçlerde bunun yerine "**parent'ın view-profile'i ile aynı `code`'a sahip**
   view-profile'i kullan" gibi bir **parentViewProfile** seçeneği mi eklenmeli, yoksa farklı bir yöntemle mi ilerlenmeli?
   _(process-step §3.15/§3.16 · view-profile §5)_
 - [ ] **Form List tik (seçim) davranışı** — formların yanındaki **tiklerde** yapılan değişiklikler **aksiyon tetikleyecek mi**?
-  **Tik kaldırma nedeni** kullanıcıdan nasıl alınacak ve nasıl kaydedilecek? _(properties §3.13 Form List · `selectableModeActive`/
+  **Tik kaldırma nedeni** kullanıcıdan nasıl alınacak ve nasıl kaydedilecek? _(properties §3.13 Form List · `selectableVisible`/
   `selectedEditable` · view-profile §5)_
 - [ ] **"Var olanlardan ekleme" filtreleri** — bugün yalnız **durum** (`addFromExistingStatusIds`) ile filtre var; ek olarak
   "yalnız **related-form** olanlar listelensin", "hangi **property** ile related olanlar listelensin" gibi seçenekler nasıl
-  yönetilecek? _(view-profile §5 · properties §3.13 Form List · RelatedForm)_
-- [ ] **Alt süreç WorkFlow'ları ayrı tabloda mı?** — Bağımsız alt süreçler (`parentWorkFlowId`) ana `WorkFlow` tablosunda mı,
+  yönetilecek? _(view-profile §5 · properties §3.13 Form List · RelatedInstance)_
+- [ ] **Alt süreç ProcessInstance'ları ayrı tabloda mı?** — Bağımsız alt süreçler (`parentProcessInstanceId`) ana `ProcessInstance` tablosunda mı,
   yoksa **ayrı bir tablo/sayfa**da mı tutulmalı? Fayda/eksi (izolasyon · sorgu maliyeti · raporlama · listeleme). _(models/
-  workFlows/work-flow.md · process-step §3.20)_
+  processInstances/process-instance.md · process-step §3.20)_
 - [ ] **Ortamlar arası değişiklik aktarımı (promote/rollback)** — bir ortamda yapılan değişiklikleri **canlıya aktarma** ve
   **geri alma** yöntemi; ortamlar arası **pull-request** benzeri bir yapı nasıl kurulabilir? _(→ Tier 1 "Ortam (environment) modeli")_
 - [ ] **Servis template & JSON ile servis oluşturma** — servisler **template** olarak nasıl oluşturulacak; template ile servis
@@ -130,7 +131,7 @@
   _(action §3 · process-step-action §7)_
 - [x] **ActionDto: kopya ↔ canlı referans** — **ÇÖZÜLDÜ:** adıma eklenince alanlar **bir kez kopyalanır**, kopya **bağımsızdır**; Action değişince mevcut adım-aksiyonları güncellenmez (FK/canlı bağ yok). _(action §3)_
 - [ ] **`actionDisplayType`** gözden geçir (`invisible`/`everywhere`/`onlyFormDetail`/`onlyFastApprove`). _(action §3)_
-- [ ] **`withForm` formu** — serbest pop-up mu, formun bir görüntüleme profili mi? _(process-step-action §7)_
+- [x] **`eventForm` formu** — **ÇÖZÜLDÜ:** `formType = eventForm` olan servisin **görüntüleme profilidir**; aksiyon alınırken seçili profildeki alanlar **pop-up** olur, sonuç **`parameters`** ile taşınır (`Instance`/akış yok). _(process-step-action §3.2 · models/service-settings/service.md)_
 - [ ] **`changeList` öğe yapısı** (alan id + yeni değer + tip?) ve **`action` nesnesinin şekli**. _(process-step-action §7)_
 - [ ] **`AssignValueToPropertyAttribute`** adı teyit. _(work-rule §6)_
 - [ ] **İş kuralı performansı** — `always` kuralları yalnız ilgili property değişince (alan-bağımlı) tetiklensin mi?
@@ -143,8 +144,11 @@
   _(translation §5)_
 - [ ] **`idleTimeoutMinute`** alt/üst sınır; oturum kilitlenince davranış (yeniden giriş mi, yalnız parola mı)?
   Organization sonraki alanlar: plan/abonelik, timezone, para birimi, bölge, güvenlik. _(organization §4)_
-- [ ] **`actionType` isim çakışması** — ActionDto `actionType` (tür) ↔ WorkRule `actionType` (etki tipi) aynı ada sahip;
-  yeniden adlandırma (opsiyonel). _(new-vs-current §13/§14 · process-step-action)_
+- [x] **`actionType` isim çakışması — ÇÖZÜLDÜ (v0.7):** BusinessRule alanı `actionType` → **`businessRuleActionType`**
+  olarak yeniden adlandırıldı; **`Action.actionType`** aynen kaldı. _(business-rule.md · enums.md Notlar · business-rule-action-type.md)_
+- [ ] **`valueType` isim çakışması** — AdditionalQualification `valueType` (**QualificationValueType**: String/Double/DateTime/Combobox)
+  ↔ süreç adımı Değer Atama `valueType` (**ValueAssignType**: değer kaynağı) aynı ada sahip; ayrı enum'lardır, yeniden
+  adlandırma (opsiyonel). _(models/enums/enums.md Notlar · additional-qualification · process-step §3.4)_
 - [ ] **Çeviri `definition` ↔ `defaultLang` tutarlılığı** — organizasyon `defaultLang`'ini sonradan değiştirirse eski
   `definition` metinleri **yanlış dilde** kalır; veri-giriş kuralı ile garanti edilmeli. (Yukarıdaki "ezmiş kayıt teyidi"nden ayrı.)
   _(new-vs-current §13/§14 · translation §5)_
@@ -163,26 +167,26 @@
 - [ ] **Customer API dış referans anahtarı** — API'de kiracı `organizationId` (int) mi, `organizationCode` (string) mi
   ile belirtilmeli? (organization §2 dış referanslarda `code` diyor.) _(flovo-customer-api §3)_
 - [ ] **`apiKeyId` içeriği/adı (Customer API kimliği)** — Customer API ile oluşturulan kayıtlarda oluşturan **User**
-  olmadığından işlemi kimin yaptığını kaydetmek için `apiKeyId` alanları var (`WorkFlow.createdByApiKeyId`,
-  `ProcessStepExecution.atApiKeyId`). **Ad geçici**; içine gelecek veri Customer API **erişim mekanizması** kesinleşince
-  doğrulanacak. _(flovo-customer-api §3 · models/workFlows/work-flow.md · process-step-execution.md)_
+  olmadığından işlemi kimin yaptığını kaydetmek için `apiKeyId` alanları var (`ProcessInstance.createdByApiKeyId`,
+  `ProcessStepInstance.atApiKeyId`). **Ad geçici**; içine gelecek veri Customer API **erişim mekanizması** kesinleşince
+  doğrulanacak. _(flovo-customer-api §3 · models/processInstances/process-instance.md · process-step-instance.md)_
 - [x] **Alt Süreç Başlangıcı adım türü — ÇÖZÜLDÜ** (eski "Webhook/Triggered" açık sorusu): Bağımsız alt süreçlerin **giriş
   düğümü** için yeni **Alt Süreç Başlangıcı** adım türü eklendi (process-step §3.20). Webhook **ve** Süreç Adımı Tetikleme
   ile tetiklenir; webhook'u tutan aksiyon bu adıma bağlı **`default`**'a dönüşür; Alt Süreç Başlangıcı bir süreç adımı
-  olduğundan `ProcessStepExecution.processStepId` doğru atılır. Ana süreç içi API ilerlemesi için **Webhook aksiyonu**
+  olduğundan `ProcessStepInstance.processStepId` doğru atılır. Ana süreç içi API ilerlemesi için **Webhook aksiyonu**
   (process-step-action §3.6) kullanımı korunur. _(process-step §3.20/§4 · sampleProcess/createPdfAsync ·
-  models/workFlows/process-step-execution.md)_
-- [x] **Alt süreç yürütmesinin runtime temsili — ÇÖZÜLDÜ:** Bağımsız alt süreç tetiklenince **ayrı, yeni bir `WorkFlow`** oluşur;
-  **`WorkFlow.parentWorkFlowId`** = tetikleyen ana sürecin `WorkFlow` id'si (ana süreçlerde null). _(process-step §3.20/§4 ·
-  models/workFlows/work-flow.md · process-step-execution.md · models.md)_
+  models/processInstances/process-step-instance.md)_
+- [x] **Alt süreç yürütmesinin runtime temsili — ÇÖZÜLDÜ:** Bağımsız alt süreç tetiklenince **ayrı, yeni bir `ProcessInstance`** oluşur;
+  **`ProcessInstance.parentProcessInstanceId`** = tetikleyen ana sürecin `ProcessInstance` id'si (ana süreçlerde null). _(process-step §3.20/§4 ·
+  models/processInstances/process-instance.md · process-step-instance.md · models.md)_
 - [ ] **Grup onayı: `groupApproval` (adım) ↔ `groupApprovalRequired` (UserGroup) ilişkisi** — eşik (**hepsi/biri**) adım-düzeyi
   `groupApproval`'da (process-step §3.16), "grup onayı gerekli mi" ise `UserGroup.groupApprovalRequired` (bool) alanında. İki alanın
   yakın adı + kapsam örtüşmesi netleştirilmeli (eşiğin ve gerekliliğin tek sahibi kim; opsiyon seti hepsi/biri). _(process-step §3.16 ·
-  models/organization-settings/user-group.md · models/workFlows/user-group-approved-user.md)_
-- [ ] **Form validasyon durumu — `Form.validated` (bool) mü, `FormValidation` tablosu mu?** Workflow'dan validasyonları **sürekli
-  tekrar yapmamak** ve **iş kuralı** (WorkRule `ApplyValidation`) ile oluşturulan validasyonlarla **tutarsızlık yaşamamak** için:
-  `Form` modeline **`validated` (bool)** alanı mı eklenmeli, yoksa ayrı bir **`FormValidation`** tablosu mu oluşturulmalı? Karar
-  sonraya. _(models/workFlows/form.md · work-rule.md `ApplyValidation` · flovo-bpm-engine.md)_
+  models/organization-settings/user-group.md · models/processInstances/user-group-approved-user.md)_
+- [ ] **Form validasyon durumu — `Instance.validated` (bool) mü, `FormValidation` tablosu mu?** İş akışından validasyonları **sürekli
+  tekrar yapmamak** ve **iş kuralı** (BusinessRule `ApplyValidation`) ile oluşturulan validasyonlarla **tutarsızlık yaşamamak** için:
+  `Instance` modeline **`validated` (bool)** alanı mı eklenmeli, yoksa ayrı bir **`FormValidation`** tablosu mu oluşturulmalı? Karar
+  sonraya. _(models/processInstances/instance.md · business-rule.md `ApplyValidation` · flovo-bpm-engine.md)_
 - [x] **Solution & Service modellendi** — hiyerarşi `Organization → Solution → Service` netleşti; `models/service-settings/solution.md`
   ve `models/service-settings/service.md` oluşturuldu. Alan ayrıntıları (ikon/versiyon/yetki vb.) daha sonra detaylandırılacak.
 
@@ -191,7 +195,7 @@
   Action şablonu mu? (Action'a **canlı FK yok** ilkesiyle uyumlu olmalı; şu an models'ta belirsiz.) _(process-step §2)_
 - [ ] **Bildirim dil kapsamı** — bildirim başlık/mesajı bugün **TR/EN**; sabit dil seti **tr/en/de** ve kayıt-başına-dil
   ilkesiyle hizalanmalı mı (**de eksik**)? _(process-step §3.6 · flovo-bpm-engine §8)_
-- [ ] **`ProcessStep`/`WorkRule` denormalize `organizationId`** — asıl kapsayıcı `serviceId`; kiracı için ayrıca
+- [ ] **`ProcessStep`/`BusinessRule` denormalize `organizationId`** — asıl kapsayıcı `serviceId`; kiracı için ayrıca
   `organizationId` tutulsun mu, yoksa `service → solution → org` üzerinden mi? _(models)_
 
 ---
@@ -207,9 +211,9 @@
 - **View-profile + diğer modeller:** eksik primary/secondary key'ler eklendi (`id`, `serviceId`, `processStepId`);
   alan-referansları `...Id` (FK) yapıldı (`processViewProfileId`, `organizationUserGroupIds`, `styleId`).
 - **PK adı:** modelin birincil anahtarı `id` (property'de `propertyId`→`id`).
-- **İnsan-tetikli aksiyonlar:** manuel/withForm'a ek Fotoğraf Çek/Dosya Seç/Barcode Tara da eklendi.
+- **İnsan-tetikli aksiyonlar:** `manual`/`eventForm`'a ek `takePhoto`/`selectFile`/`scanBarcode` da eklendi.
 - **Yazım/casing:** `trealingView`→`trailingView`, `criteritionType`→`criterionType`, `solutionid`/`ServiceId`→`solutionId`/`serviceId`.
-- **Hiyerarşi tanımlandı:** `Organization → Solution → Service → {Property · ProcessViewProfile · ProcessStep · WorkRule}`;
+- **Hiyerarşi tanımlandı:** `Organization → Solution → Service → {Property · ProcessViewProfile · ProcessStep · BusinessRule}`;
   `ProcessStepAction → ProcessStep`; **Action/Status/Style/Translation → Organization** (havuz). `models/` klasörü ve
   `organization-settings/action.md`·`status.md` buna göre revize edildi (Action/Status `serviceId`→`organizationId`).
 - **Translation kayıt-başına-dil:** `tr`/`en`/`de` kolonları kaldırıldı → **`languageCode` + `definition`** eklendi;
@@ -219,7 +223,7 @@
 - **Profil-bazlı alan override'ı (B2):** `ProcessViewProfilePropertySetting {viewProfilePropertyId, key, value}` eklendi
   (propertyType'a göre dictionary). Form List ayarları Property'den profile taşındı: `addNewEnabled`→`activeStartActions`
   (ProcessStepAction id listesi), `addFromExistingRecordsIsActive`→`addFromExistingStatusIds` (Status id listesi). Ayrıca
-  `selectedEnable`→`selectableModeActive` olarak **alan-düzeyine** (Form List, `Property`) taşındı.
+  `selectedEnable`→`selectableVisible` olarak **profil-bazına** (Form List, `ProcessViewProfilePropertySetting`) taşındı.
 - **Dokümanlar senkronlandı + tutarlılık denetimi:** `research/compare/new-vs-current.md` bu oturumun tüm kararlarıyla
   güncellendi; `CLAUDE.md`/`README.md` indekslerine `models/` + `todo.md` eklendi. Bağımsız denetim düzeltmeleri:
   README (style alanları), Processing taksonomisi (otomatik), `process-step-action`/`flovo-bpm-engine` `style`→`styleId`,

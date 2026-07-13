@@ -2,7 +2,7 @@
 
 > **Durum:** 🟡 TASLAK (ilk çıkarım — gözden geçirilecek)
 > **Amaç:** İş akışındaki bir **düğüm/kutu**. Adımlar aksiyonlarla bağlanarak süreci oluşturur.
-> **Davranış/kullanım + adım kataloğu (19 tip):** → `../../service-settings/process-step.md`
+> **Davranış/kullanım + adım kataloğu (20 tip):** → `../../service-settings/process-step.md`
 
 ## 1. Ortak alanlar (her adımda)
 | Alan | Tip | Anahtar | Açıklama / amaç |
@@ -27,13 +27,13 @@
 |---|---|
 | HTTP Request | `endpoint` · `method` · `templateParameters` · `queryParameters` · `headers` · `body` · `returns` · `async` |
 | Flovo AI | seçili AI + AI'a özel ayarlar · dosya kaynağı (thumbnail / file alanı) |
-| Değer Atama | `valueType` (`FixedValue`/`PropertyValue`/`FromCalculation`) · `fixedValue` · `expression` · `useDisplay` · `targetPropertyId` · `propertyId` · (alt-servis) `useRelatedService`·`relatedServiceId`·`targetInstancesPropertyId` |
-| Karşılaştırma | `conditions` · `conditionType` (VE/VEYA) · operatörler |
+| Değer Atama | `valueType` (değer kaynağı `ValueAssignType` → [`../enums/value-assign-type.md`](../enums/value-assign-type.md): `FixedValue`/`PropertyValue`/`FromCalculation`…) · `fixedValue` · `expression` · `useDisplay` · `targetPropertyId` · `propertyId` · (alt-servis) `useRelatedService`·`relatedServiceId`·`targetInstancesPropertyId` |
+| Karşılaştırma | `conditions` · `conditionType` (`and`/`or` → [`../enums/business-rule-condition-type.md`](../enums/business-rule-condition-type.md)) · operatörler (`criterionType` → [`../enums/criterion-type.md`](../enums/criterion-type.md)) |
 | Switch | seçili alan · değere göre eşleşen aksiyon (default zorunlu) |
 | Bildirim | kanal (Mail/Push/Toast) · alıcılar · TR/EN başlık+mesaj · (Push/Toast) `parameters` |
 | Timer / Timer Start / Timer End | süre stili (çalışma takvimi/normal/sabit) · `selectedTimerProcessStepId` |
 | Custom ID Creator | `customId` · `targetPropertyId` · `createWithBarcode` · `targetFilePropertyId` |
-| Form Creator | init değerleri (property↔`parameters` eşlemesi / thumbnail url) |
+| Instance Creator | init değerleri (property↔`parameters` eşlemesi / thumbnail url) |
 | Kullanıcı | `userType` · `stableUserId` · `processViewProfileId` · bildirim · timeout |
 | Kullanıcı Grubu | `userGroupType` · `organizationUserGroupId` · `groupApproval` · profil · bildirim · timeout |
 | Süreç Bitişi | `processViewProfileId` · `organizationUserGroupIds` |

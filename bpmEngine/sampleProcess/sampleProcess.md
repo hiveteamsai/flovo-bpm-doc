@@ -12,20 +12,20 @@
 ## Örnekler
 | Örnek | Ne örnekliyor | Öne çıkan motor öğeleri |
 |---|---|---|
-| [**expense**](./expense/process.md) — Masraf oluşturma | 3 başlatma yöntemi · AI tarama · loading kart · hata telafisi | Form Creator · **Processing(showLoading)** · **Flovo AI(Masraf)** · **default/onFail** · Bildirim · **Form Silme** |
+| [**expense**](./expense/process.md) — Masraf oluşturma | 3 başlatma yöntemi · AI tarama · loading kart · hata telafisi | Instance Creator · **Processing(showLoading)** · **Flovo AI(Masraf)** · **default/onFail** · Bildirim · **Instance Deleter** |
 | [**createPdf**](./createPdf/process.md) — PDF (senkron) | Dış sunucuda PDF üretip **bekleyerek** dönme | **HTTP Request (`async=false`)** · `parameters` · Bildirim |
 | [**createPdfAsync**](./createPdfAsync/process.md) — PDF (async) | Beklemeden ilerleme + dış sistemden **geri dönüş** | **HTTP Request (`async=true`)** · **Webhook** |
 | [**integration**](./integration/process.md) — Asenkron entegrasyon | Uzun aktarımı **durum güncelleyerek** bekleme | HTTP Request async · **Processing(showLoading=false)** · **Webhook** · Süreç Bitişi |
-| [**scanBarcode**](./scanBarcode/process.md) — Barkod ile var olanı aç | Yanıta göre **koşullu dallanma** | **`response.action` zinciri** (`createForm`/`yonlendir`) · **Form Yönlendirme** · Form Creator |
+| [**scanBarcode**](./scanBarcode/process.md) — Barkod ile var olanı aç | Yanıta göre **koşullu dallanma** | **`response.action` zinciri** (`createForm`/`yonlendir`) · **Form Yönlendirme** · Instance Creator |
 
 ---
 
 ## Özetler
 
 ### 1. expense — Masraf Oluşturma
-Süreç Başlangıcı altında **3 aksiyon** (Fotoğraf Çek / Dosya Seç / Manuel). Fotoğraf/Dosya → Form Creator (thumbnail'dan
+Süreç Başlangıcı altında **3 aksiyon** (`takePhoto` / `selectFile` / `manual`). Fotoğraf/Dosya → Instance Creator (thumbnail'dan
 form üretir) → **Processing** (loading kart) → **Flovo AI (Masraf)** → **Bildirim** (parametre-modu) → Kullanıcı. AI
-**hata** verirse `onFail` → Bildirim (toast) → **Form Silme** (telafi). "Belgesiz" kolu AI'sız, doğrudan form üretip kullanıcıya.
+**hata** verirse `onFail` → Bildirim (toast) → **Instance Deleter** (telafi). "Belgesiz" kolu AI'sız, doğrudan form üretip kullanıcıya.
 
 ### 2. createPdf — PDF (Senkron)
 **HTTP Request** adımı form id ile müşteri sunucusuna istek atar, **`async=false`** → **bekler**; başarıda `default` →
@@ -40,8 +40,8 @@ Aynı iş **`async=true`**: istek atılır, **beklenmez** → `default` → Kull
 **durum güncellenir**, forma güncel bilgi). Müşteri sunucusu bitince **Webhook** → **Süreç Bitişi**.
 
 ### 5. scanBarcode — Barkod ile Var Olanı Aç
-**2 başlatma aksiyonu** (Barcode Tara / withForm-barkod gir). Barkod **HTTP Request (Function)** ile sunucuya gider;
-yanıt **`action=yonlendir`** ise **Form Yönlendirme** (var olan form açılır), **`action=createForm`** ise **Form Creator**
+**2 başlatma aksiyonu** (`scanBarcode` / eventForm-barkod gir). Barkod **HTTP Request (Function)** ile sunucuya gider;
+yanıt **`action=yonlendir`** ise **Form Yönlendirme** (var olan form açılır), **`action=createForm`** ise **Instance Creator**
 (barkod init değerli yeni form) → Kullanıcı.
 
 ---
@@ -58,7 +58,7 @@ yanıt **`action=yonlendir`** ise **Form Yönlendirme** (var olan form açılır
    **parametre yalnız Push ve Toast**'ta (UI'da görünmez, runtime veri güncelleme). Mail'de parametre yok.
 4. ✅ **Webhook** — `../service-settings/process-step-action.md` **§3.6**'ya işlendi: **uygulama dışından HTTP request ile** (müşteri sunucusu →
    Flovo Customer API) tetiklenen aksiyon; async geri-dönüş kolu.
-5. ✅ **Form Creator init değerleri** — `../service-settings/process-step.md` **§3.12**'ye işlendi: alana karşılık değer veya thumbnail url;
+5. ✅ **Instance Creator init değerleri** — `../service-settings/process-step.md` **§3.12**'ye işlendi: alana karşılık değer veya thumbnail url;
    aksiyon `parameters`'ı ile eşleşip alanlara initial değer atanır.
 6. **`response.action` zinciri** (scanBarcode): custom kodlar (`createForm`/`yonlendir`) → aynı kodlu aksiyon → her
    aksiyonun **`targetProcessStepId`**'si hedef adıma götürür. §1.2 modelini doğrular. _(zaten modelde — onay.)_
@@ -72,7 +72,7 @@ yanıt **`action=yonlendir`** ise **Form Yönlendirme** (var olan form açılır
 > atfıyla bulunur; verilen kararlar bu dokümanın **gövdesinde** anlatılır.
 
 > **Çözülenler (yerel karar log'u):**
-- ✅ **integration** ikinci webhook'u **modellendi:** `transferFail` (Webhook) → başlatıcıya (`integrationStart`) geri dönüş;
+- ✅ **integration** ikinci webhook'u **modellendi:** `transferFail` (`webhook`) → başlatıcıya (`integrationStart`) geri dönüş;
   `transferOk` → `processEnd`. Aynı bekleme noktasında **webhook koduna göre dallanma** (→ `integration/process.md`).
 
 ---
