@@ -71,6 +71,7 @@
 - **N – 1** → `Organization`, `Department`, `Profession`, `CostCenter`, `WorkerLevel`, `WorkingSchedule`, `User` (`managerUserId`, self-ref).
 - **N – N** → `Company` (`companyIds`), `UserGroup` (üyelik → `UserGroupMember`).
 - **1 – N** ← `UserSolution`, `UserQualificationValue`, `CreditCard` (`userId`).
+- **1 – 1** ← `Staff` (`userId`) — kullanıcının **pozisyon/kadro** ataması; User'da depolanmaz, salt-okunur yansıma (→ `position.md`).
 - **BPM:** onay merci atamaları (kullanıcı / yönetici / yönetici zinciri / departman yöneticisi / ünvana göre yönetici).
 
 *Oluşturma: 2026-07-03.*

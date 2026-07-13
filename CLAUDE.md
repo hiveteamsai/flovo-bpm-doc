@@ -26,7 +26,7 @@ yalnızca **analiz** için okunur.
 
 ### `bpmEngine/` — ASIL ÇALIŞMA (yeni BPM motoru tasarımı)
 Yeni BPM motoru tasarım dökümanları **doğrudan `bpmEngine/` altındadır.**
-İndeks → **[`bpmEngine/README.md`](bpmEngine/README.md)**.
+İndeks → **[`bpmEngine/index.md`](bpmEngine/index.md)**.
 
 | Öğe | İçerik |
 |---|---|
@@ -50,7 +50,7 @@ Daha önce yapılan **pazar/ürün araştırmaları, ESN vakaları, vizyon ve su
 
 1. **Kod yazma.** Bu klasörde uygulama kodu üretme; çıktılar Markdown/doküman olsun.
 2. **Dil:** Kullanıcı Türkçe konuşuyor; doküman ve yanıtları **Türkçe** üret.
-3. **Asıl odak:** `bpmEngine/` — yeni BPM motoru tasarımı. İndeks: `bpmEngine/README.md`.
+3. **Asıl odak:** `bpmEngine/` — yeni BPM motoru tasarımı. İndeks: `bpmEngine/index.md`.
 4. **Yeni-uygulama dökümanları kendi başına** yeni uygulamayı anlatır; eski uygulamayla **farklar yalnız**
    `bpmEngine/research/compare/new-vs-current.md`'de, diğer platform kıyasları `bpmEngine/research/compare/` altında
    tutulur. Tasarım dökümanlarına eski-app karşılaştırması / "eski adı …" ifadeleri **konmaz**.

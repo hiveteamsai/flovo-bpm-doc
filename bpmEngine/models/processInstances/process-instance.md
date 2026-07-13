@@ -24,7 +24,7 @@
 - **`createdByApiKeyId` / `ApiKey` (açık soru):** Customer API ile oluşturulan kayıtlarda oluşturan doğrudan bir `User`
   olmadığından, **işlemi kimin yaptığını** kaydetmek için `createdByApiKeyId` alanı kullanılır. Customer API'de `apiKey`
   mekanizması henüz kararlaştırılmadığından hedef **`ApiKey` modeli/adı geçici**; içine gelecek veri **erişim mekanizması
-  kesinleşince doğrulanacak** → `../../todo.md`, `../models.md §4` (`ApiKey` henüz modellenmedi).
+  kesinleşince doğrulanacak** → `../../todo.md`, `../index.md §4` (`ApiKey` henüz modellenmedi).
 - `createdByUserId` **veya** `createdByApiKeyId` — biri dolar (kullanıcı ya da API başlatımı).
 - **Alt süreç = bağımsız yeni `ProcessInstance`:** **Alt Süreç Başlangıcı** (→ `../../service-settings/process-step.md` §3.20) ile
   başlayan süreçler ana süreçten **bağımsız, yeni bir `ProcessInstance`** olarak oluşur; `parentProcessInstanceId`'ye **tetikleyen ana sürecin

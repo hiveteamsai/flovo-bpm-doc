@@ -98,8 +98,8 @@
   şişman modelin sadeleştirme sınırı. _(properties §4 · new-vs-current §14)_
 - [ ] **Processing'de "durum değişimi" alanı** nasıl tutulacak (Processing otomatik ilerlerken durumu neyle değiştirir).
   _(process-step §4 · sampleProcess)_
-- [ ] **Kapsam-dışı varlıklar + Org ↔ BPM entegrasyonu** — ExpenseType / Currency / Position / Tax modellensin mi;
-  organizasyon ayarlarının BPM ile entegrasyon derinliği. _(models.md §4 · new-vs-current §14)_
+- [ ] **Kapsam-dışı varlıklar + Org ↔ BPM entegrasyonu** — ExpenseType / Currency / Tax modellensin mi;
+  organizasyon ayarlarının BPM ile entegrasyon derinliği. _(Position/Staff modellendi → `position.md`.)_ _(index.md §4 · new-vs-current §14)_
 - [ ] **ActionTransfer'e `user` alanı + API-başlatımlı `creatorUserId` tespiti** — `ActionTransfer` (parameters/changeList/
   action → process-step-action §2) modeline bir **user** property'si eklenmeli mi? **API ile başlatılan** süreçlerde **Instance
   Creator** (§3.12), kullanıcı olmadığından `Instance.creatorUserId`'yi **nasıl tespit edecek**? _(process-step-action §2 ·
@@ -145,10 +145,10 @@
 - [ ] **`idleTimeoutMinute`** alt/üst sınır; oturum kilitlenince davranış (yeniden giriş mi, yalnız parola mı)?
   Organization sonraki alanlar: plan/abonelik, timezone, para birimi, bölge, güvenlik. _(organization §4)_
 - [x] **`actionType` isim çakışması — ÇÖZÜLDÜ (v0.7):** BusinessRule alanı `actionType` → **`businessRuleActionType`**
-  olarak yeniden adlandırıldı; **`Action.actionType`** aynen kaldı. _(business-rule.md · enums.md Notlar · business-rule-action-type.md)_
+  olarak yeniden adlandırıldı; **`Action.actionType`** aynen kaldı. _(business-rule.md · index.md Notlar · business-rule-action-type.md)_
 - [ ] **`valueType` isim çakışması** — AdditionalQualification `valueType` (**QualificationValueType**: String/Double/DateTime/Combobox)
   ↔ süreç adımı Değer Atama `valueType` (**ValueAssignType**: değer kaynağı) aynı ada sahip; ayrı enum'lardır, yeniden
-  adlandırma (opsiyonel). _(models/enums/enums.md Notlar · additional-qualification · process-step §3.4)_
+  adlandırma (opsiyonel). _(models/enums/index.md Notlar · additional-qualification · process-step §3.4)_
 - [ ] **Çeviri `definition` ↔ `defaultLang` tutarlılığı** — organizasyon `defaultLang`'ini sonradan değiştirirse eski
   `definition` metinleri **yanlış dilde** kalır; veri-giriş kuralı ile garanti edilmeli. (Yukarıdaki "ezmiş kayıt teyidi"nden ayrı.)
   _(new-vs-current §13/§14 · translation §5)_
@@ -178,7 +178,7 @@
   models/processInstances/process-step-instance.md)_
 - [x] **Alt süreç yürütmesinin runtime temsili — ÇÖZÜLDÜ:** Bağımsız alt süreç tetiklenince **ayrı, yeni bir `ProcessInstance`** oluşur;
   **`ProcessInstance.parentProcessInstanceId`** = tetikleyen ana sürecin `ProcessInstance` id'si (ana süreçlerde null). _(process-step §3.20/§4 ·
-  models/processInstances/process-instance.md · process-step-instance.md · models.md)_
+  models/processInstances/process-instance.md · process-step-instance.md · index.md)_
 - [ ] **Grup onayı: `groupApproval` (adım) ↔ `groupApprovalRequired` (UserGroup) ilişkisi** — eşik (**hepsi/biri**) adım-düzeyi
   `groupApproval`'da (process-step §3.16), "grup onayı gerekli mi" ise `UserGroup.groupApprovalRequired` (bool) alanında. İki alanın
   yakın adı + kapsam örtüşmesi netleştirilmeli (eşiğin ve gerekliliğin tek sahibi kim; opsiyon seti hepsi/biri). _(process-step §3.16 ·
@@ -225,7 +225,7 @@
   (ProcessStepAction id listesi), `addFromExistingRecordsIsActive`→`addFromExistingStatusIds` (Status id listesi). Ayrıca
   `selectedEnable`→`selectableVisible` olarak **profil-bazına** (Form List, `ProcessViewProfilePropertySetting`) taşındı.
 - **Dokümanlar senkronlandı + tutarlılık denetimi:** `research/compare/new-vs-current.md` bu oturumun tüm kararlarıyla
-  güncellendi; `CLAUDE.md`/`README.md` indekslerine `models/` + `todo.md` eklendi. Bağımsız denetim düzeltmeleri:
+  güncellendi; `CLAUDE.md`/`index.md` indekslerine `models/` + `todo.md` eklendi. Bağımsız denetim düzeltmeleri:
   README (style alanları), Processing taksonomisi (otomatik), `process-step-action`/`flovo-bpm-engine` `style`→`styleId`,
   `skipWithThisActionId` "FK → Action" kaldırıldı (belirsiz olarak işaretlendi), Customer API başlığı "geçici" notu.
 - **Açık soru merkezileştirme (2026-07-07):** Tüm dokümanlar denetlendi; dağınık açık sorular burada toplandı. **Eklenen**

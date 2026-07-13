@@ -250,7 +250,8 @@ CostCenter · WorkerLevel · WorkingSchedule · VacationDay · CreditCard · Pro
   (`comboboxItemId` + kopya `comboboxCode`/`comboboxDefinition`).
 - **QualificationItem** alt modeli (combobox seçenekleri) — `PropertyItem`'dan türetildi ama **`Property`'siz** (`additionalQualificationId`).
 
-**➖ Kapsam dışı (referans dokümanı):** para birimi, pozisyon, vergi oranları (ExpenseType/Currency/Position/Tax) — modellenmedi.
+**➕ Pozisyon/Kadro modellendi:** `Position` (+ `Staff` alt modeli; 1 kadro ↔ 1 kullanıcı) → `models/organization-settings/position.md`.
+**➖ Kapsam dışı (referans dokümanı):** para birimi, vergi oranları (ExpenseType/Currency/Tax) — modellenmedi.
 
 **↔ BPM tüketimi:** User/UserGroup → onay merci/atama · WorkingSchedule+VacationDay → Timer/zaman aşımı ·
 Department/Profession → yönetici atama tipleri · CostCenter/CreditCard → masraf.

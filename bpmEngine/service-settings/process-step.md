@@ -304,7 +304,7 @@ idempotency → `process-step-action.md` §3.6 / `../flovo-customer-api.md`.)_
   `../sampleProcess/createPdfAsync/process.md` · `../models/processInstances/process-step-instance.md`.)_
 - [x] **Alt süreç yürütmesinin runtime temsili — ÇÖZÜLDÜ:** Bağımsız alt süreç (Alt Süreç Başlangıcı ile başlayan) tetiklenince
   **ayrı, yeni bir `ProcessInstance`** oluşur; **`ProcessInstance.parentProcessInstanceId`**'ye tetikleyen **ana sürecin `ProcessInstance` id'si** yazılır
-  (ana süreçlerde null). _(../models/processInstances/process-instance.md · process-step-instance.md · models.md)_
+  (ana süreçlerde null). _(../models/processInstances/process-instance.md · process-step-instance.md · index.md)_
 
 ---
 

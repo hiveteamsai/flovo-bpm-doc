@@ -1,9 +1,10 @@
-# Flovo BPM — Veri Modelleri (Şema Referansı)
+# Flovo BPM — Veri Modelleri (Şema Referansı) — İndeks
 
 > **Durum:** 🟡 TASLAK — mevcut tasarım dokümanlarından **ilk çıkarım**; alanlar/tipler gözden geçirilecek.
-> **Amaç:** Tüm veri modellerinin **tek yerde** kısa tanımı + **birbirleriyle ilişkileri**. Her modelin **alan-düzeyi
-> ayrıntısı** kendi dosyasındadır. Bu klasör **veri modeli/şema** odaklıdır; **davranış/kullanım** özellik
-> dokümanlarındadır (`organization-settings/`, `service-settings/`, `flovo-bpm-engine.md`).
+> **Amaç:** `models/` ağacının **indeksi** — alt klasörlere yönlendirme (§1) + tüm modellerin **birbirleriyle ilişkileri**
+> (§2/§3, tek yerde). Her modelin **alan-düzeyi ayrıntısı** kendi dosyasında, **klasör dizini** ise alt klasör `index.md`'lerindedir.
+> Bu klasör **veri modeli/şema** odaklıdır; **davranış/kullanım** özellik dokümanlarındadır
+> (`../organization-settings/`, `../service-settings/`, `../flovo-bpm-engine.md`).
 >
 > **Anahtar kuralı:** Her modelin birincil anahtarı **`id`** (int). Yabancı anahtarlar **`...Id`** (örn. `serviceId`,
 > `styleId`). Kiracı kimliği **`organizationId`** (int); dış referanslarda **`organizationCode`** (string) kullanılır.
@@ -24,73 +25,22 @@
 
 ---
 
-## 1. Modeller (dizin)
+## 1. Alt klasörler (dizin)
 
-> **Fiziksel yerleşim (özellik klasörleriyle hizalı):** modeller iki alt klasöre ayrıldı — **`organization-settings/`**
-> (Organization + Organizasyon havuzu + **organizasyon ayarları/yapısal veri**) ve **`service-settings/`**
-> (**Solution · Service** + servise bağlı modeller). Ayrıca **`enums/`** — modellerde kullanılan **enum tanımlarının**
-> (kanonik değer listeleri) tek yerde indekslendiği alt klasör (→ [`enums/enums.md`](enums/enums.md)). Bu indeks (`models.md`) kökte kalır.
+> Modeller **fiziksel olarak alt klasörlere** ayrılmıştır (özellik klasörleriyle hizalı). Her alt klasörün **kendi
+> `index.md`'si** o klasördeki modelleri tek tek listeler; buradaki tablo yalnız **klasör düzeyinde** özet + yönlendirmedir.
+> Model **ilişkileri** (klasörler arası) aşağıda §2/§3'te tek yerde tutulur.
 
-### Kiracı & hiyerarşi
-| Model | Dosya | Kısa açıklama |
+| Klasör | İçerik (özet) | İndeks |
 |---|---|---|
-| **Organization** | [`organization.md`](./organization-settings/organization.md) | Kiracı (tenant). En üst kapsayıcı. |
+| **organization-settings/** | Kiracıya bağlı **yapısal veri** + **organizasyon havuzu** (eski "Account Settings"): Organization · Company · Department · Profession · Position · User · UserGroup · Translation · Style · Status · Action · CostCenter · WorkerLevel · CreditCard · AdditionalQualification · WorkingSchedule · VacationDay · ProcessTransfer · SchedulerJob. | [`organization-settings/index.md`](./organization-settings/index.md) |
+| **service-settings/** | Bir **Solution/Service** altındaki tasarım modelleri: Solution · Service (`formType`) · Property/PropertyItem · ProcessViewProfile ailesi · ProcessStep · ProcessStepAction · BusinessRule/BusinessRuleCondition. | [`service-settings/index.md`](./service-settings/index.md) |
+| **processInstances/** | Ayarlardan üretilen **çalışma-zamanı (runtime)** kayıtları: ProcessInstance · ProcessStepInstance · Instance · InstanceAwaitingUser · UserGroupApprovedUser · RelatedInstance. 🟢 TANIMLI. | [`processInstances/index.md`](./processInstances/index.md) |
+| **enums/** | Modellerde kullanılan **enum tanımları** (kanonik değer listeleri; ör. `actionType`, `controlTypeId`, `formType`). | [`enums/index.md`](./enums/index.md) |
 
-> **Solution** ve **Service** — service-settings kırılımının **başladığı** yer olduğu için fiziksel olarak
-> **`service-settings/`** altındadır (aşağıdaki "Servis hiyerarşisi & servise bağlı" bölümü).
-
-### Organizasyon havuzu (organizasyona bağlı — servislerde kullanılır)
-| Model | Dosya | Kısa açıklama |
-|---|---|---|
-| **Translation** | [`translation.md`](./organization-settings/translation.md) | `code`-bazlı çok dilli metinler (ortak + organizasyon). |
-| **Style** | [`style.md`](./organization-settings/style.md) | Renk/görünüm varlığı (bg + font). |
-| **Status** | [`status.md`](./organization-settings/status.md) | Kaydın aşaması (etiket). |
-| **Action** | [`action.md`](./organization-settings/action.md) | Aksiyon **şablonu** (ActionDto); adıma eklenince kopyalanır. |
-
-### Servis hiyerarşisi & servise bağlı (`service-settings/`)
-| Model | Dosya | Kısa açıklama |
-|---|---|---|
-| **Solution** | [`solution.md`](./service-settings/solution.md) | Servisleri gruplayan tanım (organizasyona bağlı). |
-| **Service** | [`service.md`](./service-settings/service.md) | İş sürecinin/formun tamamı (solution altında). **`formType`**: form/parameter/eventForm. |
-| **Property** | [`property.md`](./service-settings/property.md) | Form alanı (kontrol tipiyle render edilir). |
-| **PropertyItem** | [`property-item.md`](./service-settings/property-item.md) | Seçim alanının statik seçeneği. |
-| **ProcessViewProfile** | [`view-profile.md`](./service-settings/view-profile.md) | Formun adım-bazlı görünümü. |
-| **ProcessViewProfileProperty** | [`view-profile-property.md`](./service-settings/view-profile-property.md) | Profildeki tek alan yapılandırması. |
-| **ProcessViewProfilePropertySetting** | [`view-profile-property-setting.md`](./service-settings/view-profile-property-setting.md) | Alanın profil-bazlı tipe-özel override'ı (key/value). |
-| **ProcessStep** | [`process-step.md`](./service-settings/process-step.md) | Süreç adımı (akıştaki düğüm). |
-| **ProcessStepAction** | [`process-step-action.md`](./service-settings/process-step-action.md) | Aksiyonun adıma bağlanması (binding). |
-| **BusinessRule** | [`business-rule.md`](./service-settings/business-rule.md) | Frontend realtime form davranışı. 🟡 en son şekillenecek. |
-| **BusinessRuleCondition** | [`business-rule-condition.md`](./service-settings/business-rule-condition.md) | İş kuralı koşulu (recursive). 🟡 en son. |
-
-### Organizasyon ayarları (yapısal veri — `organization-settings/`; eski "Account Settings" DTO'ları)
-| Model | Dosya | Kısa açıklama |
-|---|---|---|
-| **Company** | [`company.md`](./organization-settings/company.md) | Tüzel kişilik (şirket); çok-şirket temeli. |
-| **Department** | [`department.md`](./organization-settings/department.md) | Hiyerarşik birim; departman yöneticisi. |
-| **Profession** | [`profession.md`](./organization-settings/profession.md) | Görev/meslek (eski "Ünvan/Title"). |
-| **User** | [`user.md`](./organization-settings/user.md) | Kişi; BPM onay merci temeli. |
-| **UserGroup** | [`user-group.md`](./organization-settings/user-group.md) | Kullanıcı topluluğu (grup onayı/bildirim/aksiyon yetkisi). |
-| **AdditionalQualification** | [`additional-qualification.md`](./organization-settings/additional-qualification.md) | Dinamik/özel alanlar (+ RelationalType · QualificationValueType · **QualificationItem** alt modeli — combobox). |
-| **CostCenter** | [`cost-center.md`](./organization-settings/cost-center.md) | Masraf merkezi. |
-| **WorkerLevel** | [`worker-level.md`](./organization-settings/worker-level.md) | Çalışan seviyesi. |
-| **WorkingSchedule** | [`working-schedule.md`](./organization-settings/working-schedule.md) | Haftalık çalışma takvimi (Timer temeli). |
-| **VacationDay** | [`vacation-day.md`](./organization-settings/vacation-day.md) | Tatil günleri. |
-| **CreditCard** | [`credit-card.md`](./organization-settings/credit-card.md) | Kurumsal kart. |
-| **ProcessTransfer** | [`process-transfer.md`](./organization-settings/process-transfer.md) | Görev devri (operasyon). |
-| **SchedulerJob** | [`scheduler-job.md`](./organization-settings/scheduler-job.md) | Cron arka plan görevi (+ log). |
-
-### İş akışı / çalıştırma (runtime — `processInstances/`)
-> 🟢 **TANIMLI** — ayarlardan (`Service`/`ProcessStep`/`Property`…) motor tarafından üretilen **çalışma-zamanı**
-> kayıtları. 6 modelin alanları netleşti. _(Açık: `Instance` **property value depolaması** sonraya bırakıldı → `../todo.md`.)_
-
-| Model | Dosya | Kısa açıklama |
-|---|---|---|
-| **ProcessInstance** | [`process-instance.md`](./processInstances/process-instance.md) | Bir servis sürecinin çalıştırma örneği. |
-| **ProcessStepInstance** | [`process-step-instance.md`](./processInstances/process-step-instance.md) | Tek bir adımın çalıştırılması (aksiyon/tetikleyici/zaman). |
-| **Instance** | [`instance.md`](./processInstances/instance.md) | Doldurulmuş form / süreç örneği; mevcut `statusId`. |
-| **InstanceAwaitingUser** | [`instance-awaiting-user.md`](./processInstances/instance-awaiting-user.md) | Formu bekleyen kullanıcı/grup (onay kuyruğu). |
-| **UserGroupApprovedUser** | [`user-group-approved-user.md`](./processInstances/user-group-approved-user.md) | Grup onayında onaylayan üye + zamanı. |
-| **RelatedInstance** | [`related-instance.md`](./processInstances/related-instance.md) | Formlar arası ilişki (property boyutuyla). |
+> **Not:** **Organization** kiracının kökü; **Solution · Service** service-settings kırılımının başladığı yerdir
+> (fiziksel olarak `service-settings/` altında). **Organizasyon havuzu** (Translation/Style/Status/Action) organizasyona
+> bağlıdır ve tüm servislerde kullanılır.
 
 ---
 
@@ -196,7 +146,7 @@ ProcessInstance (id; createdByUserId → User · createdByApiKeyId → ApiKey[ge
 | Varlık | Nerede geçiyor | Not |
 |---|---|---|
 | **ApiKey** (Customer API anahtarı) | `ProcessInstance.createdByApiKeyId`, `ProcessStepInstance.atApiKeyId` | API üzerinden başlatım/tetikleme kimliği (oluşturan `User` değilken "kim yaptı"). **Ad geçici**; Customer API erişim mekanizması kesinleşince doğrulanacak → `../todo.md`. |
-| **ExpenseType / Currency / Position / Tax** | Masraf süreçleri | Masraf tipi, para birimi, pozisyon, vergi — referans dokümanında **kapsam dışı**. |
+| **ExpenseType / Currency / Tax** | Masraf süreçleri | Masraf tipi, para birimi, vergi — referans dokümanında **kapsam dışı**. _(Position/Staff artık modellendi → `organization-settings/position.md`.)_ |
 
 > **Instance (doldurulmuş form) artık modellendi** → `processInstances/` (ProcessInstance · Instance · ProcessStepInstance · InstanceAwaitingUser ·
 > UserGroupApprovedUser · RelatedInstance). 🟢 TANIMLI — yalnız `Instance` **property value depolaması** açık (→ `../todo.md`).
@@ -207,7 +157,7 @@ ProcessInstance (id; createdByUserId → User · createdByApiKeyId → ApiKey[ge
 ---
 
 ## 5. Notlar
-- **Enum'lar** artık **tek yerde** indekslenir → [`enums/enums.md`](enums/enums.md) (kanonik değer listeleri: `actionType`, `controlTypeId`, `businessRuleRuntimeType`, `criterionType`, `valueType`, `formType`...). Her model, kullandığı enum'a **buradan link** verir ve **o değerin o modeldeki rolünü** kendi içinde anlatır.
+- **Enum'lar** artık **tek yerde** indekslenir → [`enums/index.md`](enums/index.md) (kanonik değer listeleri: `actionType`, `controlTypeId`, `businessRuleRuntimeType`, `criterionType`, `valueType`, `formType`...). Her model, kullandığı enum'a **buradan link** verir ve **o değerin o modeldeki rolünü** kendi içinde anlatır.
 - **`Service.formType` (form/parameter/eventForm):** servisin davranışını belirler — **`form`** akış+onay+sahipli `Instance`
   (`creatorUserId` dolu, `InstanceAwaitingUser`); **`parameter`** onaysız veri-kaynağı (`Instance` oluşur, `creatorUserId`
   **null**, `InstanceAwaitingUser`'a bakılmaz); **`eventForm`** akışsız/`Instance`'sız (pop-up viewprofile → `parameters`;
@@ -225,13 +175,14 @@ ProcessInstance (id; createdByUserId → User · createdByApiKeyId → ApiKey[ge
 - **Organizasyon ayarları (yapısal veri):** eski "Account Settings" DTO'larından türetildi; tümü **`organizationId` (int)**
   ile kiracıya bağlı (`accountId` string→int; `account*`→`organization*`; Türkçe alanlar İngilizceye normalize; **Title→Profession**).
   **Company** ve **User** merkez düğümlerdir. BPM tüketimi: **User/UserGroup** → onay merci/atama · **WorkingSchedule+VacationDay**
-  → Timer/zaman aşımı · **Department/Profession** → yönetici atama tipleri · **CostCenter/CreditCard** → masraf.
+  → Timer/zaman aşımı · **Department/Profession** → yönetici atama tipleri · **Position/Staff** → organizasyonel görev yeri +
+  personel slotu (1 kadro ↔ 1 kullanıcı; kullanıcı pozisyonu `Staff.userId` üzerinden) · **CostCenter/CreditCard** → masraf.
 - **Organizasyon ayarları — `active` / `deleted`:** `active` (eski `status`) + `deleted` bulunan master-veri modellerinde
-  (Company · Department · Profession · User · UserGroup · AdditionalQualification · CostCenter · WorkerLevel · WorkingSchedule · CreditCard) **BPM workflow motoru
+  (Company · Department · Profession · Position · User · UserGroup · AdditionalQualification · CostCenter · WorkerLevel · WorkingSchedule · CreditCard) **BPM workflow motoru
   `deleted=true` VEYA `active=false` kayıtları kullanmaz** (ikisi de **not-null**: varsayılan `active=true`, `deleted=false`; yeni kayıtlar böyle oluşur). Fark: **`deleted=true`** frontend'de tamamen **gizli/aktarılmaz/salt**;
   **`active=false`** frontend'de **görünür + düzenlenebilir** (yalnız BPM veri işlemede dışlanır). _(VacationDay'de `active`/`code` yok; ProcessTransfer/SchedulerJob operasyon/altyapı — dokunulmadı.)_
 - **`code` benzersizliği — `(organizationId, code)`:** aynı organizasyonda aynı `code`'lu iki kayıt olamaz.
-  - **Yapısal org-ayarları (10):** Company·Department·Profession·User·UserGroup·AdditionalQualification·CostCenter·WorkerLevel·WorkingSchedule·CreditCard — **`deleted=true` kayıtlar kontrole dahil edilmez**. _(User ayrıca `(organizationId, email)` · `(organizationId, phone)` benzersiz — aynı e-posta farklı org'larda olabilir.)_
+  - **Yapısal org-ayarları (11):** Company·Department·Profession·Position·User·UserGroup·AdditionalQualification·CostCenter·WorkerLevel·WorkingSchedule·CreditCard — **`deleted=true` kayıtlar kontrole dahil edilmez**. _(User ayrıca `(organizationId, email)` · `(organizationId, phone)` benzersiz — aynı e-posta farklı org'larda olabilir; Position'ın `Staff` alt modeli `(positionId, code)` + `userId` benzersiz.)_
   - **Organizasyon havuzu:** **Status · Action** benzersiz; **Style** `code` doluysa (`organizationId=null` sistem tarafı da).
   - **İstisnalar:** **Translation** → `(organizationId, code, languageCode)`; **Organization** → `code` **global** benzersiz.
 - **Yetkilendirme:** `Organization.adminUserIds` (adminler — en az 1 aktif; tüm yetkiler + config'i düzenler) +
