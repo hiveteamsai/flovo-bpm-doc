@@ -34,8 +34,8 @@ Ayrımlar: **ham değer (raw)** ↔ **gösterim (display)** (çeviriye bağlı) 
 
 ## 2. İş kuralları (frontend realtime — `business-rule.md`)
 7. **[R][FE]** Koşul: `expenseType == 1 (Konaklama)` → `nightsCount` alanını **göster + zorunlu** yap.
-8. **[W][FE]** `AssignValueToProperty` (`FromCalculation`): `taxAmount = amount * (vergiOranı/100)` hesapla ve yaz.
-9. **[R/W][FE]** `FillDataSource`: `city` seçilince `district` combobox veri kaynağını doldur (değere bağlı).
+8. **[W][FE]** `assignValueToProperty` (`fromCalculation`): `taxAmount = amount * (vergiOranı/100)` hesapla ve yaz.
+9. **[R/W][FE]** `fillDataSource`: `city` seçilince `district` combobox veri kaynağını doldur (değere bağlı).
 
 ## 3. Motor / akış kararları (backend — `flovo-bpm-engine.md`)
 10. **[W][M]** `changeList`: onaylayan "Onayla" aksiyonuyla `note="uygun"` gönderir → adım **işini yapmadan ÖNCE** forma yazılır.

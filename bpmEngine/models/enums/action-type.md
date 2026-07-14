@@ -1,6 +1,6 @@
-# Enum — actionType (Action)
+# Enum — ActionType
 
-> **Kullanan model:** [`action.md`](../organization-settings/action.md) (`actionType`) · binding: [`process-step-action.md`](../service-settings/process-step-action.md)
+> **Kullanan model:** [`action.md`](../organization-settings/action.md) — alan `actionType`, tip **ActionType** · binding: [`process-step-action.md`](../service-settings/process-step-action.md)
 > **Amaç:** Bir **aksiyonun tetiklenme/çalışma türünü** belirler — kullanıcı aksiyona bastığında ne olacağını (manuel onay mı, cihaz eylemi mi, otomatik mi, pop-up form mu) tanımlar.
 > **Davranış kataloğu:** → [`../../service-settings/process-step-action.md`](../../service-settings/process-step-action.md) §3.
 

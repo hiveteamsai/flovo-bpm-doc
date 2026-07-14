@@ -1,6 +1,6 @@
-# Enum — controlTypeId (Property / kontrol tipi)
+# Enum — ControlType
 
-> **Kullanan model:** [`property.md`](../service-settings/property.md) (`controlTypeId`)
+> **Kullanan model:** [`property.md`](../service-settings/property.md) — alan `controlTypeId`, tip **ControlType**
 > **Amaç:** Bir form alanının **hangi kontrol/görsel eleman** olarak render edileceğini ve hangi tipe-özel alanların geçerli olacağını belirler.
 > **Tam tipe-özel alan kataloğu:** → [`../../service-settings/properties.md`](../../service-settings/properties.md) §3.
 

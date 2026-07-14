@@ -10,15 +10,15 @@
 |---|---|---|---|
 | `id` | int | PK | Adım çalıştırma ID'si. |
 | `processInstanceId` | int | FK → ProcessInstance.id | Ait olduğu iş akışı. |
-| `instanceId` | int (null olabilir) | FK → Instance.id | İlgili form. **Null olabilir:** yeni form oluşturulmadan başka bir iş akışına yönlendiren adımlarda (bkz. aşağıdaki not — Form Yönlendirme). |
+| `instanceId` | int? | FK → Instance.id | İlgili form. **Null olabilir:** yeni form oluşturulmadan başka bir iş akışına yönlendiren adımlarda (bkz. aşağıdaki not — Form Yönlendirme). |
 | `processStepId` | int | FK → ProcessStep.id | Çalıştırılan tasarım adımı. |
-| `atUserId` | int (null olabilir) | FK → User.id | **Aksiyonu tetikleyen kullanıcı** (AT = ActionTrigger). Aksiyon tetiklendiğinde dolar. |
-| `atApiKeyId` | int (null olabilir) | FK → ApiKey | **Aksiyonu tetikleyen API anahtarı** (kullanıcı yerine API başlatımı). Aksiyon tetiklendiğinde dolar. |
+| `atUserId` | int? | FK → User.id | **Aksiyonu tetikleyen kullanıcı** (AT = ActionTrigger). Aksiyon tetiklendiğinde dolar. |
+| `atApiKeyId` | int? | FK → ApiKey | **Aksiyonu tetikleyen API anahtarı** (kullanıcı yerine API başlatımı). Aksiyon tetiklendiğinde dolar. |
 | `executionDate` | datetime | — | Bu adıma **ilk girildiği / çalıştığı** tarih. |
-| `actionTriggerDate` | datetime (null olabilir) | — | **Aksiyonun tetiklendiği** zaman. Aksiyon tetiklendiğinde dolar. |
-| `processStepActionId` | int (null olabilir) | FK → ProcessStepAction.id | Adım **bir aksiyon tetiklenerek** çalıştığında, **hangi aksiyonun** tetiklendiği. |
-| `processStepActionParameter` | string (null olabilir) | — | **Sonraki aksiyona taşınan `ActionTransfer` modelinin JSON kaydı.** Aksiyon tetiklendiğinde dolar. |
-| `atDelegateUserId` | int (null olabilir) | FK → User.id | **Vekaleten** aksiyon alınması durumunda, **vekaleten onaylayan** kişi. |
+| `actionTriggerDate` | datetime? | — | **Aksiyonun tetiklendiği** zaman. Aksiyon tetiklendiğinde dolar. |
+| `processStepActionId` | int? | FK → ProcessStepAction.id | Adım **bir aksiyon tetiklenerek** çalıştığında, **hangi aksiyonun** tetiklendiği. |
+| `processStepActionParameter` | string? | — | **Sonraki aksiyona taşınan `ActionTransfer` modelinin JSON kaydı.** Aksiyon tetiklendiğinde dolar. |
+| `atDelegateUserId` | int? | FK → User.id | **Vekaleten** aksiyon alınması durumunda, **vekaleten onaylayan** kişi. |
 
 ## İlişkiler
 - **N – 1** → `ProcessInstance` (`processInstanceId`), `Instance` (`instanceId`), `ProcessStep` (`processStepId`),

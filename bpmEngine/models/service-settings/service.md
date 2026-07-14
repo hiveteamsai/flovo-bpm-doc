@@ -12,7 +12,7 @@
 | `solutionId` | int | FK → Solution.id | Bağlı solution (organizasyon buradan türetilir). |
 | `code` | string | benzersiz | Servis kodu (izolasyon başlığı `serviceId`; dış referans). |
 | `definition` | string | — | Servis (form) adı/tanımı. |
-| `formType` | enum | — | Servisin **davranış türü** — [`../enums/form-type.md`](../enums/form-type.md): `form` · `parameter` · `eventForm` (varsayılan **`form`**). Bkz. "formType — Servis davranış türü". |
+| `formType` | FormType | — | Servisin **davranış türü** — [`../enums/form-type.md`](../enums/form-type.md): `form` · `parameter` · `eventForm` (varsayılan **`form`**). Bkz. "formType — Servis davranış türü". |
 
 ## `formType` — Servis davranış türü
 Enum tanımı → [`../enums/form-type.md`](../enums/form-type.md). Bir servis, `formType` değerine göre **üç farklı davranış** sergiler:

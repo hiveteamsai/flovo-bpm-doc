@@ -1,6 +1,6 @@
-# Enum — formType (Service)
+# Enum — FormType
 
-> **Kullanan model:** [`service.md`](../service-settings/service.md) (`formType`)
+> **Kullanan model:** [`service.md`](../service-settings/service.md) — alan `formType`, tip **FormType**
 > **Amaç:** Servisin **davranış türünü** belirler — akış olup olmadığını, instance oluşup oluşmadığını ve sahiplik/onay davranışını.
 > **Ayrıntılı davranış:** → [`service.md`](../service-settings/service.md) `## formType` bölümü.
 

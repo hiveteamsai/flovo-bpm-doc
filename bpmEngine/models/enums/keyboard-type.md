@@ -1,6 +1,6 @@
-# Enum — keyboardType (Property)
+# Enum — KeyboardType
 
-> **Kullanan model:** [`property.md`](../service-settings/property.md) (`keyboardType` — Textbox / Phone)
+> **Kullanan model:** [`property.md`](../service-settings/property.md) — alan `keyboardType` (Textbox / Phone), tip **KeyboardType**
 > **Amaç:** Metin girişi alanlarında açılacak **klavye türünü** belirler (ör. metin, sayısal, e-posta).
 
 ## Değerler

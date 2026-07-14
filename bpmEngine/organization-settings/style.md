@@ -5,7 +5,7 @@
 > yapılan yerlerde (aksiyonlar, durumlar...) kullanılır.
 >
 > **İlişki:** `action.md` (aksiyonun `styleId`) · `status.md` (durum stili). _(Not: **form alanlarına bu Style
-> varlığı uygulanmaz**; iş kuralındaki `SetStyle` yalnız tekil görünüm niteliklerini —fontSize/titleColor gibi—
+> varlığı uygulanmaz**; iş kuralındaki `setStyle` yalnız tekil görünüm niteliklerini —fontSize/titleColor gibi—
 > değiştirir, Style varlığı seçmez → `../service-settings/business-rule.md`.)_
 
 ---

@@ -29,12 +29,12 @@
 ## Alanlar — organizasyon bağlantıları
 | Alan | Tip | Anahtar | Açıklama |
 |---|---|---|---|
-| `departmentId` | int (null olabilir) | FK → `department.md` | Departman. |
-| `professionId` | int (null olabilir) | FK → `profession.md` | Ünvan/meslek. |
-| `managerUserId` | int (null olabilir) | FK → User (self-ref) | **Yönetici** (yönetici zinciri). |
-| `costCenterId` | int (null olabilir) | FK → `cost-center.md` | Masraf yeri. |
-| `workerLevelId` | int (null olabilir) | FK → `worker-level.md` | Çalışan seviyesi. |
-| `workingScheduleId` | int (null olabilir) | FK → `working-schedule.md` | Çalışma takvimi. |
+| `departmentId` | int? | FK → `department.md` | Departman. |
+| `professionId` | int? | FK → `profession.md` | Ünvan/meslek. |
+| `managerUserId` | int? | FK → User (self-ref) | **Yönetici** (yönetici zinciri). |
+| `costCenterId` | int? | FK → `cost-center.md` | Masraf yeri. |
+| `workerLevelId` | int? | FK → `worker-level.md` | Çalışan seviyesi. |
+| `workingScheduleId` | int? | FK → `working-schedule.md` | Çalışma takvimi. |
 | `companyIds` | List\<int\> (boş olabilir) | FK → `company.md` (N–N) | İlişkili şirketler. |
 
 > **Tüm organizasyon bağlantıları opsiyoneldir** (nullable); kullanıcı bunların hiçbirine bağlı olmadan da tanımlanabilir.
@@ -53,12 +53,12 @@
 | `id` | int | PK | Kayıt ID'si. |
 | `userId` | int | FK → User | Bağlı kullanıcı. |
 | `qualificationId` | int | FK → `additional-qualification.md` | Ek nitelik. |
-| `stringValue` | string (null olabilir) | — | `valueType=String` ise değer burada. |
-| `doubleValue` | double (null olabilir) | — | `valueType=Double` ise değer burada. |
-| `datetimeValue` | datetime (null olabilir) | — | `valueType=DateTime` ise değer burada. |
-| `comboboxItemId` | int (null olabilir) | FK → `additional-qualification.md` (QualificationItem) | `valueType=Combobox` ise **seçilen öğe**. |
-| `comboboxCode` | string (null olabilir) | — | Seçilen öğenin **kopya `code`**'u (çeviri). |
-| `comboboxDefinition` | string (null olabilir) | — | Seçilen öğenin **kopya `definition`**'ı. |
+| `stringValue` | string? | — | `valueType=string` ise değer burada. |
+| `doubleValue` | double? | — | `valueType=double` ise değer burada. |
+| `datetimeValue` | datetime? | — | `valueType=dateTime` ise değer burada. |
+| `comboboxItemId` | int? | FK → `additional-qualification.md` (QualificationItem) | `valueType=combobox` ise **seçilen öğe**. |
+| `comboboxCode` | string? | — | Seçilen öğenin **kopya `code`**'u (çeviri). |
+| `comboboxDefinition` | string? | — | Seçilen öğenin **kopya `definition`**'ı. |
 
 > **Kredi kartları:** `CreditCard.userId` üzerinden bağlanır (bkz. `credit-card.md`).
 

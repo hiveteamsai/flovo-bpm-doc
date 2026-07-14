@@ -122,12 +122,12 @@ değer atamak için kullanılır.
 **Veri modeli (atama tanımı):**
 | Alan | Tip | Açıklama |
 |---|---|---|
-| `valueType` | enum | `FixedValue` (sabit) / `PropertyValue` (form property değeri) / `FromCalculation` (expression ile hesaplanan değer) |
-| `fixedValue` | string | Sabit değer (`valueType=FixedValue`) |
-| `expression` | string | Değeri üreten ifade (`valueType=FromCalculation`) |
+| `valueType` | ValueAssignType | `fixedValue` (sabit) / `propertyValue` (form property değeri) / `fromCalculation` (expression ile hesaplanan değer) |
+| `fixedValue` | string | Sabit değer (`valueType=fixedValue`) |
+| `expression` | string | Değeri üreten ifade (`valueType=fromCalculation`) |
 | `useDisplay` | bool | Görüntü (display) değerini kullan |
 | `targetPropertyId` | int | Hedef property (değerin yazılacağı alan) |
-| `propertyId` | int | Kaynak property (`valueType=PropertyValue`) |
+| `propertyId` | int | Kaynak property (`valueType=propertyValue`) |
 
 **Alt-servise değer atama:** `useRelatedService` (bool) · `relatedServiceId` (int) · `targetInstancesPropertyId`
 (hedef alt-servis kayıt(lar) property'si).

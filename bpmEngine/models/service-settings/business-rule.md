@@ -15,21 +15,21 @@
 | `definition` | string | — | Kural adı/tanımı. |
 | `icon` | string | — | İkon. |
 | `environmentRestriction` | string | — | Ortam kısıtı. |
-| `businessRuleActionType` | enum | — | Kural aksiyonu (aşağıda) — [`../enums/business-rule-action-type.md`](../enums/business-rule-action-type.md). |
-| `businessRuleRuntimeType` | enum | — | Çalışma zamanı — [`../enums/business-rule-runtime-type.md`](../enums/business-rule-runtime-type.md): `always` / `firstOpening` / `whenChanging`. |
-| `businessRuleConditionType` | enum | — | Koşul birleştirme — [`../enums/business-rule-condition-type.md`](../enums/business-rule-condition-type.md): `and` (VE) / `or` (VEYA). |
+| `businessRuleActionType` | BusinessRuleActionType | — | Kural aksiyonu (aşağıda) — [`../enums/business-rule-action-type.md`](../enums/business-rule-action-type.md). |
+| `businessRuleRuntimeType` | BusinessRuleRuntimeType | — | Çalışma zamanı — [`../enums/business-rule-runtime-type.md`](../enums/business-rule-runtime-type.md): `always` / `firstOpening` / `whenChanging`. |
+| `businessRuleConditionType` | BusinessRuleConditionType | — | Koşul birleştirme — [`../enums/business-rule-condition-type.md`](../enums/business-rule-condition-type.md): `and` (VE) / `or` (VEYA). |
 | `businessRuleConditions` | List\<BusinessRuleCondition\> | — | Koşul listesi (recursive → `business-rule-condition.md`). |
 | `activeViewProfiles` | List\<int\> | FK → ProcessViewProfile.id | Yalnız bu görüntüleme profillerinde çalış. |
 | `shouldNotWorkInReadonlyMode` | bool | — | Salt-okunur modda çalışmasın. |
 
 ### `businessRuleActionType` değerleri (bu modeldeki rol — frontend etkisi)
 Enum tanımı → [`../enums/business-rule-action-type.md`](../enums/business-rule-action-type.md). Bu modelde koşul sağlanınca formda uygulanacak etkiyi belirler:
-- `SetViewForProperties` (visible/enabled/required) · `ChangeViewProfile` · `ApplyValidation` · `ShowMessage` ·
-  `AssignValueToProperty` · `FillDataSource` · `AssignValueToPropertyAttribute` _(isim teyit)_ ·
-  `SetStyle` _(tekil görünüm niteliği — fontSize/titleColor; `../organization-settings/style.md` Style varlığını **seçmez**)_.
+- `setViewForProperties` (visible/enabled/required) · `changeViewProfile` · `applyValidation` · `showMessage` ·
+  `assignValueToProperty` · `fillDataSource` · `assignValueToPropertyAttribute` _(isim teyit)_ ·
+  `setStyle` _(tekil görünüm niteliği — fontSize/titleColor; `../organization-settings/style.md` Style varlığını **seçmez**)_.
 
-> `AssignValueToProperty` değer kaynakları (`ValueAssignType` → [`../enums/value-assign-type.md`](../enums/value-assign-type.md)): `FixedValue` · `PropertyValue` · `FromCalculation` ·
-> `FromDataSet` · `Search` · `HttpRequest`.
+> `assignValueToProperty` değer kaynakları (`ValueAssignType` → [`../enums/value-assign-type.md`](../enums/value-assign-type.md)): `fixedValue` · `propertyValue` · `fromCalculation` ·
+> `fromDataSet` · `search` · `httpRequest`.
 
 ## İlişkiler
 - **N – 1** → `Organization` (`organizationId`), `Service` (`serviceId`).
@@ -37,6 +37,6 @@ Enum tanımı → [`../enums/business-rule-action-type.md`](../enums/business-ru
 - **1 – N** ← `BusinessRuleCondition` (`businessRuleId`).
 
 ## Notlar / açık noktalar
-- İki-katman sınırı (adım ↔ iş kuralı), `FillDataSource` kaynak tipleri, performans (alan-bağımlı tetikleme) → `../../todo.md`.
+- İki-katman sınırı (adım ↔ iş kuralı), `fillDataSource` kaynak tipleri, performans (alan-bağımlı tetikleme) → `../../todo.md`.
 
 *Oluşturma: 2026-07-02.*

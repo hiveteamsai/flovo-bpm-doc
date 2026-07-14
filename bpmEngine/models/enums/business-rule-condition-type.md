@@ -1,6 +1,6 @@
-# Enum — businessRuleConditionType (BusinessRule / BusinessRuleCondition)
+# Enum — BusinessRuleConditionType
 
-> **Kullanan model:** [`business-rule.md`](../service-settings/business-rule.md) · [`business-rule-condition.md`](../service-settings/business-rule-condition.md) (`businessRuleConditionType`) · [`process-step.md`](../service-settings/process-step.md) (**Karşılaştırma** adımı — `conditionType`)
+> **Kullanan model:** [`business-rule.md`](../service-settings/business-rule.md) · [`business-rule-condition.md`](../service-settings/business-rule-condition.md) (alan `businessRuleConditionType`, tip **BusinessRuleConditionType**) · [`process-step.md`](../service-settings/process-step.md) (**Karşılaştırma** adımı — `conditionType`)
 > **Amaç:** Bir koşul grubundaki alt koşulların **mantıksal birleştirme** biçimini belirler.
 
 ## Değerler

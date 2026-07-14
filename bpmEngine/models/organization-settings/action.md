@@ -14,12 +14,12 @@
 | `definition` | string | — | Aksiyon adı/etiketi (çeviri: `code` → Translation). |
 | `icon` | string | — | İkon. |
 | `styleId` | int | FK → Style.id | Renk/görünüm (bg + font). |
-| `actionType` | enum | — | Aksiyonun **türü** (aşağıda) — [`../enums/action-type.md`](../enums/action-type.md). |
+| `actionType` | ActionType | — | Aksiyonun **türü** (aşağıda) — [`../enums/action-type.md`](../enums/action-type.md). |
 | `defaultAction` | bool | — | Varsayılan aksiyon mu (↔ `default` kodu; birleşim açık → `../../todo.md`). |
 | `validation` | bool | — | Form validasyonu gerekli mi. |
 | `stayOnPage` | bool | — | Aksiyon sonrası sayfada kal. |
 | `showHistory` | bool | — | Süreç geçmişini göster. |
-| `actionDisplayType` | enum | — | Görünürlük — [`../enums/action-display-type.md`](../enums/action-display-type.md): `invisible` / `everywhere` / `onlyFormDetail` / `onlyFastApprove`. |
+| `actionDisplayType` | ActionDisplayType | — | Görünürlük — [`../enums/action-display-type.md`](../enums/action-display-type.md): `invisible` / `everywhere` / `onlyFormDetail` / `onlyFastApprove`. |
 
 ### `actionType` değerleri (bu modeldeki rol)
 Enum tanımı → [`../enums/action-type.md`](../enums/action-type.md). Bu modelde aksiyonun tetiklenme davranışını belirler:

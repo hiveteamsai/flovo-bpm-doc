@@ -30,7 +30,7 @@
 | `status` | string | — | Çalışma durumu. |
 | `errorMessage` | string | — | Hata mesajı (başarısızsa). |
 | `triggeredBy` | string | — | Tetikleyen (zamanlayıcı / manuel). |
-| `triggeredByUserId` | int (null olabilir) | FK → `user.md` | Manuel tetikleyen kullanıcı. |
+| `triggeredByUserId` | int? | FK → `user.md` | Manuel tetikleyen kullanıcı. |
 | `durationSeconds` | double | — | Çalışma süresi. |
 
 ## İlişkiler

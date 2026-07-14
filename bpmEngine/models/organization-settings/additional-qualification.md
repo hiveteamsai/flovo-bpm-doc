@@ -12,7 +12,7 @@
 | `organizationId` | int | FK → `organization.md` | Sahibi organizasyon. |
 | `code` | string | — | Nitelik kodu. |
 | `definition` | string | — | Nitelik tanımı. |
-| `valueType` | enum | — | Değerin **tipi** — `QualificationValueType` ([`../enums/qualification-value-type.md`](../enums/qualification-value-type.md)) (String/Double/DateTime/Combobox); değerin hangi **typed sütuna** yazılacağını belirler. |
+| `valueType` | QualificationValueType | — | Değerin **tipi** ([`../enums/qualification-value-type.md`](../enums/qualification-value-type.md)) (string/double/dateTime/combobox); değerin hangi **typed sütuna** yazılacağını belirler. |
 | `active` | bool | — | Aktif/pasif — **null olamaz**, varsayılan `true`. `false` = frontend'de **görünür/düzenlenebilir** ama BPM işlemede kullanılmaz. |
 | `deleted` | bool | — | Soft-delete — **null olamaz**, varsayılan `false`. `true` = frontend'de **gizli/aktarılmaz/salt** + BPM işlemede kullanılmaz. |
 | `companyIds` | List\<int\> | FK → `company.md` (N–N) | Nitelik kapsamındaki şirketler. |
@@ -22,37 +22,37 @@
 |---|---|---|---|
 | `id` | int | PK | Kayıt ID'si. |
 | `additionalQualificationId` | int | FK → AdditionalQualification | Bağlı nitelik. |
-| `relationalType` | enum | — | İlişkilendirilen varlık türü (aşağıda) — [`../enums/relational-type.md`](../enums/relational-type.md). |
+| `relationalType` | RelationalType | — | İlişkilendirilen varlık türü (aşağıda) — [`../enums/relational-type.md`](../enums/relational-type.md). |
 | `required` | bool | — | Bu varlık için zorunlu mu. |
 
 ### Enum — RelationalType
 Enum tanımı → [`../enums/relational-type.md`](../enums/relational-type.md). Bu modelde niteliğin hangi varlığa uygulandığını ve değerin hangi `...QualificationValue` alt modeline yazılacağını belirler.
 | Index | Değer | Hedef varlık |
 |---|---|---|
-| 0 | `Users` | `user.md` |
-| 1 | `Departments` | `department.md` |
-| 2 | `Professions` | `profession.md` |
-| 3 | `CostCenters` | `cost-center.md` |
-| 4 | `WorkerLevels` | `worker-level.md` |
+| 0 | `users` | `user.md` |
+| 1 | `departments` | `department.md` |
+| 2 | `professions` | `profession.md` |
+| 3 | `costCenters` | `cost-center.md` |
+| 4 | `workerLevels` | `worker-level.md` |
 
 ### Enum — QualificationValueType
 Enum tanımı → [`../enums/qualification-value-type.md`](../enums/qualification-value-type.md). Niteliğin **değer tipi**; value modelinde hangi **typed sütunun** kullanılacağını belirler.
 | Index | Değer | Depolanan sütun |
 |---|---|---|
-| 0 | `String` | `stringValue` (string) |
-| 1 | `Double` | `doubleValue` (double) |
-| 2 | `DateTime` | `datetimeValue` (datetime) |
-| 3 | `Combobox` | `comboboxItemId` + kopya `comboboxCode` / `comboboxDefinition` |
+| 0 | `string` | `stringValue` (string) |
+| 1 | `double` | `doubleValue` (double) |
+| 2 | `dateTime` | `datetimeValue` (datetime) |
+| 3 | `combobox` | `comboboxItemId` + kopya `comboboxCode` / `comboboxDefinition` |
 
-## Alt model — QualificationItem (combobox seçeneği; `valueType = Combobox`)
-`valueType=Combobox` olan nitelik, **kendi combobox seçeneklerini** ek nitelik sayfasında **`QualificationItem`** olarak
+## Alt model — QualificationItem (combobox seçeneği; `valueType = combobox`)
+`valueType=combobox` olan nitelik, **kendi combobox seçeneklerini** ek nitelik sayfasında **`QualificationItem`** olarak
 tanımlar. `PropertyItem` yapısından türetildi **fakat `Property` ile ilişkisi YOKTUR** (`propertyId` yerine
 `additionalQualificationId`). Değer atama ekranında (`relationalType`'a göre) bu seçeneklerden **biri seçilir**.
 
 | Alan | Tip | Anahtar | Açıklama |
 |---|---|---|---|
 | `id` | int | PK | Öğe ID'si. |
-| `additionalQualificationId` | int | FK → AdditionalQualification | Bağlı ek nitelik (Combobox tipli). |
+| `additionalQualificationId` | int | FK → AdditionalQualification | Bağlı ek nitelik (combobox tipli). |
 | `value` | string | — | Seçilen değer; `(additionalQualificationId, value)` **benzersiz**. |
 | `code` | string | — | Çeviri eşleşme kodu (→ `translation.md`); öğe metni buradan çözülür. |
 | `definition` | string | — | Öğe tanımı (yönetim ekranında görünen ad). |
@@ -63,8 +63,8 @@ tanımlar. `PropertyItem` yapısından türetildi **fakat `Property` ile ilişki
 ## Değer saklama (varlık başına)
 Bir niteliğin **değeri**, hedef varlığın kendi "qualification value" alt modelinde tutulur. Ortak desen —
 `{ id, <entity>Id, qualificationId, stringValue, doubleValue, datetimeValue, comboboxItemId, comboboxCode, comboboxDefinition }`:
-niteliğin **`valueType`**'ına göre **yalnız ilgili sütun(lar)** doldurulur — String→`stringValue` · Double→`doubleValue` ·
-DateTime→`datetimeValue` · **Combobox→`comboboxItemId` + kopya `comboboxCode`/`comboboxDefinition`** (diğerleri `null`).
+niteliğin **`valueType`**'ına göre **yalnız ilgili sütun(lar)** doldurulur — string→`stringValue` · double→`doubleValue` ·
+dateTime→`datetimeValue` · **combobox→`comboboxItemId` + kopya `comboboxCode`/`comboboxDefinition`** (diğerleri `null`).
 Value modelleri: `UserQualificationValue` · `DepartmentQualificationValue` · `ProfessionQualificationValue` ·
 `CostCenterQualificationValue` · `WorkerLevelQualificationValue`.
 
@@ -74,7 +74,7 @@ Value modelleri: `UserQualificationValue` · `DepartmentQualificationValue` · `
 ## İlişkiler
 - **N – 1** → `Organization` · **N – N** → `Company` (`companyIds`).
 - **1 – N** ← `AdditionalQualificationRelation` (`additionalQualificationId`).
-- **1 – N** ← `QualificationItem` (`additionalQualificationId`) — yalnız `valueType=Combobox` (combobox seçenekleri).
+- **1 – N** ← `QualificationItem` (`additionalQualificationId`) — yalnız `valueType=combobox` (combobox seçenekleri).
 - **Değer:** `relationalType`'a göre ilgili varlığın `...QualificationValue` kaydında (`qualificationId` FK).
 
 *Oluşturma: 2026-07-03.*

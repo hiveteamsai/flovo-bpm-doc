@@ -77,7 +77,7 @@ Mevcut **15 adım tipi** (biri, `atama`, enum'da tanımlı ama **kullanılmayan*
 **🔧 Adım ortak yapısı (`ProcessStepDto`) değişiklikleri**
 - **Kaldırıldı:** `selectModalItemDeactive`, `canSelectExpenses` → görüntüleme/seçim profili konusu (Form List).
 - **Taşındı → Değer Atama:** `useRelatedService`, `relatedServiceId`, `targetInstancesFieldId` (→ `targetInstancesPropertyId`).
-- **Değer Atama:** `valueType` değeri `FormValue` → **`PropertyValue`**; `targetFieldId`→`targetPropertyId`, `fieldId`→`propertyId`; ayrıca **`FromCalculation`** (+`expression`) değer kaynağı eklendi.
+- **Değer Atama:** `valueType` değeri `FormValue` → **`PropertyValue`**; `targetFieldId`→`targetPropertyId`, `fieldId`→`propertyId`; ayrıca **`fromCalculation`** (+`expression`) değer kaynağı eklendi.
 
 ---
 
@@ -173,13 +173,13 @@ Mevcut **30 ControlType** → yeni **19 alan** (16 founder + **3 mevcuttan korun
 **✏️ Yeniden adlandırılan**
 | Eski | Yeni |
 |---|---|
-| `SetViewForFields` | `SetViewForProperties` |
-| `AssignValueToField` | `AssignValueToProperty` |
-| `AssignValueToPropertyField` | `AssignValueToPropertyAttribute` _(⚠️ teyit)_ |
+| `SetViewForFields` | `setViewForProperties` |
+| `AssignValueToField` | `assignValueToProperty` |
+| `assignValueToPropertyField` | `assignValueToPropertyAttribute` _(⚠️ teyit)_ |
 | `FieldValue` / `FormValue` | `PropertyValue` |
-| `Function` (değer kaynağı) | `HttpRequest` |
+| `Function` (değer kaynağı) | `httpRequest` |
 
-**↔ Korundu:** `ChangeViewProfile`, `ApplyValidation`, `ShowMessage`, `FillDataSource`, `SetStyle`, runtime tipleri (always/firstOpening/whenChanging), recursive koşullar.
+**↔ Korundu:** `changeViewProfile`, `applyValidation`, `showMessage`, `fillDataSource`, `setStyle`, runtime tipleri (always/firstOpening/whenChanging), recursive koşullar.
 
 ---
 

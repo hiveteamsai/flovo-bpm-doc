@@ -16,8 +16,8 @@
 | `id` | int | PK | Bekleme kaydı ID'si. |
 | `instanceId` | int | FK → Instance.id | Beklenen form. |
 | `processStepInstanceId` | int | FK → ProcessStepInstance.id | Bekleme hangi adım çalıştırmasında oluştu. |
-| `userId` | int (null olabilir) | FK → User.id | Aksiyon alabilecek **kullanıcı**. _(`userId` **veya** `userGroupId`'den biri dolu olmak zorunda.)_ |
-| `userGroupId` | int (null olabilir) | FK → UserGroup.id | Aksiyon alabilecek **kullanıcı grubu** (gruptaki üyeler aksiyon alabilir). |
+| `userId` | int? | FK → User.id | Aksiyon alabilecek **kullanıcı**. _(`userId` **veya** `userGroupId`'den biri dolu olmak zorunda.)_ |
+| `userGroupId` | int? | FK → UserGroup.id | Aksiyon alabilecek **kullanıcı grubu** (gruptaki üyeler aksiyon alabilir). |
 
 ## Kayıt oluşma senaryoları (kaç kayıt, hangi alan dolar)
 Adımın atama tipine göre **bir veya birden çok** `InstanceAwaitingUser` kaydı oluşur:

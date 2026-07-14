@@ -15,7 +15,7 @@
 | `code` | string | — | Kart kodu. |
 | `definition` | string | — | Kart adı/tanımı. |
 | `cardNumber` | string | — | Kart numarası. |
-| `userId` | int (null olabilir) | FK → `user.md` | Bağlı kullanıcı (opsiyonel). |
+| `userId` | int? | FK → `user.md` | Bağlı kullanıcı (opsiyonel). |
 | `isCommonCard` | bool | — | Ortak kart mı (herkes kullanabilir). |
 | `active` | bool | — | Aktif/pasif — **null olamaz**, varsayılan `true`. `false` = frontend'de **görünür/düzenlenebilir** ama BPM işlemede kullanılmaz. |
 | `deleted` | bool | — | Soft-delete — **null olamaz**, varsayılan `false`. `true` = frontend'de **gizli/aktarılmaz/salt** + BPM işlemede kullanılmaz. |

@@ -12,7 +12,7 @@
 | `code` | string | Unique | Organizasyon **kodu**; **benzersiz**. **Dış referanslarda** (API/entegrasyon) `id` yerine bu kullanılır. |
 | `name` | string | — | Organizasyon **adı** (kullanıcıya görünen). |
 | `defaultLang` | string | — | **Varsayılan dil**; **sabit set** `tr`/`en`/`de` içinden. Çeviri çözümlemesinde aktif dilin başlangıcı. |
-| `logoUrl` | string (null olabilir) | — | Organizasyon **logosu** (görsel URL). Başlık/rapor/bildirimlerde marka. |
+| `logoUrl` | string? | — | Organizasyon **logosu** (görsel URL). Başlık/rapor/bildirimlerde marka. |
 | `idleTimeoutMinute` | int | — | **Boşta kalma zaman aşımı** (dk). **null olamaz, varsayılan `0`**. `0` = disable; `>0` iken süre dolunca oturum kilitlenir. |
 | `adminUserIds` | List\<int\> | FK → `user.md` | **Organizasyon adminleri** (**en az 1 aktif**). Yetki yapılandırmasını yalnız bunlar değiştirir; **tüm yetkilere** sahiptir. |
 
@@ -22,10 +22,10 @@ Yetkiler **organizasyon bazında** yönetilir (eski `User.authorizationLevel` ka
 
 | Alan | Tip | Anahtar | Yetki |
 |---|---|---|---|
-| `impersonationUserGroupId` | int (null olabilir) | FK → `user-group.md` | Kullanıcı yerine geçme |
-| `organizationSettingsUserGroupId` | int (null olabilir) | FK → `user-group.md` | Organizasyon (yapısal) ayarları erişimi |
-| `serviceSettingsUserGroupId` | int (null olabilir) | FK → `user-group.md` | Servis ayarları erişimi |
-| `viewAllReportsUserGroupId` | int (null olabilir) | FK → `user-group.md` | Tüm raporları görme |
+| `impersonationUserGroupId` | int? | FK → `user-group.md` | Kullanıcı yerine geçme |
+| `organizationSettingsUserGroupId` | int? | FK → `user-group.md` | Organizasyon (yapısal) ayarları erişimi |
+| `serviceSettingsUserGroupId` | int? | FK → `user-group.md` | Servis ayarları erişimi |
+| `viewAllReportsUserGroupId` | int? | FK → `user-group.md` | Tüm raporları görme |
 
 > **Çözümleme:** kullanıcı **admin** (`adminUserIds`) ise tüm yetkilere sahiptir; değilse ilgili `*UserGroupId` grubunun
 > üyesiyse o yetkiye sahiptir. Yetki yapılandırmasını (**`adminUserIds`** + bu grup alanları) **yalnız adminler** düzenler.

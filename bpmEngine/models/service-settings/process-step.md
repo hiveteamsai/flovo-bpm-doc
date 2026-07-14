@@ -27,7 +27,7 @@
 |---|---|
 | HTTP Request | `endpoint` · `method` · `templateParameters` · `queryParameters` · `headers` · `body` · `returns` · `async` |
 | Flovo AI | seçili AI + AI'a özel ayarlar · dosya kaynağı (thumbnail / file alanı) |
-| Değer Atama | `valueType` (değer kaynağı `ValueAssignType` → [`../enums/value-assign-type.md`](../enums/value-assign-type.md): `FixedValue`/`PropertyValue`/`FromCalculation`…) · `fixedValue` · `expression` · `useDisplay` · `targetPropertyId` · `propertyId` · (alt-servis) `useRelatedService`·`relatedServiceId`·`targetInstancesPropertyId` |
+| Değer Atama | `valueType` (değer kaynağı `ValueAssignType` → [`../enums/value-assign-type.md`](../enums/value-assign-type.md): `fixedValue`/`propertyValue`/`fromCalculation`…) · `fixedValue` · `expression` · `useDisplay` · `targetPropertyId` · `propertyId` · (alt-servis) `useRelatedService`·`relatedServiceId`·`targetInstancesPropertyId` |
 | Karşılaştırma | `conditions` · `conditionType` (`and`/`or` → [`../enums/business-rule-condition-type.md`](../enums/business-rule-condition-type.md)) · operatörler (`criterionType` → [`../enums/criterion-type.md`](../enums/criterion-type.md)) |
 | Switch | seçili alan · değere göre eşleşen aksiyon (default zorunlu) |
 | Bildirim | kanal (Mail/Push/Toast) · alıcılar · TR/EN başlık+mesaj · (Push/Toast) `parameters` |

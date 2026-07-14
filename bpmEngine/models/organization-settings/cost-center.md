@@ -24,12 +24,12 @@
 | `id` | int | PK | Kayıt ID'si. |
 | `costCenterId` | int | FK → CostCenter | Bağlı masraf merkezi. |
 | `qualificationId` | int | FK → `additional-qualification.md` | Ek nitelik. |
-| `stringValue` | string (null olabilir) | — | `valueType=String` ise değer burada. |
-| `doubleValue` | double (null olabilir) | — | `valueType=Double` ise değer burada. |
-| `datetimeValue` | datetime (null olabilir) | — | `valueType=DateTime` ise değer burada. |
-| `comboboxItemId` | int (null olabilir) | FK → `additional-qualification.md` (QualificationItem) | `valueType=Combobox` ise **seçilen öğe**. |
-| `comboboxCode` | string (null olabilir) | — | Seçilen öğenin **kopya `code`**'u (çeviri). |
-| `comboboxDefinition` | string (null olabilir) | — | Seçilen öğenin **kopya `definition`**'ı. |
+| `stringValue` | string? | — | `valueType=string` ise değer burada. |
+| `doubleValue` | double? | — | `valueType=double` ise değer burada. |
+| `datetimeValue` | datetime? | — | `valueType=dateTime` ise değer burada. |
+| `comboboxItemId` | int? | FK → `additional-qualification.md` (QualificationItem) | `valueType=combobox` ise **seçilen öğe**. |
+| `comboboxCode` | string? | — | Seçilen öğenin **kopya `code`**'u (çeviri). |
+| `comboboxDefinition` | string? | — | Seçilen öğenin **kopya `definition`**'ı. |
 
 ## Benzersizlik
 > `(organizationId, code)` **benzersiz** — aynı organizasyonda aynı `code`'lu iki kayıt olamaz. **`deleted=true` kayıtlar kontrole dahil değildir** (soft-delete edilenler bu kontrolde sayılmaz).
@@ -37,6 +37,6 @@
 ## İlişkiler
 - **N – 1** → `Organization`, `Company` (`companyId`).
 - **1 – N** ← `Department` (`costCenterId`), `User` (`costCenterId`).
-- **Ek nitelikler:** `AdditionalQualification` (`RelationalType=CostCenters`).
+- **Ek nitelikler:** `AdditionalQualification` (`RelationalType=costCenters`).
 
 *Oluşturma: 2026-07-03.*

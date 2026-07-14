@@ -30,7 +30,7 @@ yoktur; **pozisyon kaydıyla birlikte** oluşturulur/güncellenir/silinir (pozis
 | `positionId` | int | FK → Position | Bağlı pozisyon. |
 | `code` | string | — | Kod. |
 | `definition` | string | — | Ad/tanım. |
-| `userId` | int (null olabilir) | FK → `user.md` | Atanan kullanıcı (**1 kadro 1 kullanıcı**). Oluşturmada zorunlu; **tekil atama kuralı** gereği geçici boşalabilir (aşağıda). |
+| `userId` | int? | FK → `user.md` | Atanan kullanıcı (**1 kadro 1 kullanıcı**). Oluşturmada zorunlu; **tekil atama kuralı** gereği geçici boşalabilir (aşağıda). |
 | `active` | bool | — | Aktif/pasif — Position ile aynı kural (**null olamaz**, varsayılan `true`). |
 | `synchronizationStatus` | bool | — | Senkron durumu. |
 
@@ -52,7 +52,7 @@ yoktur; **pozisyon kaydıyla birlikte** oluşturulur/güncellenir/silinir (pozis
 ## Notlar
 - **Position ≠ Profession ≠ Staff:** **`Profession`** (`profession.md`) = meslek/görev tanımı (örn. Müdür, Uzman);
   **`Position`** = organizasyonel görev yeri (örn. Satış Müdürlüğü); **`Staff`** = pozisyondaki somut personel slotu.
-- **`IOrganizationParameter`:** `Position`, iş kurallarının veri kaynaklarında (FillDataSource) **organizasyon parametresi**
+- **`IOrganizationParameter`:** `Position`, iş kurallarının veri kaynaklarında (fillDataSource) **organizasyon parametresi**
   olarak kullanılabilir.
 
 *Oluşturma: 2026-07-13.*

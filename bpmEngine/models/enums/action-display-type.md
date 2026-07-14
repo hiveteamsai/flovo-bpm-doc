@@ -1,6 +1,6 @@
-# Enum — actionDisplayType (Action)
+# Enum — ActionDisplayType
 
-> **Kullanan model:** [`action.md`](../organization-settings/action.md) (`actionDisplayType`)
+> **Kullanan model:** [`action.md`](../organization-settings/action.md) — alan `actionDisplayType`, tip **ActionDisplayType**
 > **Amaç:** Aksiyonun **hangi ekran bağlamında görüneceğini** belirler.
 
 ## Değerler

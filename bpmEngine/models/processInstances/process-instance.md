@@ -9,11 +9,11 @@
 | Alan | Tip | Anahtar | Açıklama / amaç |
 |---|---|---|---|
 | `id` | int | PK | İş akışı çalıştırma ID'si. |
-| `createdByUserId` | int (null olabilir) | FK → User.id | Akışı başlatan kullanıcı. _(kullanıcı **veya** API anahtarı — biri dolu.)_ |
-| `createdByApiKeyId` | int (null olabilir) | FK → ApiKey (geçici) | Customer API ile oluşturulan kayıtlarda **kim yaptı** bilgisi — oluşturan doğrudan bir `User` olmadığından. Ad **geçici**; içeriği Customer API erişim mekanizması kesinleşince doğrulanacak. |
+| `createdByUserId` | int? | FK → User.id | Akışı başlatan kullanıcı. _(kullanıcı **veya** API anahtarı — biri dolu.)_ |
+| `createdByApiKeyId` | int? | FK → ApiKey (geçici) | Customer API ile oluşturulan kayıtlarda **kim yaptı** bilgisi — oluşturan doğrudan bir `User` olmadığından. Ad **geçici**; içeriği Customer API erişim mekanizması kesinleşince doğrulanacak. |
 | `createdDate` | datetime | — | Oluşturulma zamanı. |
 | `serviceId` | int | FK → Service.id | Hangi servisin süreci çalıştırılıyor. |
-| `parentProcessInstanceId` | int (null olabilir) | FK → ProcessInstance.id (self) | **Alt süreç** ise tetikleyen **ana sürecin `ProcessInstance`** id'si. **Null = ana süreç** (üst akış yok). |
+| `parentProcessInstanceId` | int? | FK → ProcessInstance.id (self) | **Alt süreç** ise tetikleyen **ana sürecin `ProcessInstance`** id'si. **Null = ana süreç** (üst akış yok). |
 
 ## İlişkiler
 - **N – 1** → `Service` (`serviceId`), `User` (`createdByUserId`), `ApiKey` (`createdByApiKeyId`),

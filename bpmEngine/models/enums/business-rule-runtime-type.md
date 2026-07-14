@@ -1,6 +1,6 @@
-# Enum — businessRuleRuntimeType (BusinessRule)
+# Enum — BusinessRuleRuntimeType
 
-> **Kullanan model:** [`business-rule.md`](../service-settings/business-rule.md) (`businessRuleRuntimeType`)
+> **Kullanan model:** [`business-rule.md`](../service-settings/business-rule.md) — alan `businessRuleRuntimeType`, tip **BusinessRuleRuntimeType**
 > **Amaç:** Kuralın form yaşam döngüsünde **ne zaman değerlendirileceğini** belirler.
 
 ## Değerler

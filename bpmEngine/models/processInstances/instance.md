@@ -12,7 +12,7 @@
 | `id` | int | PK | Instance ID'si. |
 | `serviceId` | int | FK → Service.id | Formun ait olduğu servis. |
 | `processInstanceId` | int | FK → ProcessInstance.id | Formu oluşturan iş akışı. |
-| `creatorUserId` | int (null olabilir) | FK → User.id | Instance sahibi / oluşturan kullanıcı. **`parameter` tipi serviste boş (null)** — veri-kaynağı kayıtlarının sahibi yoktur (→ `../service-settings/service.md` `formType`). |
+| `creatorUserId` | int? | FK → User.id | Instance sahibi / oluşturan kullanıcı. **`parameter` tipi serviste boş (null)** — veri-kaynağı kayıtlarının sahibi yoktur (→ `../service-settings/service.md` `formType`). |
 | `createdDate` | datetime | — | **Instance Creator** adımının formu **oluşturduğu** tarih. |
 | `delete` | bool | — | **Soft-delete** işareti. `true` = kayıt silinmiş sayılır (fiziksel silme yok). |
 | `statusId` | int | FK → Status.id | Formun **mevcut durumu** (organizasyon havuzu Status). |
@@ -30,7 +30,7 @@
   ayrı value tablolarında mı) daha detaylı araştırma sonrası kararlaştırılacak; alan-düzeyi tanımlar burada değil, ayrı
   **değer dokümantasyonunda** yapılacak → `../../form-value-scenarios.md` (§12) · `../../todo.md`.
 - **`delete` = soft-delete** işaretidir (fiziksel silme yapılmaz); `delete` alanı içeren tüm modellerde aynı kural geçerlidir.
-- **Validasyon durumu (açık soru):** validasyonları iş akışından **sürekli tekrar yapmamak** ve iş kuralı (`ApplyValidation`)
+- **Validasyon durumu (açık soru):** validasyonları iş akışından **sürekli tekrar yapmamak** ve iş kuralı (`applyValidation`)
   validasyonlarıyla **tutarsızlığı önlemek** için `Instance`'a **`validated` (bool)** alanı mı eklenmeli, yoksa ayrı bir
   **`FormValidation`** tablosu mu oluşturulmalı? → `../../todo.md`.
 

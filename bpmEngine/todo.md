@@ -74,7 +74,7 @@
   `editOnlyOwnPosition` nasıl yönetilecek (profil-bazlı mı)? _(properties §4 / §3.13)_ · _(`addNewEnabled`→`activeStartActions`,
   `addFromExistingRecordsIsActive`→`addFromExistingStatusIds` (profil), `selectedEnable`→`selectableVisible` (profil): **çözüldü**.)_
 - [ ] **Combobox/Radiobutton seçenek kaynağı** — statik (`propertyItems`) ↔ dinamik (`dataSource`) modeli ve iş kuralı
-  `FillDataSource` ile ilişkisi; `FillDataSource` kaynak tipleri (Organization/User/API). _(properties §4 · work-rule §6)_
+  `fillDataSource` ile ilişkisi; `fillDataSource` kaynak tipleri (Organization/User/API). _(properties §4 · work-rule §6)_
 - [ ] **Timer üçlüsü** (Timer / Timer Start / Timer End) yaşam döngüsü ve bağlanması; global timer kayıtları?
   _(process-step §4)_
 - [ ] **Süreç Bitişi "önceki adıma taşıma"** — yeniden-açma (re-open) mı, ayrı akış mı? Denetim izine etkisi.
@@ -84,7 +84,7 @@
 - [ ] **`default action` kavramı** — her adımda mı, yoksa yalnız HTTP Request(async)/Timer gibi adımlarda mı?
   _(process-step §4)_
 - [ ] **Raporlama** ayrı özellik olarak nasıl modellenecek? _(view-profile §3 / §5)_
-- [ ] **`ChangeViewProfile`** çalışma-zamanı profil değişiminin akış (motor) ile etkileşimi. _(view-profile §5)_
+- [ ] **`changeViewProfile`** çalışma-zamanı profil değişiminin akış (motor) ile etkileşimi. _(view-profile §5)_
 - [ ] **Customer API** — kimlik/yetki (token kapsam/süre/yenileme); webhook güvenliği (secret/imza) + **idempotency**;
   `POST /instances/search` sorgu dili; rate limit/sayfalama/hata sözleşmesi; request/response şemaları. _(flovo-customer-api §3)_
 - [ ] **Yetkilendirme (permissions) — açık kalanlar:** **(a)** `ProcessStepAction.authorizationLevel` (aksiyon-düzeyi sayısal
@@ -133,7 +133,7 @@
 - [ ] **`actionDisplayType`** gözden geçir (`invisible`/`everywhere`/`onlyFormDetail`/`onlyFastApprove`). _(action §3)_
 - [x] **`eventForm` formu** — **ÇÖZÜLDÜ:** `formType = eventForm` olan servisin **görüntüleme profilidir**; aksiyon alınırken seçili profildeki alanlar **pop-up** olur, sonuç **`parameters`** ile taşınır (`Instance`/akış yok). _(process-step-action §3.2 · models/service-settings/service.md)_
 - [ ] **`changeList` öğe yapısı** (alan id + yeni değer + tip?) ve **`action` nesnesinin şekli**. _(process-step-action §7)_
-- [ ] **`AssignValueToPropertyAttribute`** adı teyit. _(work-rule §6)_
+- [ ] **`assignValueToPropertyAttribute`** adı teyit. _(work-rule §6)_
 - [ ] **İş kuralı performansı** — `always` kuralları yalnız ilgili property değişince (alan-bağımlı) tetiklensin mi?
   _(work-rule §6)_
 - [ ] **Status: kategori/grup** — raporlama/filtreleme için `code`/`definition` yeterli mi, ayrı kategori boyutu gerekli mi?
@@ -146,7 +146,7 @@
   Organization sonraki alanlar: plan/abonelik, timezone, para birimi, bölge, güvenlik. _(organization §4)_
 - [x] **`actionType` isim çakışması — ÇÖZÜLDÜ (v0.7):** BusinessRule alanı `actionType` → **`businessRuleActionType`**
   olarak yeniden adlandırıldı; **`Action.actionType`** aynen kaldı. _(business-rule.md · index.md Notlar · business-rule-action-type.md)_
-- [ ] **`valueType` isim çakışması** — AdditionalQualification `valueType` (**QualificationValueType**: String/Double/DateTime/Combobox)
+- [ ] **`valueType` isim çakışması** — AdditionalQualification `valueType` (**QualificationValueType**: string/double/dateTime/combobox)
   ↔ süreç adımı Değer Atama `valueType` (**ValueAssignType**: değer kaynağı) aynı ada sahip; ayrı enum'lardır, yeniden
   adlandırma (opsiyonel). _(models/enums/index.md Notlar · additional-qualification · process-step §3.4)_
 - [ ] **Çeviri `definition` ↔ `defaultLang` tutarlılığı** — organizasyon `defaultLang`'ini sonradan değiştirirse eski
@@ -184,9 +184,9 @@
   yakın adı + kapsam örtüşmesi netleştirilmeli (eşiğin ve gerekliliğin tek sahibi kim; opsiyon seti hepsi/biri). _(process-step §3.16 ·
   models/organization-settings/user-group.md · models/processInstances/user-group-approved-user.md)_
 - [ ] **Form validasyon durumu — `Instance.validated` (bool) mü, `FormValidation` tablosu mu?** İş akışından validasyonları **sürekli
-  tekrar yapmamak** ve **iş kuralı** (BusinessRule `ApplyValidation`) ile oluşturulan validasyonlarla **tutarsızlık yaşamamak** için:
+  tekrar yapmamak** ve **iş kuralı** (BusinessRule `applyValidation`) ile oluşturulan validasyonlarla **tutarsızlık yaşamamak** için:
   `Instance` modeline **`validated` (bool)** alanı mı eklenmeli, yoksa ayrı bir **`FormValidation`** tablosu mu oluşturulmalı? Karar
-  sonraya. _(models/processInstances/instance.md · business-rule.md `ApplyValidation` · flovo-bpm-engine.md)_
+  sonraya. _(models/processInstances/instance.md · business-rule.md `applyValidation` · flovo-bpm-engine.md)_
 - [x] **Solution & Service modellendi** — hiyerarşi `Organization → Solution → Service` netleşti; `models/service-settings/solution.md`
   ve `models/service-settings/service.md` oluşturuldu. Alan ayrıntıları (ikon/versiyon/yetki vb.) daha sonra detaylandırılacak.
 
@@ -204,9 +204,9 @@
 
 - **Kimlik tipi:** `organizationId` her yerde **int** (eski app'teki `accountId` = yeni `organizationCode`'a denk).
   `string` tipler int'e çevrildi.
-- **Style ↔ alan:** Form alanları `style.md` Style varlığını **kullanmaz**; iş kuralı `SetStyle` yalnız tekil görünüm
+- **Style ↔ alan:** Form alanları `style.md` Style varlığını **kullanmaz**; iş kuralı `setStyle` yalnız tekil görünüm
   niteliğini (fontSize/titleColor) değiştirir. Style tüketicileri = aksiyon + durum.
-- **Değer Atama:** `valueType`'a `FromCalculation` (+ `expression`) eklendi (özetteki "hesaplayarak" ile hizalandı).
+- **Değer Atama:** `valueType`'a `fromCalculation` (+ `expression`) eklendi (özetteki "hesaplayarak" ile hizalandı).
 - **Processing:** frontende form/response döner ama beklemez → `default` ile otomatik ilerler (yeniden sınıflandırıldı).
 - **View-profile + diğer modeller:** eksik primary/secondary key'ler eklendi (`id`, `serviceId`, `processStepId`);
   alan-referansları `...Id` (FK) yapıldı (`processViewProfileId`, `organizationUserGroupIds`, `styleId`).

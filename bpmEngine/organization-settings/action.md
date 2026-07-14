@@ -29,12 +29,12 @@ yetki...) ise **binding**'de tutulur → `../service-settings/process-step-actio
 | `definition` | string | Aksiyon adı/etiketi |
 | `icon` | string | İkon |
 | `styleId` | int | Renk/görünüm (bg + font) — **Style** varlığına FK referans (→ `style.md`) |
-| `actionType` | enum | Aksiyonun **türü** (`manual` / `eventForm` / `takePhoto` / `selectFile` / `scanBarcode` / `webhook` / `autoAction`); tür kataloğu → `../service-settings/process-step-action.md` §3 |
+| `actionType` | ActionType | Aksiyonun **türü** (`manual` / `eventForm` / `takePhoto` / `selectFile` / `scanBarcode` / `webhook` / `autoAction`); tür kataloğu → `../service-settings/process-step-action.md` §3 |
 | `defaultAction` | bool | Varsayılan aksiyon mu _(↔ `default` kodu — `../service-settings/process-step-action.md` §7)_ |
 | `validation` | bool | Form validasyonu gerekli mi |
 | `stayOnPage` | bool | Aksiyon sonrası sayfada kal |
 | `showHistory` | bool | Süreç geçmişini göster |
-| `actionDisplayType` | enum | Görünürlük: `invisible` / `everywhere` / `onlyFormDetail` / `onlyFastApprove` |
+| `actionDisplayType` | ActionDisplayType | Görünürlük: `invisible` / `everywhere` / `onlyFormDetail` / `onlyFastApprove` |
 
 > **[Karar]** `actionType` ve `styleId` **ActionDto şablonunda** yaşar; adıma eklenince **kopyalanır**. Adım-binding
 > bunları **tekrar tutmaz** (→ `../service-settings/process-step-action.md` §1.2).

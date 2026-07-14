@@ -24,7 +24,7 @@
 | `active` | bool | — | O gün çalışılıyor mu. |
 | `day` | int | — | Gün (1=Pazartesi … 7=Pazar). |
 | `period1Start` / `period1End` | datetime | — | 1. periyot başlangıç/bitiş. |
-| `period2Start` / `period2End` | datetime (null olabilir) | — | 2. periyot (opsiyonel). |
+| `period2Start` / `period2End` | datetime? | — | 2. periyot (opsiyonel). |
 
 ## Benzersizlik
 > `(organizationId, code)` **benzersiz** — aynı organizasyonda aynı `code`'lu iki kayıt olamaz. **`deleted=true` kayıtlar kontrole dahil değildir** (soft-delete edilenler bu kontrolde sayılmaz).

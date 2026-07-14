@@ -1,6 +1,6 @@
-# Enum — barcodeFormat (Property)
+# Enum — BarcodeFormat
 
-> **Kullanan model:** [`property.md`](../service-settings/property.md) (`barcodeFormat` — Barcode)
+> **Kullanan model:** [`property.md`](../service-settings/property.md) — alan `barcodeFormat` (Barcode), tip **BarcodeFormat**
 > **Amaç:** Barcode kontrolünün **tanıyacağı/tarayacağı barkod biçimini** belirler (ör. QR, EAN, Code128).
 
 ## Değerler

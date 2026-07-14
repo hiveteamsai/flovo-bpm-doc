@@ -112,13 +112,13 @@
 ---
 
 ## 8. İş Kuralı (`BusinessRule`)
-- `SetViewForFields` > **`SetViewForProperties`**
-- `AssignValueToField` > **`AssignValueToProperty`**
-- `AssignValueToPropertyField` > **`AssignValueToPropertyAttribute`** _(⚠️ teyit)_
+- `SetViewForFields` > **`setViewForProperties`**
+- `AssignValueToField` > **`assignValueToProperty`**
+- `assignValueToPropertyField` > **`assignValueToPropertyAttribute`** _(⚠️ teyit)_
 - `FieldValue` / `FormValue` > **`PropertyValue`**
-- `Function` (değer kaynağı) > **`HttpRequest`**
+- `Function` (değer kaynağı) > **`httpRequest`**
 - `-- FromEba` (değer kaynağı — Eba kaldırıldı)
-- **↔ Korunan:** `ChangeViewProfile` · `ApplyValidation` · `ShowMessage` · `FillDataSource` · `SetStyle`
+- **↔ Korunan:** `changeViewProfile` · `applyValidation` · `showMessage` · `fillDataSource` · `setStyle`
 
 ---
 
@@ -129,7 +129,7 @@
 
 **Eklenen adımlar**
 - `Flovo AI ++` · `Switch ++` · `Processing ++` · `Instance Creator ++` · `Instance Deleter ++` · `Form Yönlendirme ++` · `Süreç Adımı Tetikleme ++`
-- (Değer kaynağı) `FromCalculation ++` (+ `expression ++`)
+- (Değer kaynağı) `fromCalculation ++` (+ `expression ++`)
 
 **Kaldırılan adımlar / alanlar**
 - `-- Adım İptali` (`stepCancellation`)

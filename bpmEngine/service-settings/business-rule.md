@@ -40,9 +40,9 @@ veri kaynağı doldurma, stil vb.
 | `definition` | string | Kural adı/tanımı |
 | `icon` | string | İkon |
 | `environmentRestriction` | string | Ortam kısıtlaması |
-| `businessRuleActionType` | enum | Kural aksiyon tipi (§3) |
-| `businessRuleRuntimeType` | enum | Çalışma zamanı: `always` / `firstOpening` / `whenChanging` |
-| `businessRuleConditionType` | enum | Koşul birleştirme (`and`/`or`) |
+| `businessRuleActionType` | BusinessRuleActionType | Kural aksiyon tipi (§3) |
+| `businessRuleRuntimeType` | BusinessRuleRuntimeType | Çalışma zamanı: `always` / `firstOpening` / `whenChanging` |
+| `businessRuleConditionType` | BusinessRuleConditionType | Koşul birleştirme (`and`/`or`) |
 | `businessRuleConditions` | List | Koşul listesi (recursive) (§4) |
 | `activeViewProfiles` | List\<int\> | Sadece bu görüntüleme profillerinde çalış (→ `view-profile.md`) |
 | `shouldNotWorkInReadonlyMode` | bool | Salt-okunur modda çalışmasın |
@@ -54,18 +54,18 @@ veri kaynağı doldurma, stil vb.
 
 | Aksiyon | Ne yapar |
 |---|---|
-| `SetViewForProperties` | Hedef property'lerin `visible` / `enabled` / `required` durumunu ayarlar |
-| `ChangeViewProfile` | Aktif görüntüleme profilini değiştirir (→ `view-profile.md`) |
-| `ApplyValidation` | Koşullu validasyon; sağlanmazsa hata mesajı |
-| `ShowMessage` | Kullanıcıya bilgi mesajı (başlık + içerik; dinamik değer) |
-| `AssignValueToProperty` | Bir property'nin **değerine** değer atar (§3.1) |
-| `FillDataSource` | Combobox / Form List gibi seçim alanlarının veri kaynağını doldurur |
-| `AssignValueToPropertyAttribute` | Property'nin **değerine değil, bir niteliğine** (attribute) değer atar _(⚠️ isim teyit — §6)_ |
-| `SetStyle` | Property/form'un **tekil görünüm niteliklerini** (örn. `fontSize`, `titleColor`) değiştirir. **`../organization-settings/style.md` Style varlığını seçmez** — daha spesifik, tekil nitelik değişimidir |
+| `setViewForProperties` | Hedef property'lerin `visible` / `enabled` / `required` durumunu ayarlar |
+| `changeViewProfile` | Aktif görüntüleme profilini değiştirir (→ `view-profile.md`) |
+| `applyValidation` | Koşullu validasyon; sağlanmazsa hata mesajı |
+| `showMessage` | Kullanıcıya bilgi mesajı (başlık + içerik; dinamik değer) |
+| `assignValueToProperty` | Bir property'nin **değerine** değer atar (§3.1) |
+| `fillDataSource` | Combobox / Form List gibi seçim alanlarının veri kaynağını doldurur |
+| `assignValueToPropertyAttribute` | Property'nin **değerine değil, bir niteliğine** (attribute) değer atar _(⚠️ isim teyit — §6)_ |
+| `setStyle` | Property/form'un **tekil görünüm niteliklerini** (örn. `fontSize`, `titleColor`) değiştirir. **`../organization-settings/style.md` Style varlığını seçmez** — daha spesifik, tekil nitelik değişimidir |
 
-### 3.1 — `AssignValueToProperty` değer kaynakları (`ValueAssignType`)
-`FixedValue` (sabit) · `PropertyValue` (başka bir property'nin değeri) · `FromCalculation` (expression) ·
-`FromDataSet` (veri setinden) · `Search` (arama) · `HttpRequest` (HTTP Request çağrısı ile → `process-step.md` §3.2).
+### 3.1 — `assignValueToProperty` değer kaynakları (`ValueAssignType`)
+`fixedValue` (sabit) · `propertyValue` (başka bir property'nin değeri) · `fromCalculation` (expression) ·
+`fromDataSet` (veri setinden) · `search` (arama) · `httpRequest` (HTTP Request çağrısı ile → `process-step.md` §3.2).
 
 ---
 
@@ -81,8 +81,8 @@ Her koşul iki değerin bir **operatörle** karşılaştırılmasıdır; koşull
 | `businessRuleConditionType` | Alt grup birleştirme (`and`/`or`) |
 | `businessRuleConditions` | İç içe koşullar (recursive) |
 
-**Karşılaştırma değer tipleri (`BusinessRuleConditionCompareType`):** `PropertyValue` · `ViewProfile` (aktif görüntüleme
-profili) · `FixedValue` · `FromCalculate` (expression).
+**Karşılaştırma değer tipleri (`BusinessRuleConditionCompareType`):** `propertyValue` · `viewProfile` (aktif görüntüleme
+profili) · `fixedValue` · `fromCalculate` (expression).
 
 ---
 
@@ -105,7 +105,7 @@ profili) · `FixedValue` · `FromCalculate` (expression).
 > atfıyla bulunur; verilen kararlar bu dokümanın **gövdesinde** anlatılır.
 
 > **Çözülenler (yerel karar log'u):**
-- [x] **`SetStyle`** `style.md` Style varlığını **seçmez**; yalnız tekil görünüm niteliklerini (`fontSize`, `titleColor` vb.) değiştirir. _(Detay, iş kuralı en son şekillenince netleşecek → §7.)_
+- [x] **`setStyle`** `style.md` Style varlığını **seçmez**; yalnız tekil görünüm niteliklerini (`fontSize`, `titleColor` vb.) değiştirir. _(Detay, iş kuralı en son şekillenince netleşecek → §7.)_
 - [x] İş kuralları **servis-bazlı** tanımlanır (bir servise ait — `serviceId`).
 
 ---

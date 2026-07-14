@@ -1,6 +1,6 @@
-# Enum — criterionType (operatör)
+# Enum — CriterionType
 
-> **Kullanan model:** [`business-rule-condition.md`](../service-settings/business-rule-condition.md) (`criterionType`) · [`process-step.md`](../service-settings/process-step.md) (**Karşılaştırma** adımı — koşul operatörleri)
+> **Kullanan model:** [`business-rule-condition.md`](../service-settings/business-rule-condition.md) (alan `criterionType`, tip **CriterionType**) · [`process-step.md`](../service-settings/process-step.md) (**Karşılaştırma** adımı — koşul operatörleri)
 > **Amaç:** Bir koşulda iki değerin **hangi operatörle** karşılaştırılacağını belirler.
 
 ## Değerler

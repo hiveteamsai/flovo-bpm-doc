@@ -33,7 +33,7 @@ Yeni BPM motoru tasarım dökümanları **doğrudan `bpmEngine/` altındadır.**
 | `flovo-bpm-engine.md` · `flovo-customer-api.md` | Motor çalışma prensibi · Customer API. |
 | `organization-settings/` | Tüm servislerde kullanılan ayarlar (**action** · **style** · **status** · **translation** · **organization** · **permissions**). |
 | `service-settings/` | Servise bağlı ayarlar (**process-step** · **process-step-action** · **properties** · **business-rule** · **view-profile**). |
-| `models/` | **Veri modelleri (şema referansı)** — model dizini + ilişki haritası (`models.md`) + her model için alan-düzeyi dosya + **`enums/`** (enum tanımları). |
+| `models/` | **Veri modelleri (şema referansı)** — model dizini + ilişki haritası (`models/index.md`) + her model için alan-düzeyi dosya + **`enums/`** (enum tanımları). |
 | `todo.md` | **Açık kararlar/sorular** — tüm dokümanların **önceliklendirilmiş** tek listesi (Tier 0–3). |
 | `sampleProcess/` | Uçtan uca **örnek süreçler** (görselli, self-servis). |
 | `research/` | **BPM referansları + karşılaştırmalar:** `current-flovo-bpm-engine/` (mevcut/eski Flovo BPM) · `n8n/` (referans analizleri) · `compare/` (**new-vs-current** · **new-vs-current-names** [isim değişiklikleri] · **new-vs-n8n** farkları + başarılı/başarısız). |
@@ -56,3 +56,12 @@ Daha önce yapılan **pazar/ürün araştırmaları, ESN vakaları, vizyon ve su
    tutulur. Tasarım dökümanlarına eski-app karşılaştırması / "eski adı …" ifadeleri **konmaz**.
 5. **Mevcut (eski) Flovo BPM referansı:** `bpmEngine/research/current-flovo-bpm-engine/`.
 6. **Kaynak göster:** internet araştırmasında kullanılan kaynakları doküman sonunda linkle.
+7. **Commit-notu workflow'u (`commitNotes/`):** Her sürümün değişiklikleri bir **`v0-X.md`** çalışma dosyasında toplanır
+   (bölümler: 🆕 Eklenenler · 🔧 Değişenler/kararlar · 🩹 Düzeltmeler · ❓ Yeni açık sorular · ✅ Çözülen açık sorular).
+   **Commit/push yalnız kullanıcı açıkça isteyince** yapılır (varsayılan dal `main`; commit mesajı Türkçe `v0.X — …`).
+   **Commit sırası — üç adım, sırasıyla:**
+   **(a)** güncel `v0-X.md`'yi **kapat** — başlığı sürüm özetine çevir, "Durum: 🟡 AÇIK …" satırını "**Kapsam:** …" özetiyle değiştir;
+   **(b)** `git add -A` + commit + push;
+   **(c)** **hemen ardından** bir sonraki **`v0-(X+1).md`**'yi **AÇIK boş şablon** olarak oluştur (Önceki linki, "Durum: 🟡 AÇIK",
+   bekleyen açık konular, boş bölümler).
+   ⚠️ **Adım (c) HER committen sonra ZORUNLUDUR — atlanmaz** (aksi hâlde bir sonraki sürümün çalışma dosyası eksik kalır).

@@ -10,7 +10,7 @@
 |---|---|---|---|
 | `id` | int | PK | Çeviri kaydı ID'si. |
 | `code` | string | eşleştirme anahtarı | Çeviri **kodu** (serbest metin; istenirse `form.submit` gibi namespace). Metinler bu `code` ile çözülür. |
-| `organizationId` | int (null olabilir) | FK → Organization.id | Sahibi organizasyon. **`null` = ortak (Flovo) çeviri** (herkes kullanır, salt-okunur). |
+| `organizationId` | int? | FK → Organization.id | Sahibi organizasyon. **`null` = ortak (Flovo) çeviri** (herkes kullanır, salt-okunur). |
 | `languageCode` | string | — | **Dil kodu** — sabit set (`tr`/`en`/`de`; krş. `organization.defaultLang`). |
 | `definition` | string | — | Bu **dildeki metin** (`languageCode` dilinde). |
 

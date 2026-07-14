@@ -16,7 +16,7 @@
 | `serviceId` | int | FK → Service | Bağlı servis. |
 | `code` | string | benzersiz (binding key) | Alanın veriye bağlandığı anahtar; çeviri eşleşmesi için de kullanılır. |
 | `definition` | string | — | Alan tanımı / kullanıcıya görünen etiket (çeviri: `code` → Translation). |
-| `controlTypeId` | int | — | Kontrol tipi (§2 tipe-özel alanları belirler) — [`../enums/control-type.md`](../enums/control-type.md). |
+| `controlTypeId` | ControlType | — | Kontrol tipi (§2 tipe-özel alanları belirler) — [`../enums/control-type.md`](../enums/control-type.md). |
 
 ### 1.2 Görünüm & yardım
 | Alan | Tip | Açıklama / amaç |
