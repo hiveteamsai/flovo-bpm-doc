@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veritabanı Karşılaştırma Analizi — BPM Tool</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            line-height: 1.7;
+            padding: 2rem;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        
+        h1 {
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        h2 {
+            font-size: 1.6rem;
+            color: #60a5fa;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #1e3a5f;
+        }
+        h3 {
+            font-size: 1.2rem;
+            color: #a78bfa;
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+        p { margin-bottom: 1rem; color: #cbd5e1; }
+        
+        .subtitle {
+            color: #94a3b8;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-size: 0.9rem;
+        }
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border: 1px solid #1e293b;
+        }
+        th {
+            background: #1e293b;
+            color: #60a5fa;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        tr:nth-child(even) { background: #1e293b40; }
+        tr:hover { background: #1e293b80; }
+        td:first-child { font-weight: 500; color: #f1f5f9; }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        .card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #334155;
+            transition: border-color 0.2s;
+        }
+        .card:hover { border-color: #60a5fa; }
+        .card h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .card ul {
+            list-style: none;
+            padding: 0;
+        }
+        .card li {
+            padding: 0.3rem 0;
+            padding-left: 1.2rem;
+            position: relative;
+            color: #94a3b8;
+        }
+        .card li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #60a5fa;
+        }
+
+        /* Score badges */
+        .score { display: inline-flex; align-items: center; gap: 0.3rem; }
+        .star { color: #fbbf24; }
+        .star-empty { color: #374151; }
+
+        /* Status indicators */
+        .status-yes { color: #34d399; font-weight: 600; }
+        .status-partial { color: #fbbf24; font-weight: 600; }
+        .status-no { color: #f87171; font-weight: 600; }
+
+        /* Highlight box */
+        .highlight-box {
+            background: linear-gradient(135deg, #1e3a5f 0%, #1e293b 100%);
+            border: 1px solid #3b82f6;
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            margin: 2rem 0;
+        }
+        .highlight-box h3 { color: #60a5fa; margin-top: 0; }
+
+        /* Recommendation */
+        .recommendation {
+            background: linear-gradient(135deg, #064e3b 0%, #1e293b 100%);
+            border: 2px solid #10b981;
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        .recommendation h3 { color: #34d399; margin-top: 0; font-size: 1.3rem; }
+
+        /* Warning box */
+        .warning-box {
+            background: linear-gradient(135deg, #451a03 0%, #1e293b 100%);
+            border: 1px solid #f59e0b;
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            margin: 1.5rem 0;
+        }
+        .warning-box h4 { color: #fbbf24; margin-bottom: 0.5rem; }
+
+        /* Architecture diagram */
+        .diagram-container {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+        }
+
+        /* Supabase section */
+        .supabase-section {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 1px solid #3ecf8e40;
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        .supabase-section h2 {
+            color: #3ecf8e;
+            border-bottom-color: #3ecf8e40;
+        }
+
+        /* Pro/Con lists */
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 1rem 0;
+        }
+        .pros, .cons {
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+        }
+        .pros { background: #064e3b40; border: 1px solid #10b98140; }
+        .cons { background: #450a0a40; border: 1px solid #f8717140; }
+        .pros h4 { color: #34d399; margin-bottom: 0.5rem; }
+        .cons h4 { color: #f87171; margin-bottom: 0.5rem; }
+        .pros li::before { content: "✓"; color: #34d399; }
+        .cons li::before { content: "✗"; color: #f87171; }
+        .pros ul, .cons ul { list-style: none; padding: 0; }
+        .pros li, .cons li {
+            padding: 0.3rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            color: #94a3b8;
+        }
+        .pros li::before, .cons li::before {
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        /* Cost table highlight */
+        .cost-highlight { color: #34d399; font-weight: 700; }
+        .cost-warning { color: #f87171; font-weight: 700; }
+
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .card-grid { grid-template-columns: 1fr; }
+            .pros-cons { grid-template-columns: 1fr; }
+            table { font-size: 0.8rem; }
+            th, td { padding: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Veritabanı Karşılaştırma Analizi</h1>
+        <p class="subtitle">BPM Tool (Yeni Yapı) İçin En Uygun Veritabanı Seçimi</p>
+
+        <!-- ============================================ -->
+        <!-- BÖLÜM 1: Değerlendirilen Veritabanları -->
+        <!-- ============================================ -->
+        <h2>1. Değerlendirilen Veritabanları</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Veritabanı</th>
+                    <th>Tip</th>
+                    <th>Lisans</th>
+                    <th>Managed Hizmetler</th>
+                    <th>Olgunluk</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>PostgreSQL</td>
+                    <td>İlişkisel (RDBMS)</td>
+                    <td>PostgreSQL License (MIT benzeri)</td>
+                    <td>Azure DB, Supabase, Neon, AWS RDS</td>
+                    <td>35+ yıl</td>
+                </tr>
+                <tr>
+                    <td>MongoDB</td>
+                    <td>Document (NoSQL)</td>
+                    <td>SSPL (açık kaynak değil)</td>
+                    <td>Atlas, Azure CosmosDB (API uyum)</td>
+                    <td>15+ yıl</td>
+                </tr>
+                <tr>
+                    <td>MySQL / MariaDB</td>
+                    <td>İlişkisel (RDBMS)</td>
+                    <td>GPL</td>
+                    <td>Azure DB, PlanetScale, AWS RDS</td>
+                    <td>25+ yıl</td>
+                </tr>
+                <tr>
+                    <td>CockroachDB</td>
+                    <td>Distributed SQL</td>
+                    <td>BSL (ticari sınırlama)</td>
+                    <td>Cockroach Cloud</td>
+                    <td>8 yıl</td>
+                </tr>
+                <tr>
+                    <td>SurrealDB</td>
+                    <td>Multi-model</td>
+                    <td>MIT</td>
+                    <td>Yok (self-host zorunlu)</td>
+                    <td>3 yıl</td>
+                </tr>
+                <tr>
+                    <td>SQL Server</td>
+                    <td>İlişkisel (RDBMS)</td>
+                    <td>Ticari (lisans gerekli)</td>
+                    <td>Azure SQL</td>
+                    <td>30+ yıl</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- ============================================ -->
+        <!-- BÖLÜM 2: BPM Gereksinimleri -->
+        <!-- ============================================ -->
+        <h2>2. BPM Tool'un Veritabanı Gereksinimleri</h2>
+        <p>Bir BPM uygulamasının veritabanından beklediği kritik özellikler ve bunların öncelik dereceleri:</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Gereksinim</th>
+                    <th>Açıklama</th>
+                    <th>Kritiklik</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>ACID Transaction</td>
+                    <td>Workflow adım ilerletme + form kaydetme + bildirim gönderme = tek atomik işlem</td>
+                    <td><span class="status-yes">Kritik</span></td>
+                </tr>
+                <tr>
+                    <td>JSONB / Dinamik Veri</td>
+                    <td>Form alanları dinamik — her müşterinin formu farklı şemaya sahip</td>
+                    <td><span class="status-yes">Kritik</span></td>
+                </tr>
+                <tr>
+                    <td>Event Store (Append-Only)</td>
+                    <td>Workflow event'leri kayıt altında tutma, audit trail</td>
+                    <td><span class="status-partial">Çok Önemli</span></td>
+                </tr>
+                <tr>
+                    <td>Full-Text Search</td>
+                    <td>Form içeriklerinde ve workflow açıklamalarında hızlı arama</td>
+                    <td><span class="status-partial">Önemli</span></td>
+                </tr>
+                <tr>
+                    <td>Real-time Subscription</td>
+                    <td>Veri değiştiğinde client'a anında bildirim (WebSocket)</td>
+                    <td><span class="status-partial">Önemli</span></td>
+                </tr>
+                <tr>
+                    <td>Vector / Embedding (AI)</td>
+                    <td>Semantic search, AI ile workflow önerisi (RAG)</td>
+                    <td><span class="status-partial">Önemli</span></td>
+                </tr>
+                <tr>
+                    <td>Multi-tenancy (RLS)</td>
+                    <td>Tenant bazlı veri izolasyonu — DB seviyesinde güvenlik</td>
+                    <td><span class="status-yes">Kritik</span></td>
+                </tr>
+                <tr>
+                    <td>Yüksek Concurrency</td>
+                    <td>1000+ eşzamanlı bağlantı (çok sayıda aktif workflow)</td>
+                    <td><span class="status-partial">Çok Önemli</span></td>
+                </tr>
+                <tr>
+                    <td>Ölçeklenebilirlik</td>
+                    <td>Veri büyüdükçe (milyonlarca satır) performans korunmalı</td>
+                    <td><span class="status-partial">Önemli</span></td>
+                </tr>
+                <tr>
+                    <td>Düşük Maliyet</td>
+                    <td>Açık kaynak, uygun fiyatlı managed hizmet</td>
+                    <td><span class="status-partial">Önemli</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- ============================================ -->
+        <!-- BÖLÜM 3: Gereksinim Uyum Matrisi -->
+        <!-- ============================================ -->
+        <h2>3. Gereksinim Uyum Matrisi</h2>
+        <p>Her veritabanının BPM gereksinimlerini ne ölçüde karşıladığı:</p>
+
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Gereksinim</th>
+                        <th>PostgreSQL</th>
+                        <th>MongoDB</th>
+                        <th>MySQL</th>
+                        <th>CockroachDB</th>
+                        <th>SurrealDB</th>
+                        <th>SQL Server</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>ACID Transaction</td>
+                        <td><span class="status-yes">✅ Tam</span></td>
+                        <td><span class="status-partial">⚠️ Document-level</span></td>
+                        <td><span class="status-yes">✅ Tam</span></td>
+                        <td><span class="status-yes">✅ Distributed</span></td>
+                        <td><span class="status-partial">⚠️ Sınırlı</span></td>
+                        <td><span class="status-yes">✅ Tam</span></td>
+                    </tr>
+                    <tr>
+                        <td>JSONB / Dinamik Veri</td>
+                        <td><span class="status-yes">✅ GIN index</span></td>
+                        <td><span class="status-yes">✅ Native</span></td>
+                        <td><span class="status-partial">⚠️ Yavaş index</span></td>
+                        <td><span class="status-yes">✅ JSONB var</span></td>
+                        <td><span class="status-yes">✅ Native</span></td>
+                        <td><span class="status-partial">⚠️ Sınırlı</span></td>
+                    </tr>
+                    <tr>
+                        <td>Event Store</td>
+                        <td><span class="status-yes">✅ COPY, UNLOGGED</span></td>
+                        <td><span class="status-yes">✅ Hızlı insert</span></td>
+                        <td><span class="status-yes">✅ İyi</span></td>
+                        <td><span class="status-yes">✅ İyi</span></td>
+                        <td><span class="status-yes">✅ İyi</span></td>
+                        <td><span class="status-yes">✅ İyi</span></td>
+                    </tr>
+                    <tr>
+                        <td>Full-Text Search</td>
+                        <td><span class="status-yes">✅ tsvector</span></td>
+                        <td><span class="status-yes">✅ Atlas Search</span></td>
+                        <td><span class="status-partial">⚠️ Temel</span></td>
+                        <td><span class="status-yes">✅ Var</span></td>
+                        <td><span class="status-partial">⚠️ Temel</span></td>
+                        <td><span class="status-yes">✅ Var</span></td>
+                    </tr>
+                    <tr>
+                        <td>Real-time Subscription</td>
+                        <td><span class="status-partial">⚠️ LISTEN/NOTIFY</span></td>
+                        <td><span class="status-partial">⚠️ Change Streams</span></td>
+                        <td><span class="status-no">❌ Yok</span></td>
+                        <td><span class="status-partial">⚠️ Changefeeds</span></td>
+                        <td><span class="status-yes">✅ LIVE SELECT</span></td>
+                        <td><span class="status-no">❌ Yok</span></td>
+                    </tr>
+                    <tr>
+                        <td>Vector / AI (pgvector)</td>
+                        <td><span class="status-yes">✅ pgvector</span></td>
+                        <td><span class="status-yes">✅ Atlas Vector</span></td>
+                        <td><span class="status-no">❌ Yok</span></td>
+                        <td><span class="status-no">❌ Yok</span></td>
+                        <td><span class="status-no">❌ Yok</span></td>
+                        <td><span class="status-no">❌ Yok</span></td>
+                    </tr>
+                    <tr>
+                        <td>Multi-tenancy (RLS)</td>
+                        <td><span class="status-yes">✅ Row Level Security</span></td>
+                        <td><span class="status-partial">⚠️ Manuel filtre</span></td>
+                        <td><span class="status-no">❌ Yok</span></td>
+                        <td><span class="status-yes">✅ Var</span></td>
+                        <td><span class="status-no">❌ Yok</span></td>
+                        <td><span class="status-partial">⚠️ Sınırlı</span></td>
+                    </tr>
+                    <tr>
+                        <td>Connection Handling</td>
+                        <td><span class="status-yes">✅ PgBouncer → 10K+</span></td>
+                        <td><span class="status-yes">✅ Native 10K+</span></td>
+                        <td><span class="status-partial">⚠️ Sınırlı</span></td>
+                        <td><span class="status-yes">✅ İyi</span></td>
+                        <td><span class="status-no">❌ Test edilmemiş</span></td>
+                        <td><span class="status-yes">✅ İyi</span></td>
+                    </tr>
+                    <tr>
+                        <td>Managed Maliyet (aylık)</td>
+                        <td><span class="cost-highlight">$15–65</span></td>
+                        <td><span class="cost-warning">$57+ (Atlas)</span></td>
+                        <td><span class="cost-highlight">$15–50</span></td>
+                        <td><span class="cost-warning">$65+</span></td>
+                        <td><span class="cost-warning">Yok (self-host)</span></td>
+                        <td><span class="cost-warning">$100+ (lisans dahil)</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- BÖLÜM 4: Detaylı Değerlendirme -->
+        <!-- ============================================ -->
+        <h2>4. Detaylı Değerlendirme</h2>
+
+        <div class="card-grid">
+            <div class="card" style="border-color: #3b82f6;">
+                <h4 style="color: #60a5fa;">🐘 PostgreSQL</h4>
+                <ul>
+                    <li>JSONB ile dinamik form verisi — GIN indeks ile hızlı sorgu</li>
+                    <li>pgvector ile AI embedding araması (ayrı vector DB gereksiz)</li>
+                    <li>RLS (Row Level Security) ile DB-seviyesinde multi-tenancy</li>
+                    <li>LISTEN/NOTIFY + Supabase Realtime ile real-time push</li>
+                    <li>35+ yıllık olgunluk, devasa ekosistem, her dilde driver/ORM</li>
+                    <li>Extension sistemi ile sonsuz genişletilebilirlik</li>
+                    <li>Azure Database for PostgreSQL ile managed, HA, VNET entegrasyonu</li>
+                </ul>
+                <p style="margin-top: 1rem; color: #fbbf24; font-size: 0.85rem;">
+                    ⚠️ Native real-time sınırlı (LISTEN/NOTIFY sadece bildirim gönderir). Supabase Realtime veya NATS ile tamamlanır.
+                </p>
+            </div>
+
+            <div class="card">
+                <h4 style="color: #10b981;">🍃 MongoDB</h4>
+                <ul>
+                    <li>Document model dinamik form verisi için doğal uyum</li>
+                    <li>Atlas Vector Search ile embedding desteği</li>
+                    <li>Change Streams ile real-time bildiri</li>
+                    <li>Yatay ölçeklenme (sharding) kolay</li>
+                </ul>
+                <p style="margin-top: 1rem; color: #f87171; font-size: 0.85rem;">
+                    ✗ Cross-document transaction yavaş ve karmaşık (BPM için problem)<br>
+                    ✗ Atlas fiyatlandırması pahalı ($57/ay min, prod'da $100+)<br>
+                    ✗ SSPL lisansı "açık kaynak" değil — ticari kullanımda risk<br>
+                    ✗ RLS yok — multi-tenancy tamamen application seviyesinde
+                </p>
+            </div>
+
+            <div class="card">
+                <h4 style="color: #f59e0b;">🐬 MySQL / MariaDB</h4>
+                <ul>
+                    <li>Güvenilir, olgun, geniş bilgi birikimi</li>
+                    <li>Düşük maliyetli managed seçenekler</li>
+                    <li>Basit CRUD uygulamaları için yeterli</li>
+                </ul>
+                <p style="margin-top: 1rem; color: #f87171; font-size: 0.85rem;">
+                    ✗ JSON indeksleme zayıf — dinamik form verisi için verimsiz<br>
+                    ✗ RLS yok — multi-tenancy DB seviyesinde garanti edilemez<br>
+                    ✗ Vector desteği yok — AI için ayrı DB gerekir<br>
+                    ✗ Real-time subscription yok<br>
+                    ✗ Extension sistemi yok — genişletilemiyor
+                </p>
+            </div>
+
+            <div class="card">
+                <h4 style="color: #8b5cf6;">🪳 CockroachDB</h4>
+                <ul>
+                    <li>Distributed SQL — global ölçek, otomatik sharding</li>
+                    <li>PostgreSQL wire protocol uyumu (pgdriver kullanılabilir)</li>
+                    <li>Multi-region replikasyon otomatik</li>
+                </ul>
+                <p style="margin-top: 1rem; color: #f87171; font-size: 0.85rem;">
+                    ✗ Sizin ölçekte overkill (tek bölge, 50-100 müşteri)<br>
+                    ✗ Tam PG uyumlu değil — pgvector çalışmaz<br>
+                    ✗ BSL lisansı — belirli ticari kullanımlar kısıtlı<br>
+                    ✗ Managed fiyat yüksek ($65+/ay min)
+                </p>
+            </div>
+
+            <div class="card">
+                <h4 style="color: #ec4899;">⚡ SurrealDB</h4>
+                <ul>
+                    <li>LIVE SELECT ile native real-time</li>
+                    <li>Multi-model (document + graph + relational)</li>
+                    <li>MIT lisanslı, Rust ile yazılmış</li>
+                </ul>
+                <p style="margin-top: 1rem; color: #f87171; font-size: 0.85rem;">
+                    ✗ 3 yaşında — production-ready DEĞİL<br>
+                    ✗ Managed hizmet yok (self-host zorunlu)<br>
+                    ✗ Breaking change'ler devam ediyor<br>
+                    ✗ Ekosistem minimal — ORM yok, tooling yetersiz<br>
+                    ✗ Backup/recovery ilkel<br>
+                    ✗ Connection pooling test edilmemiş<br>
+                    ✗ "Veriniz güvende" diyemezsiniz
+                </p>
+            </div>
+
+            <div class="card">
+                <h4 style="color: #64748b;">🗄️ SQL Server (Mevcut)</h4>
+                <ul>
+                    <li>Olgun, güvenilir, enterprise-grade</li>
+                    <li>Temporal tables ile audit trail</li>
+                    <li>Azure SQL ile managed seçenek</li>
+                </ul>
+                <p style="margin-top: 1rem; color: #f87171; font-size: 0.85rem;">
+                    ✗ Pahalı (lisans + Azure SQL = $100+/ay)<br>
+                    ✗ JSON desteği PostgreSQL'in gerisinde<br>
+                    ✗ Vector/embedding desteği yok<br>
+                    ✗ Real-time subscription yok<br>
+                    ✗ Açık kaynak değil — maliyet düşürme hedefine aykırı<br>
+                    ✗ Linux'ta sınırlı extension/tooling
+                </p>
+            </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- BÖLÜM 5: Skor Tablosu -->
+        <!-- ============================================ -->
+        <h2>5. Genel Skor Tablosu</h2>
+        <p>Her veritabanının BPM gereksinimleri, maliyet, olgunluk ve ekosistem açısından toplam puanı (10 üzerinden):</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Veritabanı</th>
+                    <th>BPM Uyumu</th>
+                    <th>Maliyet</th>
+                    <th>Olgunluk</th>
+                    <th>Ekosistem</th>
+                    <th>AI Desteği</th>
+                    <th>Real-time</th>
+                    <th>Toplam (60)</th>
+                    <th>Sıralama</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="background: #064e3b30;">
+                    <td><strong>PostgreSQL</strong></td>
+                    <td><span class="status-yes">10</span></td>
+                    <td><span class="status-yes">9</span></td>
+                    <td><span class="status-yes">10</span></td>
+                    <td><span class="status-yes">10</span></td>
+                    <td><span class="status-yes">9</span></td>
+                    <td><span class="status-partial">7</span></td>
+                    <td><strong style="color: #34d399;">55/60</strong></td>
+                    <td><strong style="color: #34d399;">🥇 1.</strong></td>
+                </tr>
+                <tr>
+                    <td>MongoDB</td>
+                    <td>6</td>
+                    <td>5</td>
+                    <td>8</td>
+                    <td>8</td>
+                    <td>7</td>
+                    <td>7</td>
+                    <td>41/60</td>
+                    <td>🥈 2.</td>
+                </tr>
+                <tr>
+                    <td>CockroachDB</td>
+                    <td>7</td>
+                    <td>5</td>
+                    <td>6</td>
+                    <td>6</td>
+                    <td>3</td>
+                    <td>6</td>
+                    <td>33/60</td>
+                    <td>🥉 3.</td>
+                </tr>
+                <tr>
+                    <td>MySQL</td>
+                    <td>5</td>
+                    <td>9</td>
+                    <td>9</td>
+                    <td>8</td>
+                    <td>2</td>
+                    <td>2</td>
+                    <td>35/60</td>
+                    <td>4.</td>
+                </tr>
+                <tr>
+                    <td>SQL Server</td>
+                    <td>7</td>
+                    <td>3</td>
+                    <td>9</td>
+                    <td>7</td>
+                    <td>2</td>
+                    <td>2</td>
+                    <td>30/60</td>
+                    <td>5.</td>
+                </tr>
+                <tr>
+                    <td>SurrealDB</td>
+                    <td>5</td>
+                    <td>6</td>
+                    <td>2</td>
+                    <td>2</td>
+                    <td>2</td>
+                    <td>9</td>
+                    <td>26/60</td>
+                    <td>6.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- ============================================ -->
+        <!-- BÖLÜM 6: Supabase -->
+        <!-- ============================================ -->
+        <div class="supabase-section">
+            <h2 style="margin-top: 0;">6. Supabase Nedir?</h2>
+            <p><strong>Supabase = PostgreSQL + Hazır Servisler Paketi.</strong> Firebase'in açık kaynak alternatifi olarak konumlanır. 
+            Altında tamamen standart PostgreSQL çalışır, üzerine Auth, Realtime, Storage ve otomatik API katmanları ekler.</p>
+
+            <h3>Supabase Katmanları</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Katman</th>
+                        <th>Ne Sağlar?</th>
+                        <th>Teknoloji</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>PostgreSQL</td>
+                        <td>Ana veritabanı — tam PostgreSQL, pgvector dahil her extension</td>
+                        <td>PostgreSQL 15+</td>
+                    </tr>
+                    <tr>
+                        <td>PostgREST</td>
+                        <td>DB tablolarından otomatik REST API — backend yazmadan CRUD</td>
+                        <td>Haskell (PostgREST)</td>
+                    </tr>
+                    <tr>
+                        <td>Realtime</td>
+                        <td>LISTEN/NOTIFY üzerine WebSocket — DB değişikliği anında client'a</td>
+                        <td>Elixir (Phoenix)</td>
+                    </tr>
+                    <tr>
+                        <td>Auth (GoTrue)</td>
+                        <td>JWT, OAuth2, SAML, SSO — hazır kimlik doğrulama sistemi</td>
+                        <td>Go (GoTrue)</td>
+                    </tr>
+                    <tr>
+                        <td>Storage</td>
+                        <td>S3 uyumlu dosya depolama — resim, belge, ek</td>
+                        <td>Node.js + S3</td>
+                    </tr>
+                    <tr>
+                        <td>Edge Functions</td>
+                        <td>Serverless fonksiyonlar (webhook, trigger)</td>
+                        <td>Deno Runtime</td>
+                    </tr>
+                    <tr>
+                        <td>pgvector</td>
+                        <td>AI embedding araması — ayrı vector DB gereksiz</td>
+                        <td>PostgreSQL extension</td>
+                    </tr>
+                    <tr>
+                        <td>Row Level Security</td>
+                        <td>Multi-tenancy — DB seviyesinde veri izolasyonu</td>
+                        <td>PostgreSQL native</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Supabase Avantajları (BPM Tool İçin)</h3>
+            <div class="pros">
+                <ul>
+                    <li><strong>Real-time built-in:</strong> Form kaydedildi → diğer kullanıcılar anında görür. WebSocket kodu yazmadan.</li>
+                    <li><strong>Auth hazır:</strong> JWT, OAuth2, SSO — login/register/token refresh sıfırdan yazmak yok, 2-3 hafta kazanç.</li>
+                    <li><strong>RLS (Row Level Security):</strong> Multi-tenancy DB seviyesinde garanti. Tenant A, Tenant B'nin verisini asla göremez.</li>
+                    <li><strong>pgvector hazır:</strong> AI embedding araması — ayrı vector DB kurmaya gerek yok.</li>
+                    <li><strong>Otomatik REST API:</strong> Basit CRUD için (admin panel, ayarlar) backend kodu gereksiz.</li>
+                    <li><strong>Self-host edilebilir:</strong> Docker Compose ile kendi sunucunuzda — vendor lock-in yok.</li>
+                    <li><strong>Client SDK:</strong> JS, Flutter, Swift, Kotlin SDK'ları hazır — frontend entegrasyonu hızlı.</li>
+                    <li><strong>Açık kaynak:</strong> Tüm bileşenler MIT/Apache2 — lisans maliyeti yok.</li>
+                </ul>
+            </div>
+
+            <h3>Supabase Dezavantajları (BPM Tool İçin)</h3>
+            <div class="cons">
+                <ul>
+                    <li><strong>PostgREST sınırlı:</strong> Karmaşık business logic (workflow engine, rule evaluation) PostgREST ile yapılamaz — kendi backend şart.</li>
+                    <li><strong>Realtime ölçek sorunu:</strong> 1000+ eşzamanlı WebSocket'te performans düşebilir (Elixir ölçeklenir ama tune gerekir).</li>
+                    <li><strong>Azure'da managed yok:</strong> Supabase Cloud, AWS üzerinde çalışır. Azure'da cross-cloud latency problemi yaratır.</li>
+                    <li><strong>Edge Functions sınırlı:</strong> Deno tabanlı — Go/C# ile yazdığınız core logic burada çalışmaz.</li>
+                    <li><strong>Cloud maliyeti:</strong> Free → Pro ($25/ay) → Team ($599/ay) → Enterprise. Yoğun kullanımda ucuz değil.</li>
+                    <li><strong>Self-host karmaşıklığı:</strong> 10+ container yönetimi (PG, GoTrue, Realtime, PostgREST, Kong, Studio vs).</li>
+                </ul>
+            </div>
+
+            <h3>Supabase BPM Projemizde Nasıl Kullanılır?</h3>
+            <p>Supabase'i <strong>veritabanı olarak değil, veritabanı + hazır servisler paketi</strong> olarak düşünün. Core iş mantığını kendiniz yazarsınız, altyapı servislerini Supabase'den alırsınız:</p>
+
+            <div class="diagram-container">
+                <svg viewBox="0 0 900 520" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: auto;">
+                    <!-- Background -->
+                    <rect width="900" height="520" fill="#0f172a"/>
+                    
+                    <!-- Core BPM Box -->
+                    <rect x="50" y="30" width="380" height="180" rx="12" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+                    <text x="240" y="58" text-anchor="middle" fill="#60a5fa" font-size="14" font-weight="bold">Core BPM (Go Backend)</text>
+                    <text x="240" y="80" text-anchor="middle" fill="#94a3b8" font-size="11">Kendi yazdığınız iş mantığı</text>
+                    
+                    <rect x="75" y="95" width="150" height="35" rx="6" fill="#0f172a" stroke="#334155"/>
+                    <text x="150" y="117" text-anchor="middle" fill="#e2e8f0" font-size="11">Workflow Engine</text>
+                    
+                    <rect x="245" y="95" width="150" height="35" rx="6" fill="#0f172a" stroke="#334155"/>
+                    <text x="320" y="117" text-anchor="middle" fill="#e2e8f0" font-size="11">Rule Engine</text>
+                    
+                    <rect x="75" y="145" width="150" height="35" rx="6" fill="#0f172a" stroke="#334155"/>
+                    <text x="150" y="167" text-anchor="middle" fill="#e2e8f0" font-size="11">Form Builder</text>
+                    
+                    <rect x="245" y="145" width="150" height="35" rx="6" fill="#0f172a" stroke="#334155"/>
+                    <text x="320" y="167" text-anchor="middle" fill="#e2e8f0" font-size="11">Event Sourcing</text>
+                    
+                    <!-- Supabase Box -->
+                    <rect x="50" y="260" width="800" height="230" rx="12" fill="#1a2332" stroke="#3ecf8e" stroke-width="2"/>
+                    <text x="450" y="288" text-anchor="middle" fill="#3ecf8e" font-size="14" font-weight="bold">Supabase (Self-Hosted veya Bileşenler Ayrı)</text>
+                    <text x="450" y="308" text-anchor="middle" fill="#94a3b8" font-size="11">Hazır altyapı servisleri — açık kaynak</text>
+                    
+                    <!-- Supabase Components -->
+                    <rect x="75" y="325" width="160" height="60" rx="8" fill="#064e3b" stroke="#10b981"/>
+                    <text x="155" y="352" text-anchor="middle" fill="#34d399" font-size="12" font-weight="bold">PostgreSQL</text>
+                    <text x="155" y="372" text-anchor="middle" fill="#94a3b8" font-size="10">Ana DB + pgvector + RLS</text>
+                    
+                    <rect x="255" y="325" width="160" height="60" rx="8" fill="#1e3a5f" stroke="#3b82f6"/>
+                    <text x="335" y="352" text-anchor="middle" fill="#60a5fa" font-size="12" font-weight="bold">Realtime</text>
+                    <text x="335" y="372" text-anchor="middle" fill="#94a3b8" font-size="10">WebSocket broadcast</text>
+                    
+                    <rect x="435" y="325" width="160" height="60" rx="8" fill="#312e81" stroke="#818cf8"/>
+                    <text x="515" y="352" text-anchor="middle" fill="#a78bfa" font-size="12" font-weight="bold">Auth (GoTrue)</text>
+                    <text x="515" y="372" text-anchor="middle" fill="#94a3b8" font-size="10">JWT + OAuth2 + SSO</text>
+                    
+                    <rect x="615" y="325" width="160" height="60" rx="8" fill="#451a03" stroke="#f59e0b"/>
+                    <text x="695" y="352" text-anchor="middle" fill="#fbbf24" font-size="12" font-weight="bold">Storage</text>
+                    <text x="695" y="372" text-anchor="middle" fill="#94a3b8" font-size="10">S3 uyumlu dosya</text>
+                    
+                    <!-- Second row of Supabase components -->
+                    <rect x="75" y="405" width="160" height="60" rx="8" fill="#0f172a" stroke="#334155"/>
+                    <text x="155" y="432" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="bold">PostgREST</text>
+                    <text x="155" y="452" text-anchor="middle" fill="#94a3b8" font-size="10">Admin CRUD API</text>
+                    
+                    <rect x="255" y="405" width="160" height="60" rx="8" fill="#0f172a" stroke="#334155"/>
+                    <text x="335" y="432" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="bold">pgvector</text>
+                    <text x="335" y="452" text-anchor="middle" fill="#94a3b8" font-size="10">AI semantic search</text>
+                    
+                    <rect x="435" y="405" width="160" height="60" rx="8" fill="#0f172a" stroke="#334155"/>
+                    <text x="515" y="432" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="bold">PgBouncer</text>
+                    <text x="515" y="452" text-anchor="middle" fill="#94a3b8" font-size="10">Connection pooling</text>
+                    
+                    <!-- Frontend Box -->
+                    <rect x="500" y="30" width="350" height="100" rx="12" fill="#1e293b" stroke="#f472b6" stroke-width="2"/>
+                    <text x="675" y="58" text-anchor="middle" fill="#f472b6" font-size="14" font-weight="bold">Frontend (React/Next.js)</text>
+                    <text x="675" y="82" text-anchor="middle" fill="#94a3b8" font-size="11">Supabase Client SDK kullanır</text>
+                    <text x="675" y="102" text-anchor="middle" fill="#94a3b8" font-size="11">Auth, Realtime, Storage direkt bağlantı</text>
+                    
+                    <!-- AI Service Box -->
+                    <rect x="500" y="150" width="350" height="60" rx="12" fill="#1e293b" stroke="#a78bfa" stroke-width="2"/>
+                    <text x="675" y="178" text-anchor="middle" fill="#a78bfa" font-size="14" font-weight="bold">AI Service (Python)</text>
+                    <text x="675" y="198" text-anchor="middle" fill="#94a3b8" font-size="11">pgvector ile embedding query</text>
+                    
+                    <!-- Arrows -->
+                    <defs>
+                        <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#60a5fa"/>
+                        </marker>
+                    </defs>
+                    
+                    <!-- Core BPM → PostgreSQL -->
+                    <path d="M 155 210 L 155 320" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow)" stroke-dasharray="5,3"/>
+                    <text x="100" y="268" fill="#60a5fa" font-size="10">SQL direkt</text>
+                    
+                    <!-- Frontend → Realtime -->
+                    <path d="M 600 130 L 380 320" stroke="#f472b6" stroke-width="2" marker-end="url(#arrow)" stroke-dasharray="5,3"/>
+                    <text x="470" y="235" fill="#f472b6" font-size="10">WebSocket</text>
+                    
+                    <!-- Frontend → Auth -->
+                    <path d="M 675 130 L 540 320" stroke="#a78bfa" stroke-width="2" marker-end="url(#arrow)" stroke-dasharray="5,3"/>
+                    <text x="630" y="235" fill="#a78bfa" font-size="10">JWT/OAuth</text>
+                    
+                    <!-- AI → pgvector -->
+                    <path d="M 600 210 L 360 400" stroke="#a78bfa" stroke-width="2" marker-end="url(#arrow)" stroke-dasharray="5,3"/>
+                    <text x="510" y="308" fill="#a78bfa" font-size="10">vector query</text>
+                </svg>
+            </div>
+
+            <h3>Supabase Cloud vs Self-Host vs Azure PostgreSQL</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Kriter</th>
+                        <th>Supabase Self-Host</th>
+                        <th>Supabase Cloud</th>
+                        <th>Azure DB for PostgreSQL + Açık Kaynak Bileşenler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Maliyet</td>
+                        <td>VPS ~$20-50/ay</td>
+                        <td>$25–599/ay</td>
+                        <td>$50–130/ay (DB) + container maliyeti</td>
+                    </tr>
+                    <tr>
+                        <td>Realtime</td>
+                        <td><span class="status-yes">Var</span></td>
+                        <td><span class="status-yes">Var</span></td>
+                        <td><span class="status-partial">GoTrue/Realtime container ekle</span></td>
+                    </tr>
+                    <tr>
+                        <td>Auth</td>
+                        <td><span class="status-yes">Var (GoTrue)</span></td>
+                        <td><span class="status-yes">Var</span></td>
+                        <td><span class="status-partial">GoTrue container ekle</span></td>
+                    </tr>
+                    <tr>
+                        <td>Storage</td>
+                        <td><span class="status-yes">Var (S3 uyumlu)</span></td>
+                        <td><span class="status-yes">Var</span></td>
+                        <td>Azure Blob (native entegrasyon)</td>
+                    </tr>
+                    <tr>
+                        <td>pgvector</td>
+                        <td><span class="status-yes">Var</span></td>
+                        <td><span class="status-yes">Var</span></td>
+                        <td><span class="status-yes">Var (extension)</span></td>
+                    </tr>
+                    <tr>
+                        <td>Backup / HA</td>
+                        <td><span class="status-partial">Kendi yönetimin</span></td>
+                        <td><span class="status-yes">Otomatik</span></td>
+                        <td><span class="status-yes">Otomatik (Azure)</span></td>
+                    </tr>
+                    <tr>
+                        <td>SLA</td>
+                        <td>Kendi sorumluluğun</td>
+                        <td>%99.9</td>
+                        <td>%99.95 (Azure)</td>
+                    </tr>
+                    <tr>
+                        <td>Azure VNET</td>
+                        <td><span class="status-partial">Manuel (VPN/peering)</span></td>
+                        <td><span class="status-no">Zor (cross-cloud)</span></td>
+                        <td><span class="status-yes">Native</span></td>
+                    </tr>
+                    <tr>
+                        <td>Operasyonel yük</td>
+                        <td><span class="status-no">Yüksek (10+ container)</span></td>
+                        <td><span class="status-yes">Düşük</span></td>
+                        <td><span class="status-partial">Orta</span></td>
+                    </tr>
+                    <tr>
+                        <td>Latency (Azure'dan)</td>
+                        <td><span class="status-yes">Düşük (aynı VNET)</span></td>
+                        <td><span class="status-no">Yüksek (cross-cloud)</span></td>
+                        <td><span class="status-yes">Düşük (aynı VNET)</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- BÖLÜM 7: Maliyet Karşılaştırma -->
+        <!-- ============================================ -->
+        <h2>7. Aylık Maliyet Karşılaştırma (Azure Production)</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Bileşen</th>
+                    <th>PostgreSQL (Azure DB)</th>
+                    <th>MongoDB (Atlas)</th>
+                    <th>SQL Server (Azure SQL)</th>
+                    <th>Supabase Cloud</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Veritabanı (2 vCPU, 8GB RAM)</td>
+                    <td><span class="cost-highlight">$65/ay</span></td>
+                    <td><span class="cost-warning">$95/ay</span></td>
+                    <td><span class="cost-warning">$150/ay</span></td>
+                    <td><span class="cost-highlight">$25/ay (Pro)</span></td>
+                </tr>
+                <tr>
+                    <td>Storage (100GB)</td>
+                    <td>$12/ay</td>
+                    <td>$25/ay</td>
+                    <td>$30/ay</td>
+                    <td>$25 dahil</td>
+                </tr>
+                <tr>
+                    <td>Backup</td>
+                    <td>$5/ay</td>
+                    <td>Dahil</td>
+                    <td>$15/ay</td>
+                    <td>Dahil</td>
+                </tr>
+                <tr>
+                    <td>HA / Read Replica</td>
+                    <td>+$65/ay (replica)</td>
+                    <td>+$95/ay</td>
+                    <td>+$150/ay</td>
+                    <td>$599/ay (Team)</td>
+                </tr>
+                <tr>
+                    <td>Connection Pooling</td>
+                    <td>$0 (PgBouncer container)</td>
+                    <td>Dahil</td>
+                    <td>Dahil</td>
+                    <td>Dahil</td>
+                </tr>
+                <tr>
+                    <td>Auth Servisi</td>
+                    <td>$0 (GoTrue container)</td>
+                    <td>$0 (kendi yaz)</td>
+                    <td>$0 (kendi yaz)</td>
+                    <td>Dahil</td>
+                </tr>
+                <tr>
+                    <td>Realtime Servisi</td>
+                    <td>$0 (container veya NATS)</td>
+                    <td>$0 (kendi yaz)</td>
+                    <td>$0 (kendi yaz)</td>
+                    <td>Dahil</td>
+                </tr>
+                <tr style="background: #064e3b30;">
+                    <td><strong>TOPLAM (Temel)</strong></td>
+                    <td><strong class="cost-highlight">~$82/ay</strong></td>
+                    <td><strong class="cost-warning">~$120/ay</strong></td>
+                    <td><strong class="cost-warning">~$195/ay</strong></td>
+                    <td><strong class="cost-highlight">~$25/ay*</strong></td>
+                </tr>
+                <tr style="background: #064e3b30;">
+                    <td><strong>TOPLAM (HA + Scale)</strong></td>
+                    <td><strong class="cost-highlight">~$150/ay</strong></td>
+                    <td><strong class="cost-warning">~$215/ay</strong></td>
+                    <td><strong class="cost-warning">~$345/ay</strong></td>
+                    <td><strong class="cost-warning">~$599/ay</strong></td>
+                </tr>
+            </tbody>
+        </table>
+        <p style="font-size: 0.85rem; color: #64748b;">* Supabase Cloud Pro tier sınırları: 8GB DB, 50GB bandwidth, 500MB storage. Aşıldığında ek ücret veya Team tier gerekir.</p>
+
+        <!-- ============================================ -->
+        <!-- BÖLÜM 8: Öneri -->
+        <!-- ============================================ -->
+        <div class="recommendation">
+            <h3>8. Nihai Öneri: Azure Database for PostgreSQL + Supabase Açık Kaynak Bileşenleri</h3>
+            
+            <p style="font-size: 1.05rem; margin-bottom: 1.5rem;">
+                En optimal yaklaşım: <strong>Azure'ın managed PostgreSQL'ini</strong> ana veritabanı olarak kullanıp, 
+                Supabase'in açık kaynak bileşenlerini (Auth, Realtime) kendi container'larınızda çalıştırmaktır.
+            </p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Bileşen</th>
+                        <th>Çözüm</th>
+                        <th>Neden?</th>
+                        <th>Maliyet</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Veritabanı</strong></td>
+                        <td>Azure Database for PostgreSQL (Flexible Server)</td>
+                        <td>Managed, HA, VNET, auto-backup, pgvector, RLS</td>
+                        <td>~$65/ay</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Auth</strong></td>
+                        <td>Supabase GoTrue (self-host container)</td>
+                        <td>JWT, OAuth2, SSO hazır — 2-3 hafta geliştirme tasarrufu</td>
+                        <td>$0 (container)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Realtime</strong></td>
+                        <td>Supabase Realtime (self-host) veya NATS</td>
+                        <td>DB değişikliklerini WebSocket ile client'a push</td>
+                        <td>$0 (container)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Storage</strong></td>
+                        <td>Azure Blob Storage</td>
+                        <td>Azure'da zaten varız, VNET entegrasyonu native</td>
+                        <td>~$10/ay</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Vector (AI)</strong></td>
+                        <td>pgvector extension</td>
+                        <td>Aynı DB'de, ayrı servis gereksiz</td>
+                        <td>$0 (aynı DB)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Connection Pool</strong></td>
+                        <td>PgBouncer (sidecar container)</td>
+                        <td>10K+ bağlantı desteği</td>
+                        <td>$0 (container)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Search</strong></td>
+                        <td>PostgreSQL tsvector + Meilisearch (gerekirse)</td>
+                        <td>Basit aramalar DB'de, karmaşık search için Meilisearch</td>
+                        <td>$0–15/ay</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="highlight-box" style="margin-top: 1.5rem;">
+                <h3>Neden "Full Supabase Cloud" Değil?</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="padding: 0.4rem 0; color: #cbd5e1;">→ Supabase Cloud AWS üzerinde çalışır. Azure'daki backend'iniz ile AWS'deki DB arasında <strong>cross-cloud latency</strong> (10-30ms ekstra) olur.</li>
+                    <li style="padding: 0.4rem 0; color: #cbd5e1;">→ Azure VNET entegrasyonu mümkün değil — güvenlik açığı.</li>
+                    <li style="padding: 0.4rem 0; color: #cbd5e1;">→ Team tier'a çıkınca $599/ay — Azure DB for PostgreSQL'den pahalı.</li>
+                    <li style="padding: 0.4rem 0; color: #cbd5e1;">→ Supabase'in tüm bileşenleri açık kaynak — Docker ile kendi Azure container'larınızda çalıştırabilirsiniz.</li>
+                </ul>
+            </div>
+
+            <div class="highlight-box" style="border-color: #f59e0b;">
+                <h3 style="color: #fbbf24;">Patron'a Supabase Hakkında Ne Demeli?</h3>
+                <p style="color: #cbd5e1; font-style: italic; font-size: 1rem;">
+                    "Supabase aslında PostgreSQL + hazır servisler paketi. Auth, Realtime, Storage gibi altyapı işlerini sıfırdan yazmak yerine
+                    Supabase'in açık kaynak bileşenlerini kullanabiliriz — bu bize 2-3 hafta geliştirme süresi kazandırır. 
+                    Ama workflow engine, rule engine, form builder gibi core BPM mantığını yine kendimiz yazacağız — Supabase bunu çözmez.
+                    DB olarak PostgreSQL zaten Supabase'in altında çalışan şey, yani ikisi aynı. Biz Azure'da managed PostgreSQL + 
+                    Supabase'in bazı servislerini birlikte kullanacağız."
+                </p>
+            </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- BÖLÜM 9: SurrealDB Uyarısı -->
+        <!-- ============================================ -->
+        <div class="warning-box">
+            <h4>⚠️ SurrealDB Hakkında Kritik Not</h4>
+            <p style="color: #cbd5e1; margin-bottom: 0;">
+                Patron'un bahsettiği "S ile başlayan, real-time uyumlu veritabanı" muhtemelen <strong>SurrealDB</strong>.
+                LIVE SELECT özelliği ile native real-time desteği var, ancak:
+            </p>
+            <ul style="margin-top: 0.5rem; padding-left: 1.5rem; color: #fbbf24;">
+                <li>Sadece 3 yaşında — production'da kullanılmış büyük proje yok</li>
+                <li>Managed hizmet yok — kendiniz yönetmeniz gerekir</li>
+                <li>Breaking change'ler sürüyor — API stabilitesi yok</li>
+                <li>Backup/recovery tooling ilkel — veri kaybı riski yüksek</li>
+                <li>Ekosistem yetersiz — ORM yok, migration tool yok</li>
+                <li>Connection pooling test edilmemiş — yük altında davranışı bilinmiyor</li>
+            </ul>
+            <p style="color: #f87171; margin-top: 0.8rem; margin-bottom: 0; font-weight: 600;">
+                Müşteriye "veriniz güvende" diyemezsiniz. PostgreSQL + Supabase Realtime aynı real-time deneyimi, 
+                35 yıllık güvenilirlikle sunar.
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid #1e293b; text-align: center; color: #475569;">
+            <p>Flovo BPM — Yeni Yapı Veritabanı Analizi | Haziran 2026</p>
+        </div>
+    </div>
+</body>
+</html>

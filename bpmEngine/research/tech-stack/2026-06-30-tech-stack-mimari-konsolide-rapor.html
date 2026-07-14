@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flovo iBPM v2 — Tech-Stack + Mimari Konsolide Rapor</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/white.css" id="theme">
+<style>
+  :root {
+    --r-main-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --r-heading-font: var(--r-main-font);
+    --r-main-color: #1a1a1a;
+    --r-heading-color: #00796b;
+    --r-link-color: #00796b;
+    --accent: #00796b;
+    --accent-light: #e0f2f1;
+    --accent-dark: #004c40;
+    --secondary: #7cb342;
+    --success: #1f8a3f;
+    --warning: #c97a00;
+    --danger: #b3261e;
+  }
+  .reveal { font-size: 24px; }
+  .reveal h1 { font-size: 1.8em; color: var(--accent); margin-bottom: 0.4em; font-weight: 700; }
+  .reveal h2 { font-size: 1.3em; color: var(--accent); margin-bottom: 0.6em; font-weight: 600; }
+  .reveal h3 { font-size: 1em; color: var(--accent-dark); margin-top: 0.4em; font-weight: 600; }
+  .reveal p, .reveal li { font-size: 0.85em; line-height: 1.4; }
+  .reveal table { font-size: 0.62em; margin: 0.5em auto; border-collapse: collapse; }
+  .reveal table th, .reveal table td { padding: 0.4em 0.7em; border: 1px solid #d0d7e2; text-align: left; vertical-align: top; }
+  .reveal table thead { background: var(--accent); color: #fff; }
+  .reveal table tbody tr:nth-child(even) { background: #f6f8fb; }
+  .reveal .pick { background: #e7f6ec; font-weight: 600; }
+  .reveal .reject { background: #fdecea; color: #777; }
+  .reveal .badge { display: inline-block; padding: 0.15em 0.6em; border-radius: 12px; font-size: 0.7em; font-weight: 600; }
+  .badge-ok { background: var(--success); color: #fff; }
+  .badge-warn { background: var(--warning); color: #fff; }
+  .badge-danger { background: var(--danger); color: #fff; }
+  .reveal .footnote { font-size: 0.55em; color: #666; margin-top: 1em; }
+  .reveal .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1em; text-align: left; }
+  .reveal .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8em; text-align: left; }
+  .reveal .card { background: #f6f8fb; padding: 0.8em 1em; border-left: 4px solid var(--accent); border-radius: 4px; font-size: 0.78em; }
+  .reveal .card-ok { border-left-color: var(--success); background: #f0fbf3; }
+  .reveal .card-warn { border-left-color: var(--warning); background: #fff8ec; }
+  .reveal .card-danger { border-left-color: var(--danger); background: #fdf2f1; }
+  .reveal .card-accent { border-left-color: var(--accent); background: var(--accent-light); }
+  .reveal pre { font-size: 0.55em; }
+  .reveal .cover { text-align: center; }
+  .reveal .cover h1 { font-size: 2.2em; margin-top: 0.5em; }
+  .reveal .cover .subtitle { font-size: 1em; color: #555; margin-top: 0.8em; }
+  .reveal .cover .meta { font-size: 0.75em; color: #888; margin-top: 2em; }
+  .reveal .cover .badge-row { margin-top: 1.5em; }
+  .reveal .slide-number { font-size: 0.6em; color: #888; }
+  .reveal section { text-align: left; }
+  .reveal ul { padding-left: 1.2em; }
+  .reveal .pill { display: inline-block; background: var(--accent-light); color: var(--accent-dark); padding: 0.1em 0.6em; border-radius: 12px; font-size: 0.7em; margin-right: 0.3em; font-weight: 600; }
+  .reveal .pill-warn { background: #fff8ec; color: var(--warning); }
+  .reveal .pill-danger { background: #fdf2f1; color: var(--danger); }
+  .reveal .check { color: var(--success); font-weight: 700; }
+  .reveal .cross { color: var(--danger); font-weight: 700; }
+  .reveal .warn { color: var(--warning); font-weight: 700; }
+  .reveal .eyebrow { font-size: 0.6em; color: var(--accent); text-transform: uppercase; letter-spacing: 0.2em; font-weight: 700; margin-bottom: 0.5em; }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- COVER -->
+<section class="cover">
+  <p class="eyebrow">Flovo İBPM v2 · Konsolide Yönetim Raporu</p>
+  <h1>Tech-Stack & Mimari Konsolide Rapor</h1>
+  <p class="subtitle">İnsan ekibi analiz raporları + son tech-stack kararları + Sprint 2 mimari progress</p>
+  <div class="badge-row">
+    <span class="pill">15 slide</span>
+    <span class="pill">3 İnsan Ekibi Raporu</span>
+    <span class="pill">12 ADR</span>
+    <span class="pill">F-Infra Closed</span>
+    <span class="pill">Sprint 2 Active</span>
+  </div>
+  <p class="meta">Hazırlayan: Ada (TL) · Tarih: 2026-06-30 · BO: Mehmet ALKAN · Org: Flovo Teknoloji A.Ş.</p>
+</section>
+
+<!-- SLIDE 2: Yönetici Özeti -->
+<section>
+  <p class="eyebrow">Yönetici Özeti</p>
+  <h2>Konsolidasyon Özeti</h2>
+  <div class="grid-2">
+    <div class="card card-ok">
+      <h3>✅ İnsan Ekibi Analizleri</h3>
+      <ul>
+        <li><strong>Mimari analiz</strong> — SOA + Hex + Event Sourcing önerisi</li>
+        <li><strong>DB analiz</strong> — Postgres + Supabase OSS bileşenleri</li>
+        <li><strong>Dil analiz</strong> — Go BE + TS FE destekli</li>
+      </ul>
+    </div>
+    <div class="card card-accent">
+      <h3>🎯 Stratejik Karar</h3>
+      <ul>
+        <li><strong>On-prem + Private Cloud ready</strong> korunur</li>
+        <li>Azure-first öneriler reddedildi</li>
+        <li>Mimari paradigma <em>MVP Core BPM monolith</em> → <em>SOA-ready</em> hazırlık</li>
+        <li>AI Service post-MVP scope</li>
+      </ul>
+    </div>
+  </div>
+  <div class="grid-2" style="margin-top: 0.8em;">
+    <div class="card">
+      <h3>📊 Sprint 2 Velocity (4 saat)</h3>
+      <ul>
+        <li><strong>14 PR merged</strong> main</li>
+        <li>Backend foundation %100 (Hex + ES + gRPC + NATS + cache)</li>
+        <li>UI shell + Dashboard + Form Designer + Notification live</li>
+        <li>5 Story Done + 3 In Progress</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>📋 Yeni ADR (4)</h3>
+      <ul>
+        <li>ADR-009 Hexagonal architecture</li>
+        <li>ADR-010 Partial Event Sourcing (Workflow)</li>
+        <li>ADR-011 Bounded context isolation</li>
+        <li>ADR-012 API contract hybrid (gRPC + REST + OpenAPI)</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 3: 3 Rapor Bağlamı -->
+<section>
+  <p class="eyebrow">Bağlam</p>
+  <h2>3 İnsan Ekibi Analiz Raporu</h2>
+  <table>
+    <thead>
+      <tr><th>Rapor</th><th>Boyut</th><th>Ana Tez</th><th>Sonuç</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>mimari-analiz.html</strong> (87KB)</td>
+        <td>Sistem mimarisi</td>
+        <td>Monolith → SOA (2-3 sistem) + Hexagonal + Partial Event Sourcing + CQRS + Saga + Container Apps</td>
+        <td class="pick">Kabul (MVP'de Core BPM monolith, SOA-ready hazırlık)</td>
+      </tr>
+      <tr>
+        <td><strong>db-analiz.html</strong> (55KB)</td>
+        <td>Veritabanı altyapısı</td>
+        <td>Azure PostgreSQL Flexible Server + Supabase OSS bileşenleri self-host + pgvector + RLS</td>
+        <td class="reject">Kısmen reddedildi (self-host Postgres + on-prem)</td>
+      </tr>
+      <tr>
+        <td><strong>dil-analiz.html</strong> (62KB)</td>
+        <td>Programlama dilleri</td>
+        <td>Go BE + TS+Next.js FE + REST/OpenAPI dış + gRPC iç + Python AI Service</td>
+        <td class="pick">Kabul (mevcut karar +100% uyumlu; Python AI post-MVP)</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="footnote">Tüm raporlar Flovo iBPM v2 Epic #1 attachment'ı olarak paylaşıldı, Ada TL adım adım değerlendirme yaptı (Epic #1 thread).</p>
+</section>
+
+<!-- SLIDE 4: Mimari Analiz Özeti -->
+<section>
+  <p class="eyebrow">Rapor 1 / 3 — Mimari Analiz</p>
+  <h2>Mimari Tezler vs Karar</h2>
+  <table>
+    <thead><tr><th>Konu</th><th>Analiz Önerisi</th><th>Flovo Kararı</th><th>Neden</th></tr></thead>
+    <tbody>
+      <tr><td>Sistem ayrımı</td><td>SOA 2-3 sistem (Core BPM + AI + Workers)</td><td>MVP <strong>Core BPM monolith</strong> + AI/Workers post-MVP</td><td>Premature split overhead; saga + distributed tx pahalı</td></tr>
+      <tr><td>Architecture style</td><td>Hexagonal + CQRS + Saga + Partial Event Sourcing</td><td class="pick">✅ Hexagonal + Partial Event Sourcing</td><td>Future SOA split için 5x refactor avantajı</td></tr>
+      <tr><td>Container hosting</td><td>Azure Container Apps + Service Bus</td><td class="reject">❌ <strong>OpenShift + BYO K8s</strong> + NATS</td><td>BO direktif: on-prem + Private Cloud ready</td></tr>
+      <tr><td>Serverless</td><td>Terk → Container Apps (BPM stateful)</td><td class="pick">✅ Compose dev + K8s prod, sadece Helm</td><td>Stateful BPM serverless aykırı, doğru karar</td></tr>
+    </tbody>
+  </table>
+  <div class="card card-accent" style="margin-top: 0.8em;">
+    <strong>SOA-ready 5 madde hazırlık (MVP'de):</strong> Hexagonal disipline (ADR-009) · Domain event emission (ADR-010) · gRPC interfaces (ADR-012) · Partial Event Sourcing Workflow · Bounded context isolation (ADR-011)
+  </div>
+</section>
+
+<!-- SLIDE 5: DB Analiz Özeti -->
+<section>
+  <p class="eyebrow">Rapor 2 / 3 — DB Analiz</p>
+  <h2>Veritabanı Önerisi vs Karar</h2>
+  <table>
+    <thead><tr><th>Konu</th><th>Analiz Önerisi</th><th>Flovo Kararı</th><th>Neden</th></tr></thead>
+    <tbody>
+      <tr><td>DB hosting</td><td>Azure PostgreSQL Flexible Server (managed HA)</td><td class="reject">❌ <strong>Self-host Postgres yalın</strong></td><td>On-prem ready; vendor lock-in yok</td></tr>
+      <tr><td>Multi-tenancy</td><td>RLS per tenant</td><td class="pick">✅ Pattern B v2 RLS (mevcut, portable)</td><td>%100 uyumlu</td></tr>
+      <tr><td>Connection pooling</td><td>PgBouncer transaction mode</td><td class="pick">✅ PgBouncer 1.23.1 (F-Infra'da canlı)</td><td>%100 uyumlu</td></tr>
+      <tr><td>Event store</td><td>Append-only log table</td><td class="pick">✅ ADR-010 workflow_events (UPDATE/DELETE trigger reddi)</td><td>S2.3'te uygulandı</td></tr>
+      <tr><td>AI vector search</td><td>pgvector embedding</td><td><span class="pill-warn">Post-MVP</span> AI Service ile birlikte</td><td>Scope creep önleme</td></tr>
+      <tr><td>Supabase OSS</td><td>GoTrue, Realtime self-host</td><td class="reject">❌ Keycloak (auth) + NATS (realtime)</td><td>Daha mature stack; F-Infra'da canlı</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- SLIDE 6: Dil Analiz Özeti -->
+<section>
+  <p class="eyebrow">Rapor 3 / 3 — Dil Analiz</p>
+  <h2>Dil + Contract Önerisi vs Karar</h2>
+  <table>
+    <thead><tr><th>Konu</th><th>Analiz Önerisi</th><th>Flovo Kararı</th><th>Uyum</th></tr></thead>
+    <tbody>
+      <tr><td>Backend dil</td><td>Go (en düşük RAM, 3-4x hız, concurrency)</td><td class="pick">✅ Go full rewrite (F-Infra)</td><td>%100</td></tr>
+      <tr><td>Frontend dil</td><td>TypeScript + Next.js</td><td class="pick">✅ TypeScript + Next.js 14</td><td>%100</td></tr>
+      <tr><td>API contract (dış)</td><td>REST + OpenAPI + codegen</td><td class="pick">✅ <strong>Hybrid:</strong> Protobuf source-of-truth + grpc-gateway REST + OpenAPI codegen FE</td><td>Hibrit kabul</td></tr>
+      <tr><td>API contract (iç)</td><td>gRPC + Protobuf</td><td class="pick">✅ gRPC + Protobuf (ADR-012, S2.4)</td><td>%100</td></tr>
+      <tr><td>AI Service</td><td>Python (asyncpg + SQLAlchemy 2.0)</td><td><span class="pill-warn">Post-MVP</span></td><td>Sprint 5+ scope</td></tr>
+      <tr><td>Go BE ecosystem</td><td>chi router + sqlc + pgxpool</td><td class="pick">✅ chi + pgx/v5 + sqlc planlı</td><td>Mevcut F-Infra</td></tr>
+    </tbody>
+  </table>
+  <p class="footnote">Sonuç: Dil analizi Flovo kararlarını <strong>%100 destekliyor</strong>; tek ekleme AI Service Python (post-MVP scope).</p>
+</section>
+
+<!-- SLIDE 7: Stratejik Gerilim — Karar -->
+<section>
+  <p class="eyebrow">Stratejik Karar</p>
+  <h2>Azure-first vs On-Prem Gerilim → Çözüm</h2>
+  <div class="grid-2">
+    <div class="card card-warn">
+      <h3>⚠️ İnsan Ekibi Varsayımı</h3>
+      <ul>
+        <li>Azure Container Apps (BPM hosting)</li>
+        <li>Azure PostgreSQL Flexible Server</li>
+        <li>Azure Service Bus messaging</li>
+        <li>Azure Functions ↔ Container Apps</li>
+        <li>Managed services + vendor scaling</li>
+      </ul>
+      <p><strong>Bağlam:</strong> Azure cost optimize + managed HA + cloud-native scale</p>
+    </div>
+    <div class="card card-ok">
+      <h3>✅ Flovo Stratejik Karar (BO 2026-06-29)</h3>
+      <ul>
+        <li>OpenShift + BYO K8s (on-prem + Private Cloud)</li>
+        <li>Self-host Postgres yalın (vendor lock-in yok)</li>
+        <li>NATS + JetStream (CNCF, açık)</li>
+        <li>Keycloak (AD/LDAP, Türkiye Enterprise için zorunlu)</li>
+        <li>MinIO embed (S3 compat, self-host)</li>
+      </ul>
+      <p><strong>Bağlam:</strong> Türkiye Enterprise pilot; KVKK + müşteri kendi data center'ı; vendor-agnostic</p>
+    </div>
+  </div>
+  <p class="footnote">Bu farkı yaratmanın <strong>maliyeti</strong>: ~%30 ek ops effort (Helm + K8s + monitoring kendi yığınımızda). <strong>Kazanımı</strong>: müşteri kendi cloud/on-prem'inde çalıştırma esnekliği, Türkiye Enterprise satış kanalı açık.</p>
+</section>
+
+<!-- SLIDE 8: Tech-Stack Matrix -->
+<section>
+  <p class="eyebrow">Konsolide Karar</p>
+  <h2>Mevcut Tech-Stack Matrix (10 katman)</h2>
+  <table style="font-size: 0.58em;">
+    <thead><tr><th>Katman</th><th>Karar</th><th>Durum</th><th>ADR</th></tr></thead>
+    <tbody>
+      <tr><td><strong>FE Framework</strong></td><td>Next.js 14 + React 18 + TypeScript</td><td>✅ Canlı (Sprint 1)</td><td>Sprint 1 baseline</td></tr>
+      <tr><td><strong>BE Dil</strong></td><td>Go (full rewrite)</td><td>✅ Canlı (F-Infra SI.2)</td><td>ADR-004</td></tr>
+      <tr><td><strong>BE Framework</strong></td><td>chi router + pgx/v5 + sqlc planlı</td><td>✅ Canlı</td><td>ADR-004</td></tr>
+      <tr><td><strong>Auth</strong></td><td>Keycloak 25 + AD/LDAP + Custom Token Mapper SPI</td><td>✅ Canlı (F-Infra SI.3)</td><td>ADR-005</td></tr>
+      <tr><td><strong>Storage</strong></td><td>MinIO (EMBED, S3 compat, bucket-per-tenant, KMS)</td><td>✅ Canlı (F-Infra SI.4)</td><td>ADR-006</td></tr>
+      <tr><td><strong>DB</strong></td><td>Postgres 16 + PgBouncer 1.23 (self-host)</td><td>✅ Canlı (F-Infra SI.1)</td><td>Sprint 1 + F-Infra</td></tr>
+      <tr><td><strong>Realtime</strong></td><td>NATS 2.10 + JetStream + WS 9222</td><td>✅ Canlı (F-Infra SI.5)</td><td>ADR-008</td></tr>
+      <tr><td><strong>Container</strong></td><td>Compose dev + K8s prod (OpenShift + BYO, sadece Helm)</td><td>✅ Canlı (F-Infra SI.1/6)</td><td>ADR-007</td></tr>
+      <tr><td><strong>API Contract</strong></td><td>Protobuf source + grpc-gateway REST + OpenAPI codegen (hybrid)</td><td>✅ Canlı (Sprint 2 S2.4)</td><td>ADR-012</td></tr>
+      <tr><td><strong>Architecture</strong></td><td>Hexagonal + Bounded context + Partial Event Sourcing + Domain Event Bus</td><td>✅ Canlı (Sprint 2 S2.1-3)</td><td>ADR-009/010/011</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- SLIDE 9: SOA-Ready 5 Madde -->
+<section>
+  <p class="eyebrow">SOA-Ready Hazırlık</p>
+  <h2>MVP'de Şimdiden Yapılanlar (5 Madde)</h2>
+  <div class="grid-2">
+    <div class="card card-ok">
+      <h3>1. Hexagonal Architecture (S2.1)</h3>
+      <p><code>internal/domain/</code> saf (framework-free) + <code>internal/adapter/{http,grpc,db,storage,nats}/</code></p>
+      <p><strong>Etki:</strong> Future SOA split ucuz olur, ~5x refactor avantajı</p>
+    </div>
+    <div class="card card-ok">
+      <h3>2. Domain Event Bus (S2.2)</h3>
+      <p>9 subject catalog · <code>flovo.{aggregate}.{verb}.{version}</code> · JetStream FLOVO_EVENTS stream · idempotent envelope (Nats-Msg-Id)</p>
+      <p><strong>Etki:</strong> Saga + audit trail foundation</p>
+    </div>
+    <div class="card card-ok">
+      <h3>3. Workflow Event Sourcing (S2.3)</h3>
+      <p>Append-only workflow_events + workflow_projection · Aggregate + Apply + Replay · optimistic locking (UNIQUE) · RLS Pattern B v2</p>
+      <p><strong>Etki:</strong> Immutable audit, replay, saga base</p>
+    </div>
+    <div class="card card-ok">
+      <h3>4. gRPC Interface Definitions (S2.4)</h3>
+      <p>4 proto (workflow/form/auth/notify v1) · buf codegen pipeline · grpc-gateway REST proxy · OpenAPI v2 spec · TS client codegen</p>
+      <p><strong>Etki:</strong> Network split zero-code-change ready</p>
+    </div>
+  </div>
+  <div class="card card-ok" style="margin-top: 0.5em;">
+    <h3>5. Bounded Context Isolation (ADR-011, S2.5 opsiyonel)</h3>
+    <p>Table prefix <code>workflow_*</code>/<code>forms_*</code>/<code>auth_*</code>/<code>notify_*</code> + Go package separation <code>internal/domain/{workflow,forms,auth,notify}/</code></p>
+  </div>
+</section>
+
+<!-- SLIDE 10: API Contract Hybrid -->
+<section>
+  <p class="eyebrow">ADR-012 — API Contract</p>
+  <h2>Hybrid Protocol Yaklaşımı</h2>
+  <table>
+    <thead><tr><th>Katman</th><th>Protocol</th><th>Kullanıcı</th><th>Avantaj</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Inter-service (iç)</strong></td><td>gRPC + Protobuf</td><td>Go BE modülleri arası</td><td>Future SOA split-ready, binary serialization 7-10x az bandwidth, compile-time tip kontrolü</td></tr>
+      <tr><td><strong>External (dış)</strong></td><td>HTTP/JSON + OpenAPI</td><td>Next.js FE + 3rd party + mobile</td><td>REST ergonomics, Swagger UI, kolay debug</td></tr>
+      <tr><td><strong>FE client</strong></td><td>OpenAPI codegen TS (<code>@flovo/api-client</code>)</td><td>FE typed client</td><td>Contract drift sıfır</td></tr>
+      <tr><td><strong>Source of truth</strong></td><td>Protobuf <code>proto/flovo/&lt;svc&gt;/v1/*.proto</code></td><td>Tüm katmanlar</td><td>Tek kaynak, tüm istemciler türetilir</td></tr>
+      <tr><td><strong>Streaming</strong></td><td>NATS subjects</td><td>Realtime notification, process state</td><td>Pub/sub + JetStream replay</td></tr>
+    </tbody>
+  </table>
+  <div class="card card-accent" style="margin-top: 0.8em;">
+    <strong>Pipeline:</strong> <code>buf.yaml</code> lint STANDARD + breaking WIRE_JSON → <code>buf.gen.yaml</code> 5 plugin pinned (go, go-grpc, grpc-gateway, openapiv2, protobuf-es TS) → CI proto job (lint + breaking against main) → ci-gate aggregate
+  </div>
+</section>
+
+<!-- SLIDE 11: F-Infra Closure -->
+<section>
+  <p class="eyebrow">F-Infra Closure (2026-06-29)</p>
+  <h2>Sprint 1 → F-Infra Transform Achievements</h2>
+  <div class="grid-2">
+    <div class="card card-ok">
+      <h3>✅ 9 Story Tamamlandı</h3>
+      <ul>
+        <li>SI.1 Docker Compose 7-service stack</li>
+        <li>SI.2 Go BE rewrite + Keycloak verify</li>
+        <li>SI.3 Keycloak Auth + AD/LDAP + SPI</li>
+        <li>SI.4 MinIO Storage (EMBED + bucket-per-tenant)</li>
+        <li>SI.5 NATS + JetStream realtime</li>
+        <li>SI.6 Helm umbrella chart (OpenShift + BYO)</li>
+        <li>SI.7 form-engine-go full port</li>
+        <li>SI.8 QA/DevOps CI Gate + Playwright + RLS regression</li>
+      </ul>
+    </div>
+    <div class="card card-ok">
+      <h3>✅ BO UAT Sign-Off</h3>
+      <ul>
+        <li>Tailscale UAT stack ayağa kaldırıldı</li>
+        <li>Alice JWT decoded + 4-user fixture parity</li>
+        <li>MinIO bucket-per-tenant verified</li>
+        <li>NATS JetStream + 2 tenant account healthy</li>
+        <li>Keycloak SPI Custom Token Mapper canlı</li>
+        <li><strong>F6 Sprint 1 + F-Infra batched UAT closure</strong> (transform-first pattern)</li>
+      </ul>
+    </div>
+  </div>
+  <p class="footnote">F-Infra TEK ODAK pattern 90dk içinde tamamlandı: 7 PR merged main + 6 ekran demo-ready + on-prem deploy ready.</p>
+</section>
+
+<!-- SLIDE 12: Sprint 2 Progress -->
+<section>
+  <p class="eyebrow">Sprint 2 (F7) Progress — 2026-06-30</p>
+  <h2>14 PR Merged + Velocity</h2>
+  <table style="font-size: 0.58em;">
+    <thead><tr><th>Story</th><th>Konu</th><th>Owner</th><th>PR</th><th>Durum</th></tr></thead>
+    <tbody>
+      <tr><td>S2.1</td><td>Hexagonal refactor</td><td>Kaya</td><td>#22</td><td>✅</td></tr>
+      <tr><td>S2.2</td><td>NATS event bus</td><td>Kaya</td><td>#26</td><td>✅</td></tr>
+      <tr><td>S2.3</td><td>Workflow Event Sourcing</td><td>Kaya</td><td>#29</td><td>✅</td></tr>
+      <tr><td>S2.4</td><td>gRPC interfaces + buf</td><td>Mert</td><td>#25</td><td>✅</td></tr>
+      <tr><td>S2.6</td><td>Process persistence RPC</td><td>Mert</td><td>#31</td><td>✅</td></tr>
+      <tr><td>S2.7</td><td>Form publish handler</td><td>Kaya</td><td>#30</td><td>✅</td></tr>
+      <tr><td>S2.8</td><td>Notification (BE Redis + FE live)</td><td>Kaya + Eren</td><td>#32, #33</td><td>✅</td></tr>
+      <tr><td>S2.9</td><td>Layout shell (sidebar + header + AppShell)</td><td>Eren</td><td>#34</td><td>✅</td></tr>
+      <tr><td>S2.10</td><td>Form Designer (16 control + palette + canvas)</td><td>Eren</td><td>#36</td><td>✅</td></tr>
+      <tr><td>S2.10b</td><td>PropertiesPanel 8-prop + Publish + Playwright</td><td>Eren</td><td>#37, #38</td><td>✅</td></tr>
+      <tr><td>S2.13</td><td>Dashboard (KPI + SLA + Activity + Process)</td><td>Eren</td><td>#35</td><td>✅</td></tr>
+      <tr><td>S2.14</td><td>Tasks Inbox (Gelen Kutusu)</td><td>Eren</td><td>—</td><td>🔄 In Progress</td></tr>
+      <tr><td>S2.15</td><td>Process management UI</td><td>Eren</td><td>—</td><td>🔄 In Progress</td></tr>
+    </tbody>
+  </table>
+  <p class="footnote">~4 saat içinde 14 PR + 600+ test added. Sprint 1 F-Infra üstüne 2x velocity sürdürüldü.</p>
+</section>
+
+<!-- SLIDE 13: BPM Studio Design Import -->
+<section>
+  <p class="eyebrow">UI/UX Capability</p>
+  <h2>BPM Studio Design Import + Implementation</h2>
+  <div class="grid-2">
+    <div class="card card-accent">
+      <h3>🎨 Design Source</h3>
+      <ul>
+        <li>Claude Design project <code>b14610aa-fb05-4041-ab0d-462c6f333508</code></li>
+        <li>BPM Studio app UI (367KB HTML)</li>
+        <li>Design system manifest + tokens (100+)</li>
+        <li>Türkçe enterprise B2B brand</li>
+        <li><strong>Teal-forward palette</strong> (#00796b) + Manrope/Inter + Heroicons</li>
+      </ul>
+    </div>
+    <div class="card card-ok">
+      <h3>🛠️ Implementation Sprint 2'de</h3>
+      <ul>
+        <li><strong>Layout shell:</strong> sidebar 248px dark-teal + header 60px frosted</li>
+        <li><strong>Dashboard:</strong> KPI cards + SLA bar chart + Activity feed</li>
+        <li><strong>Form Designer:</strong> 16 control + 3-panel + 8-prop + publish UI</li>
+        <li><strong>Notification center:</strong> bell + badge + live stream</li>
+        <li>Ortak primitives: <code>StatusPill</code>, <code>ProgressBar</code>, <code>KpiCard</code>, <code>ActivityFeed</code></li>
+      </ul>
+    </div>
+  </div>
+  <p class="footnote">Sırada: Tasks Inbox (Gelen Kutusu 3-pane), Process management UI, Flow Designer SVG canvas + NDV, Org Settings, Global search, Activity feed center.</p>
+</section>
+
+<!-- SLIDE 14: Sonraki Sprint + Roadmap -->
+<section>
+  <p class="eyebrow">Roadmap</p>
+  <h2>Sonraki Sprint Çerçevesi</h2>
+  <table>
+    <thead><tr><th>Sprint</th><th>Scope</th><th>Hedef</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Sprint 2 (F7) — devam</strong></td><td>S2.11 Flow Designer + S2.14-18 (Tasks/Process/Org/Search/Activity)</td><td>MVP demo-ready full UI</td></tr>
+      <tr><td><strong>Sprint 3 (F8)</strong></td><td>K8s deploy hardening + Helm subchart values customization + SCC + NetworkPolicy + cert-manager + ServiceMonitor</td><td>OpenShift + BYO K8s prod-grade</td></tr>
+      <tr><td><strong>Sprint 4 (F9)</strong></td><td>Bimser CSP gap analysis öncelikleri (integration hub + advanced reporting + view profiles)</td><td>Türkiye Enterprise pilot başlangıç</td></tr>
+      <tr><td><strong>Sprint 5+ (F10+)</strong></td><td>AI Service (Python) + NLP/RAG + Process Mining + Centrifugo opsiyonel</td><td>AI-first capability</td></tr>
+      <tr><td><strong>Sprint 6+</strong></td><td>SOA split (Core BPM + AI + Workers ayrı deploy) + Saga orchestrator + Kerberos SSO</td><td>Distributed system maturity</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- SLIDE 15: ADR Listesi + Karar Özeti -->
+<section>
+  <p class="eyebrow">ADR Listesi</p>
+  <h2>Mimari Karar Kayıtları (12 ADR)</h2>
+  <div class="grid-2">
+    <div>
+      <h3>Sprint 1 + F-Infra (8 ADR)</h3>
+      <ul style="font-size: 0.75em;">
+        <li>ADR-001 Two-layer Form Schema + Bridge</li>
+        <li>ADR-002 Plugin Registry (Control extensibility)</li>
+        <li>ADR-003 Migration apply CI workflow</li>
+        <li>ADR-004 Go BE full rewrite</li>
+        <li>ADR-005 Keycloak Auth + AD/LDAP + SPI</li>
+        <li>ADR-006 MinIO Storage (EMBED + bucket-per-tenant)</li>
+        <li>ADR-007 Container Hybrid (Compose + K8s + Helm)</li>
+        <li>ADR-008 NATS + JetStream Realtime</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Sprint 2 (4 ADR)</h3>
+      <ul style="font-size: 0.75em;">
+        <li>ADR-009 Hexagonal architecture (domain/adapter)</li>
+        <li>ADR-010 Partial Event Sourcing (Workflow)</li>
+        <li>ADR-011 Bounded context isolation</li>
+        <li>ADR-012 API contract hybrid (gRPC + REST + OpenAPI)</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card card-accent" style="margin-top: 0.8em;">
+    <h3>📌 Konsolide Tek Cümle Özeti</h3>
+    <p>Flovo iBPM v2 <strong>Go BE + Postgres + Keycloak + MinIO + NATS + Compose/K8s hybrid + Hexagonal SOA-ready</strong> mimarisiyle, <strong>on-prem + Private Cloud ready</strong> Türkiye Enterprise pilot için MVP demo-ready capability ve Sprint 2 (F7) tarafından <strong>14 PR / 4 saat</strong> içinde teslim edildi.</p>
+  </div>
+  <p class="footnote">Tüm ADR'ler <code>flovo-wiki/research/adr/</code> altında kalıcı kayıt + Bilge RAG ingest kuyruğunda (agent registry FK fix sonrası).</p>
+</section>
+
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script>
+  Reveal.initialize({
+    hash: true,
+    width: 1280,
+    height: 800,
+    margin: 0.06,
+    controls: true,
+    progress: true,
+    slideNumber: 'c/t',
+    transition: 'slide',
+    transitionSpeed: 'default'
+  });
+</script>
+</body>
+</html>

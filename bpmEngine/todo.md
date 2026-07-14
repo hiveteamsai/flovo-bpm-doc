@@ -27,11 +27,17 @@
 
 - [ ] **Çalışma-zamanı mimarisi** — tek-süreç mi, kuyruk-tabanlı dağıtık worker mı? Orkestrasyon ↔ yürütme ayrımı;
   durum DB'de, kuyruk yalnız iş ID'leri, worker'lar durumsuz. _(flovo-bpm-engine §2.2 / §12)_
-- [ ] **Bulut + on-prem hibrit** dağıtım; on-prem ↔ merkezi kimlik/sosyal çelişkisi. _(flovo-bpm-engine §2.2 / §12)_
+  - 🧱 **Tech-stack (kısmen kapandı):** dağıtım/ölçekleme kararı verildi — MVP **Core BPM monolith** → Hexagonal + **NATS kuyruk** +
+    **durumsuz worker** + durum **Postgres/NATS**'ta (SOA-ready); motor-içi **orkestrasyon↔yürütme** ayrımı hâlâ açık. → [`tech-stack/`](./tech-stack/index.md) · [`research/tech-stack/tech_rating.md`](./research/tech-stack/tech_rating.md)
+- [x] **Bulut + on-prem hibrit dağıtım — ÇÖZÜLDÜ (tech-stack):** **on-prem + Private Cloud ready** (K8s OpenShift + BYO + tek
+  Helm umbrella); merkezi-kimlik çelişkisi **Keycloak AD/LDAP federasyonu** ile giderildi (müşterinin kendi AD/LDAP'ı; merkezi-cloud
+  bağımlılığı yok). _(Kalan minör: saf-on-prem'de sosyal-login kapsamı.)_ → [`tech-stack/kubernetes-helm.md`](./tech-stack/kubernetes-helm.md) · [`tech-stack/keycloak.md`](./tech-stack/keycloak.md)
 - [ ] **Veri modeli** — token-tabanlı (klasik BPMN) mı, koleksiyon-tabanlı (n8n) mı? Adımlar arası veri temsili/akışı,
   soy ağacı (lineage). _(flovo-bpm-engine §3 / §12)_
 - [ ] **Kalıcılık & durum** — ne saklanır (süreç tanımı · instance/state · veri · dosya/binary); durum yaşam döngüsü
   (new/running/waiting/done); saklama/pruning. _(flovo-bpm-engine §8)_
+  - 🧱 **Tech-stack:** kalıcılık **substratı** = PostgreSQL + **Partial Event Sourcing** (`workflow_events` append-only); *ne
+    saklanır / yaşam döngüsü / pruning* tasarımı açık. → [`tech-stack/postgresql.md`](./tech-stack/postgresql.md)
 - [ ] **Property value (form alan değerleri) depolaması** — `Instance`'un alan değerleri **nerede/nasıl** tutulacak: `Instance`
   modelinde mi, ayrı value tablo(lar)ında mı; tip-bazlı sütun mu, referans mı? Daha detaylı araştırma sonrası
   kararlaştırılacak; alan-düzeyi tanımlar ayrı **değer dokümantasyonunda** yapılacak.
@@ -41,9 +47,14 @@
     cross-form; **(5)** binary/dosya ayrımı; **(6)** value geçmişi/sürümleme; **(7)** instance/state serileştirme.
   - 📎 **Araştırma girdisi (değerlendirme bekliyor):** [`research/property-value-storage/`](./research/property-value-storage/index.md)
     — CQRS Projection · Outbox · Postgres/JSONB tabanlı bir mimari öneri (yukarıdaki alt-soruların çoğunu ele alıyor). Karara bağlanınca buraya işlenecek.
+  - 🧱 **Tech-stack:** depolama **substratı** karara bağlandı — PostgreSQL/JSONB · **NATS JetStream** (outbox omurgası) · MinIO
+    (binary) · Go (projektör); bu, `form_attr` değerlendirmesindeki **S2/D9 "NATS stack açık" notunu kapatır**. Depolama **MODELİ**
+    hâlâ karara bağlanacak. → [`tech-stack/index.md`](./tech-stack/index.md)
 - [ ] **Denetim izi (audit) / loglama + dosya/binary depolama performansı** — **loglar nasıl ve nerede tutulacak**
   (workflow/form logları · **ayar değişiklik** logları · sistem logları); organizasyonlar **kendi loglarına** nasıl erişecek
   (izolasyon/yetki); saklama/pruning; mevcut "yavaş belge yükleme" şikâyetiyle doğrudan bağlı; KVKK. _(flovo-bpm-engine §8 / §12)_
+  - 🧱 **Tech-stack (kısmen):** **dosya/binary depolama → MinIO** (URL-in-JSONB; "yavaş belge yükleme" çözülür) karara bağlandı;
+    **loglama modeli** (nerede/erişim/pruning) hâlâ açık. → [`tech-stack/minio.md`](./tech-stack/minio.md)
 - [ ] **Ortam (environment) modeli** — **parent-child env** yapısı kurulacak mı? Her ortamın **formları ayrı mı**? Geliştirmeyi
   bir ortamda yapıp **canlı ortamda oluşturulmuş formları görüntüleme** senaryosu nasıl çözülecek? _(environmentRestriction
   alanları: process-step §2 / action · flovo-bpm-engine §8)_
@@ -53,6 +64,8 @@
   Alt servisler (Form List) ana süreçle eşzamanlı mı yürür? _(flovo-bpm-engine §4.5)_
 - [ ] **Olay/mesaj-tabanlı tetikleme** ve uyuyan sürecin uyandırılması; çok-örneklilikte "en-fazla-bir-kez"/lider
   seçimi. _(flovo-bpm-engine §5 / §6 / §12)_
+  - 🧱 **Tech-stack:** mesaj/olay **omurgası** = **NATS JetStream** (durable consumer + `Nats-Msg-Id` idempotency → "en-fazla-bir-kez");
+    BPM-düzeyi *uyandırma / lider-seçimi* tasarımı açık. → [`tech-stack/nats-jetstream.md`](./tech-stack/nats-jetstream.md)
 
 ---
 
@@ -60,6 +73,7 @@
 
 - [ ] **AI entegrasyon modeli** — deterministik "AI adımı" vs otonom "ajan"; takılabilir strateji (model/memory/araç);
   "herhangi bir adım = araç" + MCP? _(flovo-bpm-engine §11)_
+  - 🧱 **Tech-stack:** AI **substratı** = **Python AI Service** (🟡 post-MVP) + **pgvector**; entegrasyon **MODELİ** açık. → [`tech-stack/python-ai-service.md`](./tech-stack/python-ai-service.md)
 - [ ] **Hata yönetimi** — her adımda `onFail` var mı/zorunlu mu; **retry** (deneme + bekleme); süreç-seviye global
   hata yakalayıcı; telafi/compensation; `action` zinciri **sonsuz döngü** koruması. _(flovo-bpm-engine §7 · process-step-action §7)_
 - [ ] **İnsan-görev ailesi ortak modeli** — Kullanıcı / Kullanıcı Grubu / Processing için atama + bekleme.
@@ -89,6 +103,8 @@
 - [ ] **`changeViewProfile`** çalışma-zamanı profil değişiminin akış (motor) ile etkileşimi. _(view-profile §5)_
 - [ ] **Customer API** — kimlik/yetki (token kapsam/süre/yenileme); webhook güvenliği (secret/imza) + **idempotency**;
   `POST /instances/search` sorgu dili; rate limit/sayfalama/hata sözleşmesi; request/response şemaları. _(flovo-customer-api §3)_
+  - 🧱 **Tech-stack (kısmen):** kimlik = **Keycloak** (token) · sözleşme/şema = **OpenAPI** (api-contract) · idempotency deseni =
+    **NATS**; API'nin kendi tasarımı (search sorgu dili, rate limit, webhook imza) açık. → [`tech-stack/keycloak.md`](./tech-stack/keycloak.md) · [`tech-stack/api-contract.md`](./tech-stack/api-contract.md)
 - [ ] **Yetkilendirme (permissions) — açık kalanlar:** **(a)** `ProcessStepAction.authorizationLevel` (aksiyon-düzeyi sayısal
   yetki) yeni **org-bazlı** yetki modeliyle nasıl uyumlanır; **(b)** **impersonation** kapsamı/denetimi (kimin yerine
   geçilebilir; log/audit); **(c)** yetki setinin **genişletilebilirliği** (yeni yetki = Organization'a yeni `*UserGroupId`

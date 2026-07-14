@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flovo BPM - Yeni Mimari Analiz</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #dbeafe;
+            --success: #16a34a;
+            --success-light: #dcfce7;
+            --warning: #d97706;
+            --warning-light: #fef3c7;
+            --danger: #dc2626;
+            --danger-light: #fee2e2;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--gray-800);
+            background: var(--gray-50);
+            padding: 2rem;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { font-size: 2rem; color: var(--gray-900); margin-bottom: 0.5rem; border-bottom: 3px solid var(--primary); padding-bottom: 0.5rem; }
+        .subtitle { color: var(--gray-600); margin-bottom: 2rem; font-size: 1.1rem; }
+        h2 { font-size: 1.5rem; color: var(--gray-900); margin: 2.5rem 0 1rem 0; padding-left: 0.75rem; border-left: 4px solid var(--primary); }
+        h3 { font-size: 1.2rem; color: var(--gray-800); margin: 1.5rem 0 0.75rem 0; }
+        h4 { font-size: 1.05rem; color: var(--gray-700); margin: 1.2rem 0 0.5rem 0; }
+        p { margin-bottom: 1rem; color: var(--gray-600); }
+        table { width: 100%; border-collapse: collapse; margin: 1rem 0 2rem 0; font-size: 0.9rem; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        th { background: var(--gray-900); color: white; padding: 0.75rem 1rem; text-align: left; font-weight: 600; }
+        td { padding: 0.65rem 1rem; border-bottom: 1px solid var(--gray-200); }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: var(--gray-50); }
+        .badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600; }
+        .badge-success { background: var(--success-light); color: var(--success); }
+        .badge-warning { background: var(--warning-light); color: var(--warning); }
+        .badge-danger { background: var(--danger-light); color: var(--danger); }
+        .badge-info { background: var(--primary-light); color: var(--primary); }
+        .card { background: white; border-radius: 8px; padding: 1.5rem; margin: 1rem 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid var(--gray-200); }
+        .card-title { font-weight: 700; font-size: 1.1rem; margin-bottom: 0.75rem; color: var(--gray-900); }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .highlight-box { background: var(--primary-light); border: 1px solid var(--primary); border-radius: 8px; padding: 1.25rem; margin: 1.5rem 0; }
+        .highlight-box h4 { color: var(--primary); margin-bottom: 0.5rem; }
+        .architecture-diagram { background: var(--gray-900); color: #e5e7eb; padding: 1.5rem; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 0.85rem; line-height: 1.4; overflow-x: auto; margin: 1rem 0; }
+        .arch-svg { width: 100%; margin: 1.5rem 0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .arch-svg svg { width: 100%; height: auto; display: block; }
+        .pro-con-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+        .pro-list, .con-list { padding: 1rem; border-radius: 8px; }
+        .pro-list { background: var(--success-light); border: 1px solid var(--success); }
+        .con-list { background: var(--danger-light); border: 1px solid var(--danger); }
+        .pro-list h4 { color: var(--success); margin-bottom: 0.5rem; }
+        .con-list h4 { color: var(--danger); margin-bottom: 0.5rem; }
+        ul { padding-left: 1.5rem; margin-bottom: 0.5rem; }
+        li { margin-bottom: 0.35rem; color: var(--gray-600); }
+        .section-divider { border: none; border-top: 2px dashed var(--gray-300); margin: 3rem 0; }
+        .recommendation { background: linear-gradient(135deg, #1e40af, #3b82f6); color: white; padding: 2rem; border-radius: 12px; margin: 2rem 0; }
+        .recommendation h3 { color: white; margin-bottom: 1rem; }
+        .recommendation p { color: #dbeafe; }
+        .recommendation strong { color: white; }
+        code { background: var(--gray-100); padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.85rem; color: var(--gray-800); }
+        @media (max-width: 768px) { .grid-2, .pro-con-grid { grid-template-columns: 1fr; } body { padding: 1rem; } }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <h1>Flovo BPM — Yeni Mimari Analiz Raporu</h1>
+    <p class="subtitle">AI Destekli BPM Platform Dönüşümü • Haziran 2026</p>
+
+    <!-- ================================================================== -->
+    <!-- BÖLÜM 1: MEVCUT DURUM -->
+    <!-- ================================================================== -->
+    <h2>1. Mevcut Uygulamanın BPM Perspektifinden Durumu</h2>
+
+    <table>
+        <tr><th>BPM Bileşeni</th><th>Mevcut Durum</th><th>Eksikler</th><th>Yeterlilik</th></tr>
+        <tr><td><strong>Workflow Engine</strong></td><td>FlovoWorkEngine — ProcessStep, Transition</td><td>Kullanıcı kendisi tasarlayamıyor</td><td><span class="badge badge-warning">Kısıtlı</span></td></tr>
+        <tr><td><strong>Form Builder</strong></td><td>PropertyValue + Property (EAV)</td><td>Visual designer yok, AI yok</td><td><span class="badge badge-warning">Kısıtlı</span></td></tr>
+        <tr><td><strong>Rule Engine</strong></td><td>WorkRule + NCalc</td><td>Kullanıcı tanımlayamıyor</td><td><span class="badge badge-danger">Yetersiz</span></td></tr>
+        <tr><td><strong>Onay Mekanizması</strong></td><td>ProcessStepAction + ServiceInstanceRequest</td><td>Paralel onay yok, dinamik zincir sınırlı</td><td><span class="badge badge-warning">Kısıtlı</span></td></tr>
+        <tr><td><strong>Raporlama</strong></td><td>PivotTable, SmartView, Dashboard</td><td>Self-service BI yok</td><td><span class="badge badge-warning">Kısıtlı</span></td></tr>
+        <tr><td><strong>Entegrasyon</strong></td><td>30+ müşteri adaptörü (hardcoded)</td><td>Kullanıcı ekleyemiyor</td><td><span class="badge badge-danger">Yetersiz</span></td></tr>
+        <tr><td><strong>Multi-tenancy</strong></td><td>Account bazlı</td><td>Account-specific kodlar logic içinde</td><td><span class="badge badge-success">Yeterli</span></td></tr>
+        <tr><td><strong>AI Desteği</strong></td><td>OpenAI Assistant tabloları (başlangıç)</td><td>Workflow/form önerme yok</td><td><span class="badge badge-danger">Yetersiz</span></td></tr>
+    </table>
+
+    <hr class="section-divider">
+
+    <!-- ================================================================== -->
+    <!-- BÖLÜM 2: MİMARİ YAKLAŞIMLAR -->
+    <!-- ================================================================== -->
+    <h2>2. Olası Mimari Yaklaşımlar</h2>
+
+    <p>BPM tool için değerlendirilen tüm mimari yaklaşımlar, artıları, eksileri ve teknik detaylarıyla:</p>
+
+    <!-- ===== 2.1 MODÜLER MONOLİT ===== -->
+    <h3>2.1. Modüler Monolit</h3>
+
+    <p>Tek container içinde, modüler olarak yapılandırılmış uygulama. Modüller arası in-process iletişim, tek veritabanı.</p>
+
+    <div class="arch-svg">
+        <svg viewBox="0 0 900 440" xmlns="http://www.w3.org/2000/svg">
+            <rect width="900" height="440" fill="#f8fafc"/>
+            <rect x="50" y="20" width="800" height="50" rx="8" fill="#1e40af" stroke="#1e3a8a" stroke-width="2"/>
+            <text x="450" y="50" text-anchor="middle" fill="white" font-size="16" font-weight="bold">API Gateway</text>
+            <line x1="450" y1="70" x2="450" y2="95" stroke="#64748b" stroke-width="2"/>
+            <rect x="80" y="95" width="740" height="200" rx="12" fill="white" stroke="#3b82f6" stroke-width="3"/>
+            <rect x="80" y="95" width="740" height="32" rx="12" fill="#3b82f6"/>
+            <rect x="80" y="115" width="740" height="12" fill="#3b82f6"/>
+            <text x="450" y="115" text-anchor="middle" fill="white" font-size="13" font-weight="bold">Tek Container — Modüler Yapı</text>
+            <rect x="100" y="140" width="155" height="50" rx="6" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
+            <text x="177" y="160" text-anchor="middle" fill="#1e40af" font-size="11" font-weight="bold">Auth Module</text>
+            <text x="177" y="177" text-anchor="middle" fill="#64748b" font-size="9">JWT, RBAC, SSO</text>
+            <rect x="270" y="140" width="155" height="50" rx="6" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+            <text x="347" y="160" text-anchor="middle" fill="#166534" font-size="11" font-weight="bold">Workflow Module</text>
+            <text x="347" y="177" text-anchor="middle" fill="#64748b" font-size="9">BPMN, State Machine</text>
+            <rect x="440" y="140" width="155" height="50" rx="6" fill="#fef3c7" stroke="#fcd34d" stroke-width="1.5"/>
+            <text x="517" y="160" text-anchor="middle" fill="#92400e" font-size="11" font-weight="bold">Form Module</text>
+            <text x="517" y="177" text-anchor="middle" fill="#64748b" font-size="9">Dynamic Forms</text>
+            <rect x="610" y="140" width="155" height="50" rx="6" fill="#e0e7ff" stroke="#a5b4fc" stroke-width="1.5"/>
+            <text x="687" y="160" text-anchor="middle" fill="#4338ca" font-size="11" font-weight="bold">Rule Module</text>
+            <text x="687" y="177" text-anchor="middle" fill="#64748b" font-size="9">Business Rules</text>
+            <rect x="100" y="205" width="155" height="50" rx="6" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
+            <text x="177" y="225" text-anchor="middle" fill="#9d174d" font-size="11" font-weight="bold">Tenant Module</text>
+            <text x="177" y="242" text-anchor="middle" fill="#64748b" font-size="9">Multi-tenancy</text>
+            <rect x="270" y="205" width="155" height="50" rx="6" fill="#f0fdf4" stroke="#86efac" stroke-width="1.5"/>
+            <text x="347" y="225" text-anchor="middle" fill="#166534" font-size="11" font-weight="bold">Notify Module</text>
+            <text x="347" y="242" text-anchor="middle" fill="#64748b" font-size="9">Push, Email, WS</text>
+            <rect x="440" y="205" width="155" height="50" rx="6" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1.5"/>
+            <text x="517" y="225" text-anchor="middle" fill="#5b21b6" font-size="11" font-weight="bold">Report Module</text>
+            <text x="517" y="242" text-anchor="middle" fill="#64748b" font-size="9">Dashboard</text>
+            <rect x="610" y="205" width="155" height="50" rx="6" fill="#fff7ed" stroke="#fdba74" stroke-width="1.5"/>
+            <text x="687" y="225" text-anchor="middle" fill="#9a3412" font-size="11" font-weight="bold">Integration Module</text>
+            <text x="687" y="242" text-anchor="middle" fill="#64748b" font-size="9">Webhooks, API</text>
+            <line x1="450" y1="295" x2="450" y2="330" stroke="#64748b" stroke-width="2"/>
+            <ellipse cx="450" cy="345" rx="120" ry="16" fill="#1e40af" stroke="#1e3a8a" stroke-width="2"/>
+            <rect x="330" y="345" width="240" height="55" fill="#2563eb" stroke="#1e3a8a" stroke-width="2"/>
+            <ellipse cx="450" cy="400" rx="120" ry="16" fill="#1e40af" stroke="#1e3a8a" stroke-width="2"/>
+            <text x="450" y="370" text-anchor="middle" fill="white" font-size="12" font-weight="bold">PostgreSQL (Tek DB)</text>
+            <text x="450" y="389" text-anchor="middle" fill="#bfdbfe" font-size="10">Schema-per-module</text>
+            <rect x="640" y="350" width="170" height="45" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+            <text x="725" y="370" text-anchor="middle" fill="#166534" font-size="10" font-weight="bold">Maliyet</text>
+            <text x="725" y="387" text-anchor="middle" fill="#166534" font-size="13" font-weight="bold">~$240/ay</text>
+        </svg>
+    </div>
+
+    <div class="pro-con-grid">
+        <div class="pro-list">
+            <h4>✓ Artıları</h4>
+            <ul>
+                <li>Tek DB = en düşük maliyet (~$65/ay)</li>
+                <li>In-process çağrı = sıfır latency</li>
+                <li>Transaction bütünlüğü (ACID garanti)</li>
+                <li>Deploy basit (tek container)</li>
+                <li>2-3 kişilik ekip yönetebilir</li>
+                <li>Debug/test çok kolay</li>
+                <li>İleride modül ayırma kolay (sınırlar hazır)</li>
+            </ul>
+        </div>
+        <div class="con-list">
+            <h4>✗ Eksileri</h4>
+            <ul>
+                <li>Bir modül çökerse tüm app çöker</li>
+                <li>Ölçekleme granüler değil</li>
+                <li>Uzun süren işler (AI, export) main thread'i bloklar</li>
+                <li>Büyük ekiplerde merge conflict riski</li>
+                <li>Disiplin gevşerse spagetti olur</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ===== 2.2 FULL MICROSERVICES ===== -->
+    <h3>2.2. Full Microservices (Her Servise Ayrı DB)</h3>
+
+    <p>Her iş alanı bağımsız bir servis. Kendi veritabanı, kendi container'ı, ağ üzerinden iletişim.</p>
+
+    <div class="arch-svg">
+        <svg viewBox="0 0 900 400" xmlns="http://www.w3.org/2000/svg">
+            <rect width="900" height="400" fill="#f8fafc"/>
+            <rect x="50" y="15" width="800" height="45" rx="8" fill="#1e40af" stroke="#1e3a8a" stroke-width="2"/>
+            <text x="450" y="43" text-anchor="middle" fill="white" font-size="15" font-weight="bold">API Gateway (Azure APIM)</text>
+            <rect x="60" y="80" width="180" height="85" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+            <text x="150" y="105" text-anchor="middle" fill="#1e40af" font-size="11" font-weight="bold">Auth Service</text>
+            <rect x="95" y="115" width="110" height="28" rx="4" fill="#fef3c7" stroke="#d97706" stroke-width="1"/>
+            <text x="150" y="134" text-anchor="middle" fill="#92400e" font-size="10">DB-1</text>
+            <rect x="260" y="80" width="180" height="85" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+            <text x="350" y="105" text-anchor="middle" fill="#1e40af" font-size="11" font-weight="bold">Workflow Service</text>
+            <rect x="295" y="115" width="110" height="28" rx="4" fill="#fef3c7" stroke="#d97706" stroke-width="1"/>
+            <text x="350" y="134" text-anchor="middle" fill="#92400e" font-size="10">DB-2</text>
+            <rect x="460" y="80" width="180" height="85" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+            <text x="550" y="105" text-anchor="middle" fill="#1e40af" font-size="11" font-weight="bold">Form Service</text>
+            <rect x="495" y="115" width="110" height="28" rx="4" fill="#fef3c7" stroke="#d97706" stroke-width="1"/>
+            <text x="550" y="134" text-anchor="middle" fill="#92400e" font-size="10">DB-3</text>
+            <rect x="660" y="80" width="180" height="85" rx="8" fill="#e0e7ff" stroke="#6366f1" stroke-width="2"/>
+            <text x="750" y="105" text-anchor="middle" fill="#4338ca" font-size="11" font-weight="bold">AI Service</text>
+            <rect x="695" y="115" width="110" height="28" rx="4" fill="#fef3c7" stroke="#d97706" stroke-width="1"/>
+            <text x="750" y="134" text-anchor="middle" fill="#92400e" font-size="10">DB-4</text>
+            <rect x="60" y="185" width="180" height="85" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+            <text x="150" y="210" text-anchor="middle" fill="#1e40af" font-size="11" font-weight="bold">Report Service</text>
+            <rect x="95" y="220" width="110" height="28" rx="4" fill="#fef3c7" stroke="#d97706" stroke-width="1"/>
+            <text x="150" y="239" text-anchor="middle" fill="#92400e" font-size="10">DB-5</text>
+            <rect x="260" y="185" width="180" height="85" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+            <text x="350" y="210" text-anchor="middle" fill="#1e40af" font-size="11" font-weight="bold">Notification Service</text>
+            <rect x="295" y="220" width="110" height="28" rx="4" fill="#fef3c7" stroke="#d97706" stroke-width="1"/>
+            <text x="350" y="239" text-anchor="middle" fill="#92400e" font-size="10">DB-6</text>
+            <rect x="460" y="185" width="180" height="85" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+            <text x="550" y="210" text-anchor="middle" fill="#1e40af" font-size="11" font-weight="bold">File Service</text>
+            <rect x="495" y="220" width="110" height="28" rx="4" fill="#dcfce7" stroke="#16a34a" stroke-width="1"/>
+            <text x="550" y="239" text-anchor="middle" fill="#166534" font-size="10">Blob</text>
+            <rect x="660" y="185" width="180" height="85" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+            <text x="750" y="210" text-anchor="middle" fill="#1e40af" font-size="11" font-weight="bold">Integration Service</text>
+            <rect x="695" y="220" width="110" height="28" rx="4" fill="#fef3c7" stroke="#d97706" stroke-width="1"/>
+            <text x="750" y="239" text-anchor="middle" fill="#92400e" font-size="10">DB-7</text>
+            <rect x="50" y="295" width="800" height="45" rx="8" fill="#7c3aed" stroke="#6d28d9" stroke-width="2"/>
+            <text x="450" y="322" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Azure Service Bus (Message Broker)</text>
+            <rect x="50" y="355" width="800" height="40" rx="8" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+            <text x="450" y="380" text-anchor="middle" fill="#991b1b" font-size="13" font-weight="bold">Tahmini Maliyet: ~$1,315/ay (7 DB + 8 Container + APIM + Bus)</text>
+        </svg>
+    </div>
+
+    <div class="pro-con-grid">
+        <div class="pro-list">
+            <h4>✓ Artıları</h4>
+            <ul>
+                <li>Her servis bağımsız deploy</li>
+                <li>Bir servis çökerse diğerleri çalışır</li>
+                <li>Bağımsız ölçekleme (sadece yoğun servisi scale et)</li>
+                <li>Her servis farklı teknoloji kullanabilir</li>
+                <li>Büyük ekipler için uygun</li>
+            </ul>
+        </div>
+        <div class="con-list">
+            <h4>✗ Eksileri</h4>
+            <ul>
+                <li>7+ ayrı DB = çok yüksek maliyet ($270-585/ay sadece DB)</li>
+                <li>Distributed transaction (Saga pattern) zorluğu</li>
+                <li>Service-to-service latency (her çağrı 5-20ms)</li>
+                <li>2-3 kişi yönetemez (min 5+ kişi gerekir)</li>
+                <li>Debug/trace karmaşık (distributed tracing şart)</li>
+                <li>Data duplication ve eventual consistency</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="highlight-box">
+        <h4>Not: Microservice + Tek DB = Anti-Pattern</h4>
+        <p>Maliyet düşürmek için "microservice ama tek DB" düşünülebilir. Ancak bu, microservice'in operasyonel karmaşıklığını alıp, bağımsızlık avantajını kaybettirir. Connection pool tükenmesi, coupling, noisy neighbor sorunları yaratır. Tek DB kullanacaksanız zaten modüler monolit veya SOA daha mantıklıdır.</p>
+    </div>
+
+    <!-- ===== 2.3 SOA ===== -->
+    <h3>2.3. SOA — Self-Contained Systems</h3>
+
+    <p>Microservice ile Monolit arasında. Az sayıda (2-4) büyük, kendi kendine yeten sistem. Her sistem içinde birden fazla modül, aralarında event-driven iletişim.</p>
+
+    <div class="arch-svg">
+        <svg viewBox="0 0 900 370" xmlns="http://www.w3.org/2000/svg">
+            <rect width="900" height="370" fill="#f8fafc"/>
+            <!-- System 1 -->
+            <rect x="40" y="20" width="390" height="210" rx="12" fill="white" stroke="#3b82f6" stroke-width="3"/>
+            <rect x="40" y="20" width="390" height="32" rx="12" fill="#3b82f6"/>
+            <rect x="40" y="40" width="390" height="12" fill="#3b82f6"/>
+            <text x="235" y="42" text-anchor="middle" fill="white" font-size="12" font-weight="bold">System 1: Core BPM Platform</text>
+            <rect x="60" y="62" width="80" height="32" rx="4" fill="#dbeafe" stroke="#93c5fd" stroke-width="1"/>
+            <text x="100" y="82" text-anchor="middle" fill="#1e40af" font-size="9" font-weight="bold">Workflow</text>
+            <rect x="150" y="62" width="60" height="32" rx="4" fill="#dcfce7" stroke="#86efac" stroke-width="1"/>
+            <text x="180" y="82" text-anchor="middle" fill="#166534" font-size="9" font-weight="bold">Form</text>
+            <rect x="220" y="62" width="55" height="32" rx="4" fill="#fef3c7" stroke="#fcd34d" stroke-width="1"/>
+            <text x="247" y="82" text-anchor="middle" fill="#92400e" font-size="9" font-weight="bold">Rule</text>
+            <rect x="285" y="62" width="55" height="32" rx="4" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1"/>
+            <text x="312" y="82" text-anchor="middle" fill="#9d174d" font-size="9" font-weight="bold">Auth</text>
+            <rect x="350" y="62" width="60" height="32" rx="4" fill="#f0fdf4" stroke="#86efac" stroke-width="1"/>
+            <text x="380" y="82" text-anchor="middle" fill="#166534" font-size="9" font-weight="bold">Notify</text>
+            <rect x="60" y="102" width="350" height="22" rx="4" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1"/>
+            <text x="235" y="117" text-anchor="middle" fill="#3b82f6" font-size="9">In-process iletişim (0 latency) + WebSocket</text>
+            <ellipse cx="235" cy="150" rx="70" ry="12" fill="#1e40af"/>
+            <rect x="165" y="150" width="140" height="35" fill="#2563eb" stroke="#1e3a8a" stroke-width="1.5"/>
+            <ellipse cx="235" cy="185" rx="70" ry="12" fill="#1e40af"/>
+            <text x="235" y="170" text-anchor="middle" fill="white" font-size="10" font-weight="bold">PostgreSQL #1</text>
+            <rect x="310" y="145" width="100" height="30" rx="4" fill="#fee2e2" stroke="#f87171" stroke-width="1"/>
+            <text x="360" y="164" text-anchor="middle" fill="#991b1b" font-size="9" font-weight="bold">Redis</text>
+            <!-- System 2 -->
+            <rect x="470" y="20" width="390" height="210" rx="12" fill="white" stroke="#7c3aed" stroke-width="3"/>
+            <rect x="470" y="20" width="390" height="32" rx="12" fill="#7c3aed"/>
+            <rect x="470" y="40" width="390" height="12" fill="#7c3aed"/>
+            <text x="665" y="42" text-anchor="middle" fill="white" font-size="12" font-weight="bold">System 2: AI & Analytics</text>
+            <rect x="490" y="62" width="100" height="32" rx="4" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1"/>
+            <text x="540" y="82" text-anchor="middle" fill="#5b21b6" font-size="9" font-weight="bold">NLP→BPMN</text>
+            <rect x="600" y="62" width="70" height="32" rx="4" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1"/>
+            <text x="635" y="82" text-anchor="middle" fill="#5b21b6" font-size="9" font-weight="bold">RAG</text>
+            <rect x="680" y="62" width="80" height="32" rx="4" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1"/>
+            <text x="720" y="82" text-anchor="middle" fill="#5b21b6" font-size="9" font-weight="bold">Mining</text>
+            <rect x="770" y="62" width="75" height="32" rx="4" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1"/>
+            <text x="807" y="82" text-anchor="middle" fill="#5b21b6" font-size="9" font-weight="bold">Dashboard</text>
+            <rect x="490" y="102" width="350" height="22" rx="4" fill="#faf5ff" stroke="#e9d5ff" stroke-width="1"/>
+            <text x="665" y="117" text-anchor="middle" fill="#7c3aed" font-size="9">In-process iletişim (0 latency)</text>
+            <ellipse cx="665" cy="150" rx="70" ry="12" fill="#6d28d9"/>
+            <rect x="595" y="150" width="140" height="35" fill="#7c3aed" stroke="#5b21b6" stroke-width="1.5"/>
+            <ellipse cx="665" cy="185" rx="70" ry="12" fill="#6d28d9"/>
+            <text x="665" y="170" text-anchor="middle" fill="white" font-size="10" font-weight="bold">PostgreSQL #2 + pgvector</text>
+            <!-- Event Bus -->
+            <rect x="40" y="255" width="820" height="45" rx="8" fill="#0f766e" stroke="#115e59" stroke-width="2"/>
+            <text x="450" y="282" text-anchor="middle" fill="white" font-size="13" font-weight="bold">Event Bus (Azure Service Bus) — Sistemler arası SADECE event</text>
+            <!-- Workers -->
+            <rect x="40" y="315" width="820" height="45" rx="8" fill="#7c3aed" stroke="#6d28d9" stroke-width="2"/>
+            <text x="450" y="342" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Background Workers (scale-to-zero): Scheduler | Integration | Export</text>
+            <!-- Arrows -->
+            <line x1="235" y1="200" x2="235" y2="255" stroke="#64748b" stroke-width="1.5"/>
+            <line x1="665" y1="200" x2="665" y2="255" stroke="#64748b" stroke-width="1.5"/>
+        </svg>
+    </div>
+
+    <div class="pro-con-grid">
+        <div class="pro-list">
+            <h4>✓ Artıları</h4>
+            <ul>
+                <li>Sadece 2-3 system (10 microservice değil) — yönetilebilir</li>
+                <li>System içi: 0 latency (in-process). Workflow form+rule kontrolü anında.</li>
+                <li>Bağımsız deploy (AI deploy'u Core'u etkilemez)</li>
+                <li>DB sayısı makul (2 adet = ~$130/ay)</li>
+                <li>AI uzun süren işleri Core'u bloklamaz</li>
+                <li>BPM'de kritik olan transaction bütünlüğü korunur</li>
+                <li>İleride bir modülü ayrı system'e çıkarmak kolay</li>
+            </ul>
+        </div>
+        <div class="con-list">
+            <h4>✗ Eksileri</h4>
+            <ul>
+                <li>Core sistem hala büyükçe (monolit'e benzer iç yapı)</li>
+                <li>Sistemler arası eventual consistency</li>
+                <li>Full microservice kadar granüler ölçekleme yok</li>
+                <li>2 ayrı deployment pipeline yönetimi</li>
+            </ul>
+        </div>
+    </div>
+
+    <h4>SOA vs Microservice: Aynı Senaryo Karşılaştırması</h4>
+    <p>"Kullanıcı form doldurdu → workflow ilerletildi → yetki kontrolü → bildirim gönderildi"</p>
+
+    <div class="grid-2">
+        <div class="card">
+            <div class="card-title" style="color: #dc2626;">Microservice (6+ ağ çağrısı)</div>
+            <ul>
+                <li>Client → Gateway → Form Service</li>
+                <li>Form Service → Workflow Service</li>
+                <li>Workflow → Rule Service</li>
+                <li>Workflow → Auth Service</li>
+                <li>Workflow → Notification Service</li>
+                <li>Her çağrı ~5-20ms</li>
+                <li><strong>Toplam overhead: ~30-100ms</strong></li>
+            </ul>
+        </div>
+        <div class="card">
+            <div class="card-title" style="color: #16a34a;">SOA (0 ağ çağrısı)</div>
+            <ul>
+                <li>Client → Core BPM (tek çağrı)</li>
+                <li>Form module → function call (0ms)</li>
+                <li>Workflow module → function call (0ms)</li>
+                <li>Rule module → function call (0ms)</li>
+                <li>Auth module → function call (0ms)</li>
+                <li>Notify module → function call (0ms)</li>
+                <li><strong>Toplam overhead: ~0ms</strong></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ===== 2.4 EVENT SOURCING ===== -->
+    <h3>2.4. Event-Driven Architecture + Event Sourcing</h3>
+
+    <p>"State'i DB'ye yaz" yerine <strong>her işlemi event olarak sakla</strong>. Güncel state event'lerin tekrarından türetilir. BPM'in doğasına çok uygun: bir iş akışı zaten "olayların sırası"dır.</p>
+
+    <div class="arch-svg">
+        <svg viewBox="0 0 900 280" xmlns="http://www.w3.org/2000/svg">
+            <rect width="900" height="280" fill="#f8fafc"/>
+            <rect x="30" y="30" width="150" height="45" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+            <text x="105" y="48" text-anchor="middle" fill="#1e40af" font-size="10" font-weight="bold">Kullanıcı</text>
+            <text x="105" y="65" text-anchor="middle" fill="#64748b" font-size="9">"Formu Onayla"</text>
+            <line x1="180" y1="52" x2="230" y2="52" stroke="#3b82f6" stroke-width="2"/>
+            <rect x="230" y="30" width="130" height="45" rx="8" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+            <text x="295" y="48" text-anchor="middle" fill="#92400e" font-size="10" font-weight="bold">Command</text>
+            <text x="295" y="65" text-anchor="middle" fill="#64748b" font-size="9">ApproveForm(123)</text>
+            <line x1="360" y1="52" x2="410" y2="52" stroke="#d97706" stroke-width="2"/>
+            <rect x="410" y="20" width="200" height="65" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="3"/>
+            <text x="510" y="42" text-anchor="middle" fill="#166534" font-size="11" font-weight="bold">Event Store</text>
+            <text x="510" y="58" text-anchor="middle" fill="#166534" font-size="9">(Append-Only)</text>
+            <text x="510" y="76" text-anchor="middle" fill="#64748b" font-size="8">FormApproved { id:123, by:5, ts:... }</text>
+            <line x1="510" y1="85" x2="510" y2="110" stroke="#16a34a" stroke-width="2"/>
+            <text x="510" y="108" text-anchor="middle" fill="#16a34a" font-size="9" font-weight="bold">Projections</text>
+            <!-- Projections -->
+            <line x1="510" y1="115" x2="150" y2="115" stroke="#16a34a" stroke-width="1"/>
+            <line x1="510" y1="115" x2="370" y2="115" stroke="#16a34a" stroke-width="1"/>
+            <line x1="510" y1="115" x2="590" y2="115" stroke="#16a34a" stroke-width="1"/>
+            <line x1="510" y1="115" x2="780" y2="115" stroke="#16a34a" stroke-width="1"/>
+            <line x1="150" y1="115" x2="150" y2="135" stroke="#16a34a" stroke-width="1"/>
+            <line x1="370" y1="115" x2="370" y2="135" stroke="#16a34a" stroke-width="1"/>
+            <line x1="590" y1="115" x2="590" y2="135" stroke="#16a34a" stroke-width="1"/>
+            <line x1="780" y1="115" x2="780" y2="135" stroke="#16a34a" stroke-width="1"/>
+            <rect x="70" y="135" width="160" height="50" rx="6" fill="#f0fdf4" stroke="#86efac" stroke-width="1.5"/>
+            <text x="150" y="155" text-anchor="middle" fill="#166534" font-size="9" font-weight="bold">Workflow State</text>
+            <text x="150" y="172" text-anchor="middle" fill="#64748b" font-size="8">Adım ilerletilir</text>
+            <rect x="290" y="135" width="160" height="50" rx="6" fill="#fef3c7" stroke="#fcd34d" stroke-width="1.5"/>
+            <text x="370" y="155" text-anchor="middle" fill="#92400e" font-size="9" font-weight="bold">Bildirim</text>
+            <text x="370" y="172" text-anchor="middle" fill="#64748b" font-size="8">Sonraki onaylayıcıya push</text>
+            <rect x="510" y="135" width="160" height="50" rx="6" fill="#e0e7ff" stroke="#a5b4fc" stroke-width="1.5"/>
+            <text x="590" y="155" text-anchor="middle" fill="#4338ca" font-size="9" font-weight="bold">Dashboard</text>
+            <text x="590" y="172" text-anchor="middle" fill="#64748b" font-size="8">Sayaç güncellenir</text>
+            <rect x="700" y="135" width="160" height="50" rx="6" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1.5"/>
+            <text x="780" y="155" text-anchor="middle" fill="#5b21b6" font-size="9" font-weight="bold">AI</text>
+            <text x="780" y="172" text-anchor="middle" fill="#64748b" font-size="8">Pattern öğrenir</text>
+            <!-- Benefits -->
+            <rect x="70" y="210" width="760" height="55" rx="6" fill="white" stroke="#e5e7eb" stroke-width="1"/>
+            <text x="450" y="232" text-anchor="middle" fill="#1f2937" font-size="10" font-weight="bold">BPM için neden doğal uyum?</text>
+            <text x="450" y="250" text-anchor="middle" fill="#64748b" font-size="9">Audit trail (kim ne yaptı) • Geri alma (undo) • Temporal query ("3 gün önce ne durumdaydı?") • Real-time (event → anında push)</text>
+        </svg>
+    </div>
+
+    <div class="pro-con-grid">
+        <div class="pro-list">
+            <h4>✓ Artıları</h4>
+            <ul>
+                <li>Tam audit trail — compliance için kritik (KVKK, SOC2)</li>
+                <li>Geri alma — compensating event ile state düzeltme</li>
+                <li>Yazma çok hızlı (append-only, sadece INSERT)</li>
+                <li>AI için hazır veri kaynağı (event stream)</li>
+                <li>Temporal query ("3 gün önceki state neydi?")</li>
+            </ul>
+        </div>
+        <div class="con-list">
+            <h4>✗ Eksileri</h4>
+            <ul>
+                <li>Öğrenme eğrisi yüksek (2-4 hafta ramp-up)</li>
+                <li>Event schema değişimlerini yönetmek zor (upcasting)</li>
+                <li>Projection güncellenmesi ~ms gecikebilir</li>
+                <li>Debug zorlaşabilir (state = event replay)</li>
+                <li>Tüm modüllere uygulamak overengineering (sadece workflow için ideal)</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ===== 2.5 HEXAGONAL ===== -->
+    <h3>2.5. Hexagonal Architecture (Ports & Adapters)</h3>
+
+    <p>Deployment modeli değil, <strong>iç tasarım prensibi</strong>. Core domain hiçbir teknolojiye (framework, DB, cloud) bağımlı olmaz. Dış bağımlılıklar adapter'lar üzerinden bağlanır.</p>
+
+    <div class="arch-svg">
+        <svg viewBox="0 0 900 260" xmlns="http://www.w3.org/2000/svg">
+            <rect width="900" height="260" fill="#f8fafc"/>
+            <polygon points="450,30 590,85 590,185 450,240 310,185 310,85" fill="#dbeafe" stroke="#3b82f6" stroke-width="3"/>
+            <text x="450" y="110" text-anchor="middle" fill="#1e40af" font-size="14" font-weight="bold">CORE DOMAIN</text>
+            <text x="450" y="135" text-anchor="middle" fill="#1e40af" font-size="11">(Pure Business Logic)</text>
+            <text x="450" y="160" text-anchor="middle" fill="#64748b" font-size="9">Framework bağımlılığı YOK</text>
+            <text x="450" y="177" text-anchor="middle" fill="#64748b" font-size="9">DB bağımlılığı YOK</text>
+            <text x="450" y="194" text-anchor="middle" fill="#64748b" font-size="9">Cloud bağımlılığı YOK</text>
+            <rect x="50" y="55" width="120" height="30" rx="5" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+            <text x="110" y="74" text-anchor="middle" fill="#166534" font-size="9" font-weight="bold">HTTP API</text>
+            <line x1="170" y1="70" x2="310" y2="100" stroke="#16a34a" stroke-width="1.5"/>
+            <rect x="50" y="105" width="120" height="30" rx="5" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+            <text x="110" y="124" text-anchor="middle" fill="#166534" font-size="9" font-weight="bold">WebSocket</text>
+            <line x1="170" y1="120" x2="310" y2="135" stroke="#16a34a" stroke-width="1.5"/>
+            <rect x="50" y="155" width="120" height="30" rx="5" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+            <text x="110" y="174" text-anchor="middle" fill="#166534" font-size="9" font-weight="bold">Event Consumer</text>
+            <line x1="170" y1="170" x2="310" y2="170" stroke="#16a34a" stroke-width="1.5"/>
+            <rect x="730" y="55" width="120" height="30" rx="5" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+            <text x="790" y="74" text-anchor="middle" fill="#92400e" font-size="9" font-weight="bold">PostgreSQL</text>
+            <line x1="590" y1="100" x2="730" y2="70" stroke="#d97706" stroke-width="1.5"/>
+            <rect x="730" y="105" width="120" height="30" rx="5" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+            <text x="790" y="124" text-anchor="middle" fill="#92400e" font-size="9" font-weight="bold">Redis</text>
+            <line x1="590" y1="135" x2="730" y2="120" stroke="#d97706" stroke-width="1.5"/>
+            <rect x="730" y="155" width="120" height="30" rx="5" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+            <text x="790" y="174" text-anchor="middle" fill="#92400e" font-size="9" font-weight="bold">OpenAI / Blob</text>
+            <line x1="590" y1="170" x2="730" y2="170" stroke="#d97706" stroke-width="1.5"/>
+            <text x="110" y="42" text-anchor="middle" fill="#16a34a" font-size="10" font-weight="bold">Input Adapters</text>
+            <text x="790" y="42" text-anchor="middle" fill="#d97706" font-size="10" font-weight="bold">Output Adapters</text>
+            <rect x="250" y="245" width="400" height="12" rx="3" fill="#f0fdf4" stroke="#10b981" stroke-width="1"/>
+            <text x="450" y="254" text-anchor="middle" fill="#065f46" font-size="8">Adapter değiştir → Core'a dokunma. PostgreSQL → MongoDB? Sadece adapter değişir.</text>
+        </svg>
+    </div>
+
+    <p><strong>Artısı:</strong> Test edilebilirlik mükemmel, teknoloji değişikliği core'u etkilemez, temiz kod yapısı.<br>
+    <strong>Eksisi:</strong> Başta fazla interface/boilerplate, basit CRUD için overengineering olabilir.</p>
+
+    <!-- ===== 2.6 SERVERLESS ===== -->
+    <h3>2.6. Serverless-First (Mevcut Yapınız)</h3>
+
+    <p>Tüm logic cloud function'larda. <strong>Şu an Azure Functions kullanıyorsunuz — bu yaklaşımın sınırlarını yaşıyorsunuz.</strong></p>
+
+    <table>
+        <tr><th>BPM Gereksinimi</th><th>Serverless Durumu</th><th>Sonuç</th></tr>
+        <tr><td>Real-time (WebSocket)</td><td>Yok — SignalR Service gerekir (+$50-150/ay)</td><td><span class="badge badge-danger">Uygunsuz</span></td></tr>
+        <tr><td>Uzun workflow orchestration</td><td>Timeout 10-30dk → zaman aşımı riski</td><td><span class="badge badge-danger">Uygunsuz</span></td></tr>
+        <tr><td>Cold start</td><td>1-10 sn bekleme → kullanıcı deneyimi kötü</td><td><span class="badge badge-danger">Uygunsuz</span></td></tr>
+        <tr><td>DB connection pool</td><td>Her invocation yeni conn → DB tükenir</td><td><span class="badge badge-danger">Uygunsuz</span></td></tr>
+        <tr><td>State management</td><td>Durable Functions ile mümkün ama çok karmaşık</td><td><span class="badge badge-warning">Sorunlu</span></td></tr>
+    </table>
+
+    <p><strong>Sonuç:</strong> BPM doğası gereği stateful, long-running, real-time iletişim gerektirir. Serverless bunun tam tersi. <strong>Devam etmemeli.</strong></p>
+
+    <!-- ===== 2.7 CELL-BASED ===== -->
+    <h3>2.7. Cell-Based Architecture</h3>
+
+    <p>Her "cell" bir müşteri grubu için tamamen izole deployment. Netflix/Amazon ölçeğinde platformlar için.</p>
+
+    <p><strong>Artısı:</strong> Tam izolasyon, bir cell çökerse sadece o müşteriler etkilenir, GDPR compliance kolay.<br>
+    <strong>Eksisi:</strong> Çok pahalı (her cell = tam stack kopyası), operasyonel yük çok yüksek.<br>
+    <strong>Sonuç:</strong> Şu an overkill. 100+ enterprise müşteride tekrar değerlendirilebilir.</p>
+
+    <hr class="section-divider">
+
+    <!-- ================================================================== -->
+    <!-- BÖLÜM 3: KARŞILAŞTIRMA TABLOSU -->
+    <!-- ================================================================== -->
+    <h2>3. Tüm Yaklaşımlar — Karşılaştırma Tablosu</h2>
+
+    <table>
+        <tr>
+            <th>Kriter</th>
+            <th>Modüler Monolit</th>
+            <th>Full Microservice</th>
+            <th>SOA (2-3 System)</th>
+            <th>Event Sourcing</th>
+            <th>Serverless</th>
+        </tr>
+        <tr>
+            <td><strong>Aylık Maliyet</strong></td>
+            <td><span class="badge badge-success">~$240</span></td>
+            <td><span class="badge badge-danger">~$1,315</span></td>
+            <td><span class="badge badge-success">~$350</span></td>
+            <td><span class="badge badge-warning">Yapıya bağlı</span></td>
+            <td><span class="badge badge-warning">Değişken</span></td>
+        </tr>
+        <tr>
+            <td><strong>Performans</strong></td>
+            <td><span class="badge badge-success">Çok yüksek</span></td>
+            <td><span class="badge badge-warning">Orta (latency)</span></td>
+            <td><span class="badge badge-success">Yüksek</span></td>
+            <td><span class="badge badge-success">Yüksek</span></td>
+            <td><span class="badge badge-danger">Düşük (cold)</span></td>
+        </tr>
+        <tr>
+            <td><strong>Karmaşıklık</strong></td>
+            <td><span class="badge badge-success">Düşük</span></td>
+            <td><span class="badge badge-danger">Çok yüksek</span></td>
+            <td><span class="badge badge-warning">Orta</span></td>
+            <td><span class="badge badge-danger">Yüksek</span></td>
+            <td><span class="badge badge-warning">Orta</span></td>
+        </tr>
+        <tr>
+            <td><strong>BPM Uyumu</strong></td>
+            <td><span class="badge badge-warning">İyi</span></td>
+            <td><span class="badge badge-warning">İyi</span></td>
+            <td><span class="badge badge-success">Çok iyi</span></td>
+            <td><span class="badge badge-success">Mükemmel</span></td>
+            <td><span class="badge badge-danger">Kötü</span></td>
+        </tr>
+        <tr>
+            <td><strong>Minimum Ekip</strong></td>
+            <td>2 kişi</td>
+            <td>5+ kişi</td>
+            <td>2-3 kişi</td>
+            <td>3 kişi</td>
+            <td>2 kişi</td>
+        </tr>
+        <tr>
+            <td><strong>Ölçeklenme</strong></td>
+            <td><span class="badge badge-warning">İyi</span></td>
+            <td><span class="badge badge-success">Mükemmel</span></td>
+            <td><span class="badge badge-success">Çok iyi</span></td>
+            <td><span class="badge badge-success">Çok iyi</span></td>
+            <td><span class="badge badge-success">Otomatik</span></td>
+        </tr>
+        <tr>
+            <td><strong>Data Consistency</strong></td>
+            <td><span class="badge badge-success">Strong (ACID)</span></td>
+            <td><span class="badge badge-danger">Eventual</span></td>
+            <td><span class="badge badge-success">Strong (system içi)</span></td>
+            <td><span class="badge badge-warning">Eventual (proj.)</span></td>
+            <td><span class="badge badge-warning">Eventual</span></td>
+        </tr>
+        <tr>
+            <td><strong>Audit Trail</strong></td>
+            <td><span class="badge badge-warning">Ek geliştirme</span></td>
+            <td><span class="badge badge-warning">Ek geliştirme</span></td>
+            <td><span class="badge badge-warning">Ek geliştirme</span></td>
+            <td><span class="badge badge-success">Built-in</span></td>
+            <td><span class="badge badge-warning">Ek geliştirme</span></td>
+        </tr>
+        <tr>
+            <td><strong>Hata İzolasyonu</strong></td>
+            <td><span class="badge badge-danger">Zayıf</span></td>
+            <td><span class="badge badge-success">Mükemmel</span></td>
+            <td><span class="badge badge-warning">İyi</span></td>
+            <td><span class="badge badge-warning">İyi</span></td>
+            <td><span class="badge badge-success">İyi</span></td>
+        </tr>
+        <tr>
+            <td><strong>Azure Uyumu</strong></td>
+            <td><span class="badge badge-success">Tam</span></td>
+            <td><span class="badge badge-success">Tam</span></td>
+            <td><span class="badge badge-success">Tam</span></td>
+            <td><span class="badge badge-success">Tam</span></td>
+            <td><span class="badge badge-success">Native</span></td>
+        </tr>
+    </table>
+
+    <hr class="section-divider">
+
+    <!-- ================================================================== -->
+    <!-- BÖLÜM 4: ÖNERİLEN YAKLAŞIM -->
+    <!-- ================================================================== -->
+    <h2>4. Önerilen Yaklaşım: SOA + Hexagonal + Partial Event Sourcing</h2>
+
+    <div class="recommendation">
+        <h3>Tek bir mimari yerine, her katmanda en uygun yaklaşımı birleştiriyoruz</h3>
+        <p>Bu kombinasyon: SOA'nın deployment kolaylığını, Hexagonal'in test edilebilirliğini ve Event Sourcing'in BPM uyumunu bir arada sunar.</p>
+    </div>
+
+    <!-- 4.1 Genel Yapı -->
+    <h3>4.1. Genel Deployment Yapısı</h3>
+
+    <table>
+        <tr><th>Birim</th><th>İçerik</th><th>Teknoloji</th><th>Ölçekleme</th></tr>
+        <tr><td><strong>System 1: Core BPM</strong></td><td>Auth, Workflow, Form, Rule, Tenant, Notification + WebSocket</td><td>Go veya TS (Bun), Container Apps (2+ replica)</td><td>HTTP trafiğine göre auto-scale</td></tr>
+        <tr><td><strong>System 2: AI Service</strong></td><td>NLP→BPMN, Form AI, RAG, Process Mining, Dashboard</td><td>Python veya Go, Container Apps (1+ replica)</td><td>Queue depth'e göre auto-scale</td></tr>
+        <tr><td><strong>Workers</strong></td><td>Scheduler, Integration, Export/Import</td><td>Aynı dil, Container Apps Jobs</td><td>Scale-to-zero</td></tr>
+    </table>
+
+    <h4>Sistem Sınırları Neden Bu Şekilde?</h4>
+    <table>
+        <tr><th>System</th><th>Neden Aynı System'de?</th></tr>
+        <tr><td><strong>Core BPM</strong> (Workflow + Form + Rule + Auth + Notify)</td><td>Workflow her adımda Form, Rule ve Auth'a sorar. Bunları ayırırsanız her request'te 3-4 ağ çağrısı olur → latency patlar. Tek transaction = ACID garanti.</td></tr>
+        <tr><td><strong>AI & Analytics</strong> (NLP, RAG, Mining, Dashboard)</td><td>AI saniyeler sürer, farklı kaynak profili (yüksek RAM). Core'u bloklamadan çalışmalı. Dashboard'un heavy query'leri de Core DB'yi yavaşlatmamalı.</td></tr>
+        <tr><td><strong>Workers</strong> (ayrı container'lar)</td><td>Entegrasyon timeout'ları, export'ların uzun sürmesi Core'u etkilememeli. Scale-to-zero ile iş yokken $0.</td></tr>
+    </table>
+
+    <!-- 4.2 İç Mimari -->
+    <h3>4.2. Core BPM İç Mimarisi (Hexagonal)</h3>
+
+    <div class="arch-svg">
+        <svg viewBox="0 0 900 400" xmlns="http://www.w3.org/2000/svg">
+            <rect width="900" height="400" fill="#f8fafc"/>
+            <!-- Outer: Infrastructure -->
+            <rect x="30" y="15" width="840" height="370" rx="14" fill="white" stroke="#e5e7eb" stroke-width="2"/>
+            <text x="450" y="38" text-anchor="middle" fill="#9ca3af" font-size="11">INFRASTRUCTURE LAYER (Adapters)</text>
+            <!-- Middle: Application -->
+            <rect x="80" y="50" width="740" height="260" rx="10" fill="#f0fdf4" stroke="#86efac" stroke-width="2"/>
+            <text x="450" y="70" text-anchor="middle" fill="#166534" font-size="11">APPLICATION LAYER (Use Cases / Command & Query Handlers)</text>
+            <!-- Inner: Domain -->
+            <rect x="200" y="85" width="500" height="160" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="3"/>
+            <text x="450" y="107" text-anchor="middle" fill="#1e40af" font-size="13" font-weight="bold">DOMAIN LAYER (Pure Business Logic)</text>
+            <text x="450" y="123" text-anchor="middle" fill="#64748b" font-size="9">Hiçbir framework/DB/cloud import'u yok — sadece iş kuralları</text>
+            <!-- Domain modules -->
+            <rect x="215" y="135" width="110" height="42" rx="5" fill="white" stroke="#3b82f6" stroke-width="1.5"/>
+            <text x="270" y="153" text-anchor="middle" fill="#1e40af" font-size="9" font-weight="bold">Workflow</text>
+            <text x="270" y="168" text-anchor="middle" fill="#dc2626" font-size="8" font-weight="bold">EVENT SOURCED</text>
+            <rect x="335" y="135" width="110" height="42" rx="5" fill="white" stroke="#16a34a" stroke-width="1.5"/>
+            <text x="390" y="153" text-anchor="middle" fill="#166534" font-size="9" font-weight="bold">Form</text>
+            <text x="390" y="168" text-anchor="middle" fill="#64748b" font-size="8">CRUD + Events</text>
+            <rect x="455" y="135" width="110" height="42" rx="5" fill="white" stroke="#d97706" stroke-width="1.5"/>
+            <text x="510" y="153" text-anchor="middle" fill="#92400e" font-size="9" font-weight="bold">Rule Engine</text>
+            <text x="510" y="168" text-anchor="middle" fill="#64748b" font-size="8">CRUD + Events</text>
+            <rect x="575" y="135" width="110" height="42" rx="5" fill="white" stroke="#7c3aed" stroke-width="1.5"/>
+            <text x="630" y="153" text-anchor="middle" fill="#5b21b6" font-size="9" font-weight="bold">Auth / Tenant</text>
+            <text x="630" y="168" text-anchor="middle" fill="#64748b" font-size="8">CRUD + Events</text>
+            <rect x="215" y="190" width="470" height="35" rx="5" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1"/>
+            <text x="450" y="212" text-anchor="middle" fill="#3b82f6" font-size="9">Domain Events: WorkflowAdvanced, FormSubmitted, RuleTriggered → Application Layer dinler</text>
+            <!-- Input adapters -->
+            <rect x="45" y="100" width="100" height="28" rx="4" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+            <text x="95" y="118" text-anchor="middle" fill="#166534" font-size="8" font-weight="bold">HTTP Router</text>
+            <rect x="45" y="140" width="100" height="28" rx="4" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+            <text x="95" y="158" text-anchor="middle" fill="#166534" font-size="8" font-weight="bold">WebSocket</text>
+            <rect x="45" y="180" width="100" height="28" rx="4" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+            <text x="95" y="198" text-anchor="middle" fill="#166534" font-size="8" font-weight="bold">Event Consumer</text>
+            <!-- Output adapters -->
+            <rect x="755" y="100" width="100" height="28" rx="4" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+            <text x="805" y="118" text-anchor="middle" fill="#92400e" font-size="8" font-weight="bold">PostgreSQL</text>
+            <rect x="755" y="140" width="100" height="28" rx="4" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+            <text x="805" y="158" text-anchor="middle" fill="#92400e" font-size="8" font-weight="bold">Redis</text>
+            <rect x="755" y="180" width="100" height="28" rx="4" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+            <text x="805" y="198" text-anchor="middle" fill="#92400e" font-size="8" font-weight="bold">Event Bus</text>
+            <!-- Lines -->
+            <line x1="145" y1="114" x2="200" y2="140" stroke="#16a34a" stroke-width="1.5"/>
+            <line x1="145" y1="154" x2="200" y2="160" stroke="#16a34a" stroke-width="1.5"/>
+            <line x1="145" y1="194" x2="200" y2="180" stroke="#16a34a" stroke-width="1.5"/>
+            <line x1="700" y1="140" x2="755" y2="114" stroke="#d97706" stroke-width="1.5"/>
+            <line x1="700" y1="160" x2="755" y2="154" stroke="#d97706" stroke-width="1.5"/>
+            <line x1="700" y1="180" x2="755" y2="194" stroke="#d97706" stroke-width="1.5"/>
+            <!-- Rules -->
+            <rect x="80" y="325" width="740" height="48" rx="6" fill="#f8fafc" stroke="#e5e7eb" stroke-width="1"/>
+            <text x="450" y="345" text-anchor="middle" fill="#1f2937" font-size="10" font-weight="bold">Katman Kuralları</text>
+            <text x="450" y="363" text-anchor="middle" fill="#64748b" font-size="9">Domain → saf logic, 0 import | Application → orchestration, port kullanır | Infrastructure → gerçek implementasyon (adapter'lar)</text>
+        </svg>
+    </div>
+
+    <!-- 4.3 Event Sourcing Detay -->
+    <h3>4.3. Workflow Modülü: Event Sourcing Detayı</h3>
+
+    <p><strong>Sadece Workflow modülü</strong> event sourced. Diğer modüller klasik CRUD + domain event yayınlar. Bu "partial event sourcing" karmaşıklığı minimumda tutar.</p>
+
+    <table>
+        <tr><th>Kavram</th><th>Teknik Açıklama</th><th>Örnek</th></tr>
+        <tr><td><strong>Event</strong></td><td>Geçmişte olan olay. Immutable. Append-only.</td><td><code>{ type: "StepCompleted", instanceId: 42, userId: 12 }</code></td></tr>
+        <tr><td><strong>Aggregate</strong></td><td>Event üreten, state koruyan domain objesi.</td><td><code>WorkflowInstance</code> — mevcut adım, durum, atamalar</td></tr>
+        <tr><td><strong>Event Store</strong></td><td>Event'lerin saklandığı tablo. PostgreSQL yeterli.</td><td><code>workflow.events (aggregate_id, type, data, version)</code></td></tr>
+        <tr><td><strong>Projection</strong></td><td>Event'lerden türetilen okuma modeli. Query-optimized.</td><td><code>workflow.instance_view</code> — flat, JOIN gerektirmez</td></tr>
+        <tr><td><strong>Snapshot</strong></td><td>Event sayısı biriktiğinde state görüntüsü. Load hızlandırır.</td><td>Her 50 event'te snapshot → yükleme sabit</td></tr>
+    </table>
+
+    <h4>Event Store Tablo Yapısı</h4>
+    <div class="architecture-diagram">
+CREATE TABLE workflow.events (
+    id              BIGSERIAL PRIMARY KEY,
+    aggregate_id    UUID NOT NULL,
+    event_type      TEXT NOT NULL,       -- 'InstanceCreated', 'StepCompleted', 'FormApproved'
+    event_data      JSONB NOT NULL,      -- Event payload
+    metadata        JSONB,               -- userId, correlationId
+    version         INT NOT NULL,        -- Optimistic concurrency control
+    created_at      TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(aggregate_id, version)
+);
+
+CREATE TABLE workflow.instance_view (   -- Projection (read-optimized)
+    instance_id     UUID PRIMARY KEY,
+    tenant_id       UUID NOT NULL,
+    current_step    TEXT,
+    status          TEXT,                -- 'active', 'completed', 'cancelled'
+    assigned_to     UUID[],
+    updated_at      TIMESTAMPTZ,
+    data            JSONB
+);
+    </div>
+
+    <!-- 4.4 Sistem Arası İletişim -->
+    <h3>4.4. Sistem Arası İletişim</h3>
+
+    <table>
+        <tr><th>Yön</th><th>Ne Zaman?</th><th>Mekanizma</th><th>Latency</th></tr>
+        <tr><td><strong>Core → AI</strong></td><td>Kullanıcı "akış öner" dediğinde</td><td>Service Bus queue (async)</td><td>1-10 sn (AI düşünme)</td></tr>
+        <tr><td><strong>AI → Core</strong></td><td>AI sonuç döndüğünde</td><td>Service Bus → Core → WebSocket push</td><td>Anında (client'a)</td></tr>
+        <tr><td><strong>Core → Workers</strong></td><td>Zamanlanmış iş, export, entegrasyon</td><td>Service Bus queue</td><td>~ms</td></tr>
+        <tr><td><strong>Core modülleri arası</strong></td><td>Workflow ilerleyince bildirim gönder</td><td>In-process domain event</td><td>0 (aynı process)</td></tr>
+    </table>
+
+    <div class="highlight-box">
+        <h4>Kural</h4>
+        <p><strong>Sistem içi:</strong> In-process function call (senkron, 0 latency). <strong>Sistemler arası:</strong> Event Bus (async). Direkt DB erişimi veya senkron API çağrısı yasak. İstisna: read-only dashboard query'leri senkron olabilir.</p>
+    </div>
+
+    <!-- 4.5 Artı / Eksi -->
+    <h3>4.5. Bu Yaklaşımın Detaylı Artıları ve Eksileri</h3>
+
+    <div class="pro-con-grid">
+        <div class="pro-list">
+            <h4>✓ Artıları</h4>
+            <ul>
+                <li><strong>Audit trail:</strong> Event store'da tüm geçmiş. KVKK/SOC2 compliance otomatik.</li>
+                <li><strong>Geri alma:</strong> Yanlış onay → compensating event → state düzeltilir.</li>
+                <li><strong>Temporal query:</strong> "Bu form 3 gün önce hangi durumdaydı?" → event replay.</li>
+                <li><strong>Test edilebilirlik:</strong> Domain layer DB olmadan test edilir. CI'da saniyeler içinde 1000 test.</li>
+                <li><strong>Teknoloji bağımsızlığı:</strong> PostgreSQL → başka DB? Sadece adapter değişir.</li>
+                <li><strong>Performans:</strong> In-process çağrı (0 latency) + append-only yazma (hızlı) + projection okuma (hızlı).</li>
+                <li><strong>AI için doğal veri:</strong> Event stream = pattern mining, anomali, öneri sistemi kaynağı.</li>
+                <li><strong>Scale yolu:</strong> Darboğaz modülünü çıkarmak kolay — sınırlar çizili, event'ler hazır.</li>
+                <li><strong>Maliyet:</strong> ~$185-350/ay. Full microservice'in %15-25'i.</li>
+            </ul>
+        </div>
+        <div class="con-list">
+            <h4>✗ Eksileri</h4>
+            <ul>
+                <li><strong>Event sourcing öğrenme:</strong> Ekipte ilk kez ise 2-4 hafta yavaşlama. Ama sadece workflow modülünde.</li>
+                <li><strong>Event schema evolution:</strong> Event yapısı değiştiğinde eski event'ler okunabilmeli (upcasting).</li>
+                <li><strong>Projection gecikmesi:</strong> Event → projection arası ~ms gecikme. "Kaydettim ama listede yok" edge case'i. Çözüm: read-your-own-writes.</li>
+                <li><strong>Core çökerse:</strong> Tüm BPM durur. Ama 2+ replica → 1 pod çökse diğeri devam eder (~2-5 sn restart).</li>
+                <li><strong>Hexagonal boilerplate:</strong> Her dış bağımlılık için interface + adapter. Başta fazla, büyüdükçe amorti eder.</li>
+                <li><strong>AI eventual consistency:</strong> Kullanıcı "öner" deyince sonuç 1-10 sn gecikir. UX'te "düşünüyor..." göstergesi gerekir.</li>
+                <li><strong>Modüler disiplin:</strong> Hexagonal kurallarına uyulmazsa spagetti olur. Code review + architecture test gerekir.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 4.6 Ne Zaman Yanlış -->
+    <h3>4.6. Bu Yaklaşım Ne Zaman Yanlış Olur?</h3>
+
+    <table>
+        <tr><th>Durum</th><th>Neden Uygun Olmaz</th><th>Alternatif</th></tr>
+        <tr><td>Ekip 1 kişi ve çok acele</td><td>Hexagonal + ES setup süresi var</td><td>Basit monolit CRUD ile başla, sonra refactor</td></tr>
+        <tr><td>100+ microservice gerekirse</td><td>2-3 system yetmez</td><td>Full microservice + K8s</td></tr>
+        <tr><td>Gaming seviyesi real-time</td><td>PostgreSQL event store yetişmeyebilir</td><td>EventStoreDB veya Kafka ekle</td></tr>
+        <tr><td>Çok basit CRUD app</td><td>Event sourcing gereksiz karmaşıklık</td><td>Düz CRUD monolit</td></tr>
+    </table>
+
+    <!-- 4.7 Maliyet -->
+    <h3>4.7. Maliyet Planı</h3>
+
+    <table>
+        <tr><th>Bileşen</th><th>Başlangıç (az müşteri)</th><th>Büyüme (50+ müşteri)</th><th>Not</th></tr>
+        <tr><td>Core BPM Container (2 replica)</td><td>$50/ay</td><td>$150/ay (4 replica)</td><td>Auto-scale</td></tr>
+        <tr><td>AI Service Container (1 replica)</td><td>$30/ay</td><td>$80/ay (2 replica)</td><td>Queue-based scale</td></tr>
+        <tr><td>Workers (scale-to-zero)</td><td>$5/ay</td><td>$30/ay</td><td>Sadece çalıştığında ödeme</td></tr>
+        <tr><td>PostgreSQL (tek instance, B2s)</td><td>$65/ay</td><td>$130/ay (D2s)</td><td>Büyüyünce tier atla</td></tr>
+        <tr><td>Redis (Basic)</td><td>$15/ay</td><td>$50/ay</td><td>Session + cache + pub/sub</td></tr>
+        <tr><td>Azure Service Bus</td><td>$5/ay</td><td>$25/ay</td><td>Event bus</td></tr>
+        <tr><td>Blob Storage + Monitoring</td><td>$15/ay</td><td>$50/ay</td><td>Dosya + log</td></tr>
+        <tr><td><strong>TOPLAM</strong></td><td><strong>~$185/ay</strong></td><td><strong>~$515/ay</strong></td><td></td></tr>
+    </table>
+
+    <hr class="section-divider">
+
+    <!-- ================================================================== -->
+    <!-- BÖLÜM 5: YATAY ÖLÇEKLEME -->
+    <!-- ================================================================== -->
+    <h2>5. Tek Container Yapılarda Yatay Ölçekleme (Horizontal Scaling)</h2>
+
+    <p>SOA veya Modüler Monolit gibi tek container yaklaşımlarda performans artırmak için <strong>aynı container'dan birden fazla replica (instance)</strong> çalıştırmak mümkündür. Bu bölüm, bunun nasıl yapılacağını, artılarını, eksilerini ve özellikle DB tarafında oluşabilecek çakışmaları analiz eder.</p>
+
+    <!-- 5.1 Nasıl Çalışır -->
+    <h3>5.1. Yatay Ölçekleme Nasıl Çalışır?</h3>
+
+    <div class="arch-svg">
+        <svg viewBox="0 0 900 380" xmlns="http://www.w3.org/2000/svg">
+            <rect width="900" height="380" fill="#f8fafc"/>
+            <!-- Title -->
+            <text x="450" y="22" text-anchor="middle" fill="#1f2937" font-size="13" font-weight="bold">SOA — Yatay Ölçekleme (Aynı Container'dan N Replica)</text>
+            
+            <!-- Load Balancer -->
+            <rect x="300" y="40" width="300" height="42" rx="8" fill="#1e40af" stroke="#1e3a8a" stroke-width="2"/>
+            <text x="450" y="56" text-anchor="middle" fill="white" font-size="11" font-weight="bold">Load Balancer / Ingress</text>
+            <text x="450" y="72" text-anchor="middle" fill="#bfdbfe" font-size="9">Round-robin, least-connections, veya sticky session</text>
+            
+            <!-- Replica 1 -->
+            <rect x="40" y="110" width="200" height="115" rx="10" fill="white" stroke="#3b82f6" stroke-width="2.5"/>
+            <rect x="40" y="110" width="200" height="26" rx="10" fill="#3b82f6"/>
+            <rect x="40" y="126" width="200" height="10" fill="#3b82f6"/>
+            <text x="140" y="128" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Core BPM — Replica 1</text>
+            <rect x="55" y="142" width="55" height="22" rx="3" fill="#dbeafe" stroke="#93c5fd"/>
+            <text x="82" y="157" text-anchor="middle" fill="#1e40af" font-size="7">Workflow</text>
+            <rect x="115" y="142" width="45" height="22" rx="3" fill="#dcfce7" stroke="#86efac"/>
+            <text x="137" y="157" text-anchor="middle" fill="#166534" font-size="7">Form</text>
+            <rect x="165" y="142" width="55" height="22" rx="3" fill="#fef3c7" stroke="#fcd34d"/>
+            <text x="192" y="157" text-anchor="middle" fill="#92400e" font-size="7">Rule</text>
+            <rect x="55" y="170" width="55" height="22" rx="3" fill="#fce7f3" stroke="#f9a8d4"/>
+            <text x="82" y="185" text-anchor="middle" fill="#9d174d" font-size="7">Auth</text>
+            <rect x="115" y="170" width="45" height="22" rx="3" fill="#f0fdf4" stroke="#86efac"/>
+            <text x="137" y="185" text-anchor="middle" fill="#166534" font-size="7">Notify</text>
+            <rect x="55" y="198" width="165" height="18" rx="3" fill="#eff6ff" stroke="#bfdbfe"/>
+            <text x="137" y="210" text-anchor="middle" fill="#3b82f6" font-size="7">In-memory cache (local)</text>
+            
+            <!-- Replica 2 -->
+            <rect x="260" y="110" width="200" height="115" rx="10" fill="white" stroke="#16a34a" stroke-width="2.5"/>
+            <rect x="260" y="110" width="200" height="26" rx="10" fill="#16a34a"/>
+            <rect x="260" y="126" width="200" height="10" fill="#16a34a"/>
+            <text x="360" y="128" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Core BPM — Replica 2</text>
+            <rect x="275" y="142" width="55" height="22" rx="3" fill="#dbeafe" stroke="#93c5fd"/>
+            <text x="302" y="157" text-anchor="middle" fill="#1e40af" font-size="7">Workflow</text>
+            <rect x="335" y="142" width="45" height="22" rx="3" fill="#dcfce7" stroke="#86efac"/>
+            <text x="357" y="157" text-anchor="middle" fill="#166534" font-size="7">Form</text>
+            <rect x="385" y="142" width="55" height="22" rx="3" fill="#fef3c7" stroke="#fcd34d"/>
+            <text x="412" y="157" text-anchor="middle" fill="#92400e" font-size="7">Rule</text>
+            <rect x="275" y="170" width="55" height="22" rx="3" fill="#fce7f3" stroke="#f9a8d4"/>
+            <text x="302" y="185" text-anchor="middle" fill="#9d174d" font-size="7">Auth</text>
+            <rect x="335" y="170" width="45" height="22" rx="3" fill="#f0fdf4" stroke="#86efac"/>
+            <text x="357" y="185" text-anchor="middle" fill="#166534" font-size="7">Notify</text>
+            <rect x="275" y="198" width="165" height="18" rx="3" fill="#eff6ff" stroke="#bfdbfe"/>
+            <text x="357" y="210" text-anchor="middle" fill="#3b82f6" font-size="7">In-memory cache (local)</text>
+            
+            <!-- Replica 3 -->
+            <rect x="480" y="110" width="200" height="115" rx="10" fill="white" stroke="#7c3aed" stroke-width="2.5"/>
+            <rect x="480" y="110" width="200" height="26" rx="10" fill="#7c3aed"/>
+            <rect x="480" y="126" width="200" height="10" fill="#7c3aed"/>
+            <text x="580" y="128" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Core BPM — Replica 3</text>
+            <rect x="495" y="142" width="55" height="22" rx="3" fill="#dbeafe" stroke="#93c5fd"/>
+            <text x="522" y="157" text-anchor="middle" fill="#1e40af" font-size="7">Workflow</text>
+            <rect x="555" y="142" width="45" height="22" rx="3" fill="#dcfce7" stroke="#86efac"/>
+            <text x="577" y="157" text-anchor="middle" fill="#166534" font-size="7">Form</text>
+            <rect x="605" y="142" width="55" height="22" rx="3" fill="#fef3c7" stroke="#fcd34d"/>
+            <text x="632" y="157" text-anchor="middle" fill="#92400e" font-size="7">Rule</text>
+            <rect x="495" y="170" width="55" height="22" rx="3" fill="#fce7f3" stroke="#f9a8d4"/>
+            <text x="522" y="185" text-anchor="middle" fill="#9d174d" font-size="7">Auth</text>
+            <rect x="555" y="170" width="45" height="22" rx="3" fill="#f0fdf4" stroke="#86efac"/>
+            <text x="577" y="185" text-anchor="middle" fill="#166534" font-size="7">Notify</text>
+            <rect x="495" y="198" width="165" height="18" rx="3" fill="#eff6ff" stroke="#bfdbfe"/>
+            <text x="577" y="210" text-anchor="middle" fill="#3b82f6" font-size="7">In-memory cache (local)</text>
+            
+            <!-- Replica N -->
+            <rect x="700" y="110" width="160" height="115" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2" stroke-dasharray="6,3"/>
+            <text x="780" y="168" text-anchor="middle" fill="#64748b" font-size="12" font-weight="bold">Replica N...</text>
+            <text x="780" y="188" text-anchor="middle" fill="#94a3b8" font-size="9">(Auto-scale)</text>
+            
+            <!-- Arrows from LB to replicas -->
+            <line x1="380" y1="82" x2="140" y2="110" stroke="#64748b" stroke-width="1.5"/>
+            <line x1="450" y1="82" x2="360" y2="110" stroke="#64748b" stroke-width="1.5"/>
+            <line x1="520" y1="82" x2="580" y2="110" stroke="#64748b" stroke-width="1.5"/>
+            <line x1="560" y1="82" x2="780" y2="110" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,2"/>
+            
+            <!-- PgBouncer -->
+            <rect x="220" y="255" width="260" height="38" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+            <text x="350" y="272" text-anchor="middle" fill="#92400e" font-size="10" font-weight="bold">PgBouncer (Connection Pooler)</text>
+            <text x="350" y="286" text-anchor="middle" fill="#92400e" font-size="8">N replica × max_conn → sınırlı DB conn</text>
+            
+            <!-- Redis -->
+            <rect x="530" y="255" width="180" height="38" rx="6" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+            <text x="620" y="272" text-anchor="middle" fill="#991b1b" font-size="10" font-weight="bold">Redis</text>
+            <text x="620" y="286" text-anchor="middle" fill="#991b1b" font-size="8">Shared cache + pub/sub</text>
+            
+            <!-- PostgreSQL -->
+            <ellipse cx="350" cy="340" rx="100" ry="14" fill="#1e40af"/>
+            <rect x="250" y="340" width="200" height="30" fill="#2563eb" stroke="#1e3a8a" stroke-width="1.5"/>
+            <ellipse cx="350" cy="370" rx="100" ry="14" fill="#1e40af"/>
+            <text x="350" y="358" text-anchor="middle" fill="white" font-size="10" font-weight="bold">PostgreSQL (Tek DB)</text>
+            
+            <!-- Arrows to PgBouncer/Redis -->
+            <line x1="140" y1="225" x2="300" y2="255" stroke="#d97706" stroke-width="1.5"/>
+            <line x1="360" y1="225" x2="350" y2="255" stroke="#d97706" stroke-width="1.5"/>
+            <line x1="580" y1="225" x2="400" y2="255" stroke="#d97706" stroke-width="1.5"/>
+            <line x1="140" y1="225" x2="570" y2="255" stroke="#dc2626" stroke-width="1" stroke-dasharray="4,2"/>
+            <line x1="360" y1="225" x2="600" y2="255" stroke="#dc2626" stroke-width="1" stroke-dasharray="4,2"/>
+            <line x1="580" y1="225" x2="630" y2="255" stroke="#dc2626" stroke-width="1" stroke-dasharray="4,2"/>
+            
+            <!-- PgBouncer to PG -->
+            <line x1="350" y1="293" x2="350" y2="340" stroke="#1e40af" stroke-width="2"/>
+        </svg>
+    </div>
+
+    <p><strong>Azure Container Apps</strong> veya Kubernetes'te bu yapıyı kurmak çok kolay: <code>replicas: min=2, max=10</code> ayarı yeterli. Load balancer trafik artınca yeni replica başlatır, azalınca durdurur.</p>
+
+    <!-- 5.2 Artılar -->
+    <h3>5.2. Yatay Ölçeklemenin Artıları</h3>
+
+    <table>
+        <tr><th>Artı</th><th>Açıklama</th><th>Etki</th></tr>
+        <tr>
+            <td><strong>Throughput artışı</strong></td>
+            <td>N replica = ~N katı request/sec kapasitesi</td>
+            <td><span class="badge badge-success">Doğrusal ölçekleme</span></td>
+        </tr>
+        <tr>
+            <td><strong>Yüksek erişilebilirlik (HA)</strong></td>
+            <td>1 replica çökerse diğerleri çalışmaya devam eder</td>
+            <td><span class="badge badge-success">Zero-downtime</span></td>
+        </tr>
+        <tr>
+            <td><strong>Rolling deployment</strong></td>
+            <td>Güncelleme sırasında replica'lar sırayla güncellenir — kesinti yok</td>
+            <td><span class="badge badge-success">Zero-downtime deploy</span></td>
+        </tr>
+        <tr>
+            <td><strong>Kaynak verimliliği</strong></td>
+            <td>Auto-scale: gece 2 replica, gündüz 8 replica — sadece kullanıldığı kadar öde</td>
+            <td><span class="badge badge-success">Maliyet optimizasyonu</span></td>
+        </tr>
+        <tr>
+            <td><strong>Basitlik</strong></td>
+            <td>Aynı kodu çoğaltıyorsun — servis bölme karmaşıklığı yok</td>
+            <td><span class="badge badge-success">Operasyonel kolaylık</span></td>
+        </tr>
+        <tr>
+            <td><strong>Fault isolation</strong></td>
+            <td>Memory leak veya crash bir replica'yı etkiler, diğerleri sağlam</td>
+            <td><span class="badge badge-success">Daha güvenilir</span></td>
+        </tr>
+    </table>
+
+    <!-- 5.3 Eksiler ve Zorluklar -->
+    <h3>5.3. Yatay Ölçeklemenin Zorlukları</h3>
+
+    <table>
+        <tr><th>Zorluk</th><th>Açıklama</th><th>Çözüm</th></tr>
+        <tr>
+            <td><strong>DB connection tükenmesi</strong></td>
+            <td>Her replica kendi connection pool açar. 5 replica × 20 conn = 100 conn. DB max_connections aşılır.</td>
+            <td><span class="badge badge-success">PgBouncer</span> (aşağıda detay)</td>
+        </tr>
+        <tr>
+            <td><strong>In-memory cache tutarsızlığı</strong></td>
+            <td>Replica A cache günceller → Replica B eski veriyi döner</td>
+            <td><span class="badge badge-success">Redis (shared cache)</span></td>
+        </tr>
+        <tr>
+            <td><strong>Optimistic concurrency çakışması</strong></td>
+            <td>Aynı workflow instance'ı 2 replica'da aynı anda güncellenmeye çalışılır</td>
+            <td><span class="badge badge-success">DB version check</span> (aşağıda detay)</td>
+        </tr>
+        <tr>
+            <td><strong>WebSocket session affinity</strong></td>
+            <td>WS bağlantısı Replica A'da → başka replica'dan event gelirse push yapamaz</td>
+            <td><span class="badge badge-success">Redis Pub/Sub broadcast</span></td>
+        </tr>
+        <tr>
+            <td><strong>Cron job tekrarı</strong></td>
+            <td>Zamanlı görev her replica'da ayrı ayrı çalışır → duplikasyon</td>
+            <td><span class="badge badge-success">Distributed lock (Redis/DB)</span></td>
+        </tr>
+        <tr>
+            <td><strong>File upload state</strong></td>
+            <td>Büyük dosya upload multi-part → parçalar farklı replica'lara gider</td>
+            <td><span class="badge badge-success">Shared storage (Blob/S3)</span></td>
+        </tr>
+    </table>
+
+    <!-- 5.4 DB Çakışmaları -->
+    <h3>5.4. Veritabanı Çakışmaları ve Çözümleri</h3>
+
+    <p>Birden fazla replica tek DB'ye yazarken oluşabilecek en kritik sorunlar ve nasıl önleneceği:</p>
+
+    <h4>Problem 1: Connection Pool Tükenmesi</h4>
+
+    <div class="grid-2">
+        <div class="card" style="border-color: #dc2626;">
+            <div class="card-title" style="color: #dc2626;">❌ Sorun</div>
+            <p>PostgreSQL varsayılan <code>max_connections = 100</code>. Her Go instance ~20-50 bağlantı açar. 5 replica = 250 bağlantı → DB reddeder.</p>
+            <p style="color: #dc2626; font-weight: bold; font-size: 0.9rem;">Sonuç: "too many connections" hatası, tüm replica'lar düşer.</p>
+        </div>
+        <div class="card" style="border-color: #16a34a;">
+            <div class="card-title" style="color: #16a34a;">✓ Çözüm: PgBouncer</div>
+            <p><strong>PgBouncer</strong> (connection pooler) replica'lar ile DB arasına konur. 500 gelen bağlantıyı 20-50 gerçek DB bağlantısına multiplexer.</p>
+            <ul>
+                <li>Pool mode: <code>transaction</code> (en verimli)</li>
+                <li>Her replica PgBouncer'a bağlanır (DB'ye değil)</li>
+                <li>Azure'da sidecar container olarak çalışır</li>
+                <li>Kaynak: ~30MB RAM, ~0.1 vCPU</li>
+            </ul>
+        </div>
+    </div>
+
+    <h4>Problem 2: Optimistic Concurrency Violation</h4>
+
+    <div class="grid-2">
+        <div class="card" style="border-color: #dc2626;">
+            <div class="card-title" style="color: #dc2626;">❌ Sorun</div>
+            <p>Kullanıcı A "Onayla" tıklar → Replica 1 workflow'u günceller.<br>
+            Kullanıcı B aynı anda "Reddet" tıklar → Replica 2 aynı workflow'u günceller.<br>
+            İkisi de version=5'i okudu, ikisi de version=6 yazmaya çalışır.</p>
+            <p style="color: #dc2626; font-weight: bold; font-size: 0.9rem;">Sonuç: Biri başarılı, diğeri "conflict" alır — veri bütünlüğü korunur ama kullanıcı hata görür.</p>
+        </div>
+        <div class="card" style="border-color: #16a34a;">
+            <div class="card-title" style="color: #16a34a;">✓ Çözüm: Optimistic Locking + Retry</div>
+            <p>Event store'daki <code>UNIQUE(aggregate_id, version)</code> constraint tam olarak bunu çözer:</p>
+            <ul>
+                <li>İlk yazan kazanır (version check)</li>
+                <li>İkinci yazan "conflict" hatası alır</li>
+                <li>Application: event'i tekrar yükle, state güncelle, retry et</li>
+                <li>3 denemede çözülmezse → kullanıcıya "başka biri güncelledi" göster</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="architecture-diagram">
+-- Event Store'da Optimistic Concurrency Control
+INSERT INTO workflow.events (aggregate_id, event_type, event_data, version)
+VALUES ($1, $2, $3, $4)
+ON CONFLICT (aggregate_id, version)
+DO NOTHING
+RETURNING id;
+
+-- Eğer RETURNING boş dönerse → conflict var → retry:
+-- 1. Event'leri tekrar oku (son version'ı al)
+-- 2. Business logic'i tekrar değerlendir
+-- 3. Yeni version ile tekrar dene (max 3 retry)
+    </div>
+
+    <h4>Problem 3: In-Memory Cache Tutarsızlığı</h4>
+
+    <div class="grid-2">
+        <div class="card" style="border-color: #dc2626;">
+            <div class="card-title" style="color: #dc2626;">❌ Sorun</div>
+            <p>Replica 1: Kullanıcı rolünü cache'ler → "Admin".<br>
+            Admin panelinden rol "Viewer" yapılır → Replica 2 DB'yi günceller.<br>
+            Replica 1 hala cache'ten "Admin" döner → yetki bypass!</p>
+        </div>
+        <div class="card" style="border-color: #16a34a;">
+            <div class="card-title" style="color: #16a34a;">✓ Çözüm: Redis + Cache Invalidation</div>
+            <ul>
+                <li><strong>Shared cache:</strong> Tüm replica'lar Redis'ten okur/yazar</li>
+                <li><strong>Pub/Sub invalidation:</strong> Bir replica güncellediğinde Redis channel'a "invalidate:user:123" gönderir</li>
+                <li><strong>TTL:</strong> Her cache entry max 5dk yaşar — worst case 5dk eski</li>
+                <li><strong>Critical data:</strong> Auth/permission asla local cache'lenmez — her seferinde Redis veya DB</li>
+            </ul>
+        </div>
+    </div>
+
+    <h4>Problem 4: WebSocket Event Broadcast</h4>
+
+    <div class="grid-2">
+        <div class="card" style="border-color: #dc2626;">
+            <div class="card-title" style="color: #dc2626;">❌ Sorun</div>
+            <p>Kullanıcı A → Replica 1'de WS bağlı.<br>
+            Kullanıcı B → Replica 2'de form günceller → event oluşur.<br>
+            Replica 2 "form güncellendi" event'ini push etmek ister ama Kullanıcı A'nın WS'i Replica 1'de!</p>
+        </div>
+        <div class="card" style="border-color: #16a34a;">
+            <div class="card-title" style="color: #16a34a;">✓ Çözüm: Redis Pub/Sub Fan-out</div>
+            <ul>
+                <li>Event oluştuğunda: Redis channel'a publish et</li>
+                <li>Tüm replica'lar bu channel'ı subscribe eder</li>
+                <li>Her replica kendi bağlı kullanıcılarına push yapar</li>
+                <li>Alternatif: Supabase Realtime veya NATS kullanılabilir</li>
+            </ul>
+        </div>
+    </div>
+
+    <h4>Problem 5: Distributed Cron (Tekrarlı Job'lar)</h4>
+
+    <div class="grid-2">
+        <div class="card" style="border-color: #dc2626;">
+            <div class="card-title" style="color: #dc2626;">❌ Sorun</div>
+            <p>Her gece 03:00'te "raporları oluştur" cron job'u var.<br>
+            3 replica = 3 kez aynı rapor oluşur → duplikasyon, gereksiz yük.</p>
+        </div>
+        <div class="card" style="border-color: #16a34a;">
+            <div class="card-title" style="color: #16a34a;">✓ Çözümler</div>
+            <ul>
+                <li><strong>En iyi:</strong> Cron job'ları ayrı worker container'a taşı (scale-to-zero) — replica'lardan bağımsız</li>
+                <li><strong>Alternatif:</strong> Redis SETNX ile distributed lock — ilk alan çalıştırır, diğerleri skip</li>
+                <li><strong>DB lock:</strong> PostgreSQL advisory lock — <code>SELECT pg_try_advisory_lock(job_id)</code></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 5.5 Auto-Scale Stratejisi -->
+    <h3>5.5. Auto-Scale Stratejisi (Azure Container Apps)</h3>
+
+    <table>
+        <tr><th>Metrik</th><th>Scale Kuralı</th><th>Örnek</th></tr>
+        <tr>
+            <td><strong>HTTP concurrent requests</strong></td>
+            <td>Replica başına 100 concurrent request aşılırsa → yeni replica</td>
+            <td>200 eşzamanlı → 2 replica, 500 → 5 replica</td>
+        </tr>
+        <tr>
+            <td><strong>CPU kullanımı</strong></td>
+            <td>%70 üzeri → scale up, %30 altı → scale down</td>
+            <td>Rule engine yoğun çalışıyorsa CPU artar</td>
+        </tr>
+        <tr>
+            <td><strong>Queue depth</strong></td>
+            <td>Service Bus kuyruk 50+ mesaj → yeni worker replica</td>
+            <td>Export işleri birikince worker scale eder</td>
+        </tr>
+        <tr>
+            <td><strong>Custom metric</strong></td>
+            <td>Active workflow instance sayısı 1000+ → scale</td>
+            <td>Yoğun dönemde (ay sonu onay akışları)</td>
+        </tr>
+    </table>
+
+    <div class="architecture-diagram">
+# Azure Container Apps — Scale kuralları (YAML)
+scale:
+  minReplicas: 2        # Her zaman en az 2 (HA garanti)
+  maxReplicas: 10       # Maksimum 10 replica
+  rules:
+    - name: http-scaling
+      http:
+        metadata:
+          concurrentRequests: "100"   # 100 concurrent req/replica
+    - name: cpu-scaling
+      custom:
+        type: cpu
+        metadata:
+          type: Utilization
+          value: "70"
+    </div>
+
+    <!-- 5.6 Maliyet Etkisi -->
+    <h3>5.6. Maliyet Etkisi</h3>
+
+    <table>
+        <tr><th>Senaryo</th><th>Replica Sayısı</th><th>Container Maliyeti</th><th>DB Etkisi</th><th>Toplam Ek Maliyet</th></tr>
+        <tr>
+            <td>Gece / düşük trafik</td>
+            <td>2 (minimum HA)</td>
+            <td>~$50/ay</td>
+            <td>Değişmez</td>
+            <td>Baz maliyet</td>
+        </tr>
+        <tr>
+            <td>Normal iş günü</td>
+            <td>3-4</td>
+            <td>~$75-100/ay</td>
+            <td>Değişmez (PgBouncer yönetir)</td>
+            <td><span class="badge badge-success">+$25-50</span></td>
+        </tr>
+        <tr>
+            <td>Yoğun dönem (ay sonu)</td>
+            <td>6-8</td>
+            <td>~$150-200/ay</td>
+            <td>DB tier upgrade gerekebilir (+$65)</td>
+            <td><span class="badge badge-warning">+$100-150</span></td>
+        </tr>
+        <tr>
+            <td>Pik (tüm müşteriler aktif)</td>
+            <td>10</td>
+            <td>~$250/ay</td>
+            <td>Read replica eklenebilir (+$65)</td>
+            <td><span class="badge badge-warning">+$200-265</span></td>
+        </tr>
+    </table>
+
+    <div class="highlight-box">
+        <h4>Önemli Not: DB Yatay Ölçekleme ≠ Container Yatay Ölçekleme</h4>
+        <p>Container'ları çoğaltmak kolay ve ucuzdur. Ama <strong>PostgreSQL tek instance kalır</strong> — DB'yi yatay ölçeklemek (sharding) çok karmaşıktır ve genelde gereksizdir. Bunun yerine:</p>
+        <ul>
+            <li><strong>PgBouncer:</strong> Bağlantı sayısını yönet (500 → 50 gerçek conn)</li>
+            <li><strong>Read Replica:</strong> Dashboard/report sorgularını replika'ya yönlendir (write = primary, read = replica)</li>
+            <li><strong>Connection-aware auto-scale:</strong> Max replica × conn_per_replica < DB max_connections kuralı</li>
+            <li><strong>Dikey ölçekleme (DB tier):</strong> 2 vCPU → 4 vCPU → 8 vCPU (çoğu durumda yeterli)</li>
+        </ul>
+    </div>
+
+    <!-- 5.7 Sonuç -->
+    <h3>5.7. Sonuç: Tek Container + Yatay Ölçekleme En Uygun Mu?</h3>
+
+    <table>
+        <tr><th>Soru</th><th>Cevap</th></tr>
+        <tr>
+            <td><strong>SOA'da container çoğaltabilir miyiz?</strong></td>
+            <td><span class="badge badge-success">Evet, çok kolay.</span> Azure Container Apps 1 satır config ile auto-scale yapar.</td>
+        </tr>
+        <tr>
+            <td><strong>Performans artışı doğrusal mı?</strong></td>
+            <td><span class="badge badge-success">Evet</span> (I/O-bound iş yükleri için). CPU-bound'da DB darboğaz olabilir.</td>
+        </tr>
+        <tr>
+            <td><strong>DB çakışmaları olur mu?</strong></td>
+            <td><span class="badge badge-warning">Evet ama yönetilebilir.</span> Optimistic locking + PgBouncer + Redis ile tüm sorunlar çözülür.</td>
+        </tr>
+        <tr>
+            <td><strong>Microservice'e göre avantajı ne?</strong></td>
+            <td>Aynı ölçekleme kapasitesi, ama: 1 codebase, 1 DB, 0 network latency, daha ucuz, daha basit.</td>
+        </tr>
+        <tr>
+            <td><strong>Ne zaman yetmez?</strong></td>
+            <td>Bir modül çok farklı kaynak profili gerektiriyorsa (örn: AI → GPU), o modülü ayırırsın (zaten SOA'da AI ayrı system).</td>
+        </tr>
+    </table>
+
+    <div class="highlight-box">
+        <h4>Önerilen Yatay Ölçekleme Stratejisi (BPM Tool)</h4>
+        <p><strong>Core BPM:</strong> min=2, max=8 replica (HTTP concurrent requests'e göre auto-scale)<br>
+        <strong>AI Service:</strong> min=1, max=4 replica (queue depth'e göre auto-scale)<br>
+        <strong>Workers:</strong> min=0, max=5 (scale-to-zero, queue depth'e göre)<br>
+        <strong>PgBouncer:</strong> Her Core replica'nın sidecar'ı olarak çalışır (veya shared pool)<br>
+        <strong>Redis:</strong> Tüm replica'lar arası shared cache + pub/sub + distributed lock<br>
+        <strong>DB:</strong> Başlangıçta tek PostgreSQL (2 vCPU). 50+ müşteride read replica ekle.</p>
+    </div>
+
+    <hr class="section-divider">
+
+    <!-- ================================================================== -->
+    <!-- BÖLÜM 6: SONRAKİ ADIMLAR -->
+    <!-- ================================================================== -->
+    <h2>6. Sonraki Adımlar</h2>
+    <div class="card">
+        <ul>
+            <li><strong>Dil kararı:</strong> Go vs TypeScript — performans / geliştirme hızı trade-off analizi</li>
+            <li><strong>Workflow Engine tasarımı:</strong> BPMN 2.0 veri modeli, state machine, event detayı</li>
+            <li><strong>AI Service tasarımı:</strong> NLP → BPMN pipeline, RAG mimarisi, model seçimi</li>
+            <li><strong>Form Builder tasarımı:</strong> Dynamic schema, kontrol tipleri, validation engine</li>
+            <li><strong>DB Schema tasarımı:</strong> Schema-per-module yapısı, migration stratejisi</li>
+            <li><strong>Azure Container Apps PoC:</strong> Basit bir service deploy ederek maliyet/performans testi</li>
+        </ul>
+    </div>
+
+    <br>
+    <p style="text-align: center; color: var(--gray-300); font-size: 0.85rem;">
+        Flovo BPM Mimari Analiz Raporu • Haziran 2026 • v2.0
+    </p>
+</div>
+</body>
+</html>
