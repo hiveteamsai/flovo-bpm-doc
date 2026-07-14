@@ -28,7 +28,7 @@
   oluşmaz** (pop-up değerleri `parameters` ile taşınır).
 - **Property value depolaması (sonraya bırakıldı):** Instance **alan değerlerinin** nerede/nasıl tutulacağı (bu modelde mi,
   ayrı value tablolarında mı) daha detaylı araştırma sonrası kararlaştırılacak; alan-düzeyi tanımlar burada değil, ayrı
-  **değer dokümantasyonunda** yapılacak → `../../form-value-scenarios.md` (§12) · `../../todo.md`.
+  **değer dokümantasyonunda** yapılacak → `../../research/property-value-storage/form-value-scenarios.md` (§12) · `../../todo.md`.
 - **`delete` = soft-delete** işaretidir (fiziksel silme yapılmaz); `delete` alanı içeren tüm modellerde aynı kural geçerlidir.
 - **Validasyon durumu (açık soru):** validasyonları iş akışından **sürekli tekrar yapmamak** ve iş kuralı (`applyValidation`)
   validasyonlarıyla **tutarsızlığı önlemek** için `Instance`'a **`validated` (bool)** alanı mı eklenmeli, yoksa ayrı bir

@@ -4,8 +4,11 @@
 > **Amaç:** **Form value'larının nasıl tutulacağına** (depolama modeli) karar vermeden önce, bu değerlerin **nerede ve
 > nasıl** okunup yazıldığını **eksiksiz ve örnekli** toplamak. Depolama kararı **en sonda** bu senaryolara göre verilecek.
 >
-> **İlgili:** `service-settings/properties.md` · `service-settings/process-step-action.md` §2 (`changeList`) ·
-> `organization-settings/translation.md` (dil çözümleme) · `flovo-bpm-engine.md` · `flovo-customer-api.md` · `todo.md`.
+> **İlgili:** `../../service-settings/properties.md` · `../../service-settings/process-step-action.md` §2 (`changeList`) ·
+> `../../organization-settings/translation.md` (dil çözümleme) · `../../flovo-bpm-engine.md` · `../../flovo-customer-api.md` · `../../todo.md`.
+>
+> **Konum notu:** Bu dosya `research/property-value-storage/` altına taşındı (depolama araştırmasıyla birlikte); `form_attr` uygunluk
+> değerlendirmesi [`form_attr_questions.md`](./form_attr_questions.md), mimari öneri [`index.md`](./index.md).
 
 ---
 
@@ -156,7 +159,7 @@ Liste-içeren alandaki kalemleri bir boyuta göre **grupla + topla**, **birden �
 
 ## 12. Değerlendirme / açık depolama soruları (SONRA)
 > **Açık sorular tek yerde:** Bu bölümdeki depolama soruları, tutarsızlığı önlemek için merkezi
-> [`todo.md`](todo.md)'de **"Property value depolaması"** (Tier 1) maddesinin **7 alt-sorusu** olarak toplanmıştır:
+> [`todo.md`](../../todo.md)'de **"Property value depolaması"** (Tier 1) maddesinin **7 alt-sorusu** olarak toplanmıştır:
 > **(1)** EAV ↔ kolon ↔ JSON ↔ hibrit; **(2)** yansıma alanları (§5) A (kopya+senkron) ↔ B (on-read), snapshot ↔ canlı;
 > **(3)** çeviri-bağımlı sorgu/indeksleme (§6c/§8.4); **(4)** list-of-model unnest / cross-form (§8.2–8.5); **(5)** binary
 > ayrımı (§7); **(6)** value geçmişi/sürüm (§7); **(7)** instance state serileştirme (§7). Karar, buradaki senaryolar

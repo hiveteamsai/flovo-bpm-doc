@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Form Değeri Saklama — Eksiksiz Mimari (CQRS Projection · Outbox · Postgres)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root{
+    --bg:#f4f6fb; --card:#ffffff; --ink:#1a2233;
+    --accent:#2b5fd9; --accent2:#e8f0ff;
+    --ok:#1f8a3f; --okbg:#e7f6ec; --warn:#c97a00; --warnbg:#fff4e2;
+    --bad:#c62828; --badbg:#fdecec; --line:#dfe4ee; --code:#0f172a;
+    --purple:#6d28d9; --purplebg:#f1eafd;
+  }
+  body{ font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif; background:var(--bg); color:var(--ink); line-height:1.6; }
+  .wrap{ max-width:1020px; margin:0 auto; padding:24px 20px 120px; }
+  header.hero{ background:linear-gradient(135deg,#2b5fd9,#5a8cff); color:#fff; border-radius:20px; padding:44px 34px; margin-bottom:24px; box-shadow:0 10px 30px rgba(43,95,217,.25); }
+  header.hero h1{ font-size:32px; margin-bottom:10px; }
+  header.hero p{ font-size:18px; opacity:.95; }
+  .tag{ display:inline-block; background:rgba(255,255,255,.2); padding:4px 12px; border-radius:20px; font-size:13px; margin-top:14px; margin-right:6px; }
+  section{ background:var(--card); border-radius:16px; padding:26px 28px; margin-bottom:22px; box-shadow:0 2px 10px rgba(20,30,60,.05); border:1px solid var(--line); scroll-margin-top:16px; }
+  h2{ font-size:23px; color:var(--accent); margin-bottom:14px; display:flex; align-items:center; gap:10px; }
+  h2 .num{ background:var(--accent); color:#fff; min-width:34px; height:34px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:16px; flex:none; }
+  h3{ font-size:18px; margin:20px 0 8px; color:#243b74; }
+  h4{ font-size:16px; margin-bottom:8px; }
+  p{ margin-bottom:10px; }
+  ul,ol{ margin:8px 0 12px 22px; }
+  li{ margin-bottom:6px; }
+  .analogy{ background:var(--accent2); border-left:5px solid var(--accent); border-radius:8px; padding:12px 16px; margin:12px 0; }
+  .analogy b{ color:var(--accent); }
+  .ok{ background:var(--okbg); border-left:5px solid var(--ok); border-radius:8px; padding:12px 16px; margin:12px 0; }
+  .warn{ background:var(--warnbg); border-left:5px solid var(--warn); border-radius:8px; padding:12px 16px; margin:12px 0; }
+  .bad{ background:var(--badbg); border-left:5px solid var(--bad); border-radius:8px; padding:12px 16px; margin:12px 0; }
+  .purple{ background:var(--purplebg); border-left:5px solid var(--purple); border-radius:8px; padding:12px 16px; margin:12px 0; }
+  .contract{ background:#0f172a; color:#e6edf3; border-radius:14px; padding:22px 24px; margin:14px 0; font-size:17px; line-height:1.7; border:2px solid #2b5fd9; }
+  .contract b{ color:#7ee787; }
+  .contract .no-b{ color:#ff8f8f; }
+  table{ width:100%; border-collapse:collapse; margin:14px 0; font-size:14.5px; }
+  th,td{ border:1px solid var(--line); padding:9px 12px; text-align:left; vertical-align:top; }
+  thead th{ background:var(--accent); color:#fff; }
+  tbody tr:nth-child(even){ background:#f7f9fd; }
+  pre{ background:var(--code); color:#e6edf3; border-radius:10px; padding:16px 18px; overflow-x:auto; margin:12px 0; font-size:13.5px; line-height:1.5; }
+  pre .c{ color:#7ee787; } pre .k{ color:#79c0ff; } pre .s{ color:#ffa657; } pre .m{ color:#8b949e; }
+  code.inline{ background:#eceff5; padding:2px 7px; border-radius:6px; font-size:14px; color:#b3005e; }
+  .pill{ display:inline-block; padding:2px 10px; border-radius:20px; font-size:13px; font-weight:600; }
+  .pill.ok{ background:var(--okbg); color:var(--ok); } .pill.bad{ background:var(--badbg); color:var(--bad); } .pill.warn{ background:var(--warnbg); color:var(--warn); }
+  .pill.purple{ background:var(--purplebg); color:var(--purple); }
+  .yes{ color:var(--ok); font-weight:700; } .no{ color:var(--bad); font-weight:700; }
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .grid3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
+  .box{ border:1px solid var(--line); border-radius:12px; padding:16px; }
+  .qa{ border-left:5px solid var(--bad); background:var(--badbg); padding:12px 16px; margin:16px 0; border-radius:8px; }
+  .qa .q{ font-weight:700; font-size:17px; color:var(--bad); }
+  .big{ font-size:19px; } .huge{ font-size:22px; font-weight:700; }
+  .center{ text-align:center; }
+  .toc a{ color:var(--accent); text-decoration:none; } .toc li{ margin-bottom:3px; }
+  .foot{ text-align:center; color:#8892a6; font-size:14px; margin-top:30px; }
+  .flow{ display:flex; align-items:stretch; gap:12px; flex-wrap:wrap; margin:16px 0; }
+  .node{ flex:1; min-width:140px; border-radius:12px; padding:14px; color:#fff; font-size:14px; }
+  .node b{ display:block; font-size:15px; margin-bottom:4px; }
+  .n-write{ background:#2b5fd9; } .n-store{ background:#217346; } .n-read{ background:#6d28d9; } .n-user{ background:#c97a00; } .n-evt{ background:#0f766e; }
+  .arrow{ align-self:center; font-size:26px; color:#8892a6; }
+  .kpi{ display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin:14px 0; }
+  .kpi .box{ text-align:center; }
+  .kpi .val{ font-size:22px; font-weight:800; color:var(--accent); }
+  .kpi .lbl{ font-size:13px; color:#5a6580; }
+  .lvl{ display:inline-block; padding:1px 8px; border-radius:6px; font-size:12.5px; font-weight:700; }
+  .lvl.none{ background:#eceff5; color:#5a6580; } .lvl.search{ background:var(--accent2); color:var(--accent); }
+  .lvl.sort{ background:var(--purplebg); color:var(--purple); } .lvl.agg{ background:var(--okbg); color:var(--ok); }
+  @media(max-width:780px){ .grid2,.grid3{ grid-template-columns:1fr; } .flow{ flex-direction:column; } .arrow{ transform:rotate(90deg); align-self:flex-start; margin-left:60px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <h1>Form Değerlerini Saklama — Eksiksiz Mimari</h1>
+  <p>Binlerce account · sınırsız/değişken alan · hızlı rapor, arama, sıralama, toplam · bozulunca nasıl toparlanır · nasıl izlenir · nasıl kanıtlanır. Sıfırdan, basit dille — ama trade-off'ları saklamadan.</p>
+  <span class="tag">Flovo BPM v2</span><span class="tag">PostgreSQL (JSONB + Projection)</span><span class="tag">CQRS</span><span class="tag">Outbox + NATS JetStream</span><span class="tag">Idempotent Projektör</span>
+</header>
+
+<section>
+  <h2><span class="num">0</span> İçindekiler</h2>
+  <ol class="toc big">
+    <li><a href="#problem">Problem — neden zor?</a></li>
+    <li><a href="#sozlesme">Mimari sözleşme: bu sistem NEDİR, NE DEĞİLDİR</a></li>
+    <li><a href="#sozluk">Kavram sözlüğü (JSON, GIN, Outbox, TOAST, idempotency...)</a></li>
+    <li><a href="#resim">Büyük resim — uçtan uca akış (30 saniyede mimari)</a></li>
+    <li><a href="#yazma">Yazma yolu — <code>form_value</code> + JSON Schema doğrulama</a></li>
+    <li><a href="#maliyet">Yazmanın dürüst maliyeti (satır yeniden yazımı, TOAST, WAL)</a></li>
+    <li><a href="#gin">Okuma A — GIN: ne çözer, ne ÇÖZMEZ</a></li>
+    <li><a href="#attr">Okuma B — <code>form_attr</code>: projection amaçlı tipli EAV</a></li>
+    <li><a href="#nested">Okuma C — <code>form_list_item</code>: iç içe listeler</a></li>
+    <li><a href="#rollup">Okuma D — özetler: MV mi, artımlı rollup mu?</a></li>
+    <li><a href="#projektor">Generic projektör + metadata versiyonu</a></li>
+    <li><a href="#senkron">Senkronizasyon: Outbox → NATS → idempotent consumer</a></li>
+    <li><a href="#matematik">Index matematiği: 15.000 değil, tek elin parmakları</a></li>
+    <li><a href="#snapshot">Snapshot mı, canlı mı? (alan alan karar tablosu)</a></li>
+    <li><a href="#operasyon">Operasyonel olgunluk: arıza senaryoları, rebuild, lag izleme</a></li>
+    <li><a href="#kapasite">Kapasite: depolama hesabı, partition, Postgres limitleri</a></li>
+    <li><a href="#benchmark">Benchmark — somut hedef sayılar ve ölçüm planı</a></li>
+    <li><a href="#senaryolar">Diğer senaryolar (çok dil, dosya, geçmiş)</a></li>
+    <li><a href="#alternatif">Neden diğer çözümler seçilmedi?</a></li>
+    <li><a href="#ozet">Özet + kapanış diyagramı</a></li>
+  </ol>
+</section>
+
+<!-- 1 PROBLEM -->
+<section id="problem">
+  <h2><span class="num">1</span> Problem — neden zor?</h2>
+  <p class="big">Her müşteride form <b>farklı sayıda alan</b> içeriyor ve müşteri bunları Form Designer'dan istediği an değiştiriyor:</p>
+  <div class="grid2">
+    <div class="box"><h4>A101 — Masraf Formu</h4><p><b>20 alan</b> (tutar, şirket, fatura no...)</p></div>
+    <div class="box"><h4>B müşterisi — Masraf Formu</h4><p><b>100 alan</b> (proje kodu, 5 vergi alanı, onay notları, iç içe kalem listeleri...)</p></div>
+  </div>
+  <div class="analogy"><b>Benzetme:</b> Herkese aynı boy tişört satamayız; üstelik elbise sürekli değişiyor. Soru: <b>bu kadar değişken alanı hem esnek, hem hızlı, hem de yönetilebilir nasıl saklarız?</b></div>
+  <h3>Cevaplanması gereken haklı itirazlar</h3>
+  <div class="qa"><p class="q">1 — JSONB'de raporlar yavaş olur.</p><p>Alan içinde arama, "X'ten büyükleri getir", sıralama JSONB'de yavaştır denir.</p></div>
+  <div class="qa"><p class="q">2 — Her alana index saçma.</p><p>Binlerce account × on binlerce "hot" alan → her birine index yönetilemez.</p></div>
+  <div class="qa"><p class="q">3 — İç içe JSON (groupByTax vb.) sorgulanamaz olur.</p><p>Liste-içinde-liste alanlar için yüzlerce özel tablo gerekirse yine yönetilemez.</p></div>
+  <div class="qa"><p class="q">4 — Senkronizasyon DB'yi yorar; bozulursa ne olacak?</p><p>Yazma ile okuma kopyasını eş tutmak ek yük. Consumer çökerse, event yinelenirse, projection bozulursa?</p></div>
+  <div class="qa"><p class="q">5 — "Hızlı olacak" sözüne neden inanayım?</p><p>İddia değil, sayı ve ölçüm planı gerekir.</p></div>
+  <div class="ok big"><b>Bu sunum beşini de cevaplar:</b> CQRS ile yazma/okuma ayrımı + alan sayısından bağımsız sabit index seti + tek generic liste tablosu + Outbox tabanlı idempotent senkronizasyon + somut benchmark hedefleri ve arıza senaryoları.</div>
+</section>
+
+<!-- 2 SOZLESME -->
+<section id="sozlesme">
+  <h2><span class="num">2</span> Mimari sözleşme: bu sistem NEDİR, NE DEĞİLDİR</h2>
+  <p>Her şeyden önce, tüm mimarinin üzerine kurulduğu üç cümle. Geri kalan her karar bunlardan türer.</p>
+  <div class="contract">
+    <p>1 — Bu sistem <span class="no-b">Event Sourcing DEĞİLDİR.</span> Olaylardan durum türetmiyoruz; olayları sadece <b>taşıma aracı</b> (senkronizasyon) olarak kullanıyoruz.</p>
+    <p>2 — <b>Tek gerçek kaynak (source of truth) = <code>form_value</code> tablosudur.</b> Nokta.</p>
+    <p>3 — <code>form_attr</code>, <code>form_list_item</code> ve tüm özetler <b>projection'dır</b>: bugün silinseler, yarın <code>form_value</code>'dan bit-bit aynı şekilde <b>yeniden üretilirler.</b> İçlerinde başka hiçbir yerde olmayan tek bir bilgi yoktur.</p>
+  </div>
+  <div class="analogy"><b>Benzetme:</b> <code>form_value</code> = tapu senedi. Projection'lar = tapudan çıkarılmış fotokopiler ve fihristler. Fotokopi yanarsa üzülmeyiz; tapudan yenisini çekeriz. Tapu tektir ve korunur.</div>
+  <div class="ok"><b>Bu sözleşmenin pratik sonuçları:</b>
+    <ul>
+      <li>Projection'lar üzerinde <b>agresif optimizasyon</b> yapabiliriz (silmek, yeniden kurmak, şemasını değiştirmek serbest).</li>
+      <li>Senkronizasyon <b>eventual consistent</b> olabilir (birkaç yüz ms gecikme kabul), çünkü doğruluk kaynağı ayrıdır.</li>
+      <li>Yedekleme/felaket senaryosunda korunması gereken tek şey <code>form_value</code> (+ metadata)'dır.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 3 SOZLUK -->
+<section id="sozluk">
+  <h2><span class="num">3</span> Kavram sözlüğü (hiç bilmiyormuş gibi)</h2>
+  <div class="grid2">
+    <div class="box"><h4>Tablo / Satır / Kolon</h4><p>Excel gibi: tablo = sayfa, kolon = sütun, satır = kayıt (form).</p></div>
+    <div class="box"><h4>DDL</h4><p>Tablonun iskeletini değiştiren komut (<code class="inline">ALTER TABLE</code>). Canlı büyük tabloda = <b>duvar yıkmak</b>: kilit, risk, migration. "Her alan değişince DDL" istemiyoruz.</p></div>
+    <div class="box"><h4>JSON / JSONB</h4><p>İçine sınırsız "etiket: değer" atabildiğin <b>kutu</b>. JSONB = Postgres'in binary, hızlı sorgulanan hâli.</p></div>
+    <div class="box"><h4>Index (dizin)</h4><p>Kitabın arkasındaki <b>fihrist</b>. Aramayı hızlandırır ama her yazmada güncellenmesi gerekir; her kelimeyi fihriste koyarsan fihrist kitaptan kalın olur.</p></div>
+    <div class="box"><h4>GIN index</h4><p>Arama motoru dizini gibi: kutunun <b>içindeki tüm etiketleri</b> tek index'le tarar. Güçlü ama sınırları var (Bölüm 7'de dürüstçe).</p></div>
+    <div class="box"><h4>CQRS <span class="pill ok">ana fikir</span></h4><p><b>Mutfak</b> (esnek yazma) ile <b>vitrin</b> (hızlı okuma) ayrı. Aynı veri iki biçimde tutulur.</p></div>
+    <div class="box"><h4>Projection / Read-model</h4><p>Ana veriden türetilmiş, okuma için optimize kopya. Silinirse ana veriden yeniden üretilir.</p></div>
+    <div class="box"><h4>EAV</h4><p>Entity-Attribute-Value: her alanı "alan adı + değer" satırı olarak tutmak. <b>Ana veri</b> olarak kullanılırsa kötüdür; <b>projection</b> olarak kullanılırsa işe yarar (Bölüm 8).</p></div>
+    <div class="box"><h4>Outbox pattern <span class="pill ok">ana fikir</span></h4><p>Veri değişikliği ile "değişti" olayını <b>aynı transaction'da</b> aynı DB'ye yazmak. Olay asla kaybolmaz; ayrı bir süreç olayları kuyruğa taşır.</p></div>
+    <div class="box"><h4>Idempotency</h4><p>Aynı işi <b>iki kez yapınca sonucun değişmemesi</b>. Olay yinelenirse, consumer yeniden başlarsa veri bozulmaz.</p></div>
+    <div class="box"><h4>Projection lag</h4><p>Ana veri ile kopyası arasındaki <b>gecikme</b>. Ölçülür, izlenir, alarmı kurulur (Bölüm 15).</p></div>
+    <div class="box"><h4>Write amplification</h4><p>1 mantıksal yazmanın fiziksel olarak N yazmaya dönüşmesi (satır + index'ler + projection + WAL). Saklanmaz, hesaplanır (Bölüm 6).</p></div>
+    <div class="box"><h4>TOAST</h4><p>Postgres'in ~2KB'den büyük değerleri (büyük JSONB) satır dışında sıkıştırıp saklaması. Update maliyetini etkiler.</p></div>
+    <div class="box"><h4>MVCC / Bloat / Autovacuum</h4><p>Postgres her UPDATE'te eski satırı <b>ölü</b> bırakır (bloat). <b>Autovacuum</b> temizlikçidir; ayarı bu mimaride önemlidir.</p></div>
+    <div class="box"><h4>HOT update</h4><p>Index'li kolon değişmiyorsa Postgres index bakımını atlayabilir. GIN'li JSONB kolonu değişince HOT <b>olamaz</b> — bunu bilerek tasarlıyoruz.</p></div>
+    <div class="box"><h4>Partition (bölme)</h4><p>Dev arşivi <b>ayrı çekmecelere</b> koymak. Sorgu tüm arşivi taramaz; vacuum/backup küçük parçalarla uğraşır.</p></div>
+    <div class="box"><h4>Materialized view (MV)</h4><p>Önceden hesaplanmış rapor. Ucuz okunur ama <b>yenilemesi (refresh)</b> büyük tabloda pahalıdır — alternatifiyle birlikte anlatılacak (Bölüm 10).</p></div>
+    <div class="box"><h4>NATS JetStream</h4><p>Stack'imizdeki mesaj kuyruğu; olayları <b>kalıcı</b> saklar, consumer kaldığı yerden devam eder.</p></div>
+  </div>
+</section>
+
+<!-- 4 BUYUK RESIM -->
+<section id="resim">
+  <h2><span class="num">4</span> Büyük resim — mimariyi 30 saniyede kavra</h2>
+  <pre>
+                    TEK GERÇEK KAYNAK
+                  ┌──────────────────┐
+   Form Save ───► │    form_value    │  (JSONB + version + metadata_version)
+   (schema        │  + outbox_event  │  ◄── AYNI transaction'da olay yazılır
+    validation)   └────────┬─────────┘
+                           │  outbox relay (poll / logical decoding)
+                           ▼
+                  ┌──────────────────┐
+                  │  NATS JetStream  │  (kalıcı, sıralı, tekrar-okunabilir)
+                  └────────┬─────────┘
+                           │  idempotent consumer (version karşılaştırır)
+                           ▼
+                 GENERIC PROJEKTÖR (Go)
+              ┌────────────┴────────────┐
+              ▼                         ▼
+      ┌──────────────┐         ┌────────────────┐
+      │  form_attr   │         │ form_list_item │   ← yeniden üretilebilir
+      │ (skalar alan)│         │ (liste kalemi) │      projection'lar
+      └──────┬───────┘         └───────┬────────┘
+             └───────────┬─────────────┘
+                         ▼
+              rollup / özet tabloları (opsiyonel)
+                         │
+                         ▼
+                   API · Rapor · Arama · Dashboard</pre>
+  <div class="flow">
+    <div class="node n-user"><b>Kullanıcı</b>Form kaydeder</div>
+    <div class="arrow">&rarr;</div>
+    <div class="node n-write"><b>YAZMA</b>form_value + outbox (tek transaction)</div>
+    <div class="arrow">&rarr;</div>
+    <div class="node n-evt"><b>OLAY</b>NATS JetStream</div>
+    <div class="arrow">&rarr;</div>
+    <div class="node n-read"><b>OKUMA</b>GIN + form_attr + form_list_item + özet</div>
+    <div class="arrow">&rarr;</div>
+    <div class="node n-user"><b>Raporlar</b>filtre/sırala/topla/ara</div>
+  </div>
+  <div class="ok"><ul>
+    <li><b>Yazma esnek:</b> 20 de 100 de alan olur, DDL yok. (İtiraz: esneklik → biter.)</li>
+    <li><b>Okuma hızlı:</b> tipli kolon + doğru index → sıradan ilişkisel DB hızı. (İtiraz 1 → biter.)</li>
+    <li><b>Index sabit:</b> tüm alanlar tek elin parmakları kadar index'le karşılanır. (İtiraz 2 → biter.)</li>
+    <li><b>Senkronizasyon dayanıklı:</b> Outbox + idempotent consumer → olay kaybolmaz, yinelense de bozmaz. (İtiraz 4 → biter.)</li>
+    <li><b>Kanıt:</b> somut hedef sayılar + ölçüm planı. (İtiraz 5 → Bölüm 17.)</li>
+  </ul></div>
+</section>
+
+<!-- 5 YAZMA -->
+<section id="yazma">
+  <h2><span class="num">5</span> Yazma yolu — <code class="inline">form_value</code> + kapıda doğrulama</h2>
+  <pre><span class="c">CREATE TABLE</span> form_value (
+  form_id          <span class="k">bigint</span>      <span class="c">NOT NULL</span>,
+  organization_id  <span class="k">int</span>         <span class="c">NOT NULL</span>,   <span class="m">-- hangi account (RLS)</span>
+  service_id       <span class="k">int</span>         <span class="c">NOT NULL</span>,   <span class="m">-- hangi form tipi</span>
+  data             <span class="k">jsonb</span>       <span class="c">NOT NULL</span>,   <span class="m">-- TÜM alanlar burada</span>
+  version          <span class="k">int</span>         <span class="c">NOT NULL DEFAULT</span> 1,  <span class="m">-- her update +1 (idempotency anahtarı)</span>
+  metadata_version <span class="k">int</span>         <span class="c">NOT NULL</span>,   <span class="m">-- hangi form tanımıyla yazıldı</span>
+  created_at       <span class="k">timestamptz</span> <span class="c">NOT NULL DEFAULT</span> now(),
+  updated_at       <span class="k">timestamptz</span> <span class="c">NOT NULL DEFAULT</span> now(),
+  deleted_at       <span class="k">timestamptz</span>,             <span class="m">-- soft delete: JSONB'ye değil, KOLONA</span>
+  <span class="c">PRIMARY KEY</span> (form_id, service_id)
+) <span class="c">PARTITION BY HASH</span> (service_id);</pre>
+  <div class="ok">Her form = tek satır (20/100 alan fark etmez). Yeni alan = kutuya yeni etiket, <b>DDL/migration yok</b>. Formu göstermek = tek satır okumak (pivot yok).</div>
+  <div class="warn"><b>Soft delete neden ayrı kolon?</b> <code class="inline">deleted_at</code> kolonu index'lenebilir (<code class="inline">WHERE deleted_at IS NULL</code> partial index), sorgusu ucuzdur ve JSONB'nin içine bayrak gömmek gibi tüm kutuyu yeniden yazdırmaz.</div>
+
+  <h3>Kapıda doğrulama: JSON Schema</h3>
+  <p>Designer bir form tanımladığında sadece UI üretmez; o tanımdan bir <b>JSON Schema</b> da üretilir. Kayıt API'si veriyi DB'ye yazmadan önce bu şemayla doğrular:</p>
+  <pre>Form Designer ──► form tanımı (metadata, version=15)
+                        │
+                        ▼ otomatik üretilir
+                  JSON Schema v15
+                        │
+Form Save ──► <span class="c">validate</span>(data, schema) ──► <span class="k">geçerse</span> DB'ye yaz
+                        │
+                        └──► <span class="s">amount:"abc"</span>, <span class="s">date:123</span> gibi bozuk veri KAPIDA reddedilir</pre>
+  <div class="ok">Böylece DB'ye giren her JSONB <b>tip garantilidir</b>: projektör "amount acaba sayı mı?" diye savunmacı kod yazmaz, projection'a çöp veri sızmaz. Doğrulama uygulama katmanında yapılır (DB CHECK constraint'i opsiyonel ikinci kemerdir).</div>
+</section>
+
+<!-- 6 MALIYET -->
+<section id="maliyet">
+  <h2><span class="num">6</span> Yazmanın dürüst maliyeti — küçük yazı yok</h2>
+  <p class="big">Bu mimarinin yazma tarafında üç gerçek maliyet var. Üçünü de saklamadan sayılarla koyuyoruz; çünkü "sorun olur mu?" sorusunun cevabı yükün <b>kaynağına</b> bağlı.</p>
+
+  <h3>1) JSONB update = tüm satırın yeniden yazılması</h3>
+  <div class="warn"><code class="inline">jsonb_set(data, '{amount}', '1800')</code> ekranda "sadece amount değişti" gibi görünür. Gerçekte Postgres (MVCC) <b>tüm JSONB'yi içeren yeni bir satır versiyonu</b> yazar. 100 KB'lık formda amount değişse bile ~100 KB yeniden yazılır; TOAST'a taşmış büyük değerler de yeniden yazılır ve sıkıştırılır.</div>
+  <p><b>Bunu nasıl yönetiyoruz:</b></p>
+  <ul>
+    <li>JSONB'yi <b>küçük tutuyoruz</b>: dosyalar MinIO'da (kutuda sadece URL), tipik form 5-30 KB.</li>
+    <li>GIN'li kolon değiştiği için HOT update mümkün değil → <code class="inline">fillfactor=85</code> + agresif autovacuum ile bloat kontrol altında.</li>
+    <li>BPM insan-güdümlü: bir form günde birkaç kez güncellenir, saniyede binlerce kez değil.</li>
+  </ul>
+
+  <h3>2) Write amplification: 1 kayıt = kaç fiziksel yazma?</h3>
+  <table>
+    <thead><tr><th>Ne yazılır</th><th>Adet (tipik form)</th></tr></thead>
+    <tbody>
+      <tr><td>form_value satırı</td><td>1</td></tr>
+      <tr><td>outbox olayı</td><td>1</td></tr>
+      <tr><td>GIN index güncellemesi</td><td>1 (alan sayısı kadar anahtar)</td></tr>
+      <tr><td>form_attr satırları (sadece sorgulanabilir alanlar)</td><td>~8-15</td></tr>
+      <tr><td>form_list_item satırları</td><td>~5-20 (kalem sayısına göre)</td></tr>
+      <tr><td>btree index bakımları</td><td>yukarıdakilerin index'leri</td></tr>
+    </tbody>
+  </table>
+  <p>Yani 1 form kaydı ≈ <b>15-40 fiziksel satır + index işi</b>. Bu çok mu?</p>
+  <table>
+    <thead><tr><th></th><th>Bu sistem (BPM)</th><th>Yorulacak senaryo (IoT/log)</th></tr></thead>
+    <tbody>
+      <tr><td>Yazma kaynağı</td><td>İnsan form doldurur</td><td>Saniyede binlerce sensör</td></tr>
+      <tr><td>Gerçekçi zirve</td><td>Yüzlerce kayıt/sn</td><td>Milyonlarca/sn</td></tr>
+      <tr><td>Amplifikasyonla</td><td class="yes">Birkaç bin satır/sn → Postgres için rahat bölge</td><td class="no">Milyarlar → bu mimari seçilmezdi</td></tr>
+    </tbody>
+  </table>
+
+  <h3>3) WAL üretimi</h3>
+  <p>Her yazma (satır + index'ler) WAL'a da gider → disk I/O ve <b>replikasyon bant genişliği</b>. Büyük JSONB update'leri WAL'ı şişirir. Bu yüzden Bölüm 17'deki benchmark listesinde <b>WAL üretim hızı</b> ayrı bir ölçüm kalemidir; "sorgu hızlı" demek yetmez.</p>
+  <div class="ok big"><b>Sonuç:</b> maliyetler gerçek ama insan-güdümlü BPM yükünde duvar değil. Kritik olan, senkronizasyonu yazma yolundan çıkarmak (Bölüm 12) ve maliyeti ölçüp izlemektir (Bölüm 15-17) — "görmezden gelmek" değil.</div>
+</section>
+
+<!-- 7 GIN -->
+<section id="gin">
+  <h2><span class="num">7</span> Okuma A — GIN: ne çözer, ne ÇÖZMEZ</h2>
+  <pre><span class="c">CREATE INDEX</span> ix_data <span class="c">ON</span> form_value <span class="c">USING</span> gin (data jsonb_path_ops);
+
+<span class="m">-- barkod = X olan formu bul (hangi alan olursa olsun aynı tek index)</span>
+<span class="c">SELECT</span> form_id <span class="c">FROM</span> form_value
+<span class="c">WHERE</span> service_id = 42 <span class="c">AND</span> data @&gt; <span class="s">'{"barcode":"8690123456789"}'</span>;</pre>
+  <p class="big">Tek GIN index, <b>tüm alanlardaki</b> "alan = değer" (containment) sorgularını çözer. Ama GIN sihirli değildir — sınırlarını açıkça bilelim:</p>
+  <table>
+    <thead><tr><th>Sorgu tipi</th><th>GIN (jsonb_path_ops)</th><th>Bu mimarideki çözümü</th></tr></thead>
+    <tbody>
+      <tr><td>alan = değer (tam eşleşme)</td><td class="yes">✓ çok hızlı</td><td>GIN</td></tr>
+      <tr><td>iç içe yapıda eşleşme (<code class="inline">@&gt;</code>, jsonpath)</td><td class="yes">✓</td><td>GIN</td></tr>
+      <tr><td>büyüktür / küçüktür / aralık</td><td class="no">✗</td><td><code class="inline">form_attr</code> btree (Bölüm 8)</td></tr>
+      <tr><td>ORDER BY (alana göre sırala)</td><td class="no">✗</td><td><code class="inline">form_attr</code> btree</td></tr>
+      <tr><td>"ile başlar" (prefix)</td><td class="no">✗</td><td><code class="inline">form_attr.text_value</code> btree (<code class="inline">text_pattern_ops</code>)</td></tr>
+      <tr><td>"içinde geçen" (ILIKE %abc%)</td><td class="no">✗</td><td><code class="inline">form_attr.text_value</code> üzerinde <b>pg_trgm</b> GIN</td></tr>
+      <tr><td>fuzzy / benzerlik araması</td><td class="no">✗</td><td>pg_trgm similarity</td></tr>
+      <tr><td>gerçek full-text (dil bilgisiyle)</td><td class="no">✗</td><td>tsvector; uç ölçekte Elasticsearch (sadece okuma yanına)</td></tr>
+    </tbody>
+  </table>
+  <div class="warn"><b>GIN'in iki operasyonel detayı:</b> (1) <code class="inline">fastupdate</code> açıkken insert hızlıdır ama bekleyen liste (pending list) aramalarda taranır — <code class="inline">gin_pending_list_limit</code> ayarlanır ve autovacuum listeyi düzenli boşaltır. (2) GIN güncellemesi ucuz değildir; zaten bu yüzden GIN <b>sadece form_value'da</b> tek tanedir.</div>
+  <div class="ok"><b>Özet:</b> GIN = "eşittir/içerir" ailesinin tamamı için tek index. Aralık, sıralama ve metin araması bilinçli olarak <b>form_attr</b>'a devredilir. Hiçbir sorgu tipi açıkta kalmaz.</div>
+</section>
+
+<!-- 8 FORM_ATTR -->
+<section id="attr">
+  <h2><span class="num">8</span> Okuma B — <code class="inline">form_attr</code>: projection amaçlı <b>tipli EAV</b></h2>
+  <div class="purple big"><b>Dürüst isimlendirme:</b> Bu tablo yapısal olarak bir EAV'dir (alan adı + değer satırları) — bunu inkâr etmiyoruz. Klasik EAV'nin kötü şöhreti, onu <b>ana veri</b> olarak kullanmaktan gelir. Burada ise <b>yeniden üretilebilir, tipli, sadece sorgulanabilir alanları içeren bir projection</b>'dır. Fark kozmetik değil, mimaridir:</div>
+  <table>
+    <thead><tr><th></th><th>Klasik EAV (ana veri — kötü)</th><th>form_attr (projection — iyi)</th></tr></thead>
+    <tbody>
+      <tr><td>Görevi</td><td class="no">Tek gerçek kaynak</td><td class="yes">Sadece arama/rapor fihristi</td></tr>
+      <tr><td>Hangi alanlar</td><td class="no">HER alan mecburen</td><td class="yes">Sadece sorgulanabilir işaretliler (zorunlu kural)</td></tr>
+      <tr><td>Formu göstermek</td><td class="no">100 satırdan pivot (yavaş, kâbus)</td><td class="yes">Buradan asla — JSONB'den tek satır</td></tr>
+      <tr><td>Değer tipi</td><td class="no">nvarchar → "10" &lt; "9" bozuk</td><td class="yes">Tipli kolonlar → 9 &lt; 10 doğru</td></tr>
+      <tr><td>Silinirse</td><td class="no">Veri kaybı, felaket</td><td class="yes">form_value'dan yeniden üretilir</td></tr>
+    </tbody>
+  </table>
+
+  <pre><span class="c">CREATE TABLE</span> form_attr (
+  form_id       <span class="k">bigint</span>, organization_id <span class="k">int</span>, service_id <span class="k">int</span>,
+  property_code <span class="k">text</span>,        <span class="m">-- HANGİ alan</span>
+  num_value     <span class="k">numeric</span>,     text_value <span class="k">text</span>,
+  date_value    <span class="k">timestamptz</span>, bool_value <span class="k">boolean</span>,
+  <span class="c">PRIMARY KEY</span> (form_id, service_id, property_code)
+) <span class="c">PARTITION BY HASH</span> (service_id);
+
+<span class="m">-- Sabit index seti — hepsi TÜM alanlara hizmet eder:</span>
+<span class="c">CREATE INDEX</span> ix_num  <span class="c">ON</span> form_attr (service_id, property_code, num_value);
+<span class="c">CREATE INDEX</span> ix_text <span class="c">ON</span> form_attr (service_id, property_code, text_value);
+<span class="c">CREATE INDEX</span> ix_date <span class="c">ON</span> form_attr (service_id, property_code, date_value);
+<span class="c">CREATE INDEX</span> ix_trgm <span class="c">ON</span> form_attr <span class="c">USING</span> gin (text_value gin_trgm_ops);  <span class="m">-- "içinde geçen" için</span></pre>
+  <pre><span class="m">-- "tutarı 1000'den büyük formlar, tutara göre sıralı" → tek index taraması:</span>
+<span class="c">SELECT</span> form_id <span class="c">FROM</span> form_attr
+<span class="c">WHERE</span> service_id = 42 <span class="c">AND</span> property_code = <span class="s">'amount'</span> <span class="c">AND</span> num_value &gt; 1000
+<span class="c">ORDER BY</span> num_value <span class="c">DESC</span> <span class="c">LIMIT</span> 50;</pre>
+
+  <h3>Büyümeyi kontrol eden ZORUNLU kural: projection seviyesi</h3>
+  <p>100 alan × 1 milyon form = 100 milyon satır olabilir. Bu yüzden "her alanı yansıt" bir seçenek <b>değildir</b>. Her property, Designer'daki metadata'sında bir <b>projection seviyesi</b> taşır ve projektör yalnızca buna bakar:</p>
+  <table>
+    <thead><tr><th>Seviye</th><th>Anlamı</th><th>Nereye yazılır</th><th>Örnek alan</th></tr></thead>
+    <tbody>
+      <tr><td><span class="lvl none">NONE</span></td><td>Rapor/filtre yok; sadece formda görünür</td><td>Hiçbir yere (JSONB'de kalır; eşittir sorgusu gerekirse GIN yeter)</td><td>açıklama, not, imza görseli</td></tr>
+      <tr><td><span class="lvl search">SEARCH</span></td><td>Eşittir + metin araması</td><td>form_attr (text/bool)</td><td>telefon, fatura no, barkod</td></tr>
+      <tr><td><span class="lvl sort">SORT</span></td><td>+ aralık, sıralama</td><td>form_attr (num/date, btree'den yararlanır)</td><td>tarih, tutar, adet</td></tr>
+      <tr><td><span class="lvl agg">AGGREGATE</span></td><td>+ toplam/ortalama raporları, rollup adayı</td><td>form_attr + gerekirse rollup</td><td>tutar, vergi tutarı</td></tr>
+    </tbody>
+  </table>
+  <div class="ok">Pratikte formların alanlarının <b>%10-20'si</b> sorgulanabilirdir → 1M form × ~12 alan ≈ 12M satır: btree için önemsiz. Seviye sonradan yükseltilirse eski formlar için <b>bulk rebuild</b> çalışır (Bölüm 15) — yani "baştan doğru işaretleme" zorunluluğu da yoktur, karar geri alınabilirdir.</div>
+</section>
+
+<!-- 9 NESTED -->
+<section id="nested">
+  <h2><span class="num">9</span> Okuma C — iç içe listeler: yüzlerce tablo YOK, tek tablo</h2>
+  <p>groupByTax gibi "liste-içinde-obje" alanlar. Her liste için ayrı tablo = yüzlerce tablo = yönetilemez. Onun yerine <b>tek generic tablo</b> (form_attr'ın liste kardeşi):</p>
+  <pre><span class="c">CREATE TABLE</span> form_list_item (
+  form_id <span class="k">bigint</span>, organization_id <span class="k">int</span>, service_id <span class="k">int</span>,
+  list_code  <span class="k">text</span>,   <span class="m">-- HANGİ liste: groupByTax, keyValueList...</span>
+  item_index <span class="k">int</span>,    <span class="m">-- listedeki kaçıncı satır</span>
+  attr_code  <span class="k">text</span>,   <span class="m">-- alt-alan: giderTuru, vergiOrani, tutar</span>
+  num_value <span class="k">numeric</span>, text_value <span class="k">text</span>, date_value <span class="k">timestamptz</span>, bool_value <span class="k">boolean</span>,
+  <span class="c">PRIMARY KEY</span> (form_id, service_id, list_code, item_index, attr_code)
+) <span class="c">PARTITION BY HASH</span> (service_id);
+
+<span class="c">CREATE INDEX</span> ix_li_num <span class="c">ON</span> form_list_item (service_id, list_code, attr_code, num_value);</pre>
+  <div class="ok"><b>Tek tablo</b>, projedeki her liste kontrolünü karşılar: groupByTax, Key-Value List, Form List... Gelecekte eklenecek herhangi bir liste de. Aynı generic projektör doldurur; liste alanları da aynı projection seviyesi kuralına tabidir.</div>
+
+  <h3>Kalem-bazlı rapor (her kaleme 1 satır)</h3>
+  <pre><span class="c">SELECT</span> v.data-&gt;&gt;<span class="s">'expenseNo'</span>, li.attr_code, li.num_value
+<span class="c">FROM</span> form_list_item li
+<span class="c">JOIN</span> form_value v <span class="c">ON</span> v.form_id = li.form_id <span class="c">AND</span> v.service_id = li.service_id
+<span class="c">WHERE</span> li.service_id = 42 <span class="c">AND</span> li.list_code = <span class="s">'groupByTax'</span>;</pre>
+
+  <h3>Cross-form toplam (yüzlerce rollup GEREKMEZ)</h3>
+  <pre><span class="c">SELECT</span> vergi_orani, <span class="c">SUM</span>(tutar) <span class="c">FROM</span> ...form_list_item... <span class="c">GROUP BY</span> vergi_orani;
+<span class="m">-- indeksli tablodan canlı gelir; sadece EN ağır birkaçı özete terfi eder (Bölüm 10)</span></pre>
+
+  <h3>Gerçekten yapısal JSON (harita koordinatı, Image Area nokta seti)</h3>
+  <div class="ok">Bunlar tablosal değildir ve nadiren filtrelenir → projection seviyesi <span class="lvl none">NONE</span>: JSONB'de kalır. Gerekirse GIN + jsonpath ile projeksiyonsuz sorgulanır:
+  <pre><span class="c">SELECT</span> form_id <span class="c">FROM</span> form_value
+<span class="c">WHERE</span> service_id = 42 <span class="c">AND</span> data @@ <span class="s">'$.groupByTax[*] ? (@.tutar &gt; 500)'</span>;</pre></div>
+</section>
+
+<!-- 10 ROLLUP -->
+<section id="rollup">
+  <h2><span class="num">10</span> Okuma D — ağır özetler: MV mi, artımlı rollup mu?</h2>
+  <p class="big">Çoğu rapor form_attr/form_list_item'dan <b>canlı</b> gelir ve bu yeterlidir. Sadece en ağır birkaç dashboard önceden hesaplanmış özete terfi eder. Burada iki seçenek var ve dürüst trade-off şu:</p>
+  <table>
+    <thead><tr><th></th><th>Materialized View</th><th>Artımlı rollup tablosu <span class="pill ok">büyükte öneri</span></th></tr></thead>
+    <tbody>
+      <tr><td>Nasıl güncellenir</td><td>REFRESH (CONCURRENTLY) — <b>tüm sorgu yeniden</b> hesaplanır</td><td>Aynı consumer, her olayda <b>delta UPSERT</b> yapar</td></tr>
+      <tr><td>Büyük tabloda maliyet</td><td class="no">Pahalı: 100M satırda her refresh dakikalar + I/O dalgası</td><td class="yes">Olay başına birkaç satır — sabit, küçük</td></tr>
+      <tr><td>Tazelik</td><td>Refresh aralığı kadar bayat (ör. 15 dk)</td><td class="yes">Projection lag kadar (sn altı)</td></tr>
+      <tr><td>Kurulum eforu</td><td class="yes">1 SQL — çok kolay</td><td>Consumer'da toplama mantığı yazılır</td></tr>
+    </tbody>
+  </table>
+  <pre><span class="m">-- Artımlı rollup örneği: form kaydedilince consumer şunu yapar</span>
+<span class="c">INSERT INTO</span> rollup_expense_by_tax (organization_id, tax_rate, total, form_count)
+<span class="c">VALUES</span> (5, 20, 1500, 1)
+<span class="c">ON CONFLICT</span> (organization_id, tax_rate)
+<span class="c">DO UPDATE SET</span> total = rollup.total + <span class="k">EXCLUDED</span>.total - :eski_deger,
+              form_count = ...;   <span class="m">-- update'te eski değer düşülür (olayda old+new taşınır)</span></pre>
+  <div class="ok"><b>Karar kuralı:</b> Kaynak tablo küçükken / rapor az bakılırken MV (basitlik kazanır). Tablo büyüyüp refresh süresi hissedilir olunca aynı özet <b>artımlı rollup tablosuna</b> taşınır — Postgres'te native artımlı MV olmadığı için bu bilinçli bir tasarım kararıdır, sonradan sürpriz değildir.</div>
+  <div class="purple"><b>Rollup per-account değildir</b> — bir rapor/şablon tanımına aittir; 3.000 account aynı rollup'ı paylaşır (organization_id kolonu ile filtrelenir). Ve her rollup, kaynağından yeniden hesaplanabilir: o da bir projection'dır.</div>
+</section>
+
+<!-- 11 PROJEKTOR -->
+<section id="projektor">
+  <h2><span class="num">11</span> Generic projektör — hangi alanı nereden bilir?</h2>
+  <div class="qa"><p class="q">form_attr'da "amount" olacağını nereden bilecek? Her account farklı alan filtreliyor.</p></div>
+  <p><b>Cevap:</b> "amount" hiçbir koda gömülü değildir. <b>Tek generic projektör</b>, olaydaki <code class="inline">service_id</code>'ye bakıp o servisin <b>property metadata'sını</b> (alan kodu + tip + projection seviyesi — zaten Designer'ın ürettiği tanım) okur ve ne varsa onu yansıtır:</p>
+  <pre><span class="m">-- TEK fonksiyon, TÜM account/servisler için (alan adı gömülü değil):</span>
+olay geldi (form_id, service_id, version, metadata_version):
+  meta = metadata_cache[service_id, metadata_version]   <span class="m"># kod + tip + seviye</span>
+  <span class="c">if</span> olay.version &lt;= projection.last_projected_version:  <span class="c">skip</span>   <span class="m"># idempotency (Bölüm 12)</span>
+  bu formun form_attr / form_list_item satırlarını sil
+  <span class="c">for</span> (code, value) <span class="c">in</span> form.data:
+     <span class="c">if</span> meta[code].seviye != NONE:
+        değeri TİPİNE göre doğru kolona yaz (num/text/date/bool)
+  last_projected_version = olay.version   <span class="m"># aynı transaction'da</span></pre>
+  <div class="ok">A account "amount", B account "projectCode" filtreliyor → projektör için fark yok; ikisi de birer satır. <b>Account başına kod/trigger/config dosyası YOK.</b> "Config" = metadata (veri), kod değil.</div>
+
+  <h3>Metadata da versiyonludur — "alan değişirse ne olacak?" sorusunun cevabı</h3>
+  <p>Designer'da bir alan yeniden adlandırılır (<code class="inline">amount → expenseAmount</code>) veya tipi değişirse (<code class="inline">number → decimal</code>) ne olur? Cevap: form tanımının her yayını <b>metadata_version</b> üretir ve her form, <b>hangi versiyonla yazıldığını</b> taşır:</p>
+  <ul>
+    <li>Projektör her formu <b>o formun kendi metadata_version'ı</b> ile yorumlar → eski formlar asla yanlış okunmaz.</li>
+    <li>Alan adı/tipi değişimi = yeni metadata_version + etkilenen servise <b>bulk rebuild</b> (Bölüm 15) → projection yeni tanıma göre yeniden üretilir.</li>
+    <li>"Bu projection hangi tanımla üretildi?" sorusunun her an net bir cevabı vardır — sessiz veri bozulması imkânsızlaşır.</li>
+  </ul>
+  <p><b>Kalıcı yapı toplamı:</b> 1 kaynak (form_value) + 1 outbox + 2 projection (form_attr, form_list_item) + 1 generic projektör + birkaç opsiyonel özet. Account/alan sayısıyla <b>büyümez.</b></p>
+</section>
+
+<!-- 12 SENKRON -->
+<section id="senkron">
+  <h2><span class="num">12</span> Senkronizasyon — Outbox → NATS → idempotent consumer</h2>
+  <p class="big">Yazma ile projection'ı eş tutmanın modern standardı budur. Trigger'ı neden seçmediğimizi de açıkça söylüyoruz.</p>
+
+  <h3>Adım adım akış</h3>
+  <pre><span class="c">BEGIN</span>;
+  <span class="c">UPDATE</span> form_value <span class="c">SET</span> data = ..., version = version + 1, updated_at = now()
+    <span class="c">WHERE</span> form_id = 1001;
+  <span class="c">INSERT INTO</span> outbox_event (event_id, form_id, service_id, org_id,
+                            version, metadata_version, occurred_at)
+    <span class="c">VALUES</span> (...);                     <span class="m">-- veriyle AYNI transaction: olay kaybolamaz</span>
+<span class="c">COMMIT</span>;
+        │
+        ▼  outbox relay (küçük servis: poll veya logical decoding)
+   NATS JetStream (kalıcı stream, durable consumer)
+        │
+        ▼  Go projektör (batch tüketir)
+   form_attr / form_list_item / rollup güncellenir
+   outbox satırı işlendi olarak işaretlenir / temizlenir</pre>
+
+  <h3>Idempotency: "iki kez gelirse ne olur?" → hiçbir şey</h3>
+  <p>Dağıtık sistemde olaylar <b>yinelenebilir</b> (at-least-once teslim), consumer yeniden başlayabilir, sıra karışabilir. Tasarım bunu problem olmaktan çıkarır:</p>
+  <pre>olay: { form_id: 1001, version: 27 }
+projection tarafında: last_projected_version = 26   → uygula, 27 yap  <span class="c">✓</span>
+aynı olay tekrar geldi: 27 &lt;= 27                    → <span class="k">atla</span>          <span class="c">✓</span>
+eski bir olay geç geldi (version 25): 25 &lt;= 27      → <span class="k">atla</span>          <span class="c">✓</span></pre>
+  <div class="ok">Projection her zaman <b>en güncel form_value'yu okuyup</b> tamamını yansıttığı için (delta değil, tam yansıtma) tek bir version karşılaştırması yeter: duplicate, retry, restart, geç gelen olay — hiçbiri veri bozamaz. Bu, production-güvenli projection'ın tanımıdır.</div>
+
+  <h3>Neden trigger değil?</h3>
+  <table>
+    <thead><tr><th></th><th>DB Trigger</th><th>Outbox + Consumer <span class="pill ok">seçim</span></th></tr></thead>
+    <tbody>
+      <tr><td>Kayıt gecikmesi</td><td class="no">Projection işi kaydın transaction'ına eklenir → her kayıt yavaşlar</td><td class="yes">Kayıt = 2 küçük yazma; projection arka planda</td></tr>
+      <tr><td>Debug / gözlemlenebilirlik</td><td class="no">PL/pgSQL içinde görünmez akış; log/trace zor</td><td class="yes">Sıradan Go servisi: log, metric, trace, retry</td></tr>
+      <tr><td>Hata anında</td><td class="no">Projection hatası KAYDI da geri alır</td><td class="yes">Kayıt başarılı; olay yeniden denenir</td></tr>
+      <tr><td>Ölçekleme</td><td class="no">DB CPU'suna bağlı</td><td class="yes">Consumer yatay ölçeklenir, batch işler</td></tr>
+      <tr><td>Rebuild / geri doldurma</td><td class="no">Ayrı mekanizma gerekir</td><td class="yes">Aynı consumer kodu rebuild'de de çalışır</td></tr>
+    </tbody>
+  </table>
+  <div class="warn"><b>Bedeli de söyleyelim:</b> Outbox = eventual consistency. Form kaydedildikten sonra raporda görünmesi <b>birkaç yüz ms</b> alabilir. Formun kendisi (JSONB) anında tutarlıdır; kullanıcı kaydettiği formu anında görür. Rapor listelerindeki sn-altı gecikme BPM için kabul edilebilirdir — ve ölçülür (Bölüm 15).</div>
+  <div class="analogy"><b>Benzetme:</b> Kasadaki fiş (form_value) anında kesilir; muhasebe defterine işleme (projection) arkadaki görevlinin kuyruğundan saniyeler içinde yapılır. Fiş asla beklemez, defter asla şaşmaz.</div>
+</section>
+
+<!-- 13 MATEMATIK -->
+<section id="matematik">
+  <h2><span class="num">13</span> Index matematiği — "her alana index" itirazının kesin cevabı</h2>
+  <div class="grid2">
+    <div class="box bad"><h4 class="no">✗ Naif yaklaşım: her hot alana index</h4><p>3.000 account × 5 alan =</p><p class="huge no">15.000 index</p><p>Yönetilemez; her yazma binlercesini besler.</p></div>
+    <div class="box ok"><h4 class="yes">✓ Bu yapı</h4><p>1 GIN + 3 composite + 1 trigram + liste index'leri =</p><p class="huge yes">~7 index, SABİT</p><p>Account/alan sayısından BAĞIMSIZ.</p></div>
+  </div>
+  <div class="ok big"><b>Neden sabit?</b> Alan adını (<code class="inline">property_code</code>) index'in <b>içine kolon</b> yaptık: <code class="inline">(service_id, property_code, num_value)</code> tek index'i 10.000 farklı alanın hepsine hizmet eder. Yeni alan = index değişikliği değil, sadece yeni satırlar.</div>
+  <table>
+    <thead><tr><th>Index</th><th>Nerede</th><th>Neyi çözer</th></tr></thead>
+    <tbody>
+      <tr><td>GIN (jsonb_path_ops)</td><td>form_value.data</td><td>Herhangi alanda eşittir/içerir</td></tr>
+      <tr><td>btree (svc, code, num_value)</td><td>form_attr</td><td>Sayısal aralık + sıralama, toplam</td></tr>
+      <tr><td>btree (svc, code, text_value)</td><td>form_attr</td><td>Metin eşittir + prefix</td></tr>
+      <tr><td>btree (svc, code, date_value)</td><td>form_attr</td><td>Tarih aralığı + sıralama</td></tr>
+      <tr><td>GIN trigram (text_value)</td><td>form_attr</td><td>"içinde geçen" / fuzzy arama</td></tr>
+      <tr><td>btree (svc, list, attr, num)</td><td>form_list_item</td><td>Kalem bazlı filtre/toplam</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 14 SNAPSHOT -->
+<section id="snapshot">
+  <h2><span class="num">14</span> Snapshot mı, canlı mı? — alan alan karar tablosu</h2>
+  <p class="big">Bir formdaki her bilgi için tek soru: <b>"formun doldurulduğu andaki değeri mi önemli, şimdiki değeri mi?"</b> Cevap alana göre değişir ve kural nettir:</p>
+  <table>
+    <thead><tr><th>Alan</th><th>Snapshot (JSONB'ye kopyalanır)</th><th>Canlı (join/ayrı kolondan)</th><th>Neden</th></tr></thead>
+    <tbody>
+      <tr><td>Oluşturan kişinin adı/ünvanı</td><td class="yes">✓</td><td></td><td>Kişi sonra "Müdür" olsa da form "Uzman"ken dolduruldu — audit doğrusu</td></tr>
+      <tr><td>Oluşturanın departmanı</td><td class="yes">✓</td><td></td><td>O anki organizasyon bilgisi hukuki kayıttır</td></tr>
+      <tr><td>Combobox seçimi</td><td class="yes">✓ (kod: "2")</td><td>görünen ad çeviriden</td><td>Kod sabit; "A101" → "A-101 Market" olsa da veri bozulmaz</td></tr>
+      <tr><td>Tutar, tarih, form içeriği</td><td class="yes">✓</td><td></td><td>Formun kendisidir</td></tr>
+      <tr><td>Süreç durumu (status)</td><td></td><td class="yes">✓ Form tablosunda kolon</td><td>Sürekli değişir; kopyalansa hep bayat kalır</td></tr>
+      <tr><td>SLA / geçen süre</td><td></td><td class="yes">✓ hesaplanır</td><td>Zamana bağlı türev değer</td></tr>
+      <tr><td>Onaycının GÜNCEL yöneticisi</td><td></td><td class="yes">✓ org şemasından</td><td>Akış her zaman güncel örgüte göre ilerlemeli</td></tr>
+    </tbody>
+  </table>
+  <h3>Örnek: kullanıcı "şirket = A101" seçiyor</h3>
+  <ol>
+    <li>Combobox: <code class="inline">0=Migros, 1=BIM, 2=A101</code></li>
+    <li>Kullanıcı "A101" seçer → kutuya <b>kod</b> yazılır: <code class="inline">{"sirket":"2"}</code> (ekrandaki metin değil).</li>
+    <li>Gösterirken: kod "2" → PropertyItem/çeviri tablosundan "A101" çözülür. Alan sorgulanabilirse form_attr'a da kod düşer.</li>
+  </ol>
+  <div class="analogy"><b>Benzetme:</b> Telefon rehberi <b>+90</b> tutar, sana <b>Türkiye</b> gösterir. İsim değişir, kod değişmez.</div>
+</section>
+
+<!-- 15 OPERASYON -->
+<section id="operasyon">
+  <h2><span class="num">15</span> Operasyonel olgunluk — "bozulunca ne oluyor?"</h2>
+  <p class="big">Büyük sistemler "çalışıyor mu?" ile değil, <b>"bozulunca nasıl toparlanıyor, izlenebiliyor mu, yeniden üretilebiliyor mu?"</b> ile değerlendirilir. Bu bölüm o soruların tamamının cevabıdır.</p>
+
+  <h3>Arıza senaryoları ve cevapları</h3>
+  <table>
+    <thead><tr><th>Problem</th><th>Ne olur / Çözüm</th></tr></thead>
+    <tbody>
+      <tr><td>Projektör (consumer) çöktü</td><td class="yes">JetStream durable consumer: yeniden ayağa kalkınca <b>kaldığı olaydan devam</b>. Veri kaybı yok, sadece lag birikir.</td></tr>
+      <tr><td>Olay iki kez teslim edildi</td><td class="yes">Version karşılaştırması → ikincisi <b>atlanır</b> (Bölüm 12). Bozulma imkânsız.</td></tr>
+      <tr><td>Olaylar sırasız geldi</td><td class="yes">Projection tam yansıtma yaptığı için eski version'lı olay atlanır; en yeni kazanır.</td></tr>
+      <tr><td>Projection bozuldu / yanlışlıkla silindi</td><td class="yes"><b>Rebuild:</b> form_value'dan yeniden üret. Kaynak sağlamsa projection kaybı olay değildir.</td></tr>
+      <tr><td>Metadata değişti (alan adı/tip)</td><td class="yes">metadata_version + etkilenen servise otomatik bulk rebuild (aşağıda).</td></tr>
+      <tr><td>DB restart / crash anında kayıt</td><td class="yes">Outbox veriyle aynı transaction'da → ya ikisi de var ya ikisi de yok. Yarım durum imkânsız.</td></tr>
+      <tr><td>NATS erişilemez</td><td class="yes">Kayıtlar etkilenmez (outbox DB'de birikir); NATS dönünce relay boşaltır.</td></tr>
+      <tr><td>Projection lag büyüdü</td><td class="yes">Alarm çalar (aşağıda); consumer yatay ölçeklenir / batch büyütülür.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Bulk rebuild — projection'ı sıfırdan üretmek</h3>
+  <pre>Tetik: Designer'da alan "sorgulanabilir" yapıldı / metadata değişti / projection şüpheli
+   │
+   ▼
+Rebuild job (background):
+  form_value'yu partition partition, 10.000'lik batch'lerle oku
+  her batch → aynı projektör koduyla form_attr/form_list_item'a yaz
+  throttle (canlı trafiği ezmemek için) + ilerleme sayacı (%)
+   │
+   ▼
+Bitti → rollup'lar yeniden hesaplanır → rapor UI'da "index güncellendi" </pre>
+  <div class="ok">Rebuild <b>aynı projektör kodunu</b> kullanır (olaydan değil tablodan beslenir) — ikinci bir mantık kopyası yok, davranış farkı imkânsız. Hedef hız Bölüm 17'de: <b>1M form ≈ 20 dk.</b></div>
+
+  <h3>Projection lag izleme — Grafana'da tek sayı</h3>
+  <pre><span class="m">-- İşlenmemiş outbox olayı sayısı ve en eskisinin yaşı = lag:</span>
+<span class="c">SELECT</span> count(*) <span class="c">AS</span> pending,
+       now() - min(occurred_at) <span class="c">AS</span> oldest_age
+<span class="c">FROM</span> outbox_event <span class="c">WHERE</span> processed_at <span class="c">IS NULL</span>;</pre>
+  <table>
+    <thead><tr><th>Metrik</th><th>Normal</th><th>Uyarı</th><th>Alarm</th></tr></thead>
+    <tbody>
+      <tr><td>Projection lag (en eski işlenmemiş olay yaşı)</td><td>&lt; 500 ms</td><td>&gt; 5 sn</td><td>&gt; 30 sn</td></tr>
+      <tr><td>Bekleyen olay sayısı</td><td>&lt; 100</td><td>&gt; 10.000</td><td>büyüme trendi durmadıysa</td></tr>
+      <tr><td>Consumer hata oranı</td><td>0</td><td>&gt; %0.1</td><td>ardışık hata</td></tr>
+    </tbody>
+  </table>
+  <h3>Canlıda sürekli sağlık (guardrail)</h3>
+  <ul>
+    <li><code class="inline">pg_stat_statements</code> — hangi sorgu yavaşladı, anında görülür.</li>
+    <li><code class="inline">pg_stat_user_indexes</code> — kullanılmayan index tespit edilip silinir.</li>
+    <li>Bloat oranı + autovacuum süresi izlenir (Bölüm 16'daki ayarlarla birlikte).</li>
+    <li>Rapor p95 için SLO + alarm; slow query log açık.</li>
+  </ul>
+</section>
+
+<!-- 16 KAPASITE -->
+<section id="kapasite">
+  <h2><span class="num">16</span> Kapasite — depolama hesabı, partition, Postgres limitleri</h2>
+
+  <h3>Depolama hesabı (kâğıt üzerinde, 1M form için)</h3>
+  <table>
+    <thead><tr><th>Bileşen</th><th>Hesap</th><th>Boyut</th></tr></thead>
+    <tbody>
+      <tr><td>form_value (JSONB)</td><td>1M × ~20 KB (TOAST sıkıştırmasıyla ~%40 düşer)</td><td>~12-20 GB</td></tr>
+      <tr><td>GIN index</td><td>JSONB'nin ~%15-25'i</td><td>~3-5 GB</td></tr>
+      <tr><td>form_attr</td><td>1M × ~12 sorgulanabilir alan × ~70 B</td><td>~1 GB + index ~2 GB</td></tr>
+      <tr><td>form_list_item</td><td>1M × ~10 kalem-alan × ~80 B</td><td>~1 GB + index ~1.5 GB</td></tr>
+      <tr><td>outbox (kısa ömürlü) + rollup + WAL payı</td><td></td><td>~1-2 GB</td></tr>
+      <tr><td><b>Toplam</b></td><td></td><td><b>~ 22-32 GB / 1M form</b></td></tr>
+    </tbody>
+  </table>
+  <div class="ok">Yani <b>100M form ≈ 2-3 TB</b> — tek Postgres kümesi için partition'larla yönetilebilir; soğuyan partition'lar arşivlenebilir. Sayılar varsayımdır; benchmark'ta gerçek form dağılımıyla doğrulanır.</div>
+
+  <h3>Partition stratejisi — dürüst değerlendirme</h3>
+  <p>Başlangıç: <code class="inline">HASH(service_id)</code> — basit ve eşit dağıtır. Ama tek başına yeterli olmayabilir; karar <b>gerçek veri dağılımına</b> göre verilir:</p>
+  <table>
+    <thead><tr><th>Strateji</th><th>Artı</th><th>Eksi</th></tr></thead>
+    <tbody>
+      <tr><td>HASH(service_id) <span class="pill warn">başlangıç</span></td><td>Basit; sorgular zaten service_id içerir → pruning çalışır</td><td>Dev bir tenant'ın dev servisi tek partition'ı ısıtabilir</td></tr>
+      <tr><td>HASH(service_id) + alt-HASH(organization_id)</td><td>Sıcak partition'ı da böler; vacuum daha küçük parçalarla çalışır</td><td>Partition sayısı artar; yönetim karmaşıklaşır</td></tr>
+      <tr><td>Büyük tenant'lara LIST ile ayrı partition</td><td>"Gürültülü komşu" izolasyonu; tenant bazlı arşiv/taşıma kolay</td><td>Elle yönetim; tenant büyüyünce operasyon ister</td></tr>
+    </tbody>
+  </table>
+  <div class="warn"><b>Kural 1:</b> Her sorgu <code class="inline">service_id</code> (ve mümkünse <code class="inline">organization_id</code>) filtresi taşır — yoksa partition pruning çalışmaz, tüm çekmeceler açılır. Bu, API katmanında zorunlu kılınır. <b>Kural 2:</b> Partition kararı benchmark'taki gerçek dağılım verisiyle kesinleşir; "en büyük partition"ın boyutu izlenen bir metriktir.</div>
+
+  <h3>Postgres'in bilinmesi şart 4 iç mekanizması</h3>
+  <div class="grid2">
+    <div class="box"><h4>TOAST</h4><p>~2 KB üstü JSONB satır dışına sıkıştırılarak taşınır. Okuma şeffaftır; <b>update tüm TOAST parçalarını yeniden yazar</b>. Çözüm: JSONB'yi küçük tut (dosya MinIO'da).</p></div>
+    <div class="box"><h4>HOT update</h4><p>GIN'li <code class="inline">data</code> kolonu değişince HOT devre dışı → her update index bakımı yapar. Çözüm: <code class="inline">fillfactor=85</code>, güncellenen meta bilgileri (status vb.) JSONB'de değil ayrı tabloda tut.</p></div>
+    <div class="box"><h4>Autovacuum</h4><p>Update-yoğun tablolarda varsayılan ayar geç kalır → bloat. Çözüm: form_value partition'larında <code class="inline">autovacuum_vacuum_scale_factor=0.02</code> civarı + vacuum süresi izlenir.</p></div>
+    <div class="box"><h4>GIN pending list</h4><p><code class="inline">fastupdate</code> yazmayı hızlandırır ama liste büyürse aramaları yavaşlatır. Çözüm: <code class="inline">gin_pending_list_limit</code> ayarı + autovacuum'un listeyi düzenli boşaltması.</p></div>
+  </div>
+</section>
+
+<!-- 17 BENCHMARK -->
+<section id="benchmark">
+  <h2><span class="num">17</span> Benchmark — hedef sayılar ve ölçüm planı</h2>
+  <div class="warn big"><b>Dürüst gerçek:</b> hiçbir mimariye "söz veriyorum hızlı" denmez. Aşağıdaki sayılar <b>kabul kriterleridir</b>: spike bunları kendi donanımımızda, gerçekçi veriyle doğrulamadan mimari "onaylandı" sayılmaz.</div>
+
+  <h3>Hedefler (kabul kriterleri)</h3>
+  <table>
+    <thead><tr><th>Metrik</th><th>Hedef</th><th>Koşul</th></tr></thead>
+    <tbody>
+      <tr><td>Form kaydı (insert/update)</td><td class="yes">1.000 req/sn sürekli, p95 &lt; 30 ms</td><td>projektör açıkken</td></tr>
+      <tr><td>Projection lag</td><td class="yes">p95 &lt; 500 ms</td><td>normal yük</td></tr>
+      <tr><td>Arama/filtre (form_attr)</td><td class="yes">p95 &lt; 20 ms</td><td>100M satırda</td></tr>
+      <tr><td>Rapor (aggregate)</td><td class="yes">p95 &lt; 50 ms</td><td>canlı sorgu; rollup'lılar &lt; 10 ms</td></tr>
+      <tr><td>Bulk rebuild</td><td class="yes">1M form ≈ 20 dk</td><td>canlı trafiği bozmadan (throttle'lı)</td></tr>
+      <tr><td>Autovacuum</td><td class="yes">en büyük partition &lt; 10 dk'da tamamlar</td><td>yük altında</td></tr>
+      <tr><td>Bloat oranı</td><td class="yes">&lt; %20'de dengelenir</td><td>1 haftalık update simülasyonu</td></tr>
+      <tr><td>WAL üretimi</td><td class="yes">replikasyon bandını doyurmaz (ölç, kaydet)</td><td>zirve yazma</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Ölçüm planı (2-3 günlük spike)</h3>
+  <ol>
+    <li><b>Gerçekçi veri üret:</b> 10-100M form; 20-100 alan + kalem listeleri; account/servis dağılımı gerçeğe benzer (<code class="inline">generate_series</code> + rastgele şablonlar).</li>
+    <li><b>Gerçek sorguları çalıştır:</b> en çok kullanılacak ~20 rapor/arama; <code class="inline">EXPLAIN (ANALYZE, BUFFERS)</code> ile plan doğrula — "Index Scan, Rows Removed: 0" görünmeli; p50/p95/p99 kaydet.</li>
+    <li><b>Yük testi:</b> k6/pgbench ile eşzamanlı yazma (projektör açık) + rapor okuma. İzle: kayıt p95, projection lag, CPU/IO, autovacuum, index boyutları, WAL hızı.</li>
+    <li><b>Kırılma noktası:</b> yazma hızını hedefin 10 katına çıkar; hangi metrik önce bozuluyor? Gerçek zirvenin kaç katında? (Güvenlik payı raporlanır.)</li>
+    <li><b>Rebuild provası:</b> 1M formluk servise bulk rebuild çalıştır, süreyi ve canlı trafiğe etkisini ölç.</li>
+  </ol>
+  <div class="ok big"><b>Çıktı:</b> iddia değil, kendi donanımında kendi verinle ölçülmüş <b>p95 sayıları + kırılma noktası + güvenlik payı</b>. Karar bu rapora dayanır.</div>
+</section>
+
+<!-- 18 SENARYOLAR -->
+<section id="senaryolar">
+  <h2><span class="num">18</span> Diğer senaryolar</h2>
+  <h3>Çok dilli sıralama</h3>
+  <ul>
+    <li>Dil = varsayılan → doğrudan tanımdaki metin kullanılır (çeviri tablosuna gitmeden, hızlı).</li>
+    <li>Farklı dil → çeviri tablosuna join (kod + dil) → o dilin metnine göre sıralanır.</li>
+  </ul>
+  <div class="ok">Kutuda hep <b>kod</b> durduğu için veri her dile uyar; çeviri sadece gösterim anında devreye girer.</div>
+  <h3>Dosya / fatura görseli</h3>
+  <div class="ok">Binary <b>MinIO</b>'da; kutuda sadece adres: <code class="inline">{"receipt":{"url":"minio://.../abc.jpg"}}</code>. JSONB küçük kalır (Bölüm 6'daki update maliyeti için de kritik), "yavaş belge yükleme" derdi biter.</div>
+  <h3>Değişiklik geçmişi (audit/KVKK)</h3>
+  <p>Ayrı <b>append-only</b> tablo: form_id, alan, eski değer, yeni değer, kullanıcı, zaman. Bu tablo da projection değildir; hukuki kayıttır ve asla güncellenmez/silinmez (saklama süresi politikasına tabidir).</p>
+</section>
+
+<!-- 19 ALTERNATIFLER -->
+<section id="alternatif">
+  <h2><span class="num">19</span> Neden diğer çözümler seçilmedi?</h2>
+  <p class="big">Bir mimari, seçtiklerinden çok <b>reddettikleriyle</b> savunulur. Değerlendirilen her alternatif ve reddedilme sebebi:</p>
+  <table>
+    <thead><tr><th>Alternatif</th><th>Neden seçilmedi</th></tr></thead>
+    <tbody>
+      <tr><td><b>MongoDB</b> (döküman DB)</td><td>Postgres JSONB aynı esnekliği <b>ACID transaction + tek operasyonel yığın</b> ile veriyor. İkinci bir DB = ikinci backup, ikinci monitoring, ikinci uzmanlık. Outbox'ın "aynı transaction" garantisi ilişkisel DB'de bedava.</td></tr>
+      <tr><td><b>Elasticsearch</b> (ana depo olarak)</td><td>Source of truth olamaz: near-real-time'dır, transaction yoktur, veri kaybı senaryoları vardır. Yeri, gerekirse <b>okuma yanına eklenen bir projection</b> olmaktır (uç ölçek full-text için) — asla kaynak değil.</td></tr>
+      <tr><td><b>Dinamik kolonlar</b> (alan eklenince ALTER TABLE)</td><td>Canlı DDL kilidi, tenant başına migration sürümü, Postgres'in 1600 kolon limiti, self-servis Designer'da her tıkın prod şemasını değiştirmesi. Kırılgan ve tehlikeli.</td></tr>
+      <tr><td><b>Klasik EAV</b> (ana veri olarak)</td><td>1 form = 100 satır; formu göstermek pivot cehennemi; tipsiz nvarchar'da "10" &lt; "9". EAV'nin doğru yeri projection'dır (Bölüm 8) — kaynak değil.</td></tr>
+      <tr><td><b>Account/servis başına fiziksel tablo</b></td><td>Aşağıda ayrıntılı — en cazip görünen, en kötü ölçeklenen seçenek.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>"Account başına tablo" neden ölçekte çöker? (7 sebep)</h3>
+  <div class="qa"><p class="q">"En temiz çözüm bu değil mi? Her account×servis için gerçek tablo üretelim; gerçek kolon = hızlı sorgu."</p></div>
+  <ol>
+    <li><b>Tablo patlaması:</b> 3.000 account × ~30 servis ≈ <b>90.000 tablo</b>; liste alanlarının child tablolarıyla <b>yüz binler</b>. pg_catalog şişer, planner yavaşlar, backup/restore saatler sürer.</li>
+    <li><b>Her alan değişimi = canlı DDL:</b> teknik olmayan kullanıcının her "Alan Ekle" tıkı prod'da <code class="inline">ALTER TABLE</code> = kilit riski + tenant'a özel migration.</li>
+    <li><b>Liste alanları tabloyu katlar:</b> her liste kontrolü kendi child tablosunu ister (bizde hepsi tek <code class="inline">form_list_item</code>).</li>
+    <li><b>Generic rapor imkânsızlaşır:</b> "tüm masrafların vergiye göre toplamı" = 90.000 farklı şekilli tablonun UNION'ı. Pratikte yazılamaz.</li>
+    <li><b>Şema drift:</b> hangi tabloda hangi kolon hangi versiyonda? Binlerce tabloda tutarlılık korunamaz.</li>
+    <li><b>Kod stabil olamaz:</b> dinamik tablo adı + dinamik SQL; ORM, hazır sorgu, test edilebilirlik biter.</li>
+    <li><b>DevOps yükü:</b> index, vacuum, istatistik, izin — hepsi tablo başına ayrı iş.</li>
+  </ol>
+  <div class="analogy"><b>Benzetme:</b> Her müşteriye sıfırdan ayrı ev inşa etmek — 90.000 çatı, tapu, tesisat. Bunun yerine herkese <b>standart daire + istediği kadar eşya</b> (JSONB kutusu): bina yönetimi tek, içerik sınırsız.</div>
+  <div class="ok"><b>DDL emitter yatırımı çöp değil — hedef değiştiriyor:</b> fiziksel tablo üretmek yerine servis metadata'sından <b>JSON Schema (Bölüm 5) + projection seviyeleri + gerekirse servise özel rollup tanımı</b> üretsin. Sprint 1 emeği korunur, patlama olmaz.</div>
+</section>
+
+<!-- 20 OZET -->
+<section id="ozet">
+  <h2><span class="num">20</span> Özet</h2>
+  <div class="ok huge center">
+    Tek gerçek kaynak = esnek JSONB kutusu (<b>form_value</b>, DDL yok);
+    okuma = GIN (eşittir) + form_attr (aralık/sıralama/metin) + form_list_item (listeler) + gerekirse artımlı özet;
+    ikisini <b>Outbox → NATS → idempotent generic projektör</b> eş tutar;
+    her projection <b>yeniden üretilebilir</b>, lag <b>izlenir</b>, hız <b>benchmark'la kanıtlanır.</b>
+  </div>
+
+  <div class="grid2" style="margin-top:18px;">
+    <div class="box"><h4 class="yes">✓ Kazandıklarımız</h4><ul>
+      <li>Sınırsız/değişken alan — migration yok</li>
+      <li>1 form = 1 satır (formu göstermek tek okuma)</li>
+      <li>Rapor/arama/sıralama = ilişkisel DB hızı</li>
+      <li>Index sayısı sabit (~7), alan sayısından bağımsız</li>
+      <li>Duplicate/retry/restart'a dayanıklı senkronizasyon</li>
+      <li>Bozulan her projection yeniden üretilebilir</li>
+      <li>Lag, bloat, vacuum, WAL — hepsi izlenen metrik</li>
+    </ul></div>
+    <div class="box"><h4 class="no">✗ Bilinçli reddettiklerimiz</h4><ul>
+      <li>Event Sourcing → gereksiz karmaşıklık, ihtiyaç yok</li>
+      <li>Trigger ile senkronizasyon → debug edilemez, kaydı yavaşlatır</li>
+      <li>Klasik EAV (ana veri) → pivot cehennemi</li>
+      <li>Account başına tablo → 90.000 tablo kâbusu</li>
+      <li>Her alana index → 15.000 index israfı</li>
+      <li>Her alanı yansıtmak → 100M gereksiz projection satırı</li>
+      <li>İkinci DB (Mongo/ES ana depo) → operasyon yükü</li>
+    </ul></div>
+  </div>
+
+  <h3>Kapanış diyagramı — 30 saniyede mimari</h3>
+  <pre>
+              SOURCE OF TRUTH
+                form_value
+          (JSONB · version · schema-valid)
+                     │
+              Outbox Event  (aynı transaction — kayıp imkânsız)
+                     │
+              NATS JetStream  (kalıcı, tekrar-okunabilir)
+                     │
+            Generic Projektör  (idempotent: version karşılaştırır)
+           ┌─────────┴─────────┐
+       form_attr        form_list_item     ← silinse yeniden üretilir
+           └─────────┬─────────┘
+              rollup / özetler (artımlı)
+                     │
+              API · Rapor · Arama
+                     │
+        Grafana: projection lag · bloat · p95</pre>
+  <div class="purple big center"><b>Bir cümlede:</b> "Esnekliği kutuda, hızı fihristte, doğruluğu tek kaynakta, dayanıklılığı outbox'ta tutuyoruz — ve hepsini ölçüyoruz."</div>
+</section>
+
+<p class="foot">Flovo BPM v2 · Form Değer Saklama Mimarisi · CQRS Projection (Event Sourcing değil) · Outbox + NATS + idempotent projektör · 2026</p>
+
+</div>
+</body>
+</html>

@@ -12,7 +12,6 @@
 |---|---|
 | [`flovo-bpm-engine.md`](./flovo-bpm-engine.md) | **Motor çalışma prensibi** — BPM motorunun nasıl çalışacağı (mimari + yürütme algoritması); adımları nasıl çalıştırır. |
 | [`flovo-customer-api.md`](./flovo-customer-api.md) | **Flovo Customer API** — müşterilerin **custom code** geliştirmesi için sağlanacak API servisi (endpoint + teorik iş). |
-| [`form-value-scenarios.md`](./form-value-scenarios.md) | **Form value kullanım senaryoları** — form değerlerinin nerede/nasıl kullanıldığı; depolama modeli kararına girdi. |
 | [`todo.md`](./todo.md) | **Açık sorular / TODO** — tüm dokümanlardaki açık kararlar, önceliklendirilmiş tek liste (Tier 0–3). |
 
 ## Alt klasörler
@@ -21,7 +20,7 @@
 | **organization-settings/** | Tüm servislerde ortak **genel ayarların davranış/kullanım** dokümanları (action · style · status · translation · organization · permissions). | [`organization-settings/index.md`](./organization-settings/index.md) |
 | **service-settings/** | Bir **servise bağlı ayarların davranış/kullanım** dokümanları (süreç adımı · adım aksiyonu · property · iş kuralı · görüntüleme profili). | [`service-settings/index.md`](./service-settings/index.md) |
 | **models/** | **Veri modelleri (şema referansı)** — organizasyon ayarları, runtime, servis ayarları ve enum tanımları + ilişki haritası. | [`models/index.md`](./models/index.md) |
-| **research/** | **BPM referansları + karşılaştırmalar** — yeni ↔ eski/n8n kıyasları, mevcut (eski) Flovo BPM analizi, n8n referansları. | [`research/index.md`](./research/index.md) |
+| **research/** | **BPM referansları + karşılaştırmalar + teknik araştırmalar** — yeni ↔ eski/n8n kıyasları, mevcut (eski) Flovo BPM analizi, n8n referansları ve **property value depolama mimarisi** (form value senaryoları + `form_attr` uygunluk değerlendirmesi). | [`research/index.md`](./research/index.md) |
 | **sampleProcess/** | Uçtan uca, görselli **örnek süreçler** (self-servis). | [`sampleProcess/index.md`](./sampleProcess/index.md) |
 
 ---
