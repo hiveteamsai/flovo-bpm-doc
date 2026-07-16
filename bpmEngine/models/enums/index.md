@@ -29,8 +29,19 @@
 | **QualificationValueType** | `additional-qualification.md` (`valueType`) | `string` · `double` · `dateTime` · `combobox` | [`qualification-value-type.md`](./qualification-value-type.md) |
 | **FormType** | `service.md` (`formType`) | `form` · `parameter` · `eventForm` | [`form-type.md`](./form-type.md) |
 | **ControlType** (propertyType) | `property.md` (`controlTypeId`) | 19 kontrol tipi (`textbox` · `combobox` · `file` · `formList` …) | [`control-type.md`](./control-type.md) |
-| **KeyboardType** | `property.md` (`keyboardType` — Textbox/Phone) | _(kaynakta sayılmadı — netleşecek)_ | [`keyboard-type.md`](./keyboard-type.md) |
-| **BarcodeFormat** | `property.md` (`barcodeFormat` — Barcode) | _(kaynakta sayılmadı — netleşecek)_ | [`barcode-format.md`](./barcode-format.md) |
+| **KeyboardType** | `property.md` (`keyboardType` — Textbox/Phone) | `default`·`plain`·`text`·`numeric`·`email`·`url`·`telephone` | [`keyboard-type.md`](./keyboard-type.md) |
+| **BarcodeFormat** | `property.md` (`barcodeFormat` — Barcode) | `aztec`·`code39`·`ean13`·`code128`·`dataMatrix`·`qr`·`pdf417`… (10) | [`barcode-format.md`](./barcode-format.md) |
+| **ProcessStepType** (adım tipi) | `process-step.md` (`stepType`) | 20 adım: `processStart`·`httpRequest`·`user`·`userGroup`·`notification`·`timer`… | [`process-step-type.md`](./process-step-type.md) |
+| **ProcessStepUserType** | `process-step.md` (Kullanıcı `userType`) | `processStarter`·`fixedUser`·`usersManager`·`departmentManager`·`variableUser` | [`process-step-user-type.md`](./process-step-user-type.md) |
+| **ProcessStepUserGroupType** | `process-step.md` (Kul. Grubu `userGroupType`) | `fixedUserGroup`·`dynamicUserList`·`dynamicUserGroup` | [`process-step-user-group-type.md`](./process-step-user-group-type.md) |
+| **NotificationChannel** | `process-step.md` (Bildirim kanalı) | `mail`·`push`·`toast` | [`notification-channel.md`](./notification-channel.md) |
+| **NotificationRecipientType** | `process-step.md` (Bildirim alıcı türü) | `user`·`userGroup`·`takeUsersWhoTookActionBefore` | [`notification-recipient-type.md`](./notification-recipient-type.md) |
+| **NotificationUserType** | `process-step.md` (Bildirim alıcı-kullanıcı) | `processStarter`·`fixedUser`·`variableUsers`·`formProperty` | [`notification-user-type.md`](./notification-user-type.md) |
+| **TimerCalculationType** | `process-step.md` (Timer/timeout `workStyle`) | `workCalendar`·`normalCalendar`·`fixedDateTime` | [`timer-calculation-type.md`](./timer-calculation-type.md) |
+| **WorkTimeSelection** | `process-step.md` (Timer normal-takvim) | `atWorkStart`·`atWorkEnd` | [`work-time-selection.md`](./work-time-selection.md) |
+| **TimeAdjustmentOption** | `process-step.md` (Timer erteleme) | `hoursAfter`·`hoursBefore` | [`time-adjustment-option.md`](./time-adjustment-option.md) |
+| **HttpMethod** | `process-step.md` (HTTP Request `method`) | `get`·`post`·`put`·`delete` | [`http-method.md`](./http-method.md) |
+| **InstanceDeleteMode** | `process-step.md` (Instance Deleter `deleteMode`) | `withRelated`·`unlinkRelated` | [`instance-delete-mode.md`](./instance-delete-mode.md) |
 
 ---
 
@@ -43,5 +54,12 @@
 - **`valueType` iki bağlamda:** `AdditionalQualification.valueType` → tip **QualificationValueType**; süreç adımı
   **Değer Atama** `valueType` → tip **ValueAssignType** (değer kaynağı). Aynı alan adı, farklı enum.
 - Değer setleri model/özellik dokümanlarından çıkarıldı; kesinleşmemiş olanlar dosyalarında işaretlidir.
+- **Süreç adımı tipe-özel enum'ları (2026-07-16):** **ProcessStepType** (adım ayrımlayıcısı) + Kullanıcı/Grup
+  (`ProcessStepUserType`, `ProcessStepUserGroupType`), Bildirim (`NotificationChannel`, `NotificationRecipientType`,
+  `NotificationUserType`), Timer (`TimerCalculationType`, `WorkTimeSelection`,
+  `TimeAdjustmentOption`) · `HttpMethod` · `InstanceDeleteMode` eklendi; **KeyboardType** & **BarcodeFormat** placeholder'ları dolduruldu.
+  Kaynak: [`../../research/current-flovo-bpm-engine/step-type-settings-and-enums.md`](../../research/current-flovo-bpm-engine/step-type-settings-and-enums.md).
+- **`NotificationRecipientType` ≠ `ProcessStepType`:** ilki bildirim **alıcı türü** (`user`/`userGroup`), ikincisi sürecin
+  **adım tipi**dir; adları benzemez, karıştırılmamalı (eski `ProcessSettingStepType`).
 
 *Oluşturma: 2026-07-10.*

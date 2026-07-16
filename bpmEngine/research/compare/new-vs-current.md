@@ -32,6 +32,7 @@
 | 17 | **Yetkilendirme** | Kullanıcı bazında **sayısal `authorizationLevel`** (dinamik değil) | **Org-bazlı**: `adminUserIds` + grup-bazlı yetkiler (kullanıcı yerine geçme · org/servis ayarları erişimi · tüm raporlar) |
 | 18 | **Master-veri yaşam döngüsü** | `status` (bool) | **`active` + `deleted`** (soft-delete); `(organizationId, code)` **benzersiz** |
 | 19 | **İş akışı / çalıştırma (runtime)** | `ServiceInstances` · `ServiceInstanceRequests` (+ dağınık alanlar) | **`processInstances/` 6 model**: `ProcessInstance` · `ProcessStepInstance` · `Instance` · `InstanceAwaitingUser` · `UserGroupApprovedUser` · `RelatedInstance` |
+| 20 | **Adım tipe-özel ayarlar** | Adım DTO'suna gömülü düz alanlar | **`settings` (JSONB)** + **`stepType`** ayrımlayıcı + tip-tip ayar modelleri (§3) + adım-tipi **enum'ları** (ProcessStepType, HttpMethod, TimerCalculationType, NotificationChannel…) |
 
 ---
 
@@ -72,12 +73,28 @@ Mevcut **15 adım tipi** (biri, `atama`, enum'da tanımlı ama **kullanılmayan*
 - **Değer Atama** (`valueAssignment`) → yeni **§3.4 Değer Atama** olarak **korunur** (property'ye / alt-servise değer atama).
 
 **✏️ Yeniden adlandırılan**
-- **Function → HTTP Request** (+ yeni `async` ayarı; query/template/header/body parametreleri explicit).
+- **Function → HTTP Request** (+ yeni `async` ayarı; query/template/header/body parametreleri explicit). **`resource → endpoint`**,
+  **`method` (string) → `HttpMethod` enum**, `returns` **kaldırıldı**, parametreler **`DynamicParameter`** (Bildirim ile ortak alt-model).
+- **Adım ayar alanları:** (Kullanıcı) `stableUserId → fixedUserId`; (Kullanıcı Grubu) `accountUserGroupId → organizationUserGroupId`,
+  `dynamicUserListFieldId → dynamicUserListPropertyId`; (Timer) `WorkStyle → TimerCalculationType`.
 
 **🔧 Adım ortak yapısı (`ProcessStepDto`) değişiklikleri**
 - **Kaldırıldı:** `selectModalItemDeactive`, `canSelectExpenses` → görüntüleme/seçim profili konusu (Form List).
 - **Taşındı → Değer Atama:** `useRelatedService`, `relatedServiceId`, `targetInstancesFieldId` (→ `targetInstancesPropertyId`).
 - **Değer Atama:** `valueType` değeri `FormValue` → **`PropertyValue`**; `targetFieldId`→`targetPropertyId`, `fieldId`→`propertyId`; ayrıca **`fromCalculation`** (+`expression`) değer kaynağı eklendi.
+
+**🧩 Tipe-özel ayarların modellenmesi (yeni)**
+- **`stepType` (ProcessStepType) + `settings` (JSONB):** Tipe-özel ayarlar `ProcessStep.settings` JSONB kolonunda **gömülü**
+  (ayrı alt-tablo yok); şekli `stepType`'a göre yorumlanır. Tip-tip ayar modelleri → `../../models/service-settings/process-step.md` §3.
+- **Yeni adım-tipi enum'ları:** `ProcessStepType` (20) · `HttpMethod` · `ProcessStepUserType` · `ProcessStepUserGroupType` ·
+  `NotificationChannel` · `NotificationRecipientType` · `NotificationUserType` · `TimerCalculationType` · `WorkTimeSelection` ·
+  `TimeAdjustmentOption` · `InstanceDeleteMode`; ayrıca `KeyboardType`/`BarcodeFormat` placeholder'ları dolduruldu. → `../../models/enums/index.md`.
+- **Bildirim:** sabit TR/EN mesaj alanları → **dinamik dil listesi** (`{languageCode, text}`); **Toast** kanalı eklendi; `parameters` → `DynamicParameter[]`;
+  alıcılar `NotificationRecipientType` (`user`/`userGroup`/`takeUsersWhoTookActionBefore`; ayrı `NotificationUserGroupType` **foldlandı**).
+- **Kullanıcı:** userType'tan `managerChain` (yönetici zinciri) ve `managerByTitle` (ünvana göre yönetici) **kaldırıldı** (aktif değildi).
+- **Switch:** ayrı `cases`/eşleme listesi yok — **alan değeri = aksiyon kodu** (eşleşme yoksa `default`).
+- **Instance Deleter:** `deleteMode` (`InstanceDeleteMode`: `withRelated` / `unlinkRelated`).
+- **Süreç Başlangıcı:** `userGroupId` (nullable) — **null = herkes** başlatabilir, **dolu = yalnız o grup**.
 
 ---
 
@@ -334,4 +351,4 @@ olarak çalışır; **`ProcessInstance.parentProcessInstanceId`** ile ana sürec
 
 ---
 
-*Güncelleme: 2026-07-10 · Tasarım dokümanları ile `../current-flovo-bpm-engine/` karşılaştırılarak derlendi (Alt Süreç Başlangıcı adımı eklendi; v0.7 — runtime & iş-kuralı model adları güncellendi: WorkFlow→ProcessInstance · ProcessStepExecution→ProcessStepInstance · Form→Instance · RelatedForm→RelatedInstance · FormAwaitingUser→InstanceAwaitingUser · WorkRule→BusinessRule).*
+*Güncelleme: 2026-07-10 · Tasarım dokümanları ile `../current-flovo-bpm-engine/` karşılaştırılarak derlendi (Alt Süreç Başlangıcı adımı eklendi; v0.7 — runtime & iş-kuralı model adları güncellendi: WorkFlow→ProcessInstance · ProcessStepExecution→ProcessStepInstance · Form→Instance · RelatedForm→RelatedInstance · FormAwaitingUser→InstanceAwaitingUser · WorkRule→BusinessRule). · 2026-07-16 (v0.12 — adım tipe-özel ayarlar JSONB `settings` + adım-tipi enum'ları + alan yeniden adlandırmaları: resource→endpoint · method→HttpMethod · stableUserId→fixedUserId · WorkStyle→TimerCalculationType · Function param→DynamicParameter).*

@@ -13,6 +13,7 @@
 | [`statuses.md`](./statuses.md) | Durumlar (Status) — kaydın aşamasını temsil eden, gösterim/filtreleme/raporlama etiketleri. |
 | [`view-profiles.md`](./view-profiles.md) | Görüntüleme profilleri — formun adım-bazlı görünümü (görünür/düzenlenebilir/zorunlu). |
 | [`work-rules.md`](./work-rules.md) | İş kuralları (WorkRule) — form üzerinde koşul-aksiyon tabanlı dinamik davranış. |
+| [`step-type-settings-and-enums.md`](./step-type-settings-and-enums.md) | **Adım tipine özel ayar DTO'ları + enum'lar (ham)** — Kullanıcı/Grup/Bildirim/Timer/HTTP ayar modelleri, KeyboardType/BarcodeFormat + yeni projeye **taşıma kararları**. Yeni `ProcessStepType` ve `enums/` boşluklarını besler. |
 
 ## Alt klasörler
 | Klasör | İçerik (özet) | İndeks |

@@ -137,6 +137,41 @@
 - `-- atama` (eski enum'da tanımlı ama kullanılmayan ölü değer)
 - `-- selectModalItemDeactive` · `-- canSelectExpenses` (→ Form List konusu)
 
+**Tipe-özel ayarlar (yeni: `settings` JSONB + `stepType`)**
+- `stepType ++` (ProcessStepType — adım ayrımlayıcı) · `settings ++` (jsonb — tipe-özel ayarlar; ayrı alt-tablo yok)
+- **Adım-tipi enum'ları ++:** `ProcessStepType` · `HttpMethod` · `ProcessStepUserType` · `ProcessStepUserGroupType` ·
+  `NotificationChannel` · `NotificationRecipientType` · `NotificationUserType` · `TimerCalculationType` · `WorkTimeSelection` ·
+  `TimeAdjustmentOption` · `InstanceDeleteMode` (+ `KeyboardType`/`BarcodeFormat` placeholder'ları dolduruldu)
+
+**HTTP Request (eski: Function)**
+- `resource` > **`endpoint`**
+- `method` (string) > **`HttpMethod`** (enum)
+- `StepTypeFunctionParameter` / `HttpRequestParameter` > **`DynamicParameter`** (Bildirim ile ortak alt-model)
+- `-- returns` (kaldırıldı)
+
+**Kullanıcı / Kullanıcı Grubu**
+- `stableUserId` > **`fixedUserId`**
+- `accountUserGroupId` > **`organizationUserGroupId`**
+- `dynamicUserListFieldId` > **`dynamicUserListPropertyId`**
+- `-- managerChain` (yönetici zinciri) · `-- managerByTitle` (ünvana göre yönetici) — `userType` değerleri (aktif değildi)
+- `groupApproval` (bool; hepsi/biri) ↔ korunur
+
+**Bildirim**
+- `StepTypeNotificationDto` > **`ProcessStepSendNotification`** · `SendNotificationOnStepDto` > **`SendNotificationMessages`** ·
+  `NotificationStepTypesDto` > **`SendNotificationUsers`**
+- `NotificationStepTypeUserType` > **`NotificationUserType`** (`FormField` > **`formProperty`**)
+- `-- NotificationStepTypeUserGroupType` (foldlandı → `NotificationRecipientType`: `{user, userGroup, takeUsersWhoTookActionBefore}`)
+- sabit TR/EN mesaj alanları > **dinamik dil listesi** (`{languageCode, text}`) · **`toast` ++** (kanal) · `parameters` > **`DynamicParameter[]`**
+
+**Timer**
+- `WorkStyle` > **`TimerCalculationType`** (`{workCalendar, normalCalendar, fixedDateTime}`)
+- `postPoning`/`postPoningHour` > **`postponing`/`postponingHour`** · `WorkTimeSelection` / `TimeAdjustmentOption` değerleri netleşti
+
+**Switch / Instance Deleter / Süreç Başlangıcı**
+- `-- cases` / `SwitchCase` (ayrı eşleme yok — **alan değeri = aksiyon kodu**)
+- (Instance Deleter) `deleteMode ++` (`InstanceDeleteMode`: `withRelated` / `unlinkRelated`)
+- (Süreç Başlangıcı) `userGroupId ++` (nullable — null=herkes başlatabilir, dolu=yalnız grup)
+
 ---
 
 ## 10. Çeviri (`Translation`)
@@ -242,4 +277,4 @@
 
 ---
 
-*Oluşturma: 2026-07-06 · Güncelleme: 2026-07-10 (v0.7 — runtime & iş-kuralı model adları: ProcessInstance · ProcessStepInstance · Instance · RelatedInstance · InstanceAwaitingUser · BusinessRule). Kaynak: `new-vs-current.md` + `../../models/` + depo kökü `commitNotes/`.*
+*Oluşturma: 2026-07-06 · Güncelleme: 2026-07-10 (v0.7 — runtime & iş-kuralı model adları: ProcessInstance · ProcessStepInstance · Instance · RelatedInstance · InstanceAwaitingUser · BusinessRule) · 2026-07-16 (v0.12 — §9 tipe-özel ayar/enum rename bloğu: stepType/settings, adım-tipi enum'ları, HTTP/Kullanıcı/Bildirim/Timer/Switch/Instance Deleter alan renameleri). Kaynak: `new-vs-current.md` + `../../models/` + depo kökü `commitNotes/`.*

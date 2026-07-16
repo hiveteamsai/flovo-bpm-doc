@@ -58,6 +58,8 @@
 - [ ] **Ortam (environment) modeli** — **parent-child env** yapısı kurulacak mı? Her ortamın **formları ayrı mı**? Geliştirmeyi
   bir ortamda yapıp **canlı ortamda oluşturulmuş formları görüntüleme** senaryosu nasıl çözülecek? _(environmentRestriction
   alanları: process-step §2 / action · flovo-bpm-engine §8)_
+  - **`environmentRestriction` alan formatı** (enum mu, string mi, kapsam) bu modelle birlikte netleşecek — şimdilik **ertelendi**.
+    _([`research/current-flovo-bpm-engine/step-type-settings-and-enums.md`](./research/current-flovo-bpm-engine/step-type-settings-and-enums.md) §8)_
 - [ ] **Güvenlik** — expression/kod değerlendirme **sandbox**'ı (sert sınır), credential şifreleme/paylaşım,
   riskli adımlar. _(flovo-bpm-engine §10 · process-step-action §5)_
 - [ ] **Paralel dallanma / eşzamanlı kollar & join** var mı? Bir adım aynı anda birden çok sonraki adımı tetikler mi?
@@ -93,10 +95,14 @@
   `fillDataSource` ile ilişkisi; `fillDataSource` kaynak tipleri (Organization/User/API). _(properties §4 · work-rule §6)_
 - [ ] **Timer üçlüsü** (Timer / Timer Start / Timer End) yaşam döngüsü ve bağlanması; global timer kayıtları?
   _(process-step §4)_
+  - **Netleşen (v0.12):** `TimerCalculationType` + `ProcessStepTimerSettings` (çalışma/normal/sabit takvim blokları + timeout
+    bildirimi) modellendi; **yaşam döngüsü/bağlanma** (`selectedTimerProcessStepId`, global timer kayıtları) hâlâ açık. _(process-step §3.7)_
 - [ ] **Süreç Bitişi "önceki adıma taşıma"** — yeniden-açma (re-open) mı, ayrı akış mı? Denetim izine etkisi.
   _(process-step §4)_
 - [ ] **Form yaşam döngüsü** — Instance Creator / Instance Deleter / Form Yönlendirme / Süreç Adımı Tetikleme; Parent Property
   ile birlikte. _(process-step §4)_
+  - **Netleşen (v0.12):** **Instance Deleter** `deleteMode` (`InstanceDeleteMode`: `withRelated`/`unlinkRelated`) + **Instance Creator**
+    temel ayar modeli tanımlandı; **Form Yönlendirme / Süreç Adımı Tetikleme** hâlâ açık. _(process-step §3.9/§3.15/§3.16)_
 - [ ] **`default action` kavramı** — her adımda mı, yoksa yalnız HTTP Request(async)/Timer gibi adımlarda mı?
   _(process-step §4)_
 - [ ] **Raporlama** ayrı özellik olarak nasıl modellenecek? _(view-profile §3 / §5)_
@@ -201,6 +207,9 @@
   `groupApproval`'da (process-step §3.16), "grup onayı gerekli mi" ise `UserGroup.groupApprovalRequired` (bool) alanında. İki alanın
   yakın adı + kapsam örtüşmesi netleştirilmeli (eşiğin ve gerekliliğin tek sahibi kim; opsiyon seti hepsi/biri). _(process-step §3.16 ·
   models/organization-settings/user-group.md · models/processInstances/user-group-approved-user.md)_
+  - **Netleşen:** adım-düzeyi `groupApproval` **bool** kalır — `true`: aksiyon alabilen **tüm** kullanıcılar onaylayınca ilerler,
+    `false`: **bir** kişinin onayı yeterli. Açık kalan: `UserGroup.groupApprovalRequired` ile sahiplik/örtüşme.
+    _([`research/current-flovo-bpm-engine/step-type-settings-and-enums.md`](./research/current-flovo-bpm-engine/step-type-settings-and-enums.md) §3)_
 - [ ] **Form validasyon durumu — `Instance.validated` (bool) mü, `FormValidation` tablosu mu?** İş akışından validasyonları **sürekli
   tekrar yapmamak** ve **iş kuralı** (BusinessRule `applyValidation`) ile oluşturulan validasyonlarla **tutarsızlık yaşamamak** için:
   `Instance` modeline **`validated` (bool)** alanı mı eklenmeli, yoksa ayrı bir **`FormValidation`** tablosu mu oluşturulmalı? Karar
@@ -211,10 +220,20 @@
 ### 🔎 Tutarlılık denetiminden (2026-07-02)
 - [ ] **`skipWithThisActionId` referansı** — atlamayı tetikleyen aksiyon: action `code` mi, `ProcessStepAction` mı,
   Action şablonu mu? (Action'a **canlı FK yok** ilkesiyle uyumlu olmalı; şu an models'ta belirsiz.) _(process-step §2)_
-- [ ] **Bildirim dil kapsamı** — bildirim başlık/mesajı bugün **TR/EN**; sabit dil seti **tr/en/de** ve kayıt-başına-dil
-  ilkesiyle hizalanmalı mı (**de eksik**)? _(process-step §3.6 · flovo-bpm-engine §8)_
+- [x] **Bildirim dil kapsamı — ÇÖZÜLDÜ (dinamik dil listesi):** bildirim başlık/mesajı sabit TR/EN alan çiftleri yerine
+  **dinamik `{ languageCode, text }` listesi**ne dönüştürüldü; sabit dil setine (tr/en/de) bağlı kalmadan kayıt-başına-dil
+  genişler. _(process-step §3.6 · [`research/current-flovo-bpm-engine/step-type-settings-and-enums.md`](./research/current-flovo-bpm-engine/step-type-settings-and-enums.md) §4)_
 - [ ] **`ProcessStep`/`BusinessRule` denormalize `organizationId`** — asıl kapsayıcı `serviceId`; kiracı için ayrıca
   `organizationId` tutulsun mu, yoksa `service → solution → org` üzerinden mi? _(models)_
+
+### 🔧 v0.12 — Adım tipe-özel ayar modellemesinden (2026-07-16)
+- [ ] **Flovo AI adım ayarları detayı** — `selectedAi` kanonik AI seti; `fileSourceType` (thumbnail/fileProperty) ayrı enum mü;
+  AI'a-özel `aiSettings` şeması. _(process-step §3.2)_
+- [ ] **Adım `settings` JSONB doğrulama & referans bütünlüğü** — tip-başına **JSON Schema**; `settings` içindeki referans id'lerin
+  (`propertyId`/`organizationUserGroupId`/`selectedTimerProcessStepId`…) **uygulama-katmanı** doğrulaması + **silme koruması**. _(process-step §2)_
+- [ ] **`triggerProcessStep` / `formRedirect` adım ayarları** — henüz modellenmedi (ayarsız grup §3.16). _(process-step §3.16)_
+- [ ] **`DynamicParameter.value` şekli** — değer-kaynağı (**ValueAssignType**: sabit/hesaplama/form property) + değerin JSONB
+  temsili (iş-kuralı `AssignValueToFieldDto` muadili). _(process-step §3.1/§3.6)_
 
 ---
 
@@ -253,3 +272,12 @@
   aksiyon kodu adlandırma tutarlılığı; property-value 7 alt-sorusu (form-value-scenarios §12) umbrella altında sayıldı. Diğer
   dokümanların "Açık Kararlar / Sorular" bölümleri **todo.md işaretçisine** çevrildi. `style.md` "Style tüketicisi: adım?" **çözüldü**
   (tüketici = Action + Status; alanlar Style kullanmaz).
+- **Adım tipe-özel ayarlar → JSONB `settings` (KARAR, v0.12):** `ProcessStep.settings` JSONB kolonunda **gömülü** (ayrı alt-tablo
+  yok); ayrımlayıcı `stepType` (ProcessStepType); tip-tip ayar modelleri process-step §3. Model §2'deki "ayrı alt-model mi gömülü mü"
+  açık notu **kapandı**; referans bütünlüğü uygulama-katmanında (tip-başına JSON Schema).
+- **Adım-tipi enum ailesi + alan rename'leri (v0.12):** 11 yeni enum (ProcessStepType · HttpMethod · ProcessStepUserType ·
+  ProcessStepUserGroupType · NotificationChannel · NotificationRecipientType · NotificationUserType · TimerCalculationType ·
+  WorkTimeSelection · TimeAdjustmentOption · InstanceDeleteMode) + KeyboardType/BarcodeFormat dolduruldu; NotificationUserGroupType
+  **foldlandı**. Rename: `stableUserId→fixedUserId` · `resource→endpoint` · `method→HttpMethod` · `WorkStyle→TimerCalculationType` ·
+  `HttpRequestParameter→DynamicParameter` · `dynamicUserListFieldId→dynamicUserListPropertyId`; kaldırıldı: `returns`, Switch `cases`,
+  userType `managerChain`/`managerByTitle`. Davranış dokümanı senkronlandı; `research/compare/*` güncellendi.

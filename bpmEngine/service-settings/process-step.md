@@ -30,6 +30,8 @@ Tip-bağımsız: bu alanlar **her adımda** ortaktır; tipe özel ayarlar bunun 
 | Alan | Tip | Açıklama |
 |---|---|---|
 | `code` | string | Adımın benzersiz kodu |
+| `stepType` | ProcessStepType | **Adım tipi ayrımlayıcısı** — tipe-özel ayarların (§3) nasıl yorumlanacağını belirler (→ `../models/enums/process-step-type.md`) |
+| `settings` | jsonb | **Tipe-özel ayarlar** — şekli `stepType`'a göre değişir (§3); modelde `ProcessStep` satırında **JSONB** kolon (→ `../models/service-settings/process-step.md` §2/§3) |
 | `definition` | string | Adımın adı/tanımı |
 | `environmentRestriction` | string | Ortam kısıtlaması |
 | `id` | int | Veritabanı ID'si |
@@ -87,9 +89,9 @@ başlatılabileceğini** ayarlamak için oluşturulur.
 ### 3.2 — HTTP Request
 **Özet:** Bir dış endpoint'e (kullanıcının kendi sunucusu olabilir) HTTP isteği atan **otomatik** adım.
 
-**Ayarlar:** `endpoint` (URL) · `method` (GET/POST/PUT/DELETE...) · `templateParameters` (URL şablon/path) ·
-`queryParameters` · `headers` · `body` · `returns` (dönüş tipi/şeması) · `async` (bool).
-**Parametre yapısı** (her parametre): `name` · `valueType` (sabit / form property'si / ifade) · `value`.
+**Ayarlar:** `endpoint` (URL) · `method` (**HttpMethod**: GET/POST/PUT/DELETE → [`../models/enums/http-method.md`](../models/enums/http-method.md)) · `templateParameters` (URL şablon/path) ·
+`queryParameters` · `headers` · `body` · `async` (bool).
+**Parametre yapısı** (`DynamicParameter`, her parametre): `name` · `value` (değer kaynağı **ValueAssignType**: sabit / form property / hesaplama).
 
 **Çalışma:**
 1. Adım tetiklendiğinde, ayarlardaki her alan **yapılandırıldığı gibi** istek atılır.
@@ -141,7 +143,7 @@ değer atamak için kullanılır.
 **Özet:** **Mail, bildirim (push) veya toast** mesaj atmak için kullanılır. Statik kullanıcı(lar) seçilebilir; seçilen
 kullanıcılara, girilen **dinamik mesaj** ile bildirim gönderilir.
 
-**Kanallar (3 seçenek):** **Mail** · **Bildirim (Push)** · **Toast**. Başlık/mesaj **TR ve EN** ayrı girilir.
+**Kanallar (3 seçenek):** **Mail** · **Bildirim (Push)** · **Toast** (→ [`../models/enums/notification-channel.md`](../models/enums/notification-channel.md)). Başlık/mesaj **dil-başına** (dinamik `{languageCode, text}` listesi) girilir.
 
 **Parametreler (yalnız Bildirim/Push ve Toast):** Bildirimle birlikte **`parameters`** gönderilebilir. Bu parametreler
 **UI'da gösterilmez**; **çalışma zamanında veriyi güncellemek** için kullanılır (örn. `instanceId` + yeni alan değerleri →
@@ -208,8 +210,9 @@ yoksa default tetiklenir.
 **Özet:** İçinde **1 kullanıcı** seçilir; belirlenen kullanıcının **onayına** gider. Onaya giden kişi formu
 **güncelleyebilir** ve form **aksiyon alınabilir** duruma gelir; seçili kullanıcı aksiyonlardan birini **manuel** tetikler.
 
-**Kullanıcı belirleme yöntemi (`userType`):** Süreci başlatan · **Sabit kullanıcı** (`stableUserId`) · Kullanıcının
-yöneticisi · Yönetici zinciri · Departman yöneticisi · Ünvana göre yönetici · **Değişken kullanıcı** (form property'sinden).
+**Kullanıcı belirleme yöntemi (`userType` → [`../models/enums/process-step-user-type.md`](../models/enums/process-step-user-type.md)):**
+Süreci başlatan · **Sabit kullanıcı** (`fixedUserId`) · Kullanıcının yöneticisi · Departman yöneticisi ·
+**Değişken kullanıcı** (form property'sinden). _(Eski "yönetici zinciri" ve "ünvana göre yönetici" kaldırıldı — aktif değildi.)_
 
 **Diğer ayarlar:** `processViewProfileId` (görüntüleme profili → `view-profile.md`) · adıma gelince **bildirim** · **timeout** (→ §3.7, `../flovo-bpm-engine.md` §6.2).
 

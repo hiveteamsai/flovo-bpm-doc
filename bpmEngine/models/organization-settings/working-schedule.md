@@ -32,6 +32,6 @@
 ## İlişkiler
 - **N – 1** → `Organization` · **1 – N** ← `WorkingScheduleDay`.
 - **1 – N** ← `User` (`workingScheduleId`).
-- **Kullanım:** `VacationDay` ile birlikte iş günü/saat ve BPM Timer zaman aşımı hesabı (`WorkStyle.calismaTakvimineGore`).
+- **Kullanım:** `VacationDay` ile birlikte iş günü/saat ve BPM Timer zaman aşımı hesabı (`TimerCalculationType.workCalendar` → [`../enums/timer-calculation-type.md`](../enums/timer-calculation-type.md)).
 
 *Oluşturma: 2026-07-03.*

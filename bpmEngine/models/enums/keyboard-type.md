@@ -6,9 +6,17 @@
 ## Değerler
 | Değer | Anlam | Ne için |
 |---|---|---|
-| _(kaynakta sayılmadı — **netleşecek**)_ | — | Değer seti eski uygulama kontrol tanımlarından teyit edilecek (→ [`../../todo.md`](../../todo.md)). |
+| `default` | Varsayılan | Platform varsayılan klavyesi. |
+| `plain` | Düz | Otomatik düzeltme/öneri olmadan düz giriş. |
+| `text` | Metin | Standart metin klavyesi. |
+| `numeric` | Sayısal | Sayı tuş takımı. |
+| `email` | E-posta | `@` ve `.` erişimli e-posta klavyesi. |
+| `url` | URL | URL girişine uygun klavye. |
+| `telephone` | Telefon | Telefon numarası tuş takımı. |
 
 ## Notlar
-- Kanonik değer listesi kaynak dokümanlarda sayılmamıştır; Textbox/Phone kontrolleriyle birlikte kesinleşecek.
+- **Kaynak:** current Flovo `KeyboardType` enum'undan alındı →
+  [`../../research/current-flovo-bpm-engine/step-type-settings-and-enums.md`](../../research/current-flovo-bpm-engine/step-type-settings-and-enums.md) §6.
+  (Önceki placeholder — "netleşecek" — kapandı.)
 
-*Oluşturma: 2026-07-10.*
+*Oluşturma: 2026-07-16.*
