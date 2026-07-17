@@ -87,14 +87,17 @@ Listedeki her eleman bir **PropertyItem**'dir:
 | `id` | int | Öğe ID'si |
 | `propertyId` | int | Bağlı olduğu alan (property) |
 | `value` | string | **Seçilen değer** (alanın value'suna yazılır) — `propertyId` içinde **benzersiz** |
-| `code` | string | **Çeviri eşleşme kodu** — `../organization-settings/translation.md` `code`'u ile eşleşir; öğe metni buradan çözülür |
-| `definition` | string | Öğe tanımı (yönetim ekranında görünen ad) |
+| `translationCode` | string? | **Çeviri eşleşme anahtarı** — `../organization-settings/translation.md` `code`'u ile eşleşir; öğe metni buradan çözülür. **`null` = çeviri es geçilir**, doğrudan `definition` kullanılır |
+| `definition` | string | Öğe tanımı — **varsayılan dildeki** metin (yönetim ekranında görünen ad) |
 
-> **Neden `code` ≠ `value`?** Farklı comboboxlar aynı `value` kümesini (örn. `0`·`1`·`2`·`3`) kullanabilir. Çeviriler
-> birbirine karışmasın diye **çeviri eşleşmesi `code` üzerinden** yapılır; `value` yalnız **seçilen değeri** taşır.
-> Böylece iki farklı alanda aynı `value` olsa bile **farklı `code` → farklı çeviri** olur.
+> **Neden `translationCode` ≠ `value`?** Farklı comboboxlar aynı `value` kümesini (örn. `0`·`1`·`2`·`3`) kullanabilir.
+> Çeviriler birbirine karışmasın diye **çeviri eşleşmesi `translationCode` üzerinden** yapılır; `value` yalnız
+> **seçilen değeri** taşır. Böylece iki farklı alanda aynı `value` olsa bile **farklı `translationCode` → farklı çeviri** olur.
+> _(Bu, tüm çevrilebilir modellerde geçerli olan **iş kodu ≠ çeviri anahtarı** standardının bir örneğidir →
+> `../organization-settings/translation.md` §3.1.)_
 > - **Benzersizlik:** `(propertyId, value)` benzersiz — bir alanda aynı `value`'lu iki öğe olamaz.
-> - **Görünen metin:** `code` → `../organization-settings/translation.md` §3 çözümlemesiyle **aktif dile** göre gösterilir.
+> - **Görünen metin:** `translationCode` → `../organization-settings/translation.md` §3 çözümlemesiyle **aktif dile** göre
+>   gösterilir; anahtar `null` ise doğrudan `definition`.
 
 ---
 

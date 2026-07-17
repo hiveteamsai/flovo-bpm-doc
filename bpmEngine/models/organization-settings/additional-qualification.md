@@ -12,6 +12,7 @@
 | `organizationId` | int | FK → `organization.md` | Sahibi organizasyon. |
 | `code` | string | — | Nitelik kodu. |
 | `definition` | string | — | Nitelik tanımı. |
+| `translationCode` | string? | çeviri anahtarı | **Çeviri eşleşme anahtarı** (→ [`translation.md`](./translation.md) `code`). `null` = çeviri **es geçilir**, doğrudan `definition` kullanılır. |
 | `valueType` | QualificationValueType | — | Değerin **tipi** ([`../enums/qualification-value-type.md`](../enums/qualification-value-type.md)) (string/double/dateTime/combobox); değerin hangi **typed sütuna** yazılacağını belirler. |
 | `active` | bool | — | Aktif/pasif — **null olamaz**, varsayılan `true`. `false` = frontend'de **görünür/düzenlenebilir** ama BPM işlemede kullanılmaz. |
 | `deleted` | bool | — | Soft-delete — **null olamaz**, varsayılan `false`. `true` = frontend'de **gizli/aktarılmaz/salt** + BPM işlemede kullanılmaz. |
@@ -42,7 +43,7 @@ Enum tanımı → [`../enums/qualification-value-type.md`](../enums/qualificatio
 | 0 | `string` | `stringValue` (string) |
 | 1 | `double` | `doubleValue` (double) |
 | 2 | `dateTime` | `datetimeValue` (datetime) |
-| 3 | `combobox` | `comboboxItemId` + kopya `comboboxCode` / `comboboxDefinition` |
+| 3 | `combobox` | `comboboxItemId` + kopya `comboboxTranslationCode` / `comboboxDefinition` |
 
 ## Alt model — QualificationItem (combobox seçeneği; `valueType = combobox`)
 `valueType=combobox` olan nitelik, **kendi combobox seçeneklerini** ek nitelik sayfasında **`QualificationItem`** olarak
@@ -54,17 +55,19 @@ tanımlar. `PropertyItem` yapısından türetildi **fakat `Property` ile ilişki
 | `id` | int | PK | Öğe ID'si. |
 | `additionalQualificationId` | int | FK → AdditionalQualification | Bağlı ek nitelik (combobox tipli). |
 | `value` | string | — | Seçilen değer; `(additionalQualificationId, value)` **benzersiz**. |
-| `code` | string | — | Çeviri eşleşme kodu (→ `translation.md`); öğe metni buradan çözülür. |
-| `definition` | string | — | Öğe tanımı (yönetim ekranında görünen ad). |
+| `translationCode` | string? | çeviri anahtarı | **Çeviri eşleşme anahtarı** (→ [`translation.md`](./translation.md) `code`); öğe metni buradan çözülür. `null` = çeviri **es geçilir**, doğrudan `definition` kullanılır. |
+| `definition` | string | — | Öğe tanımı — **varsayılan dildeki** metin (yönetim ekranında görünen ad). |
 
-> Değer atamada seçilen öğenin `code` + `definition`'ı ilgili `...QualificationValue`'nun `comboboxCode` /
-> `comboboxDefinition` alanlarına **kopyalanır** (snapshot; anlık gösterim/çeviri, join'siz).
+> Değer atamada seçilen öğenin `translationCode` + `definition`'ı ilgili `...QualificationValue`'nun
+> `comboboxTranslationCode` / `comboboxDefinition` alanlarına **kopyalanır** (snapshot; anlık gösterim/çeviri, join'siz).
+> Snapshot **çeviri anahtarını da taşır** — böylece kopya metin de aktif dile çözülebilir; `comboboxTranslationCode`
+> `null` ise `comboboxDefinition` doğrudan kullanılır.
 
 ## Değer saklama (varlık başına)
 Bir niteliğin **değeri**, hedef varlığın kendi "qualification value" alt modelinde tutulur. Ortak desen —
-`{ id, <entity>Id, qualificationId, stringValue, doubleValue, datetimeValue, comboboxItemId, comboboxCode, comboboxDefinition }`:
+`{ id, <entity>Id, qualificationId, stringValue, doubleValue, datetimeValue, comboboxItemId, comboboxTranslationCode, comboboxDefinition }`:
 niteliğin **`valueType`**'ına göre **yalnız ilgili sütun(lar)** doldurulur — string→`stringValue` · double→`doubleValue` ·
-dateTime→`datetimeValue` · **combobox→`comboboxItemId` + kopya `comboboxCode`/`comboboxDefinition`** (diğerleri `null`).
+dateTime→`datetimeValue` · **combobox→`comboboxItemId` + kopya `comboboxTranslationCode`/`comboboxDefinition`** (diğerleri `null`).
 Value modelleri: `UserQualificationValue` · `DepartmentQualificationValue` · `ProfessionQualificationValue` ·
 `CostCenterQualificationValue` · `WorkerLevelQualificationValue`.
 

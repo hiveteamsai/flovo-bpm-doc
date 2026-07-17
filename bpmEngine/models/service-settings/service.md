@@ -12,6 +12,7 @@
 | `solutionId` | int | FK → Solution.id | Bağlı solution (organizasyon buradan türetilir). |
 | `code` | string | benzersiz | Servis kodu (izolasyon başlığı `serviceId`; dış referans). |
 | `definition` | string | — | Servis (form) adı/tanımı. |
+| `translationCode` | string? | çeviri anahtarı | **Çeviri eşleşme anahtarı** (→ [`../organization-settings/translation.md`](../organization-settings/translation.md) `code`). `null` = çeviri **es geçilir**, doğrudan `definition` kullanılır. |
 | `formType` | FormType | — | Servisin **davranış türü** — [`../enums/form-type.md`](../enums/form-type.md): `form` · `parameter` · `eventForm` (varsayılan **`form`**). Bkz. "formType — Servis davranış türü". |
 
 ## `formType` — Servis davranış türü

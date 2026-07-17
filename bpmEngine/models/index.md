@@ -114,7 +114,7 @@ ProcessInstance (id; createdByUserId → User · createdByApiKeyId → ApiKey[ge
 | BusinessRule | `activeViewProfiles` | ProcessViewProfile.id | N–N | yalnız bu profillerde çalış |
 | BusinessRuleCondition | `businessRuleId` | BusinessRule.id | N–1 | |
 | BusinessRuleCondition | `parentConditionId` | BusinessRuleCondition.id | N–1 | iç içe (recursive) |
-| Translation | `code` | (kod eşleşmesi) | — | FK değil; `code` + `languageCode` + `organizationId` ile çözülür |
+| Translation | `code` | (kod eşleşmesi) | — | FK değil; kaynak modellerin **`translationCode`**'u + `languageCode` + `organizationId` ile çözülür (`translationCode=null` → çeviri es geçilir) |
 | **— İş akışı / çalıştırma (runtime — `processInstances/`) —** | | | | |
 | ProcessInstance | `createdByUserId` | User.id | N–1 | null olabilir (kullanıcı **ya da** API) |
 | ProcessInstance | `createdByApiKeyId` | ApiKey | N–1 | null olabilir; **ApiKey geçici** |
@@ -182,9 +182,17 @@ ProcessInstance (id; createdByUserId → User · createdByApiKeyId → ApiKey[ge
   `deleted=true` VEYA `active=false` kayıtları kullanmaz** (ikisi de **not-null**: varsayılan `active=true`, `deleted=false`; yeni kayıtlar böyle oluşur). Fark: **`deleted=true`** frontend'de tamamen **gizli/aktarılmaz/salt**;
   **`active=false`** frontend'de **görünür + düzenlenebilir** (yalnız BPM veri işlemede dışlanır). _(VacationDay'de `active`/`code` yok; ProcessTransfer/SchedulerJob operasyon/altyapı — dokunulmadı.)_
 - **`code` benzersizliği — `(organizationId, code)`:** aynı organizasyonda aynı `code`'lu iki kayıt olamaz.
-  - **Yapısal org-ayarları (11):** Company·Department·Profession·Position·User·UserGroup·AdditionalQualification·CostCenter·WorkerLevel·WorkingSchedule·CreditCard — **`deleted=true` kayıtlar kontrole dahil edilmez**. _(User ayrıca `(organizationId, email)` · `(organizationId, phone)` benzersiz — aynı e-posta farklı org'larda olabilir; Position'ın `Staff` alt modeli `(positionId, code)` + `userId` benzersiz.)_
+  - **Yapısal org-ayarları (11):** Company·Department·Profession·Position·User·UserGroup·AdditionalQualification·CostCenter·WorkerLevel·WorkingSchedule·CreditCard — **`deleted=true` kayıtlar kontrole dahil edilmez**. _(User ayrıca `(organizationId, email)` · `(organizationId, phone)` benzersiz — aynı e-posta farklı org'larda olabilir; **`email`/`phone` nullable, null olanlar kontrole girmez, ancak ikisi birden null olamaz**. Position'ın `Staff` alt modeli `(positionId, code)` + `userId` benzersiz.)_
   - **Organizasyon havuzu:** **Status · Action** benzersiz; **Style** `code` doluysa (`organizationId=null` sistem tarafı da).
   - **İstisnalar:** **Translation** → `(organizationId, code, languageCode)`; **Organization** → `code` **global** benzersiz.
+- **Çeviri anahtarı — `translationCode` (`string?`):** Çevrilebilir modeller çeviriye **iş kodlarıyla (`code`) değil**,
+  ayrı bir **`translationCode`** alanıyla bağlanır (`Model.translationCode → Translation.code`). Gerekçe: `code`
+  **model-içi** benzersiz (`(organizationId, code)`), çeviri ad-uzayı ise **organizasyon geneli** ve varlık ayrımı yok →
+  Departman `"01"` ile Şirket `"01"` aynı çeviri satırına düşerdi. **`null` = çeviri es geçilir**, doğrudan `definition`
+  kullanılır (çeviri **opt-in**). Alanı taşıyan **23 model/alt-model** + gerekçe → `../organization-settings/translation.md` §3.1.
+  _(Taşımayanlar: `Style`·`User`·`Organization` — çevrilecek `definition` yok; `Translation` — anahtarın kendisi.)_
+  **Snapshot kopyaları** anahtarı da kopyalar: `ProcessStepAction.translationCode` (Action'dan) ·
+  `...QualificationValue.comboboxTranslationCode` (QualificationItem'dan).
 - **Yetkilendirme:** `Organization.adminUserIds` (adminler — en az 1 aktif; tüm yetkiler + config'i düzenler) +
   **4 grup alanı** (`impersonationUserGroupId`·`organizationSettingsUserGroupId`·`serviceSettingsUserGroupId`·`viewAllReportsUserGroupId`;
   her biri **tek** `UserGroup`). Eski `User.authorizationLevel` **kaldırıldı** → `../organization-settings/permissions.md`.

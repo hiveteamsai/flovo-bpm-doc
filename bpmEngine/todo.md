@@ -166,6 +166,16 @@
   **kontrast** kontrolü. _(style §4)_
 - [ ] **Çeviri** — ortak (`null`) kayıt sonradan güncellenince, onu **ezmiş** organizasyon kayıtları etkilenmemeli (teyit).
   _(translation §5)_
+- [ ] **`translationCode` ad-uzayı kuralı** — anahtar **serbest metin**; değeri **kim üretir**? (a) kullanıcı serbest girer,
+  (b) `<varlık>.<code>` (örn. `department.01`) **otomatik** üretilir, (c) hibrit (öneri + düzenlenebilir). Bağlı sorular:
+  iş `code`'u değişince anahtar ne olur (sabit kalır / birlikte değişir); iki kaydın **kasıtlı aynı anahtarı** paylaşması
+  serbest mi; anahtar için benzersizlik kısıtı olmalı mı (şu an **yok** — çakışma artık **mümkün ama kasıtlı**).
+  _(translation §3.1 · models/index.md Notlar)_
+- [x] **Çeviri eşleşme anahtarı — ÇÖZÜLDÜ (v0.13):** Çeviri, modellerin **iş kodu (`code`)** üzerinden yapılıyordu; `code`
+  **model-içi** benzersiz, çeviri ad-uzayı ise **organizasyon geneli** ve varlık ayrımı yok → Departman `"01"` ile Şirket `"01"`
+  **aynı çeviri satırına çakışıyordu**. Çözüm: **23 model/alt-modele ayrı, nullable `translationCode`**
+  (`Model.translationCode → Translation.code`); **`null` = çeviri es geçilir → `definition`** (opt-in).
+  _(translation §3/§3.1 · models/index.md · new-vs-current §0/§9)_
 - [ ] **`idleTimeoutMinute`** alt/üst sınır; oturum kilitlenince davranış (yeniden giriş mi, yalnız parola mı)?
   Organization sonraki alanlar: plan/abonelik, timezone, para birimi, bölge, güvenlik. _(organization §4)_
 - [x] **`actionType` isim çakışması — ÇÖZÜLDÜ (v0.7):** BusinessRule alanı `actionType` → **`businessRuleActionType`**
@@ -281,3 +291,10 @@
   **foldlandı**. Rename: `stableUserId→fixedUserId` · `resource→endpoint` · `method→HttpMethod` · `WorkStyle→TimerCalculationType` ·
   `HttpRequestParameter→DynamicParameter` · `dynamicUserListFieldId→dynamicUserListPropertyId`; kaldırıldı: `returns`, Switch `cases`,
   userType `managerChain`/`managerByTitle`. Davranış dokümanı senkronlandı; `research/compare/*` güncellendi.
+- **Çeviri anahtarı ayrıldı → `translationCode` (KARAR, v0.13):** Çeviri eşleşmesi modellerin **iş kodu (`code`)** üzerinden
+  yapılıyordu; `code` **model-içi**, çeviri ad-uzayı **organizasyon geneli** ve varlık-ayrımsız olduğundan Departman `"01"` ↔
+  Şirket `"01"` **aynı çeviri satırına çakışıyordu**. **23 model/alt-modele** ayrı **nullable `translationCode`** eklendi
+  (`Model.translationCode → Translation.code`); **`null` = çeviri es geçilir → `definition`** (opt-in). Emsal: `PropertyItem`
+  (`code ≠ value`) — standart tüm modellere yayıldı. Rename: `PropertyItem.code`/`QualificationItem.code` → `translationCode`;
+  `comboboxCode` → `comboboxTranslationCode`. **VacationDay** anahtarsızdı (hiç çevrilemiyordu) — boşluk kapandı.
+  Motor `translation.md §3/§3.1`'e işlendi; ad-uzayı kuralı **açık** kaldı.

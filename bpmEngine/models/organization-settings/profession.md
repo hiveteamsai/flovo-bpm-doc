@@ -13,6 +13,7 @@
 | `organizationId` | int | FK → `organization.md` | Sahibi organizasyon. |
 | `code` | string | — | Kod. |
 | `definition` | string | — | Ad/tanım. |
+| `translationCode` | string? | çeviri anahtarı | **Çeviri eşleşme anahtarı** (→ [`translation.md`](./translation.md) `code`). `null` = çeviri **es geçilir**, doğrudan `definition` kullanılır. |
 | `active` | bool | — | Aktif/pasif — **null olamaz**, varsayılan `true`. `false` = frontend'de **görünür/düzenlenebilir** ama BPM işlemede kullanılmaz. |
 | `deleted` | bool | — | Soft-delete — **null olamaz**, varsayılan `false`. `true` = frontend'de **gizli/aktarılmaz/salt** + BPM işlemede kullanılmaz. |
 | `synchronizationStatus` | bool | — | Senkron durumu. |
@@ -28,7 +29,7 @@
 | `doubleValue` | double? | — | `valueType=double` ise değer burada. |
 | `datetimeValue` | datetime? | — | `valueType=dateTime` ise değer burada. |
 | `comboboxItemId` | int? | FK → `additional-qualification.md` (QualificationItem) | `valueType=combobox` ise **seçilen öğe**. |
-| `comboboxCode` | string? | — | Seçilen öğenin **kopya `code`**'u (çeviri). |
+| `comboboxTranslationCode` | string? | çeviri anahtarı | Seçilen öğenin **kopya `translationCode`**'u (çeviri; `null` ise `comboboxDefinition` doğrudan kullanılır). |
 | `comboboxDefinition` | string? | — | Seçilen öğenin **kopya `definition`**'ı. |
 
 ## Benzersizlik

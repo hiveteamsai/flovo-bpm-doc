@@ -13,6 +13,7 @@
 | `organizationId` | int | FK → `organization.md` | Sahibi organizasyon. |
 | `code` | string | — | Departman kodu. |
 | `definition` | string | — | Departman adı. |
+| `translationCode` | string? | çeviri anahtarı | **Çeviri eşleşme anahtarı** (→ [`translation.md`](./translation.md) `code`). `null` = çeviri **es geçilir**, doğrudan `definition` kullanılır. |
 | `managerUserId` | int? | FK → `user.md` | **Departman yöneticisi** (BPM onay merci; opsiyonel). |
 | `parentDepartmentId` | int? | FK → Department | Üst departman (hiyerarşi, self-ref). |
 | `costCenterId` | int | FK → `cost-center.md` | Bağlı masraf merkezi. |
@@ -31,7 +32,7 @@
 | `doubleValue` | double? | — | `valueType=double` ise değer burada. |
 | `datetimeValue` | datetime? | — | `valueType=dateTime` ise değer burada. |
 | `comboboxItemId` | int? | FK → `additional-qualification.md` (QualificationItem) | `valueType=combobox` ise **seçilen öğe**. |
-| `comboboxCode` | string? | — | Seçilen öğenin **kopya `code`**'u (çeviri). |
+| `comboboxTranslationCode` | string? | çeviri anahtarı | Seçilen öğenin **kopya `translationCode`**'u (çeviri; `null` ise `comboboxDefinition` doğrudan kullanılır). |
 | `comboboxDefinition` | string? | — | Seçilen öğenin **kopya `definition`**'ı. |
 
 ## Benzersizlik

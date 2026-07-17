@@ -12,16 +12,19 @@
 |---|---|---|---|
 | `id` | int | PK | Kullanıcı ID'si. |
 | `organizationId` | int | FK → `organization.md` | Sahibi organizasyon. |
-| `email` | string | — | E-posta (giriş kimliği + bildirim). |
-| `phone` | string | — | Telefon numarası. |
+| `email` | string? | — | E-posta (giriş kimliği + bildirim). **`phone` ile birlikte ikisi birden null olamaz** (↓ Kimlik alanları). |
+| `phone` | string? | — | Telefon numarası (giriş kimliği + bildirim). **`email` ile birlikte ikisi birden null olamaz** (↓ Kimlik alanları). |
 | `code` | string | — | Kullanıcı kodu. |
 | `firstName` / `lastName` | string | — | Ad / Soyad. _(fullName = getter, saklanmaz.)_ |
-| `profilePhoto` | string | — | Profil fotoğrafı URL. |
+| `profilePhoto` | string? | — | Profil fotoğrafı URL. |
 | `active` | bool | — | Aktif/pasif — **null olamaz**, varsayılan `true`. `false` = frontend'de **görünür/düzenlenebilir** ama BPM işlemede kullanılmaz. |
 | `deleted` | bool | — | Soft-delete — **null olamaz**, varsayılan `false`. `true` = frontend'de **gizli/aktarılmaz/salt** + BPM işlemede kullanılmaz. |
-| `employmentStartDate` | datetime | — | İşe başlama tarihi. |
+| `employmentStartDate` | datetime? | — | İşe başlama tarihi. |
 | `synchronizationStatus` | bool | — | Senkron durumu. |
-| `facebook` / `instagram` / `linkedin` / `twitter` | string | — | Sosyal medya. |
+
+> **Kimlik alanları (`email` / `phone`):** ikisi de **nullable**, fakat **en az biri dolu olmak zorundadır** —
+> `email IS NOT NULL OR phone IS NOT NULL` (CHECK kısıtı). Kullanıcı **e-posta ile, telefon ile veya ikisiyle** tanımlanabilir;
+> **hiçbiri olmadan** tanımlanamaz (giriş kimliği ve bildirim kanalları bunlara dayanır → [`../enums/notification-channel.md`](../enums/notification-channel.md)).
 
 > **Yetki:** Eski `authorizationLevel` (sayısal) **kaldırıldı**; yetkiler artık **organizasyon bazında** (admin + grup-bazlı)
 > yönetilir → `../../organization-settings/permissions.md`.
@@ -57,7 +60,7 @@
 | `doubleValue` | double? | — | `valueType=double` ise değer burada. |
 | `datetimeValue` | datetime? | — | `valueType=dateTime` ise değer burada. |
 | `comboboxItemId` | int? | FK → `additional-qualification.md` (QualificationItem) | `valueType=combobox` ise **seçilen öğe**. |
-| `comboboxCode` | string? | — | Seçilen öğenin **kopya `code`**'u (çeviri). |
+| `comboboxTranslationCode` | string? | çeviri anahtarı | Seçilen öğenin **kopya `translationCode`**'u (çeviri; `null` ise `comboboxDefinition` doğrudan kullanılır). |
 | `comboboxDefinition` | string? | — | Seçilen öğenin **kopya `definition`**'ı. |
 
 > **Kredi kartları:** `CreditCard.userId` üzerinden bağlanır (bkz. `credit-card.md`).
@@ -66,6 +69,8 @@
 > `(organizationId, code)` · `(organizationId, email)` · `(organizationId, phone)` **benzersiz** — aynı organizasyonda aynı
 > `code` / `email` / `phone`'lu iki kullanıcı olamaz. **Farklı organizasyonlarda aynı e-posta/telefon kullanılabilir**
 > (organizasyon bazında benzersiz, global değil). **`deleted=true` kayıtlar kontrole dahil değildir**.
+> **`email`/`phone` null ise benzersizlik kontrolüne girmez** — dolayısıyla aynı organizasyonda `email`'i null olan birden
+> çok kullanıcı olabilir (aynısı `phone` için).
 
 ## İlişkiler
 - **N – 1** → `Organization`, `Department`, `Profession`, `CostCenter`, `WorkerLevel`, `WorkingSchedule`, `User` (`managerUserId`, self-ref).

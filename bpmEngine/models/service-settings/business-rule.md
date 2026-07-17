@@ -13,6 +13,7 @@
 | `serviceId` | int | FK → Service | Bağlı servis. |
 | `code` | string | — | Kural kodu. |
 | `definition` | string | — | Kural adı/tanımı. |
+| `translationCode` | string? | çeviri anahtarı | **Çeviri eşleşme anahtarı** (→ [`../organization-settings/translation.md`](../organization-settings/translation.md) `code`). `null` = çeviri **es geçilir**, doğrudan `definition` kullanılır. |
 | `icon` | string | — | İkon. |
 | `environmentRestriction` | string | — | Ortam kısıtı. |
 | `businessRuleActionType` | BusinessRuleActionType | — | Kural aksiyonu (aşağıda) — [`../enums/business-rule-action-type.md`](../enums/business-rule-action-type.md). |

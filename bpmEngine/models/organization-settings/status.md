@@ -10,8 +10,9 @@
 |---|---|---|---|
 | `id` | int | PK | Durum ID'si. |
 | `organizationId` | int | FK → Organization.id | Sahibi organizasyon. **Organizasyon havuzu**: o organizasyonun **tüm servislerinde** kullanılabilir. |
-| `code` | string | benzersiz | Durum kodu (tanımlayıcı; çeviri eşleşmesi için de kullanılır). |
-| `definition` | string | — | Durum **adı** — kullanıcıya görünen (çeviri: `code` → Translation). Frontend'de metin rengi `styleId`.`fontColor`'dan gelir. |
+| `code` | string | benzersiz | Durum **kodu** — yalnız tanımlayıcı (çeviri için kullanılmaz → `translationCode`). |
+| `definition` | string | — | Durum **adı** — kullanıcıya görünen; **varsayılan dildeki** metin (çeviri: `translationCode` → Translation). Frontend'de metin rengi `styleId`.`fontColor`'dan gelir. |
+| `translationCode` | string? | çeviri anahtarı | **Çeviri eşleşme anahtarı** (→ [`translation.md`](./translation.md) `code`). `null` = çeviri **es geçilir**, doğrudan `definition` kullanılır. |
 | `icon` | string | — | İkon. Frontend'de ikon rengi `styleId`.`fontColor`'dan gelir. |
 | `styleId` | int | FK → Style.id | Renk/görünüm: `bgColor` = etiket arka planı; **`fontColor` = `definition` metni + `icon` rengi**. |
 

@@ -12,6 +12,7 @@
 | `organizationId` | int | FK → Organization.id | Sahibi organizasyon. |
 | `code` | string | benzersiz | Solution kodu (izolasyon başlığı `solutionId`; dış referans). |
 | `definition` | string | — | Solution adı/tanımı (kullanıcıya görünen). |
+| `translationCode` | string? | çeviri anahtarı | **Çeviri eşleşme anahtarı** (→ [`../organization-settings/translation.md`](../organization-settings/translation.md) `code`). `null` = çeviri **es geçilir**, doğrudan `definition` kullanılır. |
 
 ## İlişkiler
 - **N – 1** → `Organization` (`organizationId`).

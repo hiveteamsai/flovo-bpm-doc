@@ -88,8 +88,8 @@
 
 **Eklenen**
 - `userInfo ++` (User Info; `flowInfo`'dan ayrıldı)
-- **`PropertyItem` alt modeli ++:** `id` · `propertyId` · `value` · `code ++` · `definition ++`
-  (**`value` ↔ `code` ayrıldı**; `(propertyId, value)` benzersiz)
+- **`PropertyItem` alt modeli ++:** `id` · `propertyId` · `value` · `translationCode ++` · `definition ++`
+  (**`value` ↔ `translationCode` ayrıldı**; `(propertyId, value)` benzersiz) — bkz. §10 çeviri anahtarı standardı
 
 **Form List ayarları → görüntüleme profiline**
 - `addNewEnabled` > **`activeStartActions`**
@@ -179,6 +179,17 @@
 - `languageCode ++` · `definition ++` (**kayıt-başına-dil**)
 - Benzersizlik: `(organizationId, code, languageCode)`
 
+**Çeviri anahtarı — `translationCode ++`** (23 model/alt-model; eşleşme `Model.translationCode` > `Translation.code`)
+- `translationCode ++` (`string?`) — **iş kodu (`code`) artık çeviri anahtarı değil**; ayrı ve **nullable** alan
+  (`null` = çeviri es geçilir → `definition`). Eklendiği modeller: Company · Department · Profession · CostCenter ·
+  WorkerLevel · WorkingSchedule · UserGroup · CreditCard · Position · Staff · AdditionalQualification · QualificationItem ·
+  VacationDay · Status · Action · Service · Solution · Property · PropertyItem · ProcessStep · ProcessStepAction ·
+  BusinessRule · ViewProfile.
+- `PropertyItem.code` > **`PropertyItem.translationCode`** · `QualificationItem.code` > **`QualificationItem.translationCode`**
+  _(zaten çeviri anahtarıydılar — isim standarda çekildi)_
+- `comboboxCode` > **`comboboxTranslationCode`** (`...QualificationValue` snapshot'ları — User/Department/Profession/CostCenter/WorkerLevel)
+- **VacationDay:** `translationCode ++` — eskiden `code` **hiç yoktu**, `definition` çevrilemiyordu (boşluk kapandı).
+
 ---
 
 ## 11. Organizasyon Ayarları (yapısal veri — 13 model)
@@ -210,7 +221,9 @@
 
 **Kullanıcı (`User`)**
 - `-- userName` > **`email ++`** (giriş) + **`phone ++`**
-- Benzersizlik: `(organizationId, email) ++` · `(organizationId, phone) ++`
+- Benzersizlik: `(organizationId, email) ++` · `(organizationId, phone) ++` _(null olanlar kontrole girmez)_
+- `-- facebook` · `-- instagram` · `-- linkedin` · `-- twitter` (sosyal medya alanları — yeni uygulamada **yok**)
+- **Nullable'a çevrilen:** `email?` · `phone?` (**ikisi birden null olamaz** — CHECK) · `profilePhoto?` · `employmentStartDate?`
 
 **Yetkilendirme**
 - `-- User.authorizationLevel` (kullanıcı bazında sayısal — kaldırıldı)
@@ -225,7 +238,7 @@
 - `QualificationValueType ++` (enum: `String` · `Double` · `DateTime` · `Combobox`)
 - `valueType ++` (alan)
 - (Değer modelleri) tek `value` > **typed sütunlar**: `stringValue ++` · `doubleValue ++` · `datetimeValue ++`
-- `comboboxItemId ++` (FK) · `comboboxCode ++` · `comboboxDefinition ++` (seçilen öğenin kopyası)
+- `comboboxItemId ++` (FK) · `comboboxTranslationCode ++` · `comboboxDefinition ++` (seçilen öğenin kopyası — çeviri anahtarı dahil)
 - **`QualificationItem` alt modeli ++** (combobox seçenekleri; `PropertyItem`'dan türetildi ama `Property`'siz;
   `additionalQualificationId`)
 

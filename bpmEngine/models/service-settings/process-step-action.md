@@ -18,7 +18,9 @@
 | `environmentRestriction` | string | — | Ortam kısıtı. |
 
 ### Şablondan kopyalanan alanlar (Action/ActionDto)
-Adıma aksiyon eklenirken **bir kez kopyalanır**: `code` · `definition` · `icon` · `styleId` · `actionType` (→ `../organization-settings/action.md`).
+Adıma aksiyon eklenirken **bir kez kopyalanır**: `code` · `definition` · **`translationCode`** · `icon` · `styleId` · `actionType`
+(→ `../organization-settings/action.md`). Kopya **çeviri anahtarını da taşır** — binding'in etiketi de aktif dile çözülebilir;
+`translationCode` `null` ise doğrudan `definition` kullanılır.
 **Canlı bağ/FK yoktur** (`actionId` tutulmaz): kopyadan sonra ProcessStepAction ile Action **bağımsızdır** — Action
 değişince bu binding güncellenmez, binding değişince Action etkilenmez.
 

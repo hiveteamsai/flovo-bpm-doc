@@ -14,6 +14,7 @@
 | `endingDate` | datetime | — | Bitiş tarihi. |
 | `halfDay` | bool | — | Yarım gün mü (gün hesabında 0.5). |
 | `definition` | string | — | Tatil tanımı/adı. |
+| `translationCode` | string? | çeviri anahtarı | **Çeviri eşleşme anahtarı** (→ [`translation.md`](./translation.md) `code`). `null` = çeviri **es geçilir**, doğrudan `definition` kullanılır. |
 
 ## İlişkiler
 - **N – 1** → `Organization`.

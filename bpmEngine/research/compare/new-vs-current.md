@@ -23,9 +23,9 @@
 | 8 | **Raporlar** | View-profile içinde | **Ayrıldı** (ayrı özellik) |
 | 9 | **Şişman modeller** | PropertyDto ~60 alan | **İnce çekirdek + tipe-özel ayar** |
 | 10 | **Eba entegrasyonu** | Var (`ebaIntegratedFlovoApp`, `FromEba`) | **Tamamen kaldırıldı** |
-| 11 | **Çeviri (i18n)** | Dağınık/örtük | **`code`-bazlı çeviri motoru** (ortak+organizasyon; **kayıt-başına-dil**: `languageCode`+`definition`) |
+| 11 | **Çeviri (i18n)** | Dağınık/örtük | **`code`-bazlı çeviri motoru** (ortak+organizasyon; **kayıt-başına-dil**: `languageCode`+`definition`) + **ayrı `translationCode` anahtarı** (iş kodu ≠ çeviri anahtarı) |
 | 12 | **Organizasyon (kiracı)** | **Account** (`accountId`) + `solutionid` başlıkları | **Organization** (`organizationId` **int**) varlığı (`defaultLang`, `idleTimeoutMinute`, `logoUrl`) |
-| 13 | **Seçim öğesi** | `propertyItems` (değer=metin) | **`PropertyItem`** — `code` (çeviri) ile `value` **ayrıldı** |
+| 13 | **Seçim öğesi** | `propertyItems` (değer=metin) | **`PropertyItem`** — `translationCode` (çeviri) ile `value` **ayrıldı** |
 | 14 | **Hiyerarşi & havuz** | account/solution/service başlıkları | **Organization → Solution → Service**; Action/Status/Style/Translation = **organizasyon havuzu** (`organizationId`) |
 | 15 | **Profil-bazlı alan override** | Alan ayarları profilden bağımsız | **`ProcessViewProfilePropertySetting`** (key/value) — Form List ayarları görüntüleme profiline göre |
 | 16 | **Organizasyon ayarları (yapısal)** | "Account Settings" DTO'ları (`accountId` string) | **13 DB modeli** (Company/User/Department/Profession…) — `organizationId` **int**; **Title→Profession**; typed/combobox ek nitelik |
@@ -33,6 +33,7 @@
 | 18 | **Master-veri yaşam döngüsü** | `status` (bool) | **`active` + `deleted`** (soft-delete); `(organizationId, code)` **benzersiz** |
 | 19 | **İş akışı / çalıştırma (runtime)** | `ServiceInstances` · `ServiceInstanceRequests` (+ dağınık alanlar) | **`processInstances/` 6 model**: `ProcessInstance` · `ProcessStepInstance` · `Instance` · `InstanceAwaitingUser` · `UserGroupApprovedUser` · `RelatedInstance` |
 | 20 | **Adım tipe-özel ayarlar** | Adım DTO'suna gömülü düz alanlar | **`settings` (JSONB)** + **`stepType`** ayrımlayıcı + tip-tip ayar modelleri (§3) + adım-tipi **enum'ları** (ProcessStepType, HttpMethod, TimerCalculationType, NotificationChannel…) |
+| 21 | **Çeviri anahtarı** | Çeviri **iş kodu (`code`) ile** eşleşir → farklı varlıkların kodları (Departman "01" ↔ Şirket "01") **aynı çeviri satırına çakışır** | **Ayrı, nullable `translationCode`** (23 model/alt-model); `code` yalnız iş kodu. **`null` = çeviri es geçilir → `definition`** (opt-in) |
 
 ---
 
@@ -131,8 +132,10 @@ Mevcut **30 ControlType** → yeni **19 alan** (16 founder + **3 mevcuttan korun
 - **İnce çekirdek + tipe-özel ayar** ayrımı (şişman ~60 alanlık `PropertyDto` sadeleştirildi).
 - **`required`/`visible`/`enabled` property'den çıkarıldı → görüntüleme profiline** (alan = ne olduğu, profil = nasıl göründüğü).
 - **User Info** alanı netleştirildi (Flow Info'dan ayrıldı).
-- **`PropertyItem` modeli** (§2.6): `id` · `propertyId` · `value` · `code` · `definition`. **`value` ↔ `code` ayrıldı** —
-  farklı comboboxlar aynı `value`'yu (0/1/2/3) kullanabildiği için **çeviri eşleşmesi `code` ile** yapılır; `(propertyId, value)` benzersiz.
+- **`PropertyItem` modeli** (§2.6): `id` · `propertyId` · `value` · `translationCode` · `definition`. **`value` ↔
+  `translationCode` ayrıldı** — farklı comboboxlar aynı `value`'yu (0/1/2/3) kullanabildiği için **çeviri eşleşmesi
+  `translationCode` ile** yapılır; `(propertyId, value)` benzersiz. _(Bu ayrım sonradan **tüm çevrilebilir modellerin
+  standardı** oldu → §9.)_
 
 **➖ Çıkarıldı**
 - **DataGrid / DataGridControl** — kaldırıldı.
@@ -219,8 +222,22 @@ Mevcut **30 ControlType** → yeni **19 alan** (16 founder + **3 mevcuttan korun
 - **`code`-bazlı** çeviri: model `id`·`code`·`organizationId`·**`languageCode`·`definition`** — **kayıt-başına-dil**
   (`tr`/`en`/`de` kolonları yok); `(organizationId, code, languageCode)` benzersiz.
 - **İki katman:** ortak (Flovo, `organizationId=null`, salt-okunur) + organizasyon çevirileri (kendi kayıtlarını günceller).
-- **Çözümleme:** `definition` = organizasyonun `defaultLang` metni → dil eşleşince tabloya **gidilmez**; farklıysa
-  `code`+**`languageCode`**+`organizationId` (override) → `code`+`languageCode`+`null` (ortak) → yoksa/boşsa **`definition`** fallback.
+- **Çözümleme:** `translationCode` yoksa (`null`) tabloya **gidilmez** → `definition`; `definition` = organizasyonun
+  `defaultLang` metni → dil eşleşince yine **gidilmez**; farklıysa `translationCode`+**`languageCode`**+`organizationId`
+  (override) → +`null` (ortak) → yoksa/boşsa **`definition`** fallback.
+
+**➕ Çeviri anahtarı `translationCode` — iş kodu ≠ çeviri anahtarı** (23 model/alt-model)
+- **Sorun:** Çeviri ad-uzayı **organizasyon geneli** (`(organizationId, code, languageCode)`) ve **varlık ayrımı yok**;
+  modellerin `code`'u ise yalnız **model-içi** benzersiz (`(organizationId, code)`). İş kodu doğrudan anahtar olsaydı
+  **Departman `"01"` ile Şirket `"01"` aynı çeviri satırına düşerdi** (departman adı şirket adının çevirisini gösterirdi).
+- **Çözüm:** Her çevrilebilir modelde **ayrı, nullable `translationCode`** (`Model.translationCode → Translation.code`);
+  `code` yalnız **iş/tanımlayıcı** rolünde kalır. **`null` = çeviri es geçilir** → `definition` (çeviri **opt-in**).
+  Aynı anahtarı veren iki kayıt çeviriyi **bilinçli paylaşabilir**.
+- **Emsal:** `PropertyItem` bunu zaten yapıyordu (`code` ≠ `value`); standart **tüm modellere** yayıldı ve isimler
+  `translationCode`'a çekildi.
+- **Snapshot'lar anahtarı da kopyalar:** `ProcessStepAction.translationCode` (Action'dan) ·
+  `...QualificationValue.comboboxTranslationCode` (QualificationItem'dan).
+- **Taşımayanlar:** `Style`·`User`·`Organization` (çevrilecek `definition` yok) · `Translation` (anahtarın kendisi).
 
 **➕ Organizasyon (tenant) varlığı**
 - Model (başlangıç): `id`·`code`·`name`·`defaultLang`·`logoUrl`·`idleTimeoutMinute`.
@@ -253,6 +270,8 @@ CostCenter · WorkerLevel · WorkingSchedule · VacationDay · CreditCard · Pro
   BPM workflow motoru **`deleted=true` VEYA `active=false`** kayıtları **kullanmaz**; `deleted=true` frontend'de gizli/salt, `active=false` görünür+düzenlenebilir.
 - **`(organizationId, code)` benzersiz** (`deleted=true` hariç) — 10 master model + havuz Status/Action/Style. İstisna: Translation `(…, languageCode)`; Organization `code` global.
 - **User:** `userName` → **`email`** (giriş) + **`phone`**; benzersizlik `(organizationId, code/email/phone)` (aynı e-posta farklı org'larda olabilir); `UserExpenseLimit` kaldırıldı.
+  **`email`/`phone` ikisi de nullable** ama **en az biri dolu** olmak zorunda (CHECK) — kullanıcı e-posta ile, telefon ile veya ikisiyle tanımlanabilir;
+  null olanlar benzersizlik kontrolüne girmez. `profilePhoto`/`employmentStartDate` **nullable**. **Sosyal medya alanları** (`facebook`/`instagram`/`linkedin`/`twitter`) **kaldırıldı** — yeni uygulamada yok.
 
 **🔐 Yetkilendirme (yeni)**
 - Eski **kullanıcı bazında sayısal `User.authorizationLevel`** (dinamik ayarlanamıyordu) **kaldırıldı**.
@@ -264,7 +283,7 @@ CostCenter · WorkerLevel · WorkingSchedule · VacationDay · CreditCard · Pro
 - `RelationalSetting` → **`RelationalType`** (Users/Departments/Professions/CostCenters/WorkerLevels).
 - **`QualificationValueType`** enum: `String` · `Double` · `DateTime` · **`Combobox`**.
 - Değer alt modelleri: tek `value` → **typed sütunlar** (`stringValue`/`doubleValue`/`datetimeValue`) + combobox
-  (`comboboxItemId` + kopya `comboboxCode`/`comboboxDefinition`).
+  (`comboboxItemId` + kopya `comboboxTranslationCode`/`comboboxDefinition`).
 - **QualificationItem** alt modeli (combobox seçenekleri) — `PropertyItem`'dan türetildi ama **`Property`'siz** (`additionalQualificationId`).
 
 **➕ Pozisyon/Kadro modellendi:** `Position` (+ `Staff` alt modeli; 1 kadro ↔ 1 kullanıcı) → `models/organization-settings/position.md`.
@@ -324,7 +343,7 @@ olarak çalışır; **`ProcessInstance.parentProcessInstanceId`** ile ana sürec
 - **İki-katman ayrımı** (form-mantığı ↔ akış-mantığı): iş kuralları frontend realtime'a çekilerek motor sadeleşti; sorumluluklar netleşti.
 - **ActionDto şablon + Style varlığı:** tekrar eden aksiyon/renk tanımları tek yerden yönetilir; statik Bootstrap bağımlılığı kalktı.
 - **İnce çekirdek + tipe-özel ayar:** ~60 alanlık şişman `PropertyDto` sadeleşti; performans + self-servis kolaylaştı.
-- **Ölü ağırlığın atılması:** Eba entegrasyonu, `add-test-receipt`, iş-bazlı custom aksiyonlar, çift ondalık alanı (`precition`) temizlendi.
+- **Ölü ağırlığın atılması:** Eba entegrasyonu, `add-test-receipt`, iş-bazlı custom aksiyonlar, çift ondalık alanı (`precition`), `UserExpenseLimit` ve **kullanıcı sosyal medya alanları** (`facebook`/`instagram`/`linkedin`/`twitter`) temizlendi.
 - **i18n motoru:** `code`↔`definition` ayrımı + `definition`=varsayılan dil kısa-devresi hem tutarlı hem performanslı (çoğu kullanıcı sorgusuz).
 - **Aksiyon-kodu + `targetProcessStepId` iki katmanı:** "hangi aksiyon" ile "hangi adım" ayrımı net formalize edildi.
 - **Kararlar netleşti:** Action→ProcessStepAction **bağımsız kopya** (FK yok); Form List ayarları **profil-bazlı override** (B2); Translation **kayıt-başına-dil**; kapsam kararı (havuz ↔ servis) çözüldü.

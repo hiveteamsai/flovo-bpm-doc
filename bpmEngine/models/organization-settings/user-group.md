@@ -12,6 +12,7 @@
 | `organizationId` | int | FK → `organization.md` | Sahibi organizasyon. |
 | `code` | string | — | Grup kodu. |
 | `definition` | string | — | Grup adı/tanımı. |
+| `translationCode` | string? | çeviri anahtarı | **Çeviri eşleşme anahtarı** (→ [`translation.md`](./translation.md) `code`). `null` = çeviri **es geçilir**, doğrudan `definition` kullanılır. |
 | `groupApprovalRequired` | bool | — | **Grup onayı gerekli mi?** Bu grup bir formu beklerken (`InstanceAwaitingUser.userGroupId`) `true` ise, onaylayan üyeler `UserGroupApprovedUser` tablosundan tespit edilir. |
 | `active` | bool | — | Aktif/pasif — **null olamaz**, varsayılan `true`. `false` = frontend'de **görünür/düzenlenebilir** ama BPM işlemede kullanılmaz. |
 | `deleted` | bool | — | Soft-delete — **null olamaz**, varsayılan `false`. `true` = frontend'de **gizli/aktarılmaz/salt** + BPM işlemede kullanılmaz. |

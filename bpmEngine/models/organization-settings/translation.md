@@ -9,7 +9,7 @@
 | Alan | Tip | Anahtar | Açıklama / amaç |
 |---|---|---|---|
 | `id` | int | PK | Çeviri kaydı ID'si. |
-| `code` | string | eşleştirme anahtarı | Çeviri **kodu** (serbest metin; istenirse `form.submit` gibi namespace). Metinler bu `code` ile çözülür. |
+| `code` | string | eşleştirme anahtarı | Çeviri **kodu** (serbest metin; istenirse `form.submit` / `department.01` gibi namespace). Kaynak modellerin **`translationCode`**'u buraya eşleşir. |
 | `organizationId` | int? | FK → Organization.id | Sahibi organizasyon. **`null` = ortak (Flovo) çeviri** (herkes kullanır, salt-okunur). |
 | `languageCode` | string | — | **Dil kodu** — sabit set (`tr`/`en`/`de`; krş. `organization.defaultLang`). |
 | `definition` | string | — | Bu **dildeki metin** (`languageCode` dilinde). |
@@ -23,10 +23,19 @@
 
 ## İlişkiler
 - **N – 1** → `Organization` (`organizationId`).
-- **Kod eşleşmesi (FK değil):** `Property.code`/`definition`, `PropertyItem.code`, `Status.definition`, `Action.definition`
-  gibi metinler `code` + `organizationId` ile buradan çözülür.
+- **Kod eşleşmesi (FK değil):** Çevrilebilir modeller buraya **kendi `code`'larıyla değil**, ayrı **`translationCode`**
+  alanıyla bağlanır: **`Model.translationCode` → `Translation.code`** (+ `organizationId` + `languageCode`).
+  `translationCode` **`null`** ise çeviri **es geçilir**, kaynağın `definition`'ı doğrudan kullanılır.
+  Alanı taşıyan modellerin **tam listesi** ve gerekçe → `../../organization-settings/translation.md` **§3.1**.
+
+## Neden ayrı `translationCode`?
+Bu tablonun ad-uzayı **organizasyon geneli**dir (`(organizationId, code, languageCode)`) ve **varlık ayrımı içermez**;
+modellerin `code`'u ise yalnız **model-içi** benzersizdir. İş kodu doğrudan anahtar yapılsaydı Departman `"01"` ile
+Şirket `"01"` **aynı** çeviri satırına düşerdi. Ayrı alan bu çakışmayı keser; ayrıca iki kayıt **aynı** `translationCode`
+vererek çeviriyi **bilinçli paylaşabilir**.
 
 ## Notlar / açık noktalar
 - Ortak (`null`) kayıt güncellenince, onu **ezmiş** organizasyon kayıtları etkilenmemeli (teyit) → `../../todo.md`.
+- `translationCode` **ad-uzayı kuralı** (otomatik `<varlık>.<code>` üretimi mi, serbest metin mi) → `../../todo.md`.
 
 *Oluşturma: 2026-07-02.*

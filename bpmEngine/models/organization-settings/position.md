@@ -15,6 +15,7 @@
 | `organizationId` | int | FK → `organization.md` | Sahibi organizasyon. |
 | `code` | string | — | Kod. |
 | `definition` | string | — | Ad/tanım. |
+| `translationCode` | string? | çeviri anahtarı | **Çeviri eşleşme anahtarı** (→ [`translation.md`](./translation.md) `code`). `null` = çeviri **es geçilir**, doğrudan `definition` kullanılır. |
 | `companyId` | int | FK → `company.md` | Bağlı şirket (tekil, N–1). **Oluşturmada zorunlu** (0 olamaz); boş bırakılırsa varsayılan şirket (`isDefaultCompany`) kullanılır. |
 | `active` | bool | — | Aktif/pasif — **null olamaz**, varsayılan `true`. `false` = frontend'de **görünür/düzenlenebilir** ama BPM işlemede kullanılmaz. |
 | `deleted` | bool | — | Soft-delete — **null olamaz**, varsayılan `false`. `true` = frontend'de **gizli/aktarılmaz/salt** + BPM işlemede kullanılmaz. |
@@ -30,6 +31,7 @@ yoktur; **pozisyon kaydıyla birlikte** oluşturulur/güncellenir/silinir (pozis
 | `positionId` | int | FK → Position | Bağlı pozisyon. |
 | `code` | string | — | Kod. |
 | `definition` | string | — | Ad/tanım. |
+| `translationCode` | string? | çeviri anahtarı | **Çeviri eşleşme anahtarı** (→ [`translation.md`](./translation.md) `code`). `null` = çeviri **es geçilir**, doğrudan `definition` kullanılır. |
 | `userId` | int? | FK → `user.md` | Atanan kullanıcı (**1 kadro 1 kullanıcı**). Oluşturmada zorunlu; **tekil atama kuralı** gereği geçici boşalabilir (aşağıda). |
 | `active` | bool | — | Aktif/pasif — Position ile aynı kural (**null olamaz**, varsayılan `true`). |
 | `synchronizationStatus` | bool | — | Senkron durumu. |

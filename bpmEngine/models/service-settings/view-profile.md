@@ -12,6 +12,7 @@
 | `serviceId` | int | FK → Service | Bağlı servis. |
 | `code` | string | benzersiz | Profil kodu. |
 | `definition` | string | — | Profil adı. |
+| `translationCode` | string? | çeviri anahtarı | **Çeviri eşleşme anahtarı** (→ [`../organization-settings/translation.md`](../organization-settings/translation.md) `code`). `null` = çeviri **es geçilir**, doğrudan `definition` kullanılır. |
 | `isDefault` | bool | — | Varsayılan profil mi (adımda belirtilmeyince kullanılır). |
 | `processViewProfileProperty` | List\<ProcessViewProfileProperty\> | — | Profildeki alan yapılandırmaları (→ `view-profile-property.md`). |
 

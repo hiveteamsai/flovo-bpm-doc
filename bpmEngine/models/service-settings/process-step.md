@@ -15,6 +15,7 @@
 | `stepType` | ProcessStepType | — | **Adım tipi ayrımlayıcısı** — `settings`'in nasıl yorumlanacağını belirler (→ [`../enums/process-step-type.md`](../enums/process-step-type.md)). |
 | `settings` | jsonb | — | **Tipe-özel ayarlar** (`ProcessStep…Settings`). Şekli **`stepType`**'a göre değişir; şemalar **§3**'te. `ProcessStep` satırında **JSONB** kolon olarak tutulur (→ §2). |
 | `definition` | string | — | Adımın adı/tanımı. |
+| `translationCode` | string? | çeviri anahtarı | **Çeviri eşleşme anahtarı** (→ [`../organization-settings/translation.md`](../organization-settings/translation.md) `code`). `null` = çeviri **es geçilir**, doğrudan `definition` kullanılır. |
 | `icon` | string | — | Adım ikonu. |
 | `order` | int | — | Sıralama (sürükle-bırak). |
 | `environmentRestriction` | string | — | Ortam kısıtı. _(Alan formatı açık → [`../../todo.md`](../../todo.md) "Ortam modeli".)_ |

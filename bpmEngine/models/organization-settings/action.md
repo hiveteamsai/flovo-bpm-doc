@@ -10,8 +10,9 @@
 |---|---|---|---|
 | `id` | int | PK | Şablon ID'si. |
 | `organizationId` | int | FK → Organization.id | Sahibi organizasyon. **Organizasyon havuzu**: o organizasyonun **tüm servislerinde** kullanılabilir. |
-| `code` | string | benzersiz | Aksiyon kodu **ve yönlendirme tanımlayıcısı** (`default`, `onFail`, `true`/`false`, switch değeri...). Adım bu koda göre aksiyon seçer. |
-| `definition` | string | — | Aksiyon adı/etiketi (çeviri: `code` → Translation). |
+| `code` | string | benzersiz | Aksiyon kodu **ve yönlendirme tanımlayıcısı** (`default`, `onFail`, `true`/`false`, switch değeri...). Adım bu koda göre aksiyon seçer. **Çeviri için kullanılmaz** → `translationCode`. |
+| `definition` | string | — | Aksiyon adı/etiketi — **varsayılan dildeki** metin (çeviri: `translationCode` → Translation). |
+| `translationCode` | string? | çeviri anahtarı | **Çeviri eşleşme anahtarı** (→ [`translation.md`](./translation.md) `code`). `null` = çeviri **es geçilir**, doğrudan `definition` kullanılır. |
 | `icon` | string | — | İkon. |
 | `styleId` | int | FK → Style.id | Renk/görünüm (bg + font). |
 | `actionType` | ActionType | — | Aksiyonun **türü** (aşağıda) — [`../enums/action-type.md`](../enums/action-type.md). |

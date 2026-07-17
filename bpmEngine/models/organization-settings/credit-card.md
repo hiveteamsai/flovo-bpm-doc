@@ -14,6 +14,7 @@
 | `companyId` | int | FK → `company.md` | Bağlı şirket. |
 | `code` | string | — | Kart kodu. |
 | `definition` | string | — | Kart adı/tanımı. |
+| `translationCode` | string? | çeviri anahtarı | **Çeviri eşleşme anahtarı** (→ [`translation.md`](./translation.md) `code`). `null` = çeviri **es geçilir**, doğrudan `definition` kullanılır. |
 | `cardNumber` | string | — | Kart numarası. |
 | `userId` | int? | FK → `user.md` | Bağlı kullanıcı (opsiyonel). |
 | `isCommonCard` | bool | — | Ortak kart mı (herkes kullanabilir). |

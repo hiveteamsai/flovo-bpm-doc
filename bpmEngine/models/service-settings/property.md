@@ -14,8 +14,9 @@
 |---|---|---|---|
 | `id` | int | PK | Alan ID'si. |
 | `serviceId` | int | FK → Service | Bağlı servis. |
-| `code` | string | benzersiz (binding key) | Alanın veriye bağlandığı anahtar; çeviri eşleşmesi için de kullanılır. |
-| `definition` | string | — | Alan tanımı / kullanıcıya görünen etiket (çeviri: `code` → Translation). |
+| `code` | string | benzersiz (binding key) | Alanın veriye bağlandığı anahtar — yalnız **bağlama**; çeviri için kullanılmaz → `translationCode`. |
+| `definition` | string | — | Alan tanımı / kullanıcıya görünen etiket — **varsayılan dildeki** metin (çeviri: `translationCode` → Translation). |
+| `translationCode` | string? | çeviri anahtarı | **Çeviri eşleşme anahtarı** (→ [`../organization-settings/translation.md`](../organization-settings/translation.md) `code`). `null` = çeviri **es geçilir**, doğrudan `definition` kullanılır. |
 | `controlTypeId` | ControlType | — | Kontrol tipi (§2 tipe-özel alanları belirler) — [`../enums/control-type.md`](../enums/control-type.md). |
 
 ### 1.2 Görünüm & yardım
