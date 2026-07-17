@@ -55,6 +55,15 @@
   (izolasyon/yetki); saklama/pruning; mevcut "yavaş belge yükleme" şikâyetiyle doğrudan bağlı; KVKK. _(flovo-bpm-engine §8 / §12)_
   - 🧱 **Tech-stack (kısmen):** **dosya/binary depolama → MinIO** (URL-in-JSONB; "yavaş belge yükleme" çözülür) karara bağlandı;
     **loglama modeli** (nerede/erişim/pruning) hâlâ açık. → [`tech-stack/minio.md`](./tech-stack/minio.md)
+  - 📋 **Ayar değişiklik logu — tasarım planı hazır (v0.14), karar bekliyor:** sayfa bazlı denetim izi; tek generic tablo +
+    JSONB delta + uygulama katmanı + append-only (`SettingsLog` · `SettingsLogBatch` · `SettingsLogBatchPage`); erişim/yetki
+    mevcut `organizationSettings`/`serviceSettings` ikiliği + RLS ile çözülüyor. → [`research/settings-log/index.md`](./research/settings-log/index.md)
+    - **Ön koşul:** Customer API'de **ayar yazma / toplu senkron ucu yok** (bugün yalnız `GET /users/{userId}` · `GET /me`) —
+      toplu güncelleme loglanmadan önce bu uç tasarlanmalı. _(flovo-customer-api §1)_
+    - **Açık:** **saklama süresi / KVKK** (log kişisel veri + ham istek gövdesi içerir; "denetim kaydı silinmez" ↔ silme hakkı — **hukuki karar**) ·
+      `requestBody` satır-içi ↔ MinIO **eşiği** · **`HttpMethod` enum'una `patch`** eklenmesi (Customer API zaten `PATCH` kullanıyor).
+    - **Bölünmeli:** bu madde **üç** log sınıfını birlikte soruyor (workflow/form · **ayar** · sistem); üçü farklı doğada —
+      ayar sınıfı bu planla kapanacak, **sistem logları** (Loki/OTel) için henüz **hiçbir karar yok**.
 - [ ] **Ortam (environment) modeli** — **parent-child env** yapısı kurulacak mı? Her ortamın **formları ayrı mı**? Geliştirmeyi
   bir ortamda yapıp **canlı ortamda oluşturulmuş formları görüntüleme** senaryosu nasıl çözülecek? _(environmentRestriction
   alanları: process-step §2 / action · flovo-bpm-engine §8)_
