@@ -175,6 +175,7 @@ while adım bir BİTİŞ düğümü değilse:                   # Süreç Bitiş
     # ── EVRENSEL GİRİŞ KURALI (her adımda, iş yapılmadan ÖNCE) ──
     if gelenAction?.changeList boş değilse:
         formAlanlarınıGüncelle(gelenAction.changeList)        # yeni değerleri forma yaz
+    gelenParametreler = gelenAction?.parameters ?? {}         # bu adıma GELEN (in) parametreler
 
     # ── Adım kendi işini yapar ──
     if adım.tür == OTOMATİK:
@@ -182,11 +183,15 @@ while adım bir BİTİŞ düğümü değilse:                   # Süreç Bitiş
         gelenAction = adım.uygunAksiyonuSeç(sonuç)            # true/false · switch · response.action · default
         if gelenAction yoksa:                                 # terminal otomatik adım — giden aksiyon yok
             break                                             #   → kol burada sonlanır (ör. Instance Deleter / Form Yönlendirme)
-        gelenAction.parameters = adım.ürettiğiParametreler()  # opsiyonel
+        gelenAction.parameters = adım.ürettiğiParametreler()  # adımın ürettiği (out) — opsiyonel
     else:  # İNSAN-TETİKLEMELİ
         form.durum = "aksiyon alınabilir"
         göster(adım.kullanıcılar(), bekleyenFormListesi)      # atananlar formu listede görür
-        gelenAction = bekle()                                 # frontend: manuel / eventForm (changeList + parameters taşır)
+        gelenAction = bekle()                                 # frontend: manuel / eventForm (changeList + out parameters taşır)
+
+    # ── PARAMETRE BİRLEŞTİRME: mergeParameter ise gelen(in) korunur, üretilen(out) üstüne yazılır (→ process-actions §2.1)
+    if gelenAction.mergeParameter:
+        gelenAction.parameters = { ...gelenParametreler, ...(gelenAction.parameters ?? {}) }   # out ezer
 
     adım = gelenAction.targetProcessStepId                   # seçilen aksiyonun hedef adımı (binding → process-actions §1.2)
 # BİTİŞ düğümü: kimseyi bekletmez; kol/süreç biter.

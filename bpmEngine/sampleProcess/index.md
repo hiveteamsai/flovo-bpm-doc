@@ -18,6 +18,7 @@
 | **createPdfAsync/** | **PDF (asenkron)** — **HTTP Request `async=true`** ile beklemeden ilerleme; PDF hazır olunca **Webhook** ile bağımsız alt süreçten bildirim. | [`createPdfAsync/index.md`](./createPdfAsync/index.md) |
 | **integration/** | **Asenkron entegrasyon** — uzun aktarımı **Processing (`showLoading=false`)** ile durum güncelleyerek bekleme; **Webhook** sonucuna göre bitiş/başa dönüş. | [`integration/index.md`](./integration/index.md) |
 | **scanBarcode/** | **Barkod ile var olanı aç** — yanıttaki **`response.action`** koduna göre **koşullu dallanma**; Form Yönlendirme veya Instance Creator. | [`scanBarcode/index.md`](./scanBarcode/index.md) |
+| **referred/** | **Yönlendirmeli onay** — kontrol grubu → yönlendirilen kullanıcı + yönetici zinciri → TransferUser Kontrol (Karşılaştırma) döngüsü → muhasebe. **Odak:** **`mergeParameter`** ile parametrelerin zincir boyunca **birikerek** taşınması. | [`referred/index.md`](./referred/index.md) |
 
 ---
 
@@ -39,6 +40,9 @@
    aksiyonun **`targetProcessStepId`**'si hedef adıma götürür. §1.2 modelini doğrular. _(zaten modelde — onay.)_
 7. ✅ **Flovo Customer API** — **`../flovo-customer-api.md`** oluşturuldu (endpoint listesi + teorik iş özeti; müşteri
    sunucusundaki custom code'un Flovo formlarını okuyup/yazıp **Webhook** tetiklemesi için).
+8. ✅ **`mergeParameter` (parametre birikimi)** (referred) — `../service-settings/process-step-action.md` **§2.1**'e +
+   model alanına işlendi: `mergeParameter = true` olan aksiyon, hedefe **gelen (`in`) + ürettiği (`out`)** parametreleri
+   birlikte taşır (**`out` çakışmada ezer**); yönlendirme/döngü kollarında bağlamı korur. Motor döngüsü `../flovo-bpm-engine.md` §4.4.
 
 ## Açık Noktalar
 

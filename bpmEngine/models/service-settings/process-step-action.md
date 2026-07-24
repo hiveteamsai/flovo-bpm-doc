@@ -12,6 +12,7 @@
 | `processStepId` | int | FK → ProcessStep.id | Bağlı olduğu adım. |
 | `targetProcessStepId` | int | FK → ProcessStep.id | Aksiyon çalışınca **ilerlenecek hedef adım**. |
 | `changeStatusId` | int | FK → Status.id | Aksiyon sonrası atanacak **durum**. |
+| `mergeParameter` | bool | — | **Parametre birleştirme.** `true` ise aksiyon, hedefe taşıdığı `parameters`'a **bu adıma gelen parametreleri** de ekler (önce gelen `in`, sonra aksiyonun ürettiği `out`; **aynı anahtarda `out` ezer**). `false` (vars.) → yalnız aksiyonun kendi ürettiği parametreler taşınır. Davranış → `../../service-settings/process-step-action.md` §2.1. |
 | `authorizationLevel` | — | — | **Yetki seviyesi** (aksiyonu kim yürütebilir). |
 | `actionDisplayAuthorizedUserGroupId` | int | FK → UserGroup | Aksiyonu **görebilecek** kullanıcı grubu. |
 | `showInHistory` | bool | — | Süreç geçmişinde göster. |

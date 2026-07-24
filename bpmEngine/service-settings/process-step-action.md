@@ -42,6 +42,7 @@ _(`translationCode` `null` ise doğrudan `definition` kullanılır → çeviri e
 | `processStepId` | Bağlı süreç adımı (FK → `process-step.md`) |
 | `targetProcessStepId` | Aksiyon çalışınca **ilerlenecek hedef süreç adımı** |
 | `changeStatusId` | Aksiyon sonrası atanacak **durum** (→ `../organization-settings/status.md`) |
+| `mergeParameter` | **Parametre birleştirme** (bool) — hedefe taşınan `parameters`, adıma **gelen** parametrelerle birleştirilsin mi (§2.1). |
 | `authorizationLevel` | **Yetki seviyesi** (aksiyonu kim yürütebilir) |
 | `actionDisplayAuthorizedUserGroupId` | Aksiyonu **görebilecek** kullanıcı grubu |
 | `showInHistory` | Süreç geçmişinde göster |
@@ -73,6 +74,26 @@ Bir aksiyon tetiklendiğinde taşıdığı veri modeli **3 alandan** oluşur. **
 ```
 
 > **`changeList`**, her adım **iş yapmadan ÖNCE** forma uygulanır (evrensel giriş kuralı → `../flovo-bpm-engine.md` §4.2).
+
+### 2.1 — Parametre birleştirme (`mergeParameter`)
+Varsayılan davranışta bir aksiyon, hedefe **yalnız kendi ürettiği** `parameters`'ı taşır; adıma **gelen** (`in`)
+parametreler bir sonraki adıma **otomatik geçmez**. Bir aksiyonun binding'inde **`mergeParameter = true`** ise, aksiyon
+hedefe taşıdığı `parameters`'a **bu adıma gelen parametreleri de ekler**:
+
+> **Sıra:** önce **gelen (`in`)** parametreler `parameters`'a konur; **sonra** aksiyonun **ürettiği (`out`)** parametreler
+> eklenir. **Anahtar çakışırsa `out` ezer** (aksiyonun ürettiği değer, gelen değeri geçersiz kılar).
+>
+> `parameters(out+in) = { ...gelenParametreler, ...aksiyonunÜrettiği }`   *(sağdaki — `out` — kazanır)*
+
+- **`mergeParameter = false` (vars.):** hedefe yalnız `out` gider; `in` **düşer**.
+- **`mergeParameter = true`:** `in` **korunur**, `out` üstüne yazılır → parametreler zincir boyunca **birikerek** akar.
+
+**Ne zaman gerekir:** Bir değer birden çok adım **ötede** kullanılacaksa (özellikle **döngü/yönlendirme** kollarında),
+ara adımların onu her seferinde yeniden üretmesi gerekmez — `mergeParameter = true` ile taşınır. Örnek: yönlendirme
+zincirinde başlatıcı/atanan/aktarım-hedefi bilgisinin hop'tan hop'a taşınması → `../sampleProcess/referred`.
+
+> **`changeList` ile farkı:** `changeList` **forma** yazılan **kalıcı** alan değerleridir; `parameters` ise adımlar arası
+> taşınan **geçici** veridir (forma yazılmaz). `mergeParameter` yalnız **`parameters`**'ı ilgilendirir.
 
 ---
 
