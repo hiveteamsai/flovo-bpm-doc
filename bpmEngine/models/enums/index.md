@@ -5,7 +5,7 @@
 > (değer → anlam → ne için) kendi dosyasındadır. İlgili model dokümanı, kullandığı enum'a **buradan link** verir ve
 > **o değerin o modeldeki görevini** kendi içinde anlatır.
 >
-> **Adlandırma:** Enum **tip adı** PascalCase (`ActionType`, `ControlType` …); enum **değerleri** camelCase
+> **Adlandırma:** Enum **tip adı** PascalCase (`ActionType`, `PropertyType` …); enum **değerleri** camelCase
 > (`manual`, `fixedValue` …). Modeldeki **alan adı** camelCase kalır (`actionType`, `valueType` …).
 >
 > **Kural:** Enum tanımı (kanonik değer listesi + genel anlam) **bu klasörde**; enum'un **bir modeldeki bağlamsal
@@ -28,10 +28,10 @@
 | **RelationalType** | `additional-qualification.md` (`relationalType`) | `users` · `departments` · `professions` · `costCenters` · `workerLevels` | [`relational-type.md`](./relational-type.md) |
 | **QualificationValueType** | `additional-qualification.md` (`valueType`) | `string` · `double` · `dateTime` · `combobox` | [`qualification-value-type.md`](./qualification-value-type.md) |
 | **FormType** | `service.md` (`formType`) | `form` · `parameter` · `eventForm` | [`form-type.md`](./form-type.md) |
-| **ControlType** (propertyType) | `property.md` (`controlTypeId`) | 19 kontrol tipi (`textbox` · `combobox` · `file` · `formList` …) | [`control-type.md`](./control-type.md) |
+| **PropertyType** (kontrol tipi) | `property.md` (`propertyType`) | 19 kontrol tipi (`textbox` · `combobox` · `file` · `formList` …) | [`property-type.md`](./property-type.md) |
 | **KeyboardType** | `property.md` (`keyboardType` — Textbox/Phone) | `default`·`plain`·`text`·`numeric`·`email`·`url`·`telephone` | [`keyboard-type.md`](./keyboard-type.md) |
 | **BarcodeFormat** | `property.md` (`barcodeFormat` — Barcode) | `aztec`·`code39`·`ean13`·`code128`·`dataMatrix`·`qr`·`pdf417`… (10) | [`barcode-format.md`](./barcode-format.md) |
-| **ProcessStepType** (adım tipi) | `process-step.md` (`stepType`) | 20 adım: `processStart`·`httpRequest`·`user`·`userGroup`·`notification`·`timer`… | [`process-step-type.md`](./process-step-type.md) |
+| **ProcessStepType** (adım tipi) | `process-step.md` (`stepType`) | 21 adım: `processStart`·`httpRequest`·`user`·`userGroup`·`notification`·`timer`… `subProcessStart`·`subProcessEnd` | [`process-step-type.md`](./process-step-type.md) |
 | **ProcessStepUserType** | `process-step.md` (Kullanıcı `userType`) | `processStarter`·`fixedUser`·`usersManager`·`departmentManager`·`variableUser` | [`process-step-user-type.md`](./process-step-user-type.md) |
 | **ProcessStepUserGroupType** | `process-step.md` (Kul. Grubu `userGroupType`) | `fixedUserGroup`·`dynamicUserList`·`dynamicUserGroup` | [`process-step-user-group-type.md`](./process-step-user-group-type.md) |
 | **NotificationChannel** | `process-step.md` (Bildirim kanalı) | `mail`·`push`·`toast` | [`notification-channel.md`](./notification-channel.md) |

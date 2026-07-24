@@ -25,7 +25,7 @@
 ## Tipe-özel override key'leri (`propertyType`'a göre)
 Bir alanın **tipe-özel** görünüm/davranış ayarları **profil bazında** `ProcessViewProfilePropertySetting` (key-value)
 ile tutulur. `viewProfilePropertyId` altındaki kayıtlar bir **dictionary** oluşturur; ilgili `Property`'nin
-**`propertyType` (`controlTypeId`)**'sine göre hangi key'lerin geçerli olduğu belirlenir. Belirtilmeyen key →
+**`propertyType`**'sine göre hangi key'lerin geçerli olduğu belirlenir. Belirtilmeyen key →
 `Property` varsayılanı. _(Eski uygulamada bu ayarlar **Property**'de —profil-bağımsız— yönetiliyordu; **görüntüleme
 bazında** olması gerektiği için buraya taşındı.)_
 

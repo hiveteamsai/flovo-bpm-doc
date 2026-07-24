@@ -56,12 +56,13 @@
 ---
 
 ## 2. Süreç Adımları (`../../service-settings/process-step.md`)
-Mevcut **15 adım tipi** (biri, `atama`, enum'da tanımlı ama **kullanılmayan**) → yeni **20 adım** (korunan + yeni;
+Mevcut **15 adım tipi** (biri, `atama`, enum'da tanımlı ama **kullanılmayan**) → yeni **21 adım** (korunan + yeni;
 çıkarılan: **Adım İptali** · **Eba Entegre** · kullanılmayan **`atama`**).
 
 **➕ Eklenen (mevcutta yok)**
 - **Flovo AI** · **Switch** · **Processing** · **Instance Creator** · **Instance Deleter** · **Form Yönlendirme** · **Süreç Adımı Tetikleme** ·
-  **Alt Süreç Başlangıcı** (bağımsız alt sürecin **giriş düğümü**; webhook **veya** Süreç Adımı Tetikleme ile tetiklenir → §11 not)
+  **Alt Süreç Başlangıcı** (bağımsız alt sürecin **giriş düğümü**; webhook **veya** Süreç Adımı Tetikleme ile tetiklenir → §11 not) ·
+  **Alt Süreç Bitişi** (bağımsız alt sürecin **çıkış düğümü**; Süreç Bitişi'nin alt-süreç karşılığı)
 
 **➖ Çıkarılan**
 - **Adım İptali** (`stepCancellation`) — kaldırıldı.
@@ -87,7 +88,7 @@ Mevcut **15 adım tipi** (biri, `atama`, enum'da tanımlı ama **kullanılmayan*
 **🧩 Tipe-özel ayarların modellenmesi (yeni)**
 - **`stepType` (ProcessStepType) + `settings` (JSONB):** Tipe-özel ayarlar `ProcessStep.settings` JSONB kolonunda **gömülü**
   (ayrı alt-tablo yok); şekli `stepType`'a göre yorumlanır. Tip-tip ayar modelleri → `../../models/service-settings/process-step.md` §3.
-- **Yeni adım-tipi enum'ları:** `ProcessStepType` (20) · `HttpMethod` · `ProcessStepUserType` · `ProcessStepUserGroupType` ·
+- **Yeni adım-tipi enum'ları:** `ProcessStepType` (21) · `HttpMethod` · `ProcessStepUserType` · `ProcessStepUserGroupType` ·
   `NotificationChannel` · `NotificationRecipientType` · `NotificationUserType` · `TimerCalculationType` · `WorkTimeSelection` ·
   `TimeAdjustmentOption` · `InstanceDeleteMode`; ayrıca `KeyboardType`/`BarcodeFormat` placeholder'ları dolduruldu. → `../../models/enums/index.md`.
 - **Bildirim:** sabit TR/EN mesaj alanları → **dinamik dil listesi** (`{languageCode, text}`); **Toast** kanalı eklendi; `parameters` → `DynamicParameter[]`;
@@ -268,7 +269,7 @@ CostCenter · WorkerLevel · WorkingSchedule · VacationDay · CreditCard · Pro
 **🔧 Master-veri ortak alanları (yeni)**
 - **`active` + `deleted`** (soft-delete) — eski `status`(bool) → **`active`**; ikisi de **not-null** (vars. `active=true`, `deleted=false`).
   BPM workflow motoru **`deleted=true` VEYA `active=false`** kayıtları **kullanmaz**; `deleted=true` frontend'de gizli/salt, `active=false` görünür+düzenlenebilir.
-- **`(organizationId, code)` benzersiz** (`deleted=true` hariç) — 10 master model + havuz Status/Action/Style. İstisna: Translation `(…, languageCode)`; Organization `code` global.
+- **`(organizationId, code)` benzersiz** (`deleted=true` hariç) — **11 master model** (User dahil) + havuz Status/Action/Style. İstisna: Translation `(…, languageCode)`; Organization `code` global. _(→ `models/index.md` yapısal org-ayarları listesi.)_
 - **User:** `userName` → **`email`** (giriş) + **`phone`**; benzersizlik `(organizationId, code/email/phone)` (aynı e-posta farklı org'larda olabilir); `UserExpenseLimit` kaldırıldı.
   **`email`/`phone` ikisi de nullable** ama **en az biri dolu** olmak zorunda (CHECK) — kullanıcı e-posta ile, telefon ile veya ikisiyle tanımlanabilir;
   null olanlar benzersizlik kontrolüne girmez. `profilePhoto`/`employmentStartDate` **nullable**. **Sosyal medya alanları** (`facebook`/`instagram`/`linkedin`/`twitter`) **kaldırıldı** — yeni uygulamada yok.
@@ -370,4 +371,4 @@ olarak çalışır; **`ProcessInstance.parentProcessInstanceId`** ile ana sürec
 
 ---
 
-*Güncelleme: 2026-07-10 · Tasarım dokümanları ile `../current-flovo-bpm-engine/` karşılaştırılarak derlendi (Alt Süreç Başlangıcı adımı eklendi; v0.7 — runtime & iş-kuralı model adları güncellendi: WorkFlow→ProcessInstance · ProcessStepExecution→ProcessStepInstance · Form→Instance · RelatedForm→RelatedInstance · FormAwaitingUser→InstanceAwaitingUser · WorkRule→BusinessRule). · 2026-07-16 (v0.12 — adım tipe-özel ayarlar JSONB `settings` + adım-tipi enum'ları + alan yeniden adlandırmaları: resource→endpoint · method→HttpMethod · stableUserId→fixedUserId · WorkStyle→TimerCalculationType · Function param→DynamicParameter).*
+*Güncelleme: 2026-07-10 · Tasarım dokümanları ile `../current-flovo-bpm-engine/` karşılaştırılarak derlendi (Alt Süreç Başlangıcı adımı eklendi; v0.7 — runtime & iş-kuralı model adları güncellendi: WorkFlow→ProcessInstance · ProcessStepExecution→ProcessStepInstance · Form→Instance · RelatedForm→RelatedInstance · FormAwaitingUser→InstanceAwaitingUser · WorkRule→BusinessRule). · 2026-07-16 (v0.12 — adım tipe-özel ayarlar JSONB `settings` + adım-tipi enum'ları + alan yeniden adlandırmaları: resource→endpoint · method→HttpMethod · stableUserId→fixedUserId · WorkStyle→TimerCalculationType · Function param→DynamicParameter) · 2026-07-17 (v0.13 — ayrı çeviri anahtarı `translationCode`: §0/§9/§10) · 2026-07-24 (v0.15 — Alt Süreç Bitişi adımı → 21 adım/ProcessStepType; `controlTypeId`→`propertyType`; master model sayısı 11).*

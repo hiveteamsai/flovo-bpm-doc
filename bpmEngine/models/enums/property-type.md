@@ -1,6 +1,6 @@
-# Enum — ControlType
+# Enum — PropertyType
 
-> **Kullanan model:** [`property.md`](../service-settings/property.md) — alan `controlTypeId`, tip **ControlType**
+> **Kullanan model:** [`property.md`](../service-settings/property.md) — alan `propertyType`, tip **PropertyType**
 > **Amaç:** Bir form alanının **hangi kontrol/görsel eleman** olarak render edileceğini ve hangi tipe-özel alanların geçerli olacağını belirler.
 > **Tam tipe-özel alan kataloğu:** → [`../../service-settings/properties.md`](../../service-settings/properties.md) §3.
 
@@ -29,8 +29,8 @@
 
 ## Notlar
 - Tam 19 kontrol tipinin tipe-özel alanları ve davranışları → [`../../service-settings/properties.md`](../../service-settings/properties.md) §3.
-- `Property.propertyType` bu enum ile aynı kavramı ifade eder.
-- Fiziksel depolama `controlTypeId` (int) üzerindendir; buradaki **kod** kanonik metin karşılığıdır (görünen ad "Anlam" sütununda).
+- `Property.propertyType` alanı bu enum'un değerini taşır; fiziksel depolama **int** üzerindendir, buradaki **kod** kanonik
+  metin karşılığıdır (görünen ad "Anlam" sütununda).
 - Kodlar **camelCase** olarak normalize edildi (v0.7).
 
 *Oluşturma: 2026-07-10.*

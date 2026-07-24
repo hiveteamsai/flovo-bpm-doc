@@ -73,6 +73,9 @@
 - `ModalList` > **`formList`** (Form List)
 - `onAfterChange` > **`saveAndRefreshOnAfterChange`**
 - `maximumNumberDecimalDigits` > **`maxDecimalDigits`**
+- `controlTypeId` (enum `ControlType`) > **`propertyType`** (enum `PropertyType`) — kontrol tipi; alan adı, enum-alanı
+  konvansiyonuna uyduruldu (`Id` son eki kaldırıldı → `actionType`/`stepType`/`formType` ile aynı). Enum dosyası
+  `control-type.md` > `property-type.md`.
 
 **Birleştirilen (tür → tür/opsiyon)**
 - `MaskedEntry` > **`textbox`** (maske) · `Entry` + `Editor` > **`textbox`** (`minLine`/`maxLine`) ·
@@ -290,4 +293,4 @@
 
 ---
 
-*Oluşturma: 2026-07-06 · Güncelleme: 2026-07-10 (v0.7 — runtime & iş-kuralı model adları: ProcessInstance · ProcessStepInstance · Instance · RelatedInstance · InstanceAwaitingUser · BusinessRule) · 2026-07-16 (v0.12 — §9 tipe-özel ayar/enum rename bloğu: stepType/settings, adım-tipi enum'ları, HTTP/Kullanıcı/Bildirim/Timer/Switch/Instance Deleter alan renameleri). Kaynak: `new-vs-current.md` + `../../models/` + depo kökü `commitNotes/`.*
+*Oluşturma: 2026-07-06 · Güncelleme: 2026-07-10 (v0.7 — runtime & iş-kuralı model adları: ProcessInstance · ProcessStepInstance · Instance · RelatedInstance · InstanceAwaitingUser · BusinessRule) · 2026-07-16 (v0.12 — §9 tipe-özel ayar/enum rename bloğu: stepType/settings, adım-tipi enum'ları, HTTP/Kullanıcı/Bildirim/Timer/Switch/Instance Deleter alan renameleri) · 2026-07-17 (v0.13 — §10 çeviri anahtarı `translationCode` bloğu) · 2026-07-24 (v0.15 — §6 `controlTypeId`→`propertyType` (`ControlType`→`PropertyType`) rename). Kaynak: `new-vs-current.md` + `../../models/` + depo kökü `commitNotes/`.*

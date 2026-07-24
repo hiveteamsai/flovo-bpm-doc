@@ -21,7 +21,7 @@
 | **service-settings/** | Bir **servise bağlı ayarların davranış/kullanım** dokümanları (süreç adımı · adım aksiyonu · property · iş kuralı · görüntüleme profili). | [`service-settings/index.md`](./service-settings/index.md) |
 | **models/** | **Veri modelleri (şema referansı)** — organizasyon ayarları, runtime, servis ayarları ve enum tanımları + ilişki haritası. | [`models/index.md`](./models/index.md) |
 | **tech-stack/** | **Kullanılacak teknolojiler (tasarım/kullanım)** — her teknoloji için projeye-özel kullanım dokümanı (PostgreSQL · Go · NATS · Next.js · Keycloak · MinIO · K8s · Redis · API contract · Python AI). *Karşılaştırma/karar: `research/tech-stack/`.* | [`tech-stack/index.md`](./tech-stack/index.md) |
-| **research/** | **BPM referansları + karşılaştırmalar + teknik araştırmalar** — yeni ↔ eski/n8n kıyasları, mevcut (eski) Flovo BPM analizi, n8n referansları ve **property value depolama mimarisi** (form value senaryoları + `form_attr` uygunluk değerlendirmesi). | [`research/index.md`](./research/index.md) |
+| **research/** | **BPM referansları + karşılaştırmalar + teknik araştırmalar** — yeni ↔ eski/n8n kıyasları, mevcut (eski) Flovo BPM analizi, n8n referansları, **property value depolama mimarisi**, **ayar değişiklik logu (settings-log)** tasarımı ve **teknoloji yığını karşılaştırma/kararları** (tech-stack). | [`research/index.md`](./research/index.md) |
 | **sampleProcess/** | Uçtan uca, görselli **örnek süreçler** (self-servis). | [`sampleProcess/index.md`](./sampleProcess/index.md) |
 
 ---

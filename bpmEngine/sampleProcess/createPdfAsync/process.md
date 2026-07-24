@@ -23,6 +23,7 @@ flowchart LR
   subgraph sub[Alt süreç · bağımsız]
     ext[(Müşteri sunucusu · Flovo Customer API)] -. "webhook: pdfReady · parameters: instanceId, pdfUrl" .-> start[pdfReady · Alt Süreç Başlangıcı]
     start -->|default| notify[notifyPdf · PDF Bildirimi · Bildirim]
+    notify -->|default| subEnd([subEnd · Alt Süreç Bitişi])
   end
 ```
 
@@ -56,8 +57,9 @@ bildirim, aşağıdaki **bağımsız alt süreç** tarafından yapılır ve aç�
 
 ## Alt Süreç (bağımsız) — PDF Bildirimi
 
-> Ana süreçten **ayrık** kurulur; giriş düğümü **Alt Süreç Başlangıcı**'dır. İçinde Kullanıcı / Kullanıcı Grubu /
-> Processing / Süreç Bitişi **yer almaz** (kısa ömürlü, otomatik ilerleyen kol → `../../service-settings/process-step.md` §3.20).
+> Ana süreçten **ayrık** kurulur; giriş düğümü **Alt Süreç Başlangıcı**, çıkış düğümü **Alt Süreç Bitişi**'dir. İçinde
+> Kullanıcı / Kullanıcı Grubu / Processing / (ana) Süreç Bitişi **yer almaz** (kısa ömürlü, otomatik ilerleyen kol →
+> `../../service-settings/process-step.md` §3.20 / §3.21).
 
 ### 3. PDF Hazır (`pdfReady`) — Alt Süreç Başlangıcı
 **Görev:** Dışarıdan gelen "PDF hazır" tetiğini karşılayıp bildirim koluna başlangıç olmak.
@@ -77,7 +79,17 @@ bildirim, aşağıdaki **bağımsız alt süreç** tarafından yapılır ve aç�
 **Ayarlar ve çalışma:** Kanal **Mail/Push** (mesaj) ve/veya **Toast** (`parameters` ile açık formu güncelleme). Mesaj,
 gelen `pdfUrl` ile dinamik üretilir; `parameters: { instanceId, pdfUrl }` frontende iletilir → açık form PDF bağlantısıyla güncellenir.
 **Adımın ürettiği parametre:** — .
-**Aksiyonlar:** — (alt sürecin sonu; işini yapıp kapanır).
+**Aksiyonlar:**
+- **`default` (otomatik):** Hedef adım `subEnd` (Alt Süreç Bitişi). Bildirim atıldıktan sonra kol bitiş düğümüne ilerler.
+
+---
+
+### 5. Alt Süreç Bitişi (`subEnd`) — Alt Süreç Bitişi
+**Görev:** Bağımsız bildirim kolunu **açık bir bitiş düğümüyle** sonlandırmak (ana sürecin Süreç Bitişi'nin alt-süreç
+karşılığı → `../../service-settings/process-step.md` §3.21).
+**Bu adıma gelen parametre:** `parameters: { instanceId, pdfUrl }`.
+**Ayarlar ve çalışma:** — (**ayarsız**). Motor bu adıma ulaşınca alt süreç yürütmesi sonlanır (→ `../../flovo-bpm-engine.md` §4.4).
+**Aksiyonlar:** — (terminal; alt süreç burada biter).
 
 ---
 

@@ -127,7 +127,7 @@ resume URL** ilkelinin karşılığıdır.
 
 ### ✅ Başarılı / n8n'e göre güçlü olduğumuz alanlar
 - **Form/kayıt yaşam döngüsü birinci sınıf:** Instance Creator/Silme/Yönlendirme, eventForm, barkod init — n8n'de karşılığı yok.
-- **İnsan görevi + yetki + durum** modeli olgun (Kullanıcı/Kullanıcı Grubu, authorizationLevel, changeStatusId) — kurumsal onay/denetim için n8n'den daha uygun.
+- **İnsan görevi + yetki + durum** modeli olgun (Kullanıcı/Kullanıcı Grubu, **organizasyon-bazlı yetki** + aksiyon-düzeyi `ProcessStepAction.authorizationLevel`, changeStatusId) — kurumsal onay/denetim için n8n'den daha uygun. _(Not: eski **kullanıcı-düzeyi** `User.authorizationLevel` kaldırıldı → yetki artık org-bazlı; yalnız aksiyon-düzeyi yetki korundu.)_
 - **Yerleşik i18n:** organizasyon-seviye çeviri motoru (`code`/`definition`/override) — n8n'de form/kayıt çevirisi yok. **Net üstünlük.**
 - **Çok-kiracılık:** `Organization` + ortak/organizasyon çevirisi ayrımı; n8n org-seviye i18n sunmaz.
 - **Domain-özel AI:** Flovo AI (Masraf) süreç-entegre, kullanıma hazır; n8n jenerik AI'ı kurmayı gerektirir.

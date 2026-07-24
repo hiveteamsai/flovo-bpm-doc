@@ -23,14 +23,15 @@
 ## 1. Aksiyon Veri Modeli
 
 ### 1.1 — Aksiyon Şablonu (`ActionDto`) → `../organization-settings/action.md`
-Aksiyon **tanımı**, yeniden kullanılabilir bir **şablondur (`ActionDto`)**: `code` · `definition` · `icon` ·
-`styleId` · `actionType` · `defaultAction` · `validation` · `stayOnPage` · `showHistory` · `actionDisplayType`.
+Aksiyon **tanımı**, yeniden kullanılabilir bir **şablondur (`ActionDto`)**: `code` · `definition` · **`translationCode`** ·
+`icon` · `styleId` · `actionType` · `defaultAction` · `validation` · `stayOnPage` · `showHistory` · `actionDisplayType`.
 Bir süreç adımına aksiyon eklenirken, tanımlı ActionDto'lar arasından seçilir ve bu alanlar **kopyalanır**.
 **Detay → `../organization-settings/action.md`.**
 
 ### 1.2 — Adım-Aksiyon Binding (`ProcessStepActionDto`)
-Bir aksiyon **bir adıma bağlandığında** ek alanlar tanımlanır. Şablon alanları (`code`/`definition`/`icon`/`styleId`/
-`actionType`) ActionDto'dan **bir kez kopyalanır** (snapshot); aşağıda yalnız **adım-özel** alanlar tutulur.
+Bir aksiyon **bir adıma bağlandığında** ek alanlar tanımlanır. Şablon alanları (`code`/`definition`/`translationCode`/`icon`/
+`styleId`/`actionType`) ActionDto'dan **bir kez kopyalanır** (snapshot); aşağıda yalnız **adım-özel** alanlar tutulur.
+_(`translationCode` `null` ise doğrudan `definition` kullanılır → çeviri es geçilir.)_
 
 > **Not:** Kopyalama **oluşturma anında bir kereliktir**; sonrasında ActionDto ile bu binding **bağımsızdır** (biri
 > değişince diğeri etkilenmez). Bu yüzden binding'de **`actionId` / canlı bağ tutulmaz.**

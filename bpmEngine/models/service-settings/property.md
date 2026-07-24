@@ -1,11 +1,11 @@
 # Model — Property (form alanı)
 
 > **Durum:** 🟡 TASLAK (ilk çıkarım — gözden geçirilecek)
-> **Amaç:** Metadata-driven formdaki tek bir **giriş/görüntüleme elemanı**. Bir **kontrol tipi** (`controlTypeId`) ile
+> **Amaç:** Metadata-driven formdaki tek bir **giriş/görüntüleme elemanı**. Bir **kontrol tipi** (`propertyType`) ile
 > render edilir, `code` ile veriye bağlanır.
 > **Davranış/kullanım + tam alan kataloğu:** → `../../service-settings/properties.md`
 >
-> **Tasarım ilkesi:** ince **ortak çekirdek** + **tipe-özel alanlar** (`controlTypeId`'ye göre).
+> **Tasarım ilkesi:** ince **ortak çekirdek** + **tipe-özel alanlar** (`propertyType`'a göre).
 
 ## 1. Çekirdek alanlar (her alanda)
 
@@ -17,7 +17,7 @@
 | `code` | string | benzersiz (binding key) | Alanın veriye bağlandığı anahtar — yalnız **bağlama**; çeviri için kullanılmaz → `translationCode`. |
 | `definition` | string | — | Alan tanımı / kullanıcıya görünen etiket — **varsayılan dildeki** metin (çeviri: `translationCode` → Translation). |
 | `translationCode` | string? | çeviri anahtarı | **Çeviri eşleşme anahtarı** (→ [`../organization-settings/translation.md`](../organization-settings/translation.md) `code`). `null` = çeviri **es geçilir**, doğrudan `definition` kullanılır. |
-| `controlTypeId` | ControlType | — | Kontrol tipi (§2 tipe-özel alanları belirler) — [`../enums/control-type.md`](../enums/control-type.md). |
+| `propertyType` | PropertyType | — | Kontrol tipi (§2 tipe-özel alanları belirler) — [`../enums/property-type.md`](../enums/property-type.md). |
 
 ### 1.2 Görünüm & yardım
 | Alan | Tip | Açıklama / amaç |
@@ -60,9 +60,9 @@
 | `parentPropertyId` | int | Üst alan. |
 | `relatedPropertyIds` | List\<int\> | İlişkili alanlar. |
 
-## 2. Tipe-özel alanlar (`controlTypeId`'ye göre — özet)
+## 2. Tipe-özel alanlar (`propertyType`'a göre — özet)
 > Tam açıklama → `../../service-settings/properties.md` §3.
-> **Enum'lar:** kontrol tipi → [`../enums/control-type.md`](../enums/control-type.md) · `keyboardType` (Textbox/Phone) → [`../enums/keyboard-type.md`](../enums/keyboard-type.md) · `barcodeFormat` (Barcode) → [`../enums/barcode-format.md`](../enums/barcode-format.md).
+> **Enum'lar:** kontrol tipi → [`../enums/property-type.md`](../enums/property-type.md) · `keyboardType` (Textbox/Phone) → [`../enums/keyboard-type.md`](../enums/keyboard-type.md) · `barcodeFormat` (Barcode) → [`../enums/barcode-format.md`](../enums/barcode-format.md).
 
 | Kontrol tipi | Alanlar |
 |---|---|

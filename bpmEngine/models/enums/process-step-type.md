@@ -3,7 +3,7 @@
 > **Kullanan model:** [`process-step.md`](../service-settings/process-step.md) — alan `stepType`, tip **ProcessStepType**
 > **Amaç:** Bir süreç adımının **tipini** belirler; tipe-özel ayarların (**process-step §2**) hangi şekilde yorumlanacağını
 > söyleyen **ayrımlayıcı** (discriminator). Motor ve tasarımcı, `settings`'i bu değere göre okur.
-> **Adım kataloğu (davranış):** → [`../../service-settings/process-step.md`](../../service-settings/process-step.md) §3 (20 adım).
+> **Adım kataloğu (davranış):** → [`../../service-settings/process-step.md`](../../service-settings/process-step.md) §3 (21 adım).
 
 ## Değerler
 | Değer | Anlam (adım) | Ne için |
@@ -28,9 +28,10 @@
 | `processing` | Processing | Forma döner ama beklemez; `default` ile otomatik ilerler. |
 | `formRedirect` | Form Yönlendirme | Create öncesi var olan başka bir formu açma. |
 | `subProcessStart` | Alt Süreç Başlangıcı | Bağımsız alt sürecin giriş düğümü (servis başına N). |
+| `subProcessEnd` | Alt Süreç Bitişi | Bağımsız alt sürecin **son adımı** (Süreç Bitişi'nin alt-süreç karşılığı; kol burada sonlanır). |
 
 ## Notlar
-- Değerler `service-settings/process-step.md §3`'teki **20 adım** kataloğuyla birebir eşleşir; katalog genişletilebilir
+- Değerler `service-settings/process-step.md §3`'teki **21 adım** kataloğuyla birebir eşleşir; katalog genişletilebilir
   (yeni adım tipi → yeni değer). _(Tier 0 "Genişletilebilirlik" → [`../../todo.md`](../../todo.md).)_
 - `switch` ve `default` gibi değerler yalnız enum **kodu**dur; görünen ad "Anlam" sütunundadır.
 

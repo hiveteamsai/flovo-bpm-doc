@@ -50,7 +50,7 @@ servisler (formlar/süreçler), durumlar, çeviriler vb. bir organizasyona aitti
 
 ## 4. Yetkilendirme (Permissions)
 Yetkiler **organizasyon bazında** yönetilir; eski **kullanıcı bazında `authorizationLevel`** kaldırıldı. Ayrıntı → **`permissions.md`**.
-- **`adminUsers`** — organizasyon adminleri (**en az 1 aktif**). Yetki yapılandırmasını **yalnız adminler** değiştirir;
+- **`adminUserIds`** — organizasyon adminleri (**en az 1 aktif**). Yetki yapılandırmasını **yalnız adminler** değiştirir;
   adminler **tüm yetkilere** sahiptir; **yetki yapılandırmasını** yalnız adminler değiştirir (yapısal veri erişimi `organizationSettings` grubuyla).
 - **Grup-bazlı yetkiler** (her biri bir **kullanıcı grubu** ile; seçilen grubun üyeleri yetkiyi alır):
   **kullanıcı yerine geçme** · **organizasyon ayarları erişimi** · **servis ayarları erişimi** · **tüm raporları görme**.

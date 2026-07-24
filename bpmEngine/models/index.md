@@ -36,7 +36,7 @@
 | **organization-settings/** | Kiracıya bağlı **yapısal veri** + **organizasyon havuzu** (eski "Account Settings"): Organization · Company · Department · Profession · Position · User · UserGroup · Translation · Style · Status · Action · CostCenter · WorkerLevel · CreditCard · AdditionalQualification · WorkingSchedule · VacationDay · ProcessTransfer · SchedulerJob. | [`organization-settings/index.md`](./organization-settings/index.md) |
 | **service-settings/** | Bir **Solution/Service** altındaki tasarım modelleri: Solution · Service (`formType`) · Property/PropertyItem · ProcessViewProfile ailesi · ProcessStep · ProcessStepAction · BusinessRule/BusinessRuleCondition. | [`service-settings/index.md`](./service-settings/index.md) |
 | **processInstances/** | Ayarlardan üretilen **çalışma-zamanı (runtime)** kayıtları: ProcessInstance · ProcessStepInstance · Instance · InstanceAwaitingUser · UserGroupApprovedUser · RelatedInstance. 🟢 TANIMLI. | [`processInstances/index.md`](./processInstances/index.md) |
-| **enums/** | Modellerde kullanılan **enum tanımları** (kanonik değer listeleri; ör. `actionType`, `controlTypeId`, `formType`). | [`enums/index.md`](./enums/index.md) |
+| **enums/** | Modellerde kullanılan **enum tanımları** (kanonik değer listeleri; ör. `actionType`, `propertyType`, `formType`). | [`enums/index.md`](./enums/index.md) |
 
 > **Not:** **Organization** kiracının kökü; **Solution · Service** service-settings kırılımının başladığı yerdir
 > (fiziksel olarak `service-settings/` altında). **Organizasyon havuzu** (Translation/Style/Status/Action) organizasyona
@@ -157,7 +157,7 @@ ProcessInstance (id; createdByUserId → User · createdByApiKeyId → ApiKey[ge
 ---
 
 ## 5. Notlar
-- **Enum'lar** artık **tek yerde** indekslenir → [`enums/index.md`](enums/index.md) (kanonik değer listeleri: `actionType`, `controlTypeId`, `businessRuleRuntimeType`, `criterionType`, `valueType`, `formType`...). Her model, kullandığı enum'a **buradan link** verir ve **o değerin o modeldeki rolünü** kendi içinde anlatır.
+- **Enum'lar** artık **tek yerde** indekslenir → [`enums/index.md`](enums/index.md) (kanonik değer listeleri: `actionType`, `propertyType`, `businessRuleRuntimeType`, `criterionType`, `valueType`, `formType`...). Her model, kullandığı enum'a **buradan link** verir ve **o değerin o modeldeki rolünü** kendi içinde anlatır.
 - **`Service.formType` (form/parameter/eventForm):** servisin davranışını belirler — **`form`** akış+onay+sahipli `Instance`
   (`creatorUserId` dolu, `InstanceAwaitingUser`); **`parameter`** onaysız veri-kaynağı (`Instance` oluşur, `creatorUserId`
   **null**, `InstanceAwaitingUser`'a bakılmaz); **`eventForm`** akışsız/`Instance`'sız (pop-up viewprofile → `parameters`;

@@ -16,7 +16,7 @@
 ## 1. Adım Taksonomisi (kategoriler)
 | Kategori | Flovo adımları |
 |---|---|
-| **Başlangıç / Bitiş** | Süreç Başlangıcı · **Alt Süreç Başlangıcı** · Süreç Bitişi |
+| **Başlangıç / Bitiş** | Süreç Başlangıcı · **Alt Süreç Başlangıcı** · Süreç Bitişi · **Alt Süreç Bitişi** |
 | **İnsan görev (human task)** | Kullanıcı · Kullanıcı Grubu |
 | **Otomatik / sistem** | HTTP Request · Flovo AI · Değer Atama · Karşılaştırma · Switch · Bildirim · Custom ID Creator · **Processing** (frontende form döner ama `default` ile otomatik ilerler → §3.18) |
 | **Form & alt-servis** | Instance Creator · Instance Deleter · Form Yönlendirme · Süreç Adımı Tetikleme |
@@ -61,7 +61,7 @@ Aksiyon türleri: **`manual` · `eventForm` · `takePhoto` · `selectFile` · `s
 
 ---
 
-## 3. Adım Kataloğu (20 adım)
+## 3. Adım Kataloğu (21 adım)
 > Aşağıda her adımın **özeti** + (varsa) **detay ayarları** vardır. Sıra, kurucunun verdiği sıradır.
 >
 > **Tekrarlayan kavramlar:** **default action** (adımın varsayılan ilerleme aksiyonu) · **action modeli**
@@ -150,7 +150,8 @@ kullanıcılara, girilen **dinamik mesaj** ile bildirim gönderilir.
 frontend formu günceller). **Mail'de parametre yoktur.** _(örn. `../sampleProcess/expense`.)_
 
 **Alıcılar:** Süreci başlatan · Sabit kullanıcı(lar) · Değişken kullanıcılar (önceki adımlardan) · Form property'sinden ·
-Kullanıcı grubu · Daha önce aksiyon alanlar.
+Kullanıcı grubu · Daha önce aksiyon alanlar. Her alıcı, **birincil alıcı** yerine **CC** (bilgi) olarak da eklenebilir
+(`addToCc` → mail/bildirim kopyası; ana muhatap değil).
 **Dinamik mesaj değişkenleri:** `#ProcessCreator` · `#ProcessState` · `#ProcessStartDate` · `#ServiceName` (+ form property'leri).
 
 **İlerleme:** Bildirimi atar ve **`default`** aksiyonla ilerler.
@@ -211,8 +212,12 @@ yoksa default tetiklenir.
 **güncelleyebilir** ve form **aksiyon alınabilir** duruma gelir; seçili kullanıcı aksiyonlardan birini **manuel** tetikler.
 
 **Kullanıcı belirleme yöntemi (`userType` → [`../models/enums/process-step-user-type.md`](../models/enums/process-step-user-type.md)):**
-Süreci başlatan · **Sabit kullanıcı** (`fixedUserId`) · Kullanıcının yöneticisi · Departman yöneticisi ·
+Süreci başlatan · **Sabit kullanıcı** (`fixedUserId`) · **Kullanıcının yöneticisi** · Departman yöneticisi ·
 **Değişken kullanıcı** (form property'sinden). _(Eski "yönetici zinciri" ve "ünvana göre yönetici" kaldırıldı — aktif değildi.)_
+
+> **"Kullanıcının yöneticisi" — hangi kullanıcının?** Bu yöntem seçildiğinde yönetici, **kaynak bir süreç adımında son
+> onayı veren** kişiye göre belirlenir (`userAdministratorSourceProcessStepId` → o adımda **son aksiyonu alan** kullanıcının
+> yöneticisi bu adımın sahibi olur). Böylece "yönetici" muğlak kalmaz, belirli bir adımın onaylayanına bağlanır.
 
 **Diğer ayarlar:** `processViewProfileId` (görüntüleme profili → `view-profile.md`) · adıma gelince **bildirim** · **timeout** (→ §3.7, `../flovo-bpm-engine.md` §6.2).
 
@@ -268,8 +273,9 @@ PDF geldiğinde bildirim gönderen kol). **Servis başına birden fazla** olabil
 **Kısıtlar (alt süreç):**
 - **Bağımsızlık:** Alt süreç ana sürecin **içinde yer almaz**; ana akıştan ayrık kurulur.
 - **İçeremeyeceği adımlar:** **Kullanıcı (§3.15) · Kullanıcı Grubu (§3.16) · Processing (§3.18) · Süreç Bitişi (§3.17)** —
-  insan-görev/bekleme veya "süreç sonu" içermez; kısa ömürlü, **otomatik ilerleyen** bir akıştır.
-- Bir alt süreç kendi **tek** Alt Süreç Başlangıcı giriş düğümüyle başlar.
+  insan-görev/bekleme veya (ana süreç) "süreç sonu" içermez; kısa ömürlü, **otomatik ilerleyen** bir akıştır.
+- Bir alt süreç kendi **tek** Alt Süreç Başlangıcı giriş düğümüyle başlar ve **Alt Süreç Bitişi (§3.21)** ile sonlanır
+  (ana sürecin Süreç Bitişi'nin alt-süreç karşılığı).
 
 **Çalışma prensibi:**
 - Adım **tetiklendiğinde**, kullanıcı eylemi beklenmeden **otomatik** olarak **`default`** aksiyonu çalışır ve **bir sonraki
@@ -290,6 +296,21 @@ bu adıma bağlı **`default`** aksiyonuna dönüşür (örn. `../sampleProcess/
 
 **Ayarlar:** _(sonra detaylandırılacak — tetikleme kaynağı (webhook / iç tetikleme) · webhook güvenliği (secret/imza) +
 idempotency → `process-step-action.md` §3.6 / `../flovo-customer-api.md`.)_
+
+### 3.21 — Alt Süreç Bitişi
+**Özet:** Bir **alt sürecin son adımıdır** — ana sürecin **Süreç Bitişi (§3.17)**'nin alt-süreç karşılığı. Alt süreç
+kısa ömürlü ve otomatik ilerlediğinden, kolun **açık bir bitiş düğümüyle** sonlanmasını sağlar: motor bu adıma
+ulaştığında alt süreç yürütmesi **sonlanır** (yürütme döngüsünün çıkış düğümü → `../flovo-bpm-engine.md` §4.4).
+
+**Süreç Bitişi'nden (§3.17) farkı:** Alt süreç bağımsız ve yardımcı bir koldur; **kimseyi onayda bekletmez** ve
+**geri-taşıma / re-open** yoktur. Bu yüzden Süreç Bitişi'nin bitiş-sonrası erişim ayarları (`processViewProfileId` /
+`organizationUserGroupIds`) **burada yoktur** — Alt Süreç Bitişi **ayarsızdır**.
+
+**Neden ayrı adım tipi:** Alt Süreç Başlangıcı (§3.20) alt sürecin girişini açık bir süreç adımı yaptı; simetrik
+biçimde Alt Süreç Bitişi de **çıkışı** açık bir düğüm yapar. Böylece "aksiyonu olmayan otomatik adımın kolu ima yoluyla
+bitirmesi" belirsizliği ortadan kalkar; her alt süreç kolunun **tanımlı bir sonu** olur.
+
+**Ayarlar:** — (**ayarsız**; alt süreç bu adımda sonlanır).
 
 ---
 

@@ -30,7 +30,7 @@
 **Mevcut durum:** Yeni projede ne enum ne de `ProcessStep.stepType` alanı var; adım tipleri yalnız
 `service-settings/process-step.md §3`'te başlık olarak duruyor.
 
-**Taşıma kararı (🟢):** `ProcessStep` modelindeki **20 adım tipine** göre isimlendirilmiş bir **`ProcessStepType`** enum'u
+**Taşıma kararı (🟢):** `ProcessStep` modelindeki **21 adım tipine** göre isimlendirilmiş bir **`ProcessStepType`** enum'u
 oluşturulacak; `ProcessStep` modeline `stepType: ProcessStepType` ayrımlayıcı alanı eklenecek. Değerler `§3` kataloğundan
 türetilir (öneri, camelCase):
 
@@ -200,7 +200,7 @@ enum NotificationStepTypeUserGroupType { UserGroup, TakeUsersWhoTakeActionBefore
 > 🟢 **`SendNotificationUsers.stepType` netleşti — alıcı türü `NotificationRecipientType {user, userGroup, takeUsersWhoTookActionBefore}`:**
 > **`user`** → alıcı `UserStepTypeNotification` (→ `NotificationUserType`) ile; **`userGroup`** → doğrudan `userGroupIds`;
 > **`takeUsersWhoTookActionBefore`** → daha önce aksiyon almış kullanıcılar. §1'deki `ProcessStepType` ile karışmaması için bu adla
-> ayrıştırıldı (20 adım tipiyle ilgisi yok). Ayrı `NotificationUserGroupType` **kaldırıldı** (değerleri buraya toplandı); bildirim
+> ayrıştırıldı (21 adım tipiyle ilgisi yok). Ayrı `NotificationUserGroupType` **kaldırıldı** (değerleri buraya toplandı); bildirim
 > alıcısı adım-atama enum'larından **ayrıdır**.
 
 ---
@@ -337,7 +337,7 @@ class FunctionParameterItem {
 | `StepTypeTimerDto` | `ProcessStepTypeTimer` | 🧩 | 🟢 onaylandı |
 | `WorkStyle` | `TimerCalculationType` | 🔤 | 🟢 onaylandı |
 | `StepTypeFunctionDto` | (HTTP Request adım ayarı) | 🧩 | `method→HttpMethod` enum; parametre modeli iş-kuralına hizalanır |
-| — | `ProcessStepType` | 🔤 | yeni; §3'teki 20 adımdan |
+| — | `ProcessStepType` | 🔤 | yeni; §3'teki 21 adımdan |
 | — | `HttpMethod` | 🔤 | yeni; GET/POST/PUT/DELETE |
 | — | `NotificationChannel` | 🔤 | yeni; `{mail, push, toast}` (Push/Mail bool'ları + Toast → dinamik kanal) |
 | `WorkTimeSelection` | `WorkTimeSelection` | 🔤 | değerler netleşti → `{atWorkStart, atWorkEnd}` |

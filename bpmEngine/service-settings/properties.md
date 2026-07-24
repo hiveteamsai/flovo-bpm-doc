@@ -12,7 +12,7 @@
 
 ## 0. Form Alanı (Property) Nedir?
 Bir **property**, metadata-driven (server-tanımlı) formdaki tek bir **giriş veya görüntüleme** elemanıdır (metin
-kutusu, tarih seçici, dosya, harita...). Her property bir **kontrol tipi** (`controlTypeId`) ile render edilir, bir
+kutusu, tarih seçici, dosya, harita...). Her property bir **kontrol tipi** (`propertyType`) ile render edilir, bir
 **veriye bağlanır** (binding: `code`) ve değeri aksiyonların **`changeList`**'i ile güncellenebilir. Bir servis
 (form) birden çok property içerir.
 
@@ -40,9 +40,10 @@ Tipe-özel ayarlar → §3.
 |---|---|---|
 | `id` | int | Alan ID'si (primary key) |
 | `serviceId` | int | Bağlı servis ID'si (FK) |
-| `code` | string | Alan kodu (benzersiz — binding key) |
-| `definition` | string | Alan tanımı / kullanıcıya görünen etiket |
-| `controlTypeId` | int | Kontrol tipi |
+| `code` | string | Alan kodu (benzersiz — binding key; **çeviri için kullanılmaz** → `translationCode`) |
+| `definition` | string | Alan tanımı / kullanıcıya görünen etiket — **varsayılan dildeki** metin |
+| `translationCode` | string? | **Çeviri eşleşme anahtarı** (→ `../organization-settings/translation.md` `code`). `null` = çeviri **es geçilir**, doğrudan `definition` kullanılır. |
+| `propertyType` | int | Kontrol tipi (→ `../models/enums/property-type.md`) |
 
 ### 2.2 — Görünüm & yardım
 | Alan | Açıklama |

@@ -21,8 +21,9 @@ tetiklendiğinde kaydın durumu değişebilir.
 |---|---|---|
 | `id` | int | Durum ID'si (primary key) |
 | `organizationId` | int | Sahibi organizasyon (FK → `organization.md` `id`); **organizasyon havuzu** — tüm servislerde kullanılır |
-| `code` | string | Durum kodu (benzersiz tanımlayıcı) |
-| `definition` | string | Durum **adı** — kullanıcıya görünen (örn. "Beklemede", "Onaylandı") |
+| `code` | string | Durum kodu (benzersiz tanımlayıcı; **çeviri için kullanılmaz** → `translationCode`) |
+| `definition` | string | Durum **adı** — kullanıcıya görünen (örn. "Beklemede", "Onaylandı"); **varsayılan dildeki** metin |
+| `translationCode` | string? | **Çeviri eşleşme anahtarı** (→ `translation.md` `code`). `null` = çeviri **es geçilir**, doğrudan `definition` kullanılır. |
 | `icon` | string | İkon |
 | `styleId` | int | Renk/görünüm (bg + font) — **Style** varlığına FK referans (`style.md`) |
 

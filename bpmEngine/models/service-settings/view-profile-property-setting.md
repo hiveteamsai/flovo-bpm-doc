@@ -3,7 +3,7 @@
 > **Durum:** 🟡 TASLAK (ilk çıkarım — gözden geçirilecek)
 > **Amaç:** Bir alanın **tipe-özel** görünüm/davranış ayarını **görüntüleme profili bazında** tutar. `Property`'deki
 > varsayılanı **profil düzeyinde ezer** (override). `viewProfilePropertyId` altındaki `key`/`value` kayıtları bir
-> **dictionary** oluşturur; `Property`'nin **`propertyType` (`controlTypeId`)**'sine göre geçerli key'ler yorumlanır.
+> **dictionary** oluşturur; `Property`'nin **`propertyType`**'sine göre geçerli key'ler yorumlanır.
 > **Key kataloğu:** → `view-profile-property.md` (propertyType'a göre key'ler).
 
 ## Alanlar

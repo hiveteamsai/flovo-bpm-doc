@@ -8,7 +8,7 @@
 |---|---|
 | [`solution.md`](./solution.md) | Bir organizasyona ait, **servisleri gruplayan** tanım (organizasyonda birden çok olabilir). |
 | [`service.md`](./service.md) | Bir **iş sürecinin/formun** tamamı (motorun temel birimi); **`formType`**: form/parameter/eventForm. |
-| [`property.md`](./property.md) | Metadata-driven formdaki tek bir **giriş/görüntüleme elemanı**; `controlTypeId` ile render edilir. |
+| [`property.md`](./property.md) | Metadata-driven formdaki tek bir **giriş/görüntüleme elemanı**; `propertyType` ile render edilir. |
 | [`property-item.md`](./property-item.md) | Seçim alanlarının (`combobox`/`radiobuttonList`) **statik seçeneği**. |
 | [`view-profile.md`](./view-profile.md) | Aynı formun **farklı adım/kullanıcılara** nasıl görüneceğini belirleyen **görüntüleme profili**. |
 | [`view-profile-property.md`](./view-profile-property.md) | Profildeki **tek bir alanın** görünür/düzenlenebilir/zorunlu + sıra yapılandırması. |

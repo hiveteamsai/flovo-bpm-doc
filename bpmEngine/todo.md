@@ -254,6 +254,24 @@
 - [ ] **`DynamicParameter.value` şekli** — değer-kaynağı (**ValueAssignType**: sabit/hesaplama/form property) + değerin JSONB
   temsili (iş-kuralı `AssignValueToFieldDto` muadili). _(process-step §3.1/§3.6)_
 
+### 🔎 v0.15 — Proje incelemesinden (2026-07-24)
+- [ ] **Süreç başlatma kısıtı (`ProcessStepProcessStartSettings.userGroupId`) — davranış tarafı incelenecek.** Modelde
+  başlatmayı **hangi kullanıcı grubunun** yapabileceği tanımlı (`userGroupId`: **null** → herkes, **dolu** → yalnız o grup →
+  `models/service-settings/process-step.md` §3.14); ancak **davranış** dokümanı Süreç Başlangıcı'nı (§3.1) yalnız *nasıl*
+  tetiklendiği (manuel/webhook) üzerinden anlatıyor, **kim başlatabilir** kısıtından söz etmiyor. Kısıtın kapsamı gözden
+  geçirilip (grup dışı kullanıcı başlangıç aksiyonlarını **görür mü**, yalnız tetikleyemez mi? webhook/Customer API
+  tetiklemesinde grup kısıtı nasıl uygulanır?) sonuç **davranış §3.1'e** yazılacak. _(process-step §3.1 · models §3.14)_
+- [ ] **`Instance.delete` alan adı ↔ `deleted` tutarsızlığı — tek isme sabitlenecek (kontrol bekliyor).** Runtime
+  `Instance` modelinde soft-delete alanı **`delete`** adında (`models/processInstances/instance.md` alan tablosu + "`delete`
+  alanı içeren tüm modeller" notu); fakat onu **set eden/anan her yer `deleted`** diyor: Instance Deleter adımı
+  (`models/service-settings/process-step.md` §3.15 `deleted = true`), **InstanceDeleteMode** ve **ProcessStepType** enum'ları,
+  ayar logu tasarımı, hatta `sampleProcess/expense` ("`deleted` durumuna çekilir"). Ayrıca **tüm organizasyon-ayar
+  modelleri** soft-delete için **`deleted`** kullanıyor (`delete` kullanan başka model yok). **Detay/karar:** kanonik isim
+  **`deleted`** olmalı (hem tutarlılık hem `delete`'in SQL'de ayrılmış sözcük olması nedeniyle); değişiklik `instance.md`
+  alan adı + "`delete` alanı içeren tüm modeller" notunu kapsar. **Kontrol:** başka `delete` (soft-delete) kullanan yer
+  kalmadığı doğrulanıp tek seferde `deleted`'e çevrilecek. _(models/processInstances/instance.md · process-step §3.15 ·
+  enums/instance-delete-mode.md · enums/process-step-type.md · research/settings-log)_
+
 ---
 
 ## ✅ Bu oturumda çözülen tutarsızlıklar (log)

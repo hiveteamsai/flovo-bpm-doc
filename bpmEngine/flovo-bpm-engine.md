@@ -150,7 +150,8 @@ sonraki adıma ilerler; insan beklemez:
 | **Timer** | süre dolunca **default action** |
 | **Bildirim** | bildirimi atar, ilerler |
 | **Processing** | frontende form/response döner; **manuel aksiyon beklemeden** `default` ile ilerler |
-| **Instance Creator / Silme / Yönlendirme, Süreç Adımı Tetikleme, Custom ID Creator, Timer Start/End** | işini yapıp ilerler |
+| **Instance Creator · Süreç Adımı Tetikleme · Custom ID Creator · Timer Start/End** | işini yapıp ilerler |
+| **Silme (Instance Deleter) · Yönlendirme (Form Yönlendirme)** | işini yapar; **giden aksiyonu varsa** ilerler, **yoksa kol burada sonlanır** (terminal olabilir → §4.4) |
 
 **B) İnsan-tetiklemeli (human task) adımları** — süreç burada **durur ve bekler**; form **"aksiyon alınabilir"**
 hâle gelir:
@@ -167,10 +168,10 @@ hâle gelir:
 
 ### 4.4 — Yürütme döngüsü (pseudo)
 ```text
-adım        = SüreçBaşlangıcı
+adım        = Başlangıç                               # ana süreç: Süreç Başlangıcı · alt süreç: Alt Süreç Başlangıcı
 gelenAction = null                                   # kontrolü bu adıma getiren aksiyon
 
-while adım != SüreçBitişi:
+while adım bir BİTİŞ düğümü değilse:                   # Süreç Bitişi (ana) / Alt Süreç Bitişi (alt süreç) → aşağıdaki not
     # ── EVRENSEL GİRİŞ KURALI (her adımda, iş yapılmadan ÖNCE) ──
     if gelenAction?.changeList boş değilse:
         formAlanlarınıGüncelle(gelenAction.changeList)        # yeni değerleri forma yaz
@@ -179,6 +180,8 @@ while adım != SüreçBitişi:
     if adım.tür == OTOMATİK:
         sonuç       = adım.işiniYap()
         gelenAction = adım.uygunAksiyonuSeç(sonuç)            # true/false · switch · response.action · default
+        if gelenAction yoksa:                                 # terminal otomatik adım — giden aksiyon yok
+            break                                             #   → kol burada sonlanır (ör. Instance Deleter / Form Yönlendirme)
         gelenAction.parameters = adım.ürettiğiParametreler()  # opsiyonel
     else:  # İNSAN-TETİKLEMELİ
         form.durum = "aksiyon alınabilir"
@@ -186,7 +189,10 @@ while adım != SüreçBitişi:
         gelenAction = bekle()                                 # frontend: manuel / eventForm (changeList + parameters taşır)
 
     adım = gelenAction.targetProcessStepId                   # seçilen aksiyonun hedef adımı (binding → process-actions §1.2)
-# SüreçBitişi: kimseyi bekletmez; süreç biter (yetkililer sonradan erişebilir/geri taşıyabilir → process-steps §3.17)
+# BİTİŞ düğümü: kimseyi bekletmez; kol/süreç biter.
+#   • Süreç Bitişi (§3.17)      — ana süreç; yetkililer sonradan erişebilir/geri taşıyabilir.
+#   • Alt Süreç Bitişi (§3.21)  — bağımsız alt süreç; geri-taşıma yoktur.
+# Ayrıca terminal bir otomatik adım (giden aksiyonu olmayan) yukarıdaki `break` ile de kolu sonlandırabilir.
 ```
 
 ### 4.5 — Henüz netleşmeyenler (→ §12)

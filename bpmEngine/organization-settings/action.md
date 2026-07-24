@@ -25,8 +25,9 @@ yetki...) ise **binding**'de tutulur → `../service-settings/process-step-actio
 |---|---|---|
 | `id` | int | Şablon ID'si (primary key) |
 | `organizationId` | int | Sahibi organizasyon (FK → `organization.md` `id`); **organizasyon havuzu** — tüm servislerde kullanılır |
-| `code` | string | Aksiyon kodu — benzersiz **ve yönlendirme tanımlayıcısı** (`default`, `onFail`, `true`/`false`, switch değeri...) |
-| `definition` | string | Aksiyon adı/etiketi |
+| `code` | string | Aksiyon kodu — benzersiz **ve yönlendirme tanımlayıcısı** (`default`, `onFail`, `true`/`false`, switch değeri...); **çeviri için kullanılmaz** → `translationCode` |
+| `definition` | string | Aksiyon adı/etiketi — **varsayılan dildeki** metin |
+| `translationCode` | string? | **Çeviri eşleşme anahtarı** (→ `translation.md` `code`). `null` = çeviri **es geçilir**, doğrudan `definition` kullanılır. |
 | `icon` | string | İkon |
 | `styleId` | int | Renk/görünüm (bg + font) — **Style** varlığına FK referans (→ `style.md`) |
 | `actionType` | ActionType | Aksiyonun **türü** (`manual` / `eventForm` / `takePhoto` / `selectFile` / `scanBarcode` / `webhook` / `autoAction`); tür kataloğu → `../service-settings/process-step-action.md` §3 |

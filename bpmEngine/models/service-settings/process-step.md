@@ -64,7 +64,7 @@ Aşağıdaki §3 modelleri, her `stepType` için bu JSONB'nin **şemasıdır**.
 | `processing` | `ProcessStepProcessingSettings` | §3.13 |
 | `processStart` | `ProcessStepProcessStartSettings` | §3.14 |
 | `instanceDeleter` | `ProcessStepInstanceDeleterSettings` | §3.15 |
-| `triggerProcessStep` · `formRedirect` · `subProcessStart` | (ayarsız / sonra detaylanacak) | §3.16 |
+| `triggerProcessStep` · `formRedirect` · `subProcessStart` · `subProcessEnd` | (ayarsız / sonra detaylanacak) | §3.16 |
 
 ## 3. Adım-tipi ayar modelleri (`settings` şemaları)
 > Her tablo, ilgili `stepType` için `settings` JSONB'sinin **alan-düzeyi şemasıdır**. Değer-kaynağı olan alanlar
@@ -287,6 +287,7 @@ Formu (ve seçime göre ilişkili formları) siler (davranış → `§3.10`).
 | `triggerProcessStep` | Tetiklenecek alt-servis/adım seçimi; detay **sonra** → `../../todo.md`. |
 | `formRedirect` | Karşılaştırma + açılacak var-olan form; detay **sonra**. |
 | `subProcessStart` | **Ayara ihtiyaç yok** — ayrı özelliği yok; tetikleme kaynağı webhook / iç tetikleme (davranış → `§3.20`). |
+| `subProcessEnd` | **Ayara ihtiyaç yok** — alt sürecin çıkış düğümü; kol burada sonlanır (davranış → `§3.21`; Süreç Bitişi'nin aksine bitiş-sonrası erişim ayarı yoktur). |
 
 ## İlişkiler
 - **N – 1** → `Organization` (`organizationId`), `Service` (`serviceId`).
