@@ -56,7 +56,7 @@ flowchart LR
 ### 2. Form Creator (`formCreator`) — Instance Creator (autoAction)
 **Görev:** Formu (instance) oluşturup **webhook parametreleriyle form alanlarına ilk değer atamak** ve akışı kontrol grubuna vermek.
 **Bu adıma gelen parametre:** `parameters: { ... }` (webhook gövdesi).
-**Ayarlar ve çalışma:** Instance Creator init eşlemesiyle gelen parametreler form alanlarına yazılır; durum **Kontrol Grubunda** yapılır (→ `../../service-settings/process-step.md` §3.12).
+**Ayarlar ve çalışma:** Instance Creator init eşlemesiyle gelen parametreler form alanlarına yazılır; durum **Kontrol Grubunda** yapılır (→ `../../service-settings/process-step.md` §3.12). Süreç **API/webhook** ile (tek oluşturan kullanıcı olmadan) başlatıldığından **`Instance.creatorUserId` boş kalır**; başlatan `ProcessInstance.createdByApiKeyId` ile izlenir (→ `../../models/service-settings/service.md` `formType`).
 **Adımın ürettiği parametre:** — (değerler forma yazıldı).
 
 **Aksiyonlar:**

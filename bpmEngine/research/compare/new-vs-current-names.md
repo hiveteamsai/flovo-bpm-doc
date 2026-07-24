@@ -13,9 +13,9 @@
 >
 > **v0.7 — proje-içi ad netleştirmesi:** runtime & iş-kuralı model adları güncellendi (bu dosyada **yeni** sütun bunları
 > yansıtır): `WorkFlow`>**`ProcessInstance`** · `ProcessStepExecution`>**`ProcessStepInstance`** · `Form`>**`Instance`** ·
-> `RelatedForm`>**`RelatedInstance`** · `FormAwaitingUser`>**`InstanceAwaitingUser`** · `WorkRule`>**`BusinessRule`** ·
+> `RelatedForm`>**`AssociatedInstance`** _(v0.7'de `RelatedInstance`; v0.17'de `AssociatedInstance`)_ · `FormAwaitingUser`>**`InstanceAwaitingUser`** · `WorkRule`>**`BusinessRule`** ·
 > `WorkRuleCondition`>**`BusinessRuleCondition`**; FK'ler: `workFlowId`>**`processInstanceId`** · `parentWorkFlowId`>**`parentProcessInstanceId`** ·
-> `processStepExecutionId`>**`processStepInstanceId`** · `formId`>**`instanceId`** · `relatedFormId`>**`relatedInstanceId`** ·
+> `processStepExecutionId`>**`processStepInstanceId`** · `formId`>**`instanceId`** · `relatedFormId`>**`associatedInstanceId`** ·
 > `formAwaitingUserId`>**`instanceAwaitingUserId`** · `workRuleId`>**`businessRuleId`**. Klasör `workFlows/`>**`processInstances/`**.
 
 ---
@@ -287,10 +287,10 @@
 
 ### 15.3 Diğer runtime modelleri — YENİ (eski karşılığı yok)
 > Bu 4 model tamamen yenidir; eski uygulamada birebir karşılığı yoktur.
-- `ProcessInstance ++` · `InstanceAwaitingUser ++` · `UserGroupApprovedUser ++` · `RelatedInstance ++`
+- `ProcessInstance ++` · `InstanceAwaitingUser ++` · `UserGroupApprovedUser ++` · `AssociatedInstance ++`
 - **Alan adı normalizasyonu (taslak görsel → proje kuralı):** `Id` > `id` · `FormId` > `instanceId` · `ProcessStepId` > `processStepId`
   (PK `id`, FK `...Id` camelCase) · `FormAwaitingUser-Id` > `instanceAwaitingUserId`
 
 ---
 
-*Oluşturma: 2026-07-06 · Güncelleme: 2026-07-10 (v0.7 — runtime & iş-kuralı model adları: ProcessInstance · ProcessStepInstance · Instance · RelatedInstance · InstanceAwaitingUser · BusinessRule) · 2026-07-16 (v0.12 — §9 tipe-özel ayar/enum rename bloğu: stepType/settings, adım-tipi enum'ları, HTTP/Kullanıcı/Bildirim/Timer/Switch/Instance Deleter alan renameleri) · 2026-07-17 (v0.13 — §10 çeviri anahtarı `translationCode` bloğu) · 2026-07-24 (v0.15 — §6 `controlTypeId`→`propertyType` (`ControlType`→`PropertyType`) rename). Kaynak: `new-vs-current.md` + `../../models/` + depo kökü `commitNotes/`.*
+*Oluşturma: 2026-07-06 · Güncelleme: 2026-07-10 (v0.7 — runtime & iş-kuralı model adları: ProcessInstance · ProcessStepInstance · Instance · RelatedInstance · InstanceAwaitingUser · BusinessRule) · 2026-07-16 (v0.12 — §9 tipe-özel ayar/enum rename bloğu: stepType/settings, adım-tipi enum'ları, HTTP/Kullanıcı/Bildirim/Timer/Switch/Instance Deleter alan renameleri) · 2026-07-17 (v0.13 — §10 çeviri anahtarı `translationCode` bloğu) · 2026-07-24 (v0.15 — §6 `controlTypeId`→`propertyType` (`ControlType`→`PropertyType`) rename) · 2026-07-24 (v0.17 — §15 `RelatedInstance`→`AssociatedInstance` + `relatedInstanceId`→`associatedInstanceId` · `relatedPropertyId`→`associatedPropertyId`; eski adlar `RelatedForm`/`relatedFormId` korunur). Kaynak: `new-vs-current.md` + `../../models/` + depo kökü `commitNotes/`.*

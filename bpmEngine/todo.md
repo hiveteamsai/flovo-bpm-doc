@@ -133,10 +133,13 @@
   _(process-step §4 · sampleProcess)_
 - [ ] **Kapsam-dışı varlıklar + Org ↔ BPM entegrasyonu** — ExpenseType / Currency / Tax modellensin mi;
   organizasyon ayarlarının BPM ile entegrasyon derinliği. _(Position/Staff modellendi → `position.md`.)_ _(index.md §4 · new-vs-current §14)_
-- [ ] **ActionTransfer'e `user` alanı + API-başlatımlı `creatorUserId` tespiti** — `ActionTransfer` (parameters/changeList/
-  action → process-step-action §2) modeline bir **user** property'si eklenmeli mi? **API ile başlatılan** süreçlerde **Instance
-  Creator** (§3.12), kullanıcı olmadığından `Instance.creatorUserId`'yi **nasıl tespit edecek**? _(process-step-action §2 ·
-  process-step §3.12 · models/processInstances/instance.md · `apiKeyId` açık sorusuyla bağlantılı)_
+- [ ] **ActionTransfer'e `user` alanı** — `ActionTransfer` (parameters/changeList/action → process-step-action §2) modeline
+  bir **user** property'si eklenmeli mi (aksiyon/parametre verisinden `Instance.creatorUserId`'yi **isteğe bağlı** set etmek için)?
+  _(process-step-action §2 · process-step §3.12 · `apiKeyId` açık sorusuyla bağlantılı)_
+  - **Netleşen (v0.17):** "`form` tipinde `creatorUserId` **zorunlu dolu**" kuralı **kaldırıldı** — süreç **API/webhook ile**
+    (tek oluşturan kullanıcı olmadan, ör. gruba yönlendirilerek → `sampleProcess/referred`) başlatılabildiğinden
+    `creatorUserId` **null olabilir**; başlatan **`ProcessInstance.createdByApiKeyId`** ile izlenir. Açık kalan: yalnız
+    ActionTransfer.user ile creatorUserId'nin **opsiyonel atanması**.
 - [ ] **Alt-servis süreçlerinde `parentViewProfile` seçeneği** — Kullanıcı/Kullanıcı Grubu adımlarında `processViewProfileId`
   **statik** seçiliyor. Alt-servis olarak çalışan süreçlerde bunun yerine "**parent'ın view-profile'i ile aynı `code`'a sahip**
   view-profile'i kullan" gibi bir **parentViewProfile** seçeneği mi eklenmeli, yoksa farklı bir yöntemle mi ilerlenmeli?
@@ -146,7 +149,7 @@
   `selectedEditable` · view-profile §5)_
 - [ ] **"Var olanlardan ekleme" filtreleri** — bugün yalnız **durum** (`addFromExistingStatusIds`) ile filtre var; ek olarak
   "yalnız **related-form** olanlar listelensin", "hangi **property** ile related olanlar listelensin" gibi seçenekler nasıl
-  yönetilecek? _(view-profile §5 · properties §3.13 Form List · RelatedInstance)_
+  yönetilecek? _(view-profile §5 · properties §3.13 Form List · AssociatedInstance)_
 - [ ] **Alt süreç ProcessInstance'ları ayrı tabloda mı?** — Bağımsız alt süreçler (`parentProcessInstanceId`) ana `ProcessInstance` tablosunda mı,
   yoksa **ayrı bir tablo/sayfa**da mı tutulmalı? Fayda/eksi (izolasyon · sorgu maliyeti · raporlama · listeleme). _(models/
   processInstances/process-instance.md · process-step §3.20)_

@@ -35,7 +35,7 @@
 |---|---|---|
 | **organization-settings/** | Kiracıya bağlı **yapısal veri** + **organizasyon havuzu** (eski "Account Settings"): Organization · Company · Department · Profession · Position · User · UserGroup · Translation · Style · Status · Action · CostCenter · WorkerLevel · CreditCard · AdditionalQualification · WorkingSchedule · VacationDay · ProcessTransfer · SchedulerJob. | [`organization-settings/index.md`](./organization-settings/index.md) |
 | **service-settings/** | Bir **Solution/Service** altındaki tasarım modelleri: Solution · Service (`formType`) · Property/PropertyItem · ProcessViewProfile ailesi · ProcessStep · ProcessStepAction · BusinessRule/BusinessRuleCondition. | [`service-settings/index.md`](./service-settings/index.md) |
-| **processInstances/** | Ayarlardan üretilen **çalışma-zamanı (runtime)** kayıtları: ProcessInstance · ProcessStepInstance · Instance · InstanceAwaitingUser · UserGroupApprovedUser · RelatedInstance. 🟢 TANIMLI. | [`processInstances/index.md`](./processInstances/index.md) |
+| **processInstances/** | Ayarlardan üretilen **çalışma-zamanı (runtime)** kayıtları: ProcessInstance · ProcessStepInstance · Instance · InstanceAwaitingUser · UserGroupApprovedUser · AssociatedInstance. 🟢 TANIMLI. | [`processInstances/index.md`](./processInstances/index.md) |
 | **enums/** | Modellerde kullanılan **enum tanımları** (kanonik değer listeleri; ör. `actionType`, `propertyType`, `formType`). | [`enums/index.md`](./enums/index.md) |
 
 > **Not:** **Organization** kiracının kökü; **Solution · Service** service-settings kırılımının başladığı yerdir
@@ -77,7 +77,7 @@ ProcessInstance (id; createdByUserId → User · createdByApiKeyId → ApiKey[ge
  │        └─< InstanceAwaitingUser (processStepInstanceId; instanceId → Instance · userId → User · userGroupId → UserGroup)
  │                 └─< UserGroupApprovedUser (instanceAwaitingUserId; userId → User)   # yalnız grup onayı
  └─< Instance (processInstanceId; serviceId → Service · creatorUserId → User · statusId → Status)
-      └─< RelatedInstance (instanceId → Instance · relatedInstanceId → Instance · relatedPropertyId → Property)
+      └─< AssociatedInstance (instanceId → Instance · associatedInstanceId → Instance · associatedPropertyId → Property)
 ```
 
 ---
@@ -128,7 +128,7 @@ ProcessInstance (id; createdByUserId → User · createdByApiKeyId → ApiKey[ge
 | ProcessStepInstance | `atApiKeyId` | ApiKey | N–1 | null olabilir; **ApiKey geçici** |
 | Instance | `processInstanceId` | ProcessInstance.id | N–1 | |
 | Instance | `serviceId` | Service.id | N–1 | |
-| Instance | `creatorUserId` | User.id | N–1 | null olabilir (**`parameter`** tipi servis — sahipsiz veri-kaynağı) |
+| Instance | `creatorUserId` | User.id | N–1 | null olabilir (**`parameter`** tipi servis — sahipsiz veri-kaynağı; ayrıca **API/webhook başlatımlı `form`** — tek sahip yok, başlatan `ProcessInstance.createdByApiKeyId`) |
 | Instance | `statusId` | Status.id | N–1 | formun mevcut durumu (havuz) |
 | InstanceAwaitingUser | `processStepInstanceId` | ProcessStepInstance.id | N–1 | |
 | InstanceAwaitingUser | `instanceId` | Instance.id | N–1 | |
@@ -136,8 +136,8 @@ ProcessInstance (id; createdByUserId → User · createdByApiKeyId → ApiKey[ge
 | InstanceAwaitingUser | `userGroupId` | UserGroup.id | N–1 | |
 | UserGroupApprovedUser | `instanceAwaitingUserId` | InstanceAwaitingUser.id | N–1 | yalnız grup onayı |
 | UserGroupApprovedUser | `userId` | User.id | N–1 | onaylayan üye |
-| RelatedInstance | `instanceId` · `relatedInstanceId` | Instance.id | N–1 | formlar arası ilişki |
-| RelatedInstance | `relatedPropertyId` | Property.id | N–1 | `relatedInstanceId`'nin formundaki property |
+| AssociatedInstance | `instanceId` · `associatedInstanceId` | Instance.id | N–1 | formlar arası ilişki |
+| AssociatedInstance | `associatedPropertyId` | Property.id | N–1 | `associatedInstanceId`'nin formundaki property |
 
 ---
 
@@ -149,7 +149,7 @@ ProcessInstance (id; createdByUserId → User · createdByApiKeyId → ApiKey[ge
 | **ExpenseType / Currency / Tax** | Masraf süreçleri | Masraf tipi, para birimi, vergi — referans dokümanında **kapsam dışı**. _(Position/Staff artık modellendi → `organization-settings/position.md`.)_ |
 
 > **Instance (doldurulmuş form) artık modellendi** → `processInstances/` (ProcessInstance · Instance · ProcessStepInstance · InstanceAwaitingUser ·
-> UserGroupApprovedUser · RelatedInstance). 🟢 TANIMLI — yalnız `Instance` **property value depolaması** açık (→ `../todo.md`).
+> UserGroupApprovedUser · AssociatedInstance). 🟢 TANIMLI — yalnız `Instance` **property value depolaması** açık (→ `../todo.md`).
 
 > **Not:** **User** ve **UserGroup** artık modellendi (→ §1 "Organizasyon ayarları"). `organizationUserGroupId` /
 > `actionDisplayAuthorizedUserGroupId` gibi BPM referansları `UserGroup`'a, kullanıcı atamaları `User`'a bağlanır.
@@ -158,8 +158,9 @@ ProcessInstance (id; createdByUserId → User · createdByApiKeyId → ApiKey[ge
 
 ## 5. Notlar
 - **Enum'lar** artık **tek yerde** indekslenir → [`enums/index.md`](enums/index.md) (kanonik değer listeleri: `actionType`, `propertyType`, `businessRuleRuntimeType`, `criterionType`, `valueType`, `formType`...). Her model, kullandığı enum'a **buradan link** verir ve **o değerin o modeldeki rolünü** kendi içinde anlatır.
-- **`Service.formType` (form/parameter/eventForm):** servisin davranışını belirler — **`form`** akış+onay+sahipli `Instance`
-  (`creatorUserId` dolu, `InstanceAwaitingUser`); **`parameter`** onaysız veri-kaynağı (`Instance` oluşur, `creatorUserId`
+- **`Service.formType` (form/parameter/eventForm):** servisin davranışını belirler — **`form`** akış+onay+`Instance`
+  (`creatorUserId` **genelde dolu ama zorunlu değil** — API/webhook başlatımında null olabilir, başlatan `createdByApiKeyId`;
+  `InstanceAwaitingUser`); **`parameter`** onaysız veri-kaynağı (`Instance` oluşur, `creatorUserId`
   **null**, `InstanceAwaitingUser`'a bakılmaz); **`eventForm`** akışsız/`Instance`'sız (pop-up viewprofile → `parameters`;
   `eventForm` actionType ile). Ayrıntı → `service-settings/service.md`.
 - **Organizasyon havuzu** (Translation/Style/Status/Action) `organization-settings/`'a; **servise bağlı** modeller `service-settings/`'ya karşılık gelir.

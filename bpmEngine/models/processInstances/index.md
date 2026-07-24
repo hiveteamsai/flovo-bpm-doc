@@ -11,6 +11,6 @@
 | [`instance.md`](./instance.md) | Bir iş akışında oluşturulan **doldurulmuş form** (runtime veri kaydı); mevcut `statusId`. |
 | [`instance-awaiting-user.md`](./instance-awaiting-user.md) | Form üzerinde **atanan / aksiyon alabilecek** kullanıcı veya grup (aksiyon/onay kuyruğu). |
 | [`user-group-approved-user.md`](./user-group-approved-user.md) | Bir **grup onayında** onaylayan üye + onay zamanı. |
-| [`related-instance.md`](./related-instance.md) | Bir formu **başka bir formla ilişkilendirme** (property boyutuyla). |
+| [`associated-instance.md`](./associated-instance.md) | Bir formu **başka bir formla ilişkilendirme** (property boyutuyla). |
 
 *Oluşturma: 2026-07-13.*

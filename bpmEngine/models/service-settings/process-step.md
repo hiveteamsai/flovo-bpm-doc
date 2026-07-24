@@ -279,7 +279,7 @@ Formu (ve seçime göre ilişkili formları) siler (davranış → `§3.10`).
 **`InstanceDeleteMode` seçenekleri:**
 - **`withRelated`** — *formu ve ilişkili formları sil:* sürecin instance'ı **ve** ilişkili instance'lar `deleted = true` yapılır.
 - **`unlinkRelated`** — *formu sil, ilişkili formların ilişkisini kaldır:* sürecin instance'ı `deleted = true` yapılır;
-  `RelatedInstance` kayıtları **silinir** (ilişki kaldırılır); **ilişkili instance'ların `deleted` durumuna dokunulmaz**.
+  `AssociatedInstance` kayıtları **silinir** (ilişki kaldırılır); **ilişkili instance'ların `deleted` durumuna dokunulmaz**.
 
 ### 3.16 Ayarsız / sonra detaylanacak adımlar
 | `stepType` | Durum |

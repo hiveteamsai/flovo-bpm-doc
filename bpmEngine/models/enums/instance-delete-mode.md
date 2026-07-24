@@ -8,9 +8,9 @@
 | Değer | Anlam | Ne için |
 |---|---|---|
 | `withRelated` | Formu ve ilişkili formları sil | Sürecin instance'ı **ve** ilişkili instance'lar `deleted = true` yapılır. |
-| `unlinkRelated` | Formu sil, ilişkili formların ilişkisini kaldır | Sürecin instance'ı `deleted = true` yapılır; `RelatedInstance` kayıtları **silinir** (ilişki kaldırılır); **ilişkili instance'ların `deleted` durumuna dokunulmaz**. |
+| `unlinkRelated` | Formu sil, ilişkili formların ilişkisini kaldır | Sürecin instance'ı `deleted = true` yapılır; `AssociatedInstance` kayıtları **silinir** (ilişki kaldırılır); **ilişkili instance'ların `deleted` durumuna dokunulmaz**. |
 
 ## Notlar
-- Formlar arası ilişki `RelatedInstance` üzerinden tutulur (→ [`../processInstances/index.md`](../processInstances/index.md)).
+- Formlar arası ilişki `AssociatedInstance` üzerinden tutulur (→ [`../processInstances/index.md`](../processInstances/index.md)).
 
 *Oluşturma: 2026-07-16.*
