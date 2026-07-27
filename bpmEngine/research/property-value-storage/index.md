@@ -10,10 +10,36 @@
 ## Dosyalar
 | Dosya | İçerik (özet) |
 |---|---|
-| [`form-deger-saklama-sunum.html`](./form-deger-saklama-sunum.html) | Form/property değeri saklama için **eksiksiz mimari önerisi** — sunum/analiz (HTML). Aşağıda özetlenmiştir. |
+| ⭐ [`form-deger-saklama-v2.html`](./form-deger-saklama-v2.html) | **Ana sunum (GÜNCEL öneri) — A'dan Z'ye.** Flovo model diliyle (`InstanceValue`/`InstanceAttr`/`InstanceListItem`), **`projectToAttr` (bool)**, ayrı **çeviri/LabeledValue** bölümü, **`metadataVersion` yok**. `sunum.html`'nin evrimi. Aşağıda özetlenmiştir. |
+| [`form-deger-saklama-sunum.html`](./form-deger-saklama-sunum.html) | **Önceki teknik-derin sunum** (`form_value`/`form_attr` adlarıyla; çok-seviyeli `projectionLevel`; `metadataVersion`). v2 bunun sadeleştirilmiş/güncel hâlidir. |
+| [`form-deger-saklama-v2-analiz.md`](./form-deger-saklama-v2-analiz.md) | **v2 mimari analizi** — güçlü/zayıf yanlar (12 güç · 10 risk) + eksikler (10 madde) + genel değerlendirme. `models/`'e işleme öncesi karar girdisi. |
 | [`form-value-scenarios.md`](./form-value-scenarios.md) | **Form value kullanım senaryoları** (§1–§13) — form değerlerinin nerede/nasıl okunup yazıldığı; depolama & `form_attr` uygunluk değerlendirmesinin **girdi/gereksinim** dokümanı. |
 | [`form_attr_questions.md`](./form_attr_questions.md) | 🟡 **AÇIK** — `form_attr` projeksiyon tablosunun projeye **uygunluğunu** değerlendiren soru-cevap çalışma dosyası (S1–S13); sorular biriktirilir, sonda toplu karar verilir. |
 | [`form_attr_scenerios_rating.md`](./form_attr_scenerios_rating.md) | 🟡 **DEĞERLENDİRME** — her senaryonun (`form-value-scenarios.md` §1–§11) `form_attr`'a karşı **ölçekli** (5M+ · 150+ · 40+) **puanlaması** (🟢/🟡/🔴/⚫) + 9 performans riski + 14 ek geliştirme + faz sırası. |
+
+## `form-deger-saklama-v2.html` — ne öneriyor? (GÜNCEL, v1'den farkı)
+
+**Çekirdek mimari (v1 ile aynı temel):** CQRS + Outbox + NATS + Postgres/JSONB + MinIO. **Kaynak-hakikat** = JSONB (tapu),
+**fihrist** (Attr/ListItem) yeniden üretilebilir projeksiyon; Outbox aynı TX'te, generic projektör tam-yansıtma (delta değil) + `version` idempotency.
+
+**Model seti (Flovo diliyle):**
+- **`InstanceValue`** — Instance ile 1–1, `data` JSONB **code-keyed**, `version`; **7 kolon** (kolon eklenmez, şekil zenginleşir).
+- **`InstanceAttr`** — sorgulanabilir skaler fihrist (tipli EAV); **+`display` +`translationCode`** eklendi → 10 alan.
+- **`InstanceListItem`** — liste-of-model (`groupByTax`, key-value) fihristi; +`display`/`translationCode` → ~12 alan.
+- **`InstanceValueOutbox`** · **`ReflectionLink`** (parentProperty A′) · **`InstanceValueChange`** (append-only audit) · (mevcut) ilişki tablosu.
+
+**v1'den başlıca farklar:**
+- **`projectToAttr` (bool)** — eski çok-seviyeli `projectionLevel` (NONE/SEARCH/SORT/AGGREGATE) **kaldırıldı**; tek soru: fihriste yazılsın mı? (~%10–20 alan `true`).
+- **`metadataVersion` YOK** — projektör güncel Property tanımına göre yansıtır.
+- **Ayrı çeviri/LabeledValue bölümü** — etiketli seçimler `{value, display, translationCode}`; `display` = org `defaultLang` snapshot; rapor isim araması `Attr.display` (`projectToAttr=true`). Display kaynağı: statik `PropertyItem` **veya** dinamik iş-kuralı/API (istekte `LabeledValue` zorunlu).
+- **Property'ye eklenenler:** `projectToAttr` (bool) · `hasTranslation` (bool).
+- **Yansıma kararı** 2 soruyla: değişmez→**snapshot (A)** · değişen+göster→**canlı (B)** · değişen+ağır rapor→**materialized (A′)** (ReflectionLink + propagation, sınırlı).
+- `code` **immutable** (draft penceresi hariç) · status **Instance.statusId kolonu** (JSONB'de değil) · dosya **MinIO URL** · uygulama **fazları 0–3**.
+
+> **⚠️ Benimseme öncesi uyumlanacaklar (isim güncelliği):** v2 sunumu bazı **eski adları** kullanıyor; `models/`'e işlenirken güncel
+> proje adlarına çevrilmeli: **`controlTypeId` → `propertyType`** (v0.15) · **`RelatedInstance`/`relatedInstanceId`/`relatedPropertyId`
+> → `AssociatedInstance`/`associatedInstanceId`/`associatedPropertyId`** (v0.17) · **`Instance.delete` → `deleted`** (v0.18). _(Sunum
+> araştırma dokümanı olduğundan içerik olduğu gibi bırakıldı; uyumlama models/ tarafında yapılacak.)_
 
 ## `form-deger-saklama-sunum.html` — ne öneriyor?
 

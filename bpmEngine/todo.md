@@ -40,7 +40,11 @@
     ↔ B (on-read), snapshot ↔ canlı; **(3)** çeviri-bağımlı sorgu/indeksleme; **(4)** list-of-model (alt-servis) unnest /
     cross-form; **(5)** binary/dosya ayrımı; **(6)** value geçmişi/sürümleme; **(7)** instance/state serileştirme.
   - 📎 **Araştırma girdisi (değerlendirme bekliyor):** [`research/property-value-storage/`](./research/property-value-storage/index.md)
-    — CQRS Projection · Outbox · Postgres/JSONB tabanlı bir mimari öneri (yukarıdaki alt-soruların çoğunu ele alıyor). Karara bağlanınca buraya işlenecek.
+    — **GÜNCEL ana öneri:** [`form-deger-saklama-v2.html`](./research/property-value-storage/form-deger-saklama-v2.html) (CQRS + Outbox +
+    NATS; `InstanceValue`/`InstanceAttr`/`InstanceListItem` · **`projectToAttr` (bool)** · LabeledValue/çeviri · `metadataVersion` yok).
+    Yukarıdaki 7 alt-sorunun çoğunu ele alıyor. **Karara bağlanınca `models/processInstances/` altına InstanceValue/InstanceAttr/
+    InstanceListItem + `property.md`'ye `projectToAttr`/`hasTranslation` işlenecek**; benimsemeden önce v2'deki eski adlar (`controlTypeId`→
+    `propertyType` · `RelatedInstance`→`AssociatedInstance` · `Instance.delete`→`deleted`) güncellenmeli.
   - 🧱 **Tech-stack:** depolama **substratı** karara bağlandı — PostgreSQL/JSONB · **NATS JetStream** (outbox omurgası) · MinIO
     (binary) · Go (projektör); bu, `form_attr` değerlendirmesindeki **S2/D9 "NATS stack açık" notunu kapatır**. Depolama **MODELİ**
     hâlâ karara bağlanacak. → [`tech-stack/index.md`](./tech-stack/index.md)

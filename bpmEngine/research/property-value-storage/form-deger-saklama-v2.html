@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flovo BPM — Form & Değer Saklama A–Z (Ana Sunum)</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root{
+  --bg:#f4f6fb; --card:#ffffff; --ink:#1a2233;
+  --accent:#2b5fd9; --accent2:#e8f0ff;
+  --ok:#1f8a3f; --okbg:#e7f6ec; --warn:#c97a00; --warnbg:#fff4e2;
+  --bad:#c62828; --badbg:#fdecec; --line:#dfe4ee; --code:#0f172a;
+  --purple:#6d28d9; --purplebg:#f1eafd; --teal:#0f766e; --tealbg:#e6f7f5;
+}
+body{ font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif; background:var(--bg); color:var(--ink); line-height:1.7; }
+.wrap{ max-width:1080px; margin:0 auto; padding:24px 20px 140px; }
+header.hero{ background:linear-gradient(135deg,#1e3a8a,#2b5fd9 45%,#5a8cff); color:#fff; border-radius:20px; padding:48px 36px; margin-bottom:24px; box-shadow:0 12px 36px rgba(43,95,217,.28); }
+header.hero h1{ font-size:34px; margin-bottom:12px; line-height:1.25; }
+header.hero p{ font-size:18px; opacity:.96; max-width:920px; }
+.tag{ display:inline-block; background:rgba(255,255,255,.2); padding:4px 12px; border-radius:20px; font-size:13px; margin-top:14px; margin-right:6px; }
+section{ background:var(--card); border-radius:16px; padding:28px 30px; margin-bottom:22px; box-shadow:0 2px 10px rgba(20,30,60,.05); border:1px solid var(--line); scroll-margin-top:70px; }
+h2{ font-size:24px; color:var(--accent); margin-bottom:16px; display:flex; align-items:flex-start; gap:12px; line-height:1.35; }
+h2 .num{ background:var(--accent); color:#fff; min-width:36px; height:36px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:15px; flex:none; margin-top:2px; }
+h3{ font-size:18px; margin:22px 0 10px; color:#243b74; }
+h4{ font-size:16px; margin:14px 0 8px; }
+p{ margin-bottom:12px; }
+ul,ol{ margin:8px 0 14px 22px; }
+li{ margin-bottom:8px; }
+.analogy{ background:var(--accent2); border-left:5px solid var(--accent); border-radius:8px; padding:14px 18px; margin:14px 0; }
+.analogy b{ color:var(--accent); }
+.ok{ background:var(--okbg); border-left:5px solid var(--ok); border-radius:8px; padding:14px 18px; margin:14px 0; }
+.warn{ background:var(--warnbg); border-left:5px solid var(--warn); border-radius:8px; padding:14px 18px; margin:14px 0; }
+.bad{ background:var(--badbg); border-left:5px solid var(--bad); border-radius:8px; padding:14px 18px; margin:14px 0; }
+.purple{ background:var(--purplebg); border-left:5px solid var(--purple); border-radius:8px; padding:14px 18px; margin:14px 0; }
+.teal{ background:var(--tealbg); border-left:5px solid var(--teal); border-radius:8px; padding:14px 18px; margin:14px 0; }
+.contract{ background:#0f172a; color:#e6edf3; border-radius:14px; padding:22px 24px; margin:14px 0; font-size:17px; line-height:1.75; border:2px solid #2b5fd9; }
+.contract b{ color:#7ee787; } .contract .no-b{ color:#ff8f8f; }
+.step{ background:#f7f9fd; border:1px solid var(--line); border-radius:12px; padding:16px 18px; margin:12px 0; }
+.step .sn{ display:inline-block; background:var(--accent); color:#fff; width:28px; height:28px; border-radius:50%; text-align:center; line-height:28px; font-weight:700; margin-right:8px; font-size:14px; }
+table{ width:100%; border-collapse:collapse; margin:14px 0; font-size:14.5px; }
+th,td{ border:1px solid var(--line); padding:10px 12px; text-align:left; vertical-align:top; }
+thead th{ background:var(--accent); color:#fff; }
+tbody tr:nth-child(even){ background:#f7f9fd; }
+pre{ background:var(--code); color:#e6edf3; border-radius:10px; padding:16px 18px; overflow-x:auto; margin:12px 0; font-size:13.5px; line-height:1.5; }
+pre .c{ color:#7ee787; } pre .k{ color:#79c0ff; } pre .s{ color:#ffa657; } pre .m{ color:#8b949e; }
+code.inline{ background:#eceff5; padding:2px 7px; border-radius:6px; font-size:14px; color:#b3005e; }
+.yes{ color:var(--ok); font-weight:700; } .no{ color:var(--bad); font-weight:700; }
+.grid2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.grid3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
+.box{ border:1px solid var(--line); border-radius:12px; padding:16px; background:#fff; }
+.qa{ border-left:5px solid var(--bad); background:var(--badbg); padding:12px 16px; margin:16px 0; border-radius:8px; }
+.qa .q{ font-weight:700; font-size:17px; color:var(--bad); }
+.big{ font-size:18px; } .huge{ font-size:22px; font-weight:700; }
+.toc a{ color:var(--accent); text-decoration:none; } .toc li{ margin-bottom:5px; }
+.foot{ text-align:center; color:#8892a6; font-size:14px; margin-top:30px; }
+.flow{ display:flex; align-items:stretch; gap:10px; flex-wrap:wrap; margin:16px 0; }
+.node{ flex:1; min-width:130px; border-radius:12px; padding:14px; color:#fff; font-size:13.5px; }
+.node b{ display:block; font-size:14.5px; margin-bottom:4px; }
+.n-write{ background:#2b5fd9; } .n-store{ background:#217346; } .n-read{ background:#6d28d9; }
+.n-user{ background:#c97a00; } .n-evt{ background:#0f766e; } .n-meta{ background:#475569; }
+.arrow{ align-self:center; font-size:24px; color:#8892a6; }
+.kpi{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin:14px 0; }
+.kpi .box{ text-align:center; } .kpi .val{ font-size:20px; font-weight:800; color:var(--accent); } .kpi .lbl{ font-size:12.5px; color:#5a6580; }
+.lvl{ display:inline-block; padding:1px 8px; border-radius:6px; font-size:12.5px; font-weight:700; }
+.lvl.none{ background:#eceff5; color:#5a6580; } .lvl.search{ background:var(--accent2); color:var(--accent); }
+.lvl.sort{ background:var(--purplebg); color:var(--purple); } .lvl.agg{ background:var(--okbg); color:var(--ok); }
+.sticky-nav{ position:sticky; top:0; z-index:50; background:rgba(244,246,251,.94); backdrop-filter:blur(8px); border-bottom:1px solid var(--line); margin:0 -20px 18px; padding:10px 20px; }
+.sticky-nav-inner{ overflow-x:auto; white-space:nowrap; }
+.sticky-nav a{ font-size:12.5px; color:var(--accent); text-decoration:none; margin-right:14px; }
+.callout-jr{ background:linear-gradient(90deg,#fffbeb,#fef3c7); border:1px solid #f59e0b; border-radius:12px; padding:16px 18px; margin:14px 0; }
+.callout-jr strong{ color:#b45309; }
+.timeline{ border-left:3px solid var(--accent); margin:16px 0 16px 12px; padding-left:20px; }
+.timeline .t-item{ margin-bottom:18px; position:relative; }
+.timeline .t-item::before{ content:""; position:absolute; left:-27px; top:6px; width:12px; height:12px; border-radius:50%; background:var(--accent); border:2px solid #fff; box-shadow:0 0 0 2px var(--accent); }
+.badge-new{ display:inline-block; background:#0d7a3f; color:#fff; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px; margin-right:6px; }
+.badge-chg{ display:inline-block; background:#15803d; color:#fff; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px; margin-right:6px; border:1px dashed #bbf7d0; }
+.model-card{ border:2px solid #86efac; background:#e8f8ee; border-radius:14px; padding:18px 20px; margin:14px 0; }
+.model-card.changed{ border-style:dashed; }
+.model-card h3{ color:#0d7a3f; margin-top:0; }
+table tr.new-row td{ background:#dcfce7 !important; }
+table tr.new-row td:first-child{ border-left:4px solid #0d7a3f; }
+.field-new{ background:#dcfce7; padding:1px 6px; border-radius:4px; border:1px solid #86efac; color:#0d7a3f; font-weight:700; }
+.compare{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:14px 0; }
+.compare .before{ border:1px solid var(--line); border-radius:12px; padding:14px; background:#f8fafc; }
+.compare .after{ border:2px solid #86efac; border-radius:12px; padding:14px; background:#e8f8ee; }
+.compare h4{ margin-top:0; } .compare .before h4{ color:#64748b; } .compare .after h4{ color:#0d7a3f; }
+.scene{ border:2px solid var(--line); border-radius:14px; padding:18px 20px; margin:16px 0; background:#fafbff; }
+.scene h4{ color:#0f766e; margin-bottom:10px; font-size:17px; }
+pre .new{ color:#86efac; font-weight:700; }
+@media(max-width:780px){ .grid2,.grid3,.compare{ grid-template-columns:1fr; } .flow{ flex-direction:column; } .arrow{ transform:rotate(90deg); align-self:flex-start; margin-left:60px; } header.hero h1{ font-size:26px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <h1>Form &amp; Değer Saklama Mimarisi — A’dan Z’ye (Ana Sunum)</h1>
+  <p>Junior rehber akışı: değerlerin nerede tutulduğu, yazma/okuma, alan ekle/sil, fihrist (<code style="background:rgba(255,255,255,.25);padding:2px 6px;border-radius:4px">projectToAttr</code>),
+  Outbox/NATS — ve ayrı bölümde <b>çeviri / LabeledValue / display</b> yönetimi.
+  <code style="background:rgba(255,255,255,.25);padding:2px 6px;border-radius:4px">metadataVersion</code> bu sürümde yok.</p>
+  <span class="tag">⭐ Ana sunum</span>
+  <span class="tag">projectToAttr (bool)</span>
+  <span class="tag">LabeledValue · çeviri</span>
+  <span class="tag">CQRS + Outbox + NATS</span>
+</header>
+
+<nav class="sticky-nav"><div class="sticky-nav-inner">
+  <a href="#toc">İçindekiler</a>
+  <a href="#nasil-oku">Nasıl oku</a>
+  <a href="#problem">Problem</a>
+  <a href="#dort-kavram">4 kavram</a>
+  <a href="#sozlesme">Sözleşme</a>
+  <a href="#sozluk">Sözlük</a>
+  <a href="#buyuk-resim">Büyük resim</a>
+  <a href="#tablolar">Tablolar</a>
+  <a href="#deger-sekilleri">Değer şekilleri</a>
+  <a href="#yazma">Yazma</a>
+  <a href="#okuma">Okuma</a>
+  <a href="#alan-ekle">Alan ekle</a>
+  <a href="#alan-sil">Alan sil</a>
+  <a href="#projection">projectToAttr</a>
+  <a href="#modeller-son">Model son halleri</a>
+  <a href="#code">Code kuralı</a>
+  <a href="#yansima">Yansıma</a>
+  <a href="#form-list">Form List</a>
+  <a href="#ceviri">Çeviriler</a>
+  <a href="#dosya">Dosya</a>
+  <a href="#audit">Audit</a>
+  <a href="#outbox">Outbox</a>
+  <a href="#projektor">Projektör</a>
+  <a href="#ariza">Arıza</a>
+  <a href="#faz">Fazlar</a>
+  <a href="#sss">SSS</a>
+  <a href="#ornek-masraf">Masraf örneği</a>
+  <a href="#ozet">Özet</a>
+</div></nav>
+
+<section id="toc">
+  <h2><span class="num">★</span> İçindekiler (tam liste)</h2>
+  <ol class="toc big">
+    <li><a href="#nasil-oku">Bu sunumu nasıl oku?</a></li>
+    <li><a href="#problem">Problem — neden zor?</a></li>
+    <li><a href="#dort-kavram">Dört temel kavram</a></li>
+    <li><a href="#sozlesme">Mimari sözleşme</a></li>
+    <li><a href="#sozluk">Kavram sözlüğü</a></li>
+    <li><a href="#buyuk-resim">Büyük resim</a></li>
+    <li><a href="#tablolar">Tüm tablolar (alan alan)</a></li>
+    <li><a href="#deger-sekilleri">Değer şekilleri</a></li>
+    <li><a href="#yazma">Yazma yolu</a></li>
+    <li><a href="#okuma">Okuma yolları</a></li>
+    <li><a href="#alan-ekle">Alan eklenince</a></li>
+    <li><a href="#alan-sil">Alan silinince</a></li>
+    <li><a href="#projection">projectToAttr — Attr’a yazılsın mı?</a></li>
+    <li><a href="#modeller-son">Değişen modellerin son halleri</a></li>
+    <li><a href="#code">Property.code kuralı</a></li>
+    <li><a href="#yansima">Yansıma alanları</a></li>
+    <li><a href="#form-list">Form List &amp; RelatedInstance</a></li>
+    <li><a href="#ceviri">Çeviriler nasıl yönetilir? (LabeledValue · display)</a></li>
+    <li><a href="#dosya">Dosya / MinIO</a></li>
+    <li><a href="#audit">Değer geçmişi</a></li>
+    <li><a href="#outbox">Outbox → NATS</a></li>
+    <li><a href="#projektor">Generic projektör</a></li>
+    <li><a href="#ariza">Arıza senaryoları</a></li>
+    <li><a href="#performans">Ölçek &amp; riskler</a></li>
+    <li><a href="#alternatif">Neden diğerleri değil</a></li>
+    <li><a href="#faz">Uygulama fazları</a></li>
+    <li><a href="#senaryolar-gunluk">Günlük senaryo kartları</a></li>
+    <li><a href="#sss">SSS — junior’ın sık sorduğu 20 soru</a></li>
+    <li><a href="#ornek-masraf">Uçtan uca örnek: Masraf formu</a></li>
+    <li><a href="#ozet">Tek sayfalık özet</a></li>
+  </ol>
+</section>
+
+<section id="nasil-oku">
+  <h2><span class="num">0</span> Bu sunumu nasıl oku? (Junior için yol haritası)</h2>
+  <div class="callout-jr">
+    <strong>Kural:</strong> Her bölüm kendi başına anlaşılır. Takılırsan bir önceki “Benzetme” kutusuna dön.
+    Teknik terimler ilk geçtiklerinde sözlükte açıklanır. Tablo isimleri Flovo model dilindedir
+    (<code class="inline">Instance</code>, <code class="inline">InstanceValue</code>, <code class="inline">Property</code>…).
+  </div>
+  <p class="big">Okuma sırası (önerilen):</p>
+  <ol class="big">
+    <li><b>§1–§3</b> — Problem + 4 temel kavram + mimari sözleşme (bunu bilmeden devam etme).</li>
+    <li><b>§4–§6</b> — Sözlük + büyük resim + tüm tablolar (haritayı ezberle).</li>
+    <li><b>§7–§11</b> — Yazma/okuma + alan ekle/sil + projectToAttr (günlük iş).</li>
+    <li><b>§12+</b> — Model son halleri · code · yansıma · Form List · <b>çeviri bölümü</b> · dosya · audit.</li>
+    <li><b>§18–§22</b> — Outbox, projektör, arıza, fazlar, özet (operasyon).</li>
+  </ol>
+  <div class="analogy"><b>Benzetme (tüm sunum için tek metafor):</b>
+    Bir form kaydı = bir <b>klasör</b>. Klasörün içindeki belgeler = alan değerleri.
+    <b>Tapu senedi</b> (<code class="inline">InstanceValue</code>) klasörün asıl içeriğidir.
+    <b>Fihrist / kartotek</b> (<code class="inline">InstanceAttr</code>, <code class="inline">InstanceListItem</code>) “şu tutardan büyükleri bul” diye hızlı arama için çıkarılmış kopya kartlardır.
+    Kartlar yanarsa tapudan yeniden basılır. Tapu yanarsa felaket — onu koruruz.
+  </div>
+</section>
+
+<section id="problem">
+  <h2><span class="num">1</span> Problem — neden “sadece bir tablo” yetmez?</h2>
+  <p>Flovo’da her müşteri (organizasyon) kendi formlarını <b>Form Designer</b> ile tasarlar. Bir masraf formunda 20 alan olabilir; başka bir müşteride aynı “Masraf” 100+ alan olabilir. Üstelik alanlar <b>canlıda</b> eklenir, gizlenir, tipi değişir.</p>
+  <div class="grid2">
+    <div class="box"><h4>Müşteri A — Masraf</h4><p><b>20 alan:</b> tutar, şirket, fatura no, tarih, açıklama…</p></div>
+    <div class="box"><h4>Müşteri B — Masraf</h4><p><b>100+ alan:</b> proje kodu, 5 vergi alanı, onay notları, groupByTax kalem listesi, ek dosyalar…</p></div>
+  </div>
+  <p>Aynı anda sistem şunları da ister:</p>
+  <ul>
+    <li><b>Hızlı form açma</b> — kullanıcı kaydettiği formu hemen görsün.</li>
+    <li><b>Hızlı rapor / arama / sıralama / toplam</b> — “tutarı 5000’den büyük onay bekleyenler”.</li>
+    <li><b>Şema değişince migration cehennemi olmasın</b> — her alan eklemede <code class="inline">ALTER TABLE</code> yok.</li>
+    <li><b>Bozulunca toparlanabilsin</b> — projeksiyon yanlış olsa bile asıl veri kaybolmasın.</li>
+    <li><b>Audit / KVKK</b> — kim neyi ne zaman değiştirdi kanıtlanabilsin.</li>
+  </ul>
+  <h3>Klasik yanlış çözümler (neden elendi)</h3>
+  <table>
+    <thead><tr><th>Yaklaşım</th><th>Ne vaat eder</th><th>Neden ölçekte çöker</th></tr></thead>
+    <tbody>
+      <tr><td>Her alan = bir kolon</td><td>SQL kolay</td><td>Alan ekle = DDL; 150 kolon limiti/kâbus; her müşteri farklı şema</td></tr>
+      <tr><td>Account başına tablo</td><td>İzolasyon</td><td>Binlerce tablo; migration, backup, bağlantı planı ölür</td></tr>
+      <tr><td>Saf EAV (tek ana veri)</td><td>Esneklik</td><td>Form açmak = 100 satır pivot; tip kaybı (“10” &lt; “9”); rapor cehennemi</td></tr>
+      <tr><td>Her şey JSONB, indeks yok</td><td>Esneklik</td><td>Aralık/sıralama/toplam yavaş; rapor ölür</td></tr>
+    </tbody>
+  </table>
+  <div class="ok big"><b>Doğru yol:</b> Yazmayı esnek tut (<b>JSONB kaynak</b>), okumayı hızlı tut (<b>tipli projeksiyon fihristleri</b>), ikisini Outbox ile bağla. Buna CQRS denir — aşağıda açıyoruz.</div>
+</section>
+
+<section id="dort-kavram">
+  <h2><span class="num">2</span> Dört temel kavram — karıştırma!</h2>
+  <p class="big">Junior’ların en sık yaptığı hata: “form”, “alan”, “değer”, “liste” kelimelerini birbirinin yerine kullanmak. Bu dört kavram <b>ayrı tablolarda / ayrı yaşam döngüsünde</b> yaşar.</p>
+  <div class="grid2">
+    <div class="box">
+      <h4>1) Property (alan tanımı)</h4>
+      <p><b>Ne:</b> Designer’da çizilen alan. “Bu serviste <code class="inline">amount</code> adında sayısal bir alan var.”</p>
+      <p><b>Nerede:</b> Servis ayarları — <code class="inline">Property</code> tablosu.</p>
+      <p><b>Örnek alanlar:</b> <code class="inline">code</code>, <code class="inline">definition</code> (görünen ad), <code class="inline">controlTypeId</code>, <code class="inline">projectToAttr</code> (bool).</p>
+      <p><b>Değişmez kural:</b> <code class="inline">code</code> teknik kimliktir (sonra anlatıyoruz).</p>
+    </div>
+    <div class="box">
+      <h4>2) Instance (doldurulmuş form)</h4>
+      <p><b>Ne:</b> Kullanıcının açtığı / sürecin ürettiği <b>tek bir form kaydı</b>.</p>
+      <p><b>Nerede:</b> <code class="inline">Instance</code> — kimlik, durum, oluşturan, soft-delete.</p>
+      <p><b>Önemli:</b> Instance <b>değerleri taşımaz</b>. “Bu form onay bekliyor” bilgisi burada; “tutar=1800” burada değil.</p>
+      <p><b>Örnek:</b> Masraf #45821, status=Onay Bekliyor, creator=Ayşe.</p>
+    </div>
+    <div class="box">
+      <h4>3) InstanceValue (değerlerin tapusu)</h4>
+      <p><b>Ne:</b> O Instance’ın <b>tüm alan değerleri</b> tek JSONB kutuda.</p>
+      <p><b>Nerede:</b> <code class="inline">InstanceValue</code> — Instance ile <b>1–1</b>.</p>
+      <p><b>Örnek data:</b></p>
+      <pre>{
+  "amount": 1800,
+  "expenseType": "2",
+  "barcode": "8690…",
+  "groupByTax": [
+    {"giderTuru":"yemek","vergiOrani":18,"tutar":1000},
+    {"giderTuru":"ulasim","vergiOrani":8,"tutar":800}
+  ],
+  "receipt": "minio://org/…/fatura.pdf"
+}</pre>
+    </div>
+    <div class="box">
+      <h4>4) Projection (fihrist / kartotek)</h4>
+      <p><b>Ne:</b> Rapor-arama için JSONB’den <b>türetilmiş</b> tablolar.</p>
+      <p><b>Nerede:</b> <code class="inline">InstanceAttr</code> (skaler alanlar) · <code class="inline">InstanceListItem</code> (liste kalemleri).</p>
+      <p><b>Kritik:</b> Bunlar <b>kaynak değil</b>. Silinseler bile <code class="inline">InstanceValue</code>’dan yeniden üretilir.</p>
+      <p><b>Ne zaman kullanılır:</b> Liste, filtre, sıralama, toplam — <b>asla</b> tek form detay ekranı için değil.</p>
+    </div>
+  </div>
+  <div class="purple"><b>Ek ayrım — Service / ProcessInstance:</b>
+    <ul>
+      <li><code class="inline">Service</code> = form tipi tanımı (Masraf Servisi). Property’ler buraya bağlıdır.</li>
+      <li><code class="inline">ProcessInstance</code> = iş akışı çalışması. Bir ProcessInstance bir veya daha çok <code class="inline">Instance</code> üretebilir.</li>
+      <li><code class="inline">eventForm</code> tipinde servis → <b>Instance oluşmaz</b>; değerler geçici <code class="inline">parameters</code> ile taşınır (kalıcı değer saklama yok).</li>
+    </ul>
+  </div>
+</section>
+
+<section id="sozlesme">
+  <h2><span class="num">3</span> Mimari sözleşme — 3 cümle, asla bozulmaz</h2>
+  <div class="contract">
+    <p>1 — Bu sistem <span class="no-b">Event Sourcing DEĞİLDİR.</span> Olaylardan formu yeniden kurmayız. Olaylar sadece <b>projeksiyonu beslemek için taşıma aracıdır</b>.</p>
+    <p>2 — <b>Tek gerçek kaynak = <code>InstanceValue.data</code> (JSONB).</b> Nokta. Kullanıcı formunu buradan görür.</p>
+    <p>3 — <code>InstanceAttr</code>, <code>InstanceListItem</code>, rollup’lar <b>projection’dır</b>: bugün silinseler, yarın kaynakdan bit-bit aynı üretilir. İçlerinde “başka yerde olmayan” bilgi yoktur.</p>
+  </div>
+  <div class="analogy"><b>Benzetme:</b> Tapu senedi vs fotokopi. Fotokopiyi optimize edebilir, yırtıp yeniden basabilirsin. Tapuyu kaybedersen mahkeme gerekir.</div>
+  <div class="ok"><b>Pratik sonuçlar:</b>
+    <ul>
+      <li>Detay ekranı <b>asla</b> projeksiyona bakmaz → projection lag formu bozamaz.</li>
+      <li>Projeksiyon birkaç yüz ms bayat olabilir (eventual consistency) — rapor tarafında kabul.</li>
+      <li>Yedeklemede asıl korunan: <code class="inline">Instance</code> + <code class="inline">InstanceValue</code> + Property metadata.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="sozluk">
+  <h2><span class="num">4</span> Kavram sözlüğü — hiç bilmiyormuş gibi</h2>
+  <table>
+    <thead><tr><th>Terim</th><th>Basit anlam</th><th>Bu mimaride rolü</th></tr></thead>
+    <tbody>
+      <tr><td><b>JSONB</b></td><td>Postgres’in “içinde JSON tutan, üzerinde arama yapılabilen” kolon tipi</td><td><code class="inline">InstanceValue.data</code> — tüm alan değerleri burada</td></tr>
+      <tr><td><b>CQRS</b></td><td>Yazma modeli ≠ Okuma modeli</td><td>Yaz: JSONB · Oku (rapor): Attr/ListItem</td></tr>
+      <tr><td><b>Projection</b></td><td>Kaynaktan türetilmiş, yeniden üretilebilir kopya</td><td>InstanceAttr, InstanceListItem, rollup</td></tr>
+      <tr><td><b>EAV</b></td><td>Entity–Attribute–Value: her alan ayrı satır</td><td>Ana veri olarak KÖTÜ; projection olarak İYİ (tipli kolonlarla)</td></tr>
+      <tr><td><b>Outbox</b></td><td>Aynı transaction’da “işlenecek olay” yazmak</td><td>Value güncellenirken outbox satırı da yazılır → sonra NATS’a gider</td></tr>
+      <tr><td><b>Idempotency</b></td><td>Aynı iş iki kez gelse etki bir kez</td><td><code class="inline">version</code> karşılaştırması; projektör güvenli</td></tr>
+      <tr><td><b>GIN index</b></td><td>JSONB “eşittir / içerir” için özel index</td><td>barcode=X gibi sorgular; aralık/sıra ÇÖZMEZ</td></tr>
+      <tr><td><b>TOAST</b></td><td>Büyük değeri satır dışına koyma</td><td>Büyük JSONB otomatik sıkışır; okuma şeffaf</td></tr>
+      <tr><td><b>MVCC / bloat</b></td><td>Update = eski satır + yeni satır; eskiyi vacuum temizler</td><td>JSONB update maliyeti; fillfactor + autovacuum</td></tr>
+      <tr><td><b>WAL</b></td><td>Yazma günlüğü (replikasyon/geri alma)</td><td>Büyük update = daha çok WAL</td></tr>
+      <tr><td><b>NATS JetStream</b></td><td>Kalıcı mesaj kuyruğu</td><td>Outbox → kuyruk → projektör</td></tr>
+      <tr><td><b>MinIO</b></td><td>S3 uyumlu dosya deposu</td><td>PDF/görsel burada; JSONB’de sadece URL</td></tr>
+      <tr><td><b>projectToAttr</b></td><td>Alan Attr/ListItem fihristine yazılsın mı?</td><td>bool — true / false</td></tr>
+      <tr><td><b>RLS</b></td><td>Satır bazlı güvenlik (tenant izolasyonu)</td><td>organizationId ile kiracı ayrımı DB’de</td></tr>
+      <tr><td><b>Partition</b></td><td>Büyük tabloyu parçalara bölmek</td><td>HASH(serviceId) — vacuum/backup küçük parçalar</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="buyuk-resim">
+  <h2><span class="num">5</span> Büyük resim — 30 saniyede uçtan uca</h2>
+  <div class="flow">
+    <div class="node n-user"><b>1. Kullanıcı / Motor / API</b>Formu kaydeder veya changeList gönderir</div>
+    <div class="arrow">→</div>
+    <div class="node n-meta"><b>2. Kapıda doğrula</b>JSON Schema (Property metadata’dan)</div>
+    <div class="arrow">→</div>
+    <div class="node n-store"><b>3. InstanceValue</b>JSONB + version++ AYNI TX’de Outbox</div>
+    <div class="arrow">→</div>
+    <div class="node n-evt"><b>4. Outbox → NATS</b>Relay olayı kuyruğa bırakır</div>
+    <div class="arrow">→</div>
+    <div class="node n-write"><b>5. Projektör</b>Attr + ListItem sil+yeniden yaz</div>
+    <div class="arrow">→</div>
+    <div class="node n-read"><b>6. Rapor / arama</b>Fihristten hızlı sorgu</div>
+  </div>
+  <div class="grid2">
+    <div class="box"><h4>Detay ekranı yolu</h4><p>Kullanıcı formu açar → <b>sadece</b> <code class="inline">Instance</code> + <code class="inline">InstanceValue</code> (tek satır). Projeksiyon yok. Lag yok.</p></div>
+    <div class="box"><h4>Liste / rapor yolu</h4><p>“Tutar &gt; 1000, tarihe göre sırala” → <code class="inline">InstanceAttr</code> btree. Kalem bazlı → <code class="inline">InstanceListItem</code>.</p></div>
+  </div>
+  <pre><span class="m">-- Kaynak (tapu) — her form = 1 satır</span>
+Instance ──1:1──► InstanceValue { data jsonb, version }
+
+<span class="m">-- Fihristler (yeniden üretilebilir)</span>
+InstanceValue  =outbox+projektör=►  InstanceAttr
+                               =►  InstanceListItem
+                               =►  Rollup (opsiyonel, ağır özetler)</pre>
+</section>
+
+<section id="tablolar">
+  <h2><span class="num">6</span> Tüm tablolar — alan alan katalog</h2>
+  <p class="big">Aşağıdaki tablolar değer saklama mimarisinin <b>tam listesidir</b>. Junior: önce isimleri ezberle, sonra alanları.</p>
+
+  <h3>6.1 Instance (zaten var — değer tutmaz)</h3>
+  <p>Doldurulmuş formun <b>kimlik ve durum</b> kaydı. Sık değişen küçük alanlar burada kalır; JSONB’ye gömülmez.</p>
+  <table>
+    <thead><tr><th>Alan</th><th>Tip</th><th>Ne işe yarar</th></tr></thead>
+    <tbody>
+      <tr><td><code class="inline">id</code></td><td>int PK</td><td>Instance kimliği</td></tr>
+      <tr><td><code class="inline">serviceId</code></td><td>FK → Service</td><td>Hangi form tipi</td></tr>
+      <tr><td><code class="inline">processInstanceId</code></td><td>FK → ProcessInstance</td><td>Hangi akış üretti</td></tr>
+      <tr><td><code class="inline">creatorUserId</code></td><td>FK? → User</td><td>Sahip; <code class="inline">parameter</code> tipinde null</td></tr>
+      <tr><td><code class="inline">createdDate</code></td><td>datetime</td><td>Oluşturma anı (FlowInfo için native kolon)</td></tr>
+      <tr><td><code class="inline">statusId</code></td><td>FK → Status</td><td><b>Canlı akış durumu</b> — JSONB’de DEĞİL</td></tr>
+      <tr><td><code class="inline">delete</code></td><td>bool</td><td>Soft-delete</td></tr>
+    </tbody>
+  </table>
+  <div class="warn"><b>Neden status JSONB’de değil?</b> Her onayda status değişir. JSONB’de olsa her status değişiminde tüm değer kutusu yeniden yazılırdı + rapor bayatlardı. Kolon = hem canlı hem indeksli.</div>
+
+  <h3>6.2 InstanceValue — kaynak hakikat (tapu)</h3>
+  <p>Instance ile <b>1–1</b>. Büyük/seyrek-churn veri burada; status gibi sık-churn Instance’da.</p>
+  <table>
+    <thead><tr><th>Alan</th><th>Tip</th><th>Ne işe yarar</th></tr></thead>
+    <tbody>
+      <tr><td><code class="inline">instanceId</code></td><td>PK / FK → Instance</td><td>Hangi form</td></tr>
+      <tr><td><code class="inline">organizationId</code></td><td>int</td><td>Kiracı (RLS)</td></tr>
+      <tr><td><code class="inline">serviceId</code></td><td>int</td><td>Partition + sorgu pruning</td></tr>
+      <tr><td><code class="inline">data</code></td><td><b>jsonb</b></td><td>Tüm alan değerleri — <b>code-keyed</b></td></tr>
+      <tr><td><code class="inline">version</code></td><td>int</td><td>Her update +1; idempotency anahtarı</td></tr>
+      <tr><td><code class="inline">createdAt</code> / <code class="inline">updatedAt</code></td><td>timestamptz</td><td>İzleme</td></tr>
+    </tbody>
+  </table>
+  <pre><span class="c">CREATE TABLE</span> instance_value (
+  instance_id      <span class="k">bigint</span> <span class="c">PRIMARY KEY</span> <span class="c">REFERENCES</span> instance(id),
+  organization_id  <span class="k">int</span> <span class="c">NOT NULL</span>,
+  service_id       <span class="k">int</span> <span class="c">NOT NULL</span>,
+  data             <span class="k">jsonb</span> <span class="c">NOT NULL</span>,
+  version          <span class="k">int</span> <span class="c">NOT NULL DEFAULT</span> 1,
+  created_at       <span class="k">timestamptz</span> <span class="c">NOT NULL DEFAULT</span> now(),
+  updated_at       <span class="k">timestamptz</span> <span class="c">NOT NULL DEFAULT</span> now()
+) <span class="c">PARTITION BY HASH</span> (service_id);
+
+<span class="c">CREATE INDEX</span> ix_iv_data <span class="c">ON</span> instance_value <span class="c">USING</span> gin (data jsonb_path_ops);</pre>
+  <div class="ok"><b>code-keyed ne demek?</b> JSON anahtarları Property.id değil, <code class="inline">Property.code</code>’dur:
+  <code class="inline">{"amount":1800}</code> — API, iş kuralı, custom code aynı dili konuşur.</div>
+
+  <h3>6.3 InstanceAttr — skaler fihrist (tipli EAV projection)</h3>
+  <p>Her <b>sorgulanabilir</b> skaler alan → 1 satır. Formu göstermek için <b>kullanılmaz</b>.</p>
+  <table>
+    <thead><tr><th>Alan</th><th>Tip</th><th>Ne işe yarar</th></tr></thead>
+    <tbody>
+      <tr><td><code class="inline">instanceId</code>, <code class="inline">serviceId</code>, <code class="inline">organizationId</code></td><td>—</td><td>Kimlik + izolasyon</td></tr>
+      <tr><td><code class="inline">propertyCode</code></td><td>text</td><td>Hangi alan (<code class="inline">amount</code>)</td></tr>
+      <tr><td><code class="inline">numValue</code></td><td>numeric?</td><td>Sayısal değer</td></tr>
+      <tr><td><code class="inline">textValue</code></td><td>text?</td><td>Metin / kod (combobox kodu)</td></tr>
+      <tr><td><code class="inline">dateValue</code></td><td>timestamptz?</td><td>Tarih</td></tr>
+      <tr><td><code class="inline">boolValue</code></td><td>bool?</td><td>Checkbox</td></tr>
+      <tr class="new-row"><td><code class="inline">display</code> <span class="badge-new">EKLENİR</span></td><td>text?</td><td>Etiketli değerde görünen ad (rapor arama)</td></tr>
+      <tr class="new-row"><td><code class="inline">translationCode</code> <span class="badge-chg">VAR / NETLEŞİR</span></td><td>text?</td><td>Çeviri anahtarı; yoksa null</td></tr>
+    </tbody>
+  </table>
+  <pre><span class="c">PRIMARY KEY</span> (instance_id, service_id, property_code)
+<span class="c">CREATE INDEX</span> ix_num  <span class="c">ON</span> instance_attr (service_id, property_code, num_value);
+<span class="c">CREATE INDEX</span> ix_text <span class="c">ON</span> instance_attr (service_id, property_code, text_value);
+<span class="c">CREATE INDEX</span> ix_date <span class="c">ON</span> instance_attr (service_id, property_code, date_value);
+<span class="c">CREATE INDEX</span> ix_trgm <span class="c">ON</span> instance_attr <span class="c">USING</span> gin (text_value gin_trgm_ops);</pre>
+  <div class="analogy"><b>Benzetme:</b> Kütüphane fihristi. Kitap (form) rafta durur; fihrist kartı “yazar / yıl / konu” ile bulmanı sağlar. Kart yanlışsa kitabı raftan yeniden kataloglarsın.</div>
+  <div class="bad"><b>Klasik EAV ile fark:</b> Klasik EAV’de fihrist = tek gerçek → form açmak 100 satır pivot + tip kaybı. Bizde fihrist silinse bile tapu durur; tipler ayrı kolonlarda (9 &lt; 10 doğru).</div>
+
+  <h3>6.4 InstanceListItem — liste kalemleri fihristi</h3>
+  <p><code class="inline">groupByTax</code>, Key-Value List gibi “liste içinde obje” alanlar. Her kalemin her alt-alanı ayrı satır.</p>
+  <table>
+    <thead><tr><th>Alan</th><th>Ne işe yarar</th></tr></thead>
+    <tbody>
+      <tr><td><code class="inline">listCode</code></td><td>Hangi liste property’si (<code class="inline">groupByTax</code>)</td></tr>
+      <tr><td><code class="inline">itemIndex</code></td><td>Listedeki kaçıncı kalem (0,1,2…)</td></tr>
+      <tr><td><code class="inline">attrCode</code></td><td>Alt alan (<code class="inline">vergiOrani</code>, <code class="inline">tutar</code>)</td></tr>
+      <tr><td>num/text/date/bool</td><td>InstanceAttr ile aynı tip kolonları</td></tr>
+      <tr class="new-row"><td><code class="inline">display</code> <span class="badge-new">EKLENİR</span></td><td>Etiketli alt-alan görünen adı</td></tr>
+      <tr class="new-row"><td><code class="inline">translationCode</code> <span class="badge-new">EKLENİR</span></td><td>Çeviri anahtarı veya null</td></tr>
+    </tbody>
+  </table>
+  <pre><span class="c">PRIMARY KEY</span> (instance_id, service_id, list_code, item_index, attr_code)
+<span class="c">CREATE INDEX</span> ix_li_num <span class="c">ON</span> instance_list_item (service_id, list_code, attr_code, num_value);</pre>
+  <div class="ok"><b>Tek generic tablo</b> tüm liste kontrollerini karşılar. Her liste tipi için ayrı tablo YOK.</div>
+  <div class="warn"><b>Form List farklıdır:</b> Alt servis kayıtları ayrı <code class="inline">Instance</code>’lardır; ilişki <code class="inline">RelatedInstance</code> tablosundadır. ListItem, “aynı JSON içindeki kalemler” içindir — child formlar için değil.</div>
+
+  <h3>6.5 InstanceValueOutbox</h3>
+  <table>
+    <thead><tr><th>Alan</th><th>Ne işe yarar</th></tr></thead>
+    <tbody>
+      <tr><td><code class="inline">eventId</code></td><td>Olay kimliği</td></tr>
+      <tr><td><code class="inline">instanceId</code>, <code class="inline">serviceId</code>, <code class="inline">organizationId</code></td><td>Hangi form</td></tr>
+      <tr><td><code class="inline">version</code></td><td>Projektör idempotency</td></tr>
+      <tr><td><code class="inline">occurredAt</code></td><td>Zaman</td></tr>
+      <tr><td><code class="inline">processedAt</code></td><td>null = henüz işlenmedi</td></tr>
+    </tbody>
+  </table>
+  <div class="teal"><b>Kritik:</b> <code class="inline">UPDATE InstanceValue</code> ile <code class="inline">INSERT Outbox</code> <b>aynı veritabanı transaction’ında</b>. Biri yazılır diğeri yazılmaz durumu imkânsızdır.</div>
+
+  <h3>6.6 ReflectionLink (ParentProperty A′ için)</h3>
+  <p>Parent alanı değişince hangi child’ların güncelleneceğini bulmak için.</p>
+  <table>
+    <thead><tr><th>Alan</th><th>Ne işe yarar</th></tr></thead>
+    <tbody>
+      <tr><td><code class="inline">parentInstanceId</code> + <code class="inline">parentPropertyCode</code></td><td>Kaynak</td></tr>
+      <tr><td><code class="inline">childInstanceId</code> + <code class="inline">childPropertyCode</code></td><td>Hedef kopya</td></tr>
+    </tbody>
+  </table>
+
+  <h3>6.7 InstanceValueChange (değer geçmişi / audit)</h3>
+  <p>Append-only. <code class="inline">Property.saveChangeLog=true</code> alanlar için: kim, ne zaman, eski→yeni.</p>
+
+  <h3>6.8 RelatedInstance (zaten var)</h3>
+  <p>Form List / Combobox ile formlar arası ilişki. Değer saklamaz; “bu Instance şu Instance’a şu Property üzerinden bağlı” der.</p>
+
+  <h3>6.9 Property — bu mimariyle eklenen / netleşen alanlar</h3>
+  <table>
+    <thead><tr><th>Alan</th><th>Tip</th><th>Ne işe yarar</th></tr></thead>
+    <tbody>
+      <tr class="new-row"><td><code class="inline">projectToAttr</code> <span class="badge-new">YENİ BOOL</span></td><td>bool</td>
+        <td><b>true</b> = InstanceAttr / ListItem’a yaz · <b>false</b> = yalnız JSONB. (Eski çok seviyeli projectionLevel yok.)</td></tr>
+      <tr class="new-row"><td><code class="inline">hasTranslation</code> <span class="badge-new">YENİ BOOL</span></td><td>bool</td>
+        <td>Değer seçenekleri çeviri kullanıyor mu? (yardımcı; liste her zaman PropertyItem olmak zorunda değil)</td></tr>
+      <tr><td><code class="inline">code</code></td><td>string (immutable)</td><td>JSONB anahtarı + API kimliği — zaten var, kuralı netleşir</td></tr>
+      <tr><td><code class="inline">reflectionMode</code></td><td>snapshot · live · materialized</td><td>Yalnız parentProperty</td></tr>
+      <tr><td><code class="inline">savePropertyToDb</code></td><td>bool</td><td>Türetilmiş alan JSONB’ye yazılsın mı</td></tr>
+      <tr><td><code class="inline">saveChangeLog</code></td><td>bool</td><td>Değer geçmişi tutulsun mu</td></tr>
+    </tbody>
+  </table>
+  <div class="ok"><b>projectToAttr=false:</b> uzun not, imza, nadiren aranan alan — fihristi şişirmez.
+  <b>true:</b> tutar, tarih, fatura no, seçim kodu — rapor/filtre/sıra için Attr’da.</div>
+</section>
+
+<section id="deger-sekilleri">
+  <h2><span class="num">7</span> Değer şekilleri — JSONB’de ne nasıl durur?</h2>
+  <p>Her <code class="inline">controlType</code> aynı kutuya (JSONB) yazılır ama <b>şekli</b> farklıdır. Projektör şekle göre Attr veya ListItem üretir.</p>
+  <table>
+    <thead><tr><th>Şekil</th><th>Örnek kontrol</th><th>JSONB örneği</th><th>Projeksiyon</th></tr></thead>
+    <tbody>
+      <tr><td><b>Skaler sayı/metin/bool/tarih</b></td><td>numericTextbox, textbox, checkbox, datepicker</td><td><code class="inline">"amount": 1800</code></td><td>projectToAttr=true → Attr</td></tr>
+      <tr><td><b>Etiketli seçim (LabeledValue)</b></td><td>combobox, radio, key-value value…</td><td><code class="inline">{value, display, translationCode}</code></td><td>Attr: textValue=kod + display + translationCode</td></tr>
+      <tr><td><b>Liste-of-model</b></td><td>groupByTax, keyValueList</td><td>JSON dizi</td><td>InstanceListItem (unnest)</td></tr>
+      <tr><td><b>Yapısal JSON</b></td><td>mapViewer, imageAreaSelector</td><td><code class="inline">{lat,lng}</code> / nokta seti</td><td>Genelde projectToAttr=false; GIN gerekirse</td></tr>
+      <tr><td><b>Dosya</b></td><td>file</td><td>URL string (MinIO)</td><td>çoğunlukla false; URL aranacaksa true</td></tr>
+      <tr><td><b>Yansıma snapshot</b></td><td>userInfo, parentProperty(A)</td><td>Normal skaler gibi kopya</td><td>Attr’a normal alan gibi</td></tr>
+      <tr><td><b>Yansıma canlı</b></td><td>flowInfo status, parentProperty(B)</td><td><b>Yazılmaz</b></td><td>Kolon / join; Attr yok</td></tr>
+      <tr><td><b>Statik text</b></td><td>text (etiket)</td><td>Genelde yok / default</td><td>projectToAttr=false</td></tr>
+      <tr><td><b>Form List</b></td><td>formList</td><td>JSONB’de child id listesi veya sadece RelatedInstance</td><td>Child’ların kendi InstanceValue’su</td></tr>
+    </tbody>
+  </table>
+  <div class="callout-jr"><strong>Junior ipucu:</strong> Combobox’ta ekranda “Ulaşım” görürsün; DB’de <code class="inline">"2"</code> durur. İsim dile göre değişir; kod asla (rename-safe).</div>
+</section>
+
+<section id="yazma">
+  <h2><span class="num">8</span> Yazma yolu — adım adım (kullanıcı kaydetti)</h2>
+  <p class="big">Senaryo: Ayşe masraf formunda tutarı 1500 → 1800 yaptı ve kaydetti.</p>
+  <div class="timeline">
+    <div class="t-item">
+      <h4>Adım 1 — İstek gelir</h4>
+      <p>Frontend veya motor <code class="inline">changeList</code> / PATCH gönderir: <code class="inline">{ amount: 1800 }</code> (+ diğer alanlar partial veya full).</p>
+    </div>
+    <div class="t-item">
+      <h4>Adım 2 — Kapıda JSON Schema doğrulama</h4>
+      <p>Designer yayınından üretilen şema: <code class="inline">amount</code> number olmalı, <code class="inline">expenseType</code> bilinen kodlardan biri…</p>
+      <p><span class="no">amount: "abc"</span> → <b>red</b>, DB’ye hiç yazılmaz. Projektöre çöp sızmaz.</p>
+    </div>
+    <div class="t-item">
+      <h4>Adım 3 — Snapshot yansımalar (gerekirse)</h4>
+      <p>Yeni kayıt ise UserInfo alanları (departman, unvan) <b>şimdi</b> JSONB’ye kopyalanır ve dondurulur.</p>
+      <p>ParentProperty <code class="inline">reflectionMode=snapshot</code> ise parent’tan değer çekilip yazılır.</p>
+    </div>
+    <div class="t-item">
+      <h4>Adım 4 — Tek atomik transaction</h4>
+      <pre><span class="c">BEGIN</span>;
+  <span class="c">UPDATE</span> instance_value
+     <span class="c">SET</span> data = :yeni_jsonb,
+         version = version + 1,
+         updated_at = now()
+   <span class="c">WHERE</span> instance_id = 45821;
+
+  <span class="c">INSERT INTO</span> instance_value_outbox
+    (event_id, instance_id, service_id, organization_id, version, occurred_at)
+  <span class="c">VALUES</span> (...);
+
+  <span class="m">-- saveChangeLog=true alanlar için:</span>
+  <span class="c">INSERT INTO</span> instance_value_change (...);
+<span class="c">COMMIT</span>;</pre>
+      <div class="ok">Commit anında kullanıcı kendi formunu <b>anında</b> doğru görür (JSONB güncel). Projeksiyon henüz eski olabilir — sorun değil, detay Attr’a bakmaz.</div>
+    </div>
+    <div class="t-item">
+      <h4>Adım 5 — Arka plan (kullanıcı beklemez)</h4>
+      <p>Outbox relay → NATS JetStream → Generic projektör (aşağıda §18–19).</p>
+    </div>
+  </div>
+
+  <h3>Yazmanın dürüst maliyeti</h3>
+  <div class="warn"><b>JSONB update = tüm satırın yeniden yazılması (MVCC).</b>
+    Ekranda “sadece amount değişti” görünür; Postgres yeni bir satır versiyonu yazar. Bu yüzden JSONB’yi <b>küçük tutarız</b> (dosyalar MinIO’da).</div>
+  <table>
+    <thead><tr><th>Ne yazılır (tipik)</th><th>Adet</th></tr></thead>
+    <tbody>
+      <tr><td>InstanceValue satırı</td><td>1</td></tr>
+      <tr><td>Outbox olayı</td><td>1</td></tr>
+      <tr><td>GIN index bakımı</td><td>1 (anahtar sayısı kadar iş)</td></tr>
+      <tr><td>InstanceAttr satırları (yalnız sorgulanabilir)</td><td>~8–40</td></tr>
+      <tr><td>InstanceListItem</td><td>kalem × alt-alan</td></tr>
+    </tbody>
+  </table>
+  <p>≈ <b>15–40 fiziksel iş / kayıt</b>. BPM insan-güdümlü olduğu için (saniyede binlerce sensör değil) bu kabul edilebilir bölgededir.</p>
+
+  <h3>Kim yazar?</h3>
+  <ul>
+    <li><b>Kullanıcı (FE)</b> — form doldurma, saveAndRefreshOnAfterChange</li>
+    <li><b>Motor</b> — Değer Atama adımı, changeList ile aksiyon öncesi yazma</li>
+    <li><b>API / custom code</b> — PATCH /instances/{id}</li>
+    <li><b>İş kuralı sonucu</b> — frontend hesaplar, kaydet ile kalıcılaşır (veya motor yazar)</li>
+  </ul>
+
+  <h3>Kim ne okur / kim ne yazar? (matris)</h3>
+  <table>
+    <thead><tr><th>Aktör</th><th>Okur</th><th>Yazar</th><th>Attr kullanır mı?</th></tr></thead>
+    <tbody>
+      <tr><td>Form UI (detay)</td><td>Instance + InstanceValue</td><td>InstanceValue (+ outbox)</td><td class="no">Hayır</td></tr>
+      <tr><td>İş kuralı (FE realtime)</td><td>Bellekteki values</td><td>Doğrudan DB’ye değil (kaydet ile)</td><td class="no">Hayır</td></tr>
+      <tr><td>BPM motor (tek form)</td><td>InstanceValue (+ status kolonu)</td><td>InstanceValue / statusId</td><td class="no">Hayır</td></tr>
+      <tr><td>Liste / inbox</td><td>Attr + status (+ join)</td><td>—</td><td class="yes">Evet</td></tr>
+      <tr><td>Rapor / dashboard</td><td>Attr / ListItem / Rollup</td><td>—</td><td class="yes">Evet</td></tr>
+      <tr><td>Customer API GET by id</td><td>InstanceValue</td><td>—</td><td class="no">Hayır</td></tr>
+      <tr><td>Customer API search</td><td>GIN ve/veya Attr</td><td>—</td><td>Sorgu tipine göre</td></tr>
+      <tr><td>Projektör</td><td>InstanceValue + Property meta</td><td>Attr / ListItem / Rollup</td><td>Üretir</td></tr>
+    </tbody>
+  </table>
+  <div class="callout-jr"><strong>Ezber cümle:</strong> “İnsan formu doldururken ve motor tek kayda bakarken tapuya bakarız. Çok kayıt arasında gezerken fihriste bakarız.”</div>
+</section>
+
+<section id="okuma">
+  <h2><span class="num">9</span> Okuma yolları — hangi sorgu nereye gider?</h2>
+  <p class="huge" style="color:var(--accent);">Altın kural: Detay = JSONB · Arama/sıra/aralık = Attr · Kalem = ListItem</p>
+
+  <h3>9.1 Detay — formu aç</h3>
+  <pre><span class="c">SELECT</span> i.*, v.data, v.version
+<span class="c">FROM</span> instance i
+<span class="c">JOIN</span> instance_value v <span class="c">ON</span> v.instance_id = i.id
+<span class="c">WHERE</span> i.id = 45821;</pre>
+  <ul>
+    <li>Pivot yok, Attr yok.</li>
+    <li>Etiketli seçim: LabeledValue (value/display/translationCode) JSONB’den gelir; EN UI gerekirse Translation ile çözer.</li>
+    <li>Canlı yansıma (status): <code class="inline">i.statusId</code> kolonundan.</li>
+    <li>Dosya: URL’den MinIO render.</li>
+  </ul>
+
+  <h3>9.2 Eşittir / içerir — GIN</h3>
+  <pre><span class="c">SELECT</span> instance_id <span class="c">FROM</span> instance_value
+<span class="c">WHERE</span> service_id = 42
+  <span class="c">AND</span> data @&gt; <span class="s">'{"barcode":"8690123456789"}'</span>;</pre>
+  <div class="ok">Tek GIN, <b>herhangi</b> alanda eşittir. Yeni alan eklemek yeni index istemez. Attr’a yansıtılmamış alan bile bulunabilir!</div>
+
+  <h3>9.3 Aralık / sıralama — InstanceAttr</h3>
+  <pre><span class="c">SELECT</span> instance_id <span class="c">FROM</span> instance_attr
+<span class="c">WHERE</span> service_id = 42
+  <span class="c">AND</span> property_code = <span class="s">'amount'</span>
+  <span class="c">AND</span> num_value &gt; 1000
+<span class="c">ORDER BY</span> num_value <span class="c">DESC</span>
+<span class="c">LIMIT</span> 50;</pre>
+
+  <h3>9.4 Kalem bazlı rapor — InstanceListItem</h3>
+  <pre><span class="c">SELECT</span> instance_id, item_index, num_value <span class="c">AS</span> vergi_orani
+<span class="c">FROM</span> instance_list_item
+<span class="c">WHERE</span> service_id = 42
+  <span class="c">AND</span> list_code = <span class="s">'groupByTax'</span>
+  <span class="c">AND</span> attr_code = <span class="s">'vergiOrani'</span>
+<span class="c">ORDER BY</span> num_value <span class="c">DESC</span>;</pre>
+  <p>Rapor “kalemi tek satır” isterse (<code class="inline">giderTuru | vergiOrani | tutar</code>) → <code class="inline">(instance_id, item_index)</code> üzerinde <b>pivot</b> yapılır. Sayısal sıra index’ten gelir.</p>
+
+  <h3>9.5 Sorgu tipi → çözüm matrisi</h3>
+  <table>
+    <thead><tr><th>İhtiyaç</th><th>Nereye</th><th>Not</th></tr></thead>
+    <tbody>
+      <tr><td>Formu göster</td><td>InstanceValue</td><td>Attr’a bakma</td></tr>
+      <tr><td>alan = X</td><td>GIN</td><td>projectToAttr şart değil (JSONB)</td></tr>
+      <tr><td>&gt; / &lt; / BETWEEN</td><td>InstanceAttr</td><td>SORT+</td></tr>
+      <tr><td>ORDER BY alan</td><td>InstanceAttr</td><td>SORT+</td></tr>
+      <tr><td>ILIKE %metin% / isim</td><td>Attr (+ display)</td><td>projectToAttr=true</td></tr>
+      <tr><td>Kalem filtre/toplam</td><td>InstanceListItem</td><td>—</td></tr>
+      <tr><td>Cross-form ağır SUM</td><td>Rollup tablosu</td><td>Canlı GROUP BY ölçekte yetmez</td></tr>
+      <tr><td>İsme göre sırala / ara (etiketli)</td><td>Attr.display (projectToAttr=true)</td><td>LabeledValue; başka dil için translationCode</td></tr>
+      <tr><td>Status filtre</td><td>Instance.statusId</td><td>Attr değil</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="alan-ekle">
+  <h2><span class="num">10</span> Alan EKLENİNCE — arka planda ne olur?</h2>
+  <div class="callout-jr"><strong>Kısa cevap:</strong> <code class="inline">ALTER TABLE</code> yok. Metadata’ya satır eklenir. Eski formlar bozulmaz. Yeni yazımlarda yeni anahtar dolmaya başlar.</div>
+
+  <h3>Senaryo: Designer’a <code class="inline">projectCode</code> textbox eklendi</h3>
+  <div class="step"><span class="sn">1</span><b>Property kaydı oluşur</b><br>
+    <code class="inline">code</code> (auto-generate veya draft), <code class="inline">definition="Proje Kodu"</code>,
+    <code class="inline">controlTypeId=textbox</code>, <code class="inline">projectToAttr=true|false</code>.</div>
+  <div class="step"><span class="sn">2</span><b>Şema / Designer kaydı güncellenir</b><br>
+    DDL yok. JSON Schema / kapı doğrulama yeni alanı tanır. metadataVersion kullanılmaz.</div>
+  <div class="step"><span class="sn">3</span><b>Eski Instance’lar</b><br>
+    JSONB’de <code class="inline">projectCode</code> anahtarı <b>yoktur</b>. Okuma = null / boş. Hata değil — “bu kayıt o alan yokken yazılmış”.</div>
+  <div class="step"><span class="sn">4</span><b>Yeni kayıt / güncelleme</b><br>
+    Kullanıcı doldurursa <code class="inline">data.projectCode = "P-9"</code> yazılır → outbox → projektör.
+    projectToAttr=true ise InstanceAttr’a satır düşer. <b>Yeni index gerekmez</b> (sabit index seti, property_code kolon).</div>
+  <div class="step"><span class="sn">5</span><b>Geçmişe sorgu lazımsa</b><br>
+    Alan zaten JSONB’de (yeni kayıtlarda) vardır. Eski kayıtlarda yoksa backfill job’u default yazar (ürün kararı) — zorunlu değil.</div>
+
+  <div class="analogy"><b>Benzetme:</b> Evine yeni bir oda eklemek için tüm mahalleyi yıkmazsın. Yeni odanın kapısı metadata’dır; eski evler o kapısız yaşamaya devam eder.</div>
+
+  <h3>Junior için “yanlış beklenti” uyarısı</h3>
+  <div class="bad">
+    <p><b>Yanlış düşünce:</b> “Yeni kolon ekledim, eski 1 milyon satıra otomatik default yazıldı.”</p>
+    <p><b>Doğru düşünce:</b> Eski JSONB dokunulmaz. Anahtar yok = uygulama katmanında null. İstersen ayrı backfill job’u default basar — bu ürün kararı, mimari zorunluluk değil.</p>
+  </div>
+  <div class="ok">
+    <p><b>Yanlış düşünce:</b> “Attr’a yansıtmadığım alanı hiç sorgulayamam.”</p>
+    <p><b>Doğru düşünce:</b> <code class="inline">alan = değer</code> için GIN yeter (Attr şart değil). Attr; aralık, sıralama, prefix, ILIKE, aggregate içindir.</p>
+  </div>
+
+  <h3>projectToAttr sonradan false → true yapıldıysa</h3>
+  <ol>
+    <li>Property’de bayrak true yapılır.</li>
+    <li><b>Bulk rebuild</b> job: o servisin tüm InstanceValue’larından Attr satırları yeniden üretilir (batch’li, throttle’lı).</li>
+    <li>“Projection ready” sinyali gelene kadar rapor o alanı otoritatif saymaz (kısmi sonuç riski).</li>
+    <li>Yeni yazımlar zaten otomatik yansır.</li>
+  </ol>
+  <div class="kpi">
+    <div class="box"><div class="val">~20 dk</div><div class="lbl">1M form rebuild (throttle)</div></div>
+    <div class="box"><div class="val">~100 dk</div><div class="lbl">5M form (ölçek varsayımı)</div></div>
+    <div class="box"><div class="val">0 DDL</div><div class="lbl">Migration / downtime yok</div></div>
+  </div>
+</section>
+
+<section id="alan-sil">
+  <h2><span class="num">11</span> Alan SİLİNİNCE / gizlenince — arka planda ne olur?</h2>
+  <p>Üç farklı “silme” vardır; karıştırma:</p>
+  <table>
+    <thead><tr><th>Tür</th><th>Ne yapılır</th><th>Eski JSONB</th><th>Attr</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>Soft hide</b> (profil / visible)</td>
+        <td>UI’da görünmez; Property durur</td>
+        <td>Durur, yazılmaya devam edebilir</td>
+        <td>Seviye aynıysa durur</td>
+      </tr>
+      <tr>
+        <td><b>Designer’dan kaldır (soft retire)</b></td>
+        <td>Property deleted/retired; yeni formlarda yok</td>
+        <td><b>Orphan anahtar kalır</b> (tarihsel veri)</td>
+        <td>Yeni yazımda üretilmez; rebuild ile temizlenebilir</td>
+      </tr>
+      <tr>
+        <td><b>Hard purge</b> (nadir, KVKK)</td>
+        <td>Job: JSONB’den anahtarı sil + Attr sil</td>
+        <td>Anahtar silinir</td>
+        <td>Silinir</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="warn"><b>Varsayılan davranış = soft retire.</b> “Alanı sildim” diye geçmiş faturalardaki değeri yok etmeyiz. Denetim/rapor geçmişi bozulmasın.</div>
+  <div class="step"><span class="sn">1</span>Property <code class="inline">deleted=true</code> veya aktif tanım listesinden çıkar.</div>
+  <div class="step"><span class="sn">2</span>JSON Schema artık yeni yazımda o alanı beklemez (veya ignore).</div>
+  <div class="step"><span class="sn">3</span>Projektör metadata’ya bakarak o code için Attr satırı <b>üretmez</b>.</div>
+  <div class="step"><span class="sn">4</span>İsteğe bağlı cleanup: orphan anahtarları JSONB’den temizleyen bakım job’u (ürün/KVKK politikası).</div>
+  <div class="purple"><b>projectToAttr true → false:</b> Rebuild sonrası Attr satırları silinir; JSONB’deki değer <b>kalır</b>. Tekrar true + rebuild ile geri alınabilir.</div>
+</section>
+
+<section id="projection">
+  <h2><span class="num">12</span> projectToAttr — Attr’a yazılsın mı? (bool)</h2>
+  <p class="big">Eski çok seviyeli <code class="inline">projectionLevel</code> (NONE/SEARCH/SORT/AGGREGATE) <b>yok</b>.
+  Tek soru: bu alan fihrist tablolarına (<code class="inline">InstanceAttr</code> / <code class="inline">InstanceListItem</code>) <b>kaydedilecek mi?</b></p>
+  <table>
+    <thead><tr><th>projectToAttr</th><th>Anlam</th><th>Nereye</th><th>Örnek</th></tr></thead>
+    <tbody>
+      <tr><td><span class="lvl none">false</span></td><td>Yalnız formda / JSONB’de dursun</td><td>Attr’a yazılmaz (eşittir için GIN yeter)</td><td>uzun açıklama, imza notu</td></tr>
+      <tr><td><span class="lvl search">true</span></td><td>Rapor · filtre · sıra · isim arama</td><td>InstanceAttr (veya ListItem)</td><td>tutar, tarih, fatura no, seçim alanı</td></tr>
+    </tbody>
+  </table>
+  <div class="ok">Pratikte alanların <b>%10–20’si</b> true olur. Sonradan değiştirilebilir (rebuild ile).
+  Tipli kolonlar (num/text/date/bool) sayesinde true olan her alan hem eşitlik hem aralık/sıra için kullanılabilir —
+  ayrı SORT/AGGREGATE seviyesi gerekmez. Ağır cross-form toplam için ayrıca rollup (opsiyonel) düşünülür.</div>
+  <div class="analogy"><b>Benzetme:</b> Her kitaba fihrist kartı basma. Sadece aranacak kitaplara kart bas (<code class="inline">projectToAttr=true</code>).</div>
+</section>
+
+<section id="modeller-son">
+  <h2><span class="num">12b</span> Değişen modellerin son halleri</h2>
+  <p>Aşağıda: <b>önce kaç alan vardı → ne eklendi → toplam</b>. “Yeni tablo” değil; mevcut modellere ek / şekil netliği.</p>
+
+  <div class="model-card changed">
+    <h3><span class="badge-chg">InstanceValue</span> — son hâl (tapu)</h3>
+    <p><b>Önce (çekirdek):</b> instanceId · organizationId · serviceId · data · version · createdAt · updatedAt
+      → <b>7 alan</b> (metadataVersion <b>yok / çıkarıldı</b>).</p>
+    <p><b>Kolon eklenmez.</b> Değişen: <code class="inline">data</code> JSONB <b>yazım şekli</b> — etiketli seçimler LabeledValue objesi olur.</p>
+    <p><b>Toplam kolon:</b> hâlâ <b>7</b>. Şekil zenginleşir, şema kolon sayısı artmaz.</p>
+  </div>
+
+  <div class="model-card changed">
+    <h3><span class="badge-chg">InstanceAttr</span> — son hâl (fihrist)</h3>
+    <p><b>Önce:</b> instanceId · serviceId · organizationId · propertyCode · numValue · textValue · dateValue · boolValue
+      → <b>8 alan</b>.</p>
+    <p><b>+2 eklenir:</b></p>
+    <table>
+      <thead><tr><th>Yeni alan</th><th>Tip</th><th>Ne işe yarar</th></tr></thead>
+      <tbody>
+        <tr class="new-row"><td><span class="field-new">display</span></td><td>text?</td><td>Rapor isim arama / sıra (etiketli değer)</td></tr>
+        <tr class="new-row"><td><span class="field-new">translationCode</span></td><td>text?</td><td>Çeviri köprüsü; yoksa null</td></tr>
+      </tbody>
+    </table>
+    <p><b>Son toplam: 10 alan.</b> Skaler satırlarda display/translationCode = null.</p>
+  </div>
+
+  <div class="model-card changed">
+    <h3><span class="badge-chg">InstanceListItem</span> — son hâl</h3>
+    <p><b>Önce:</b> instanceId · serviceId · organizationId · listCode · itemIndex · attrCode · num/text/date/bool
+      → <b>~10 alan</b> (tip kolonlarıyla).</p>
+    <p><b>+2:</b> <span class="field-new">display</span> · <span class="field-new">translationCode</span></p>
+    <p><b>Son toplam: ~12 alan.</b></p>
+  </div>
+
+  <div class="model-card changed">
+    <h3><span class="badge-chg">Property</span> — son hâl (çekirdeğe ek)</h3>
+    <p>Mevcut çekirdek durur (id, serviceId, code, definition, translationCode, controlTypeId, …).</p>
+    <p><b>+2 netleşen / eklenen:</b></p>
+    <table>
+      <thead><tr><th>Alan</th><th>Tip</th><th>Not</th></tr></thead>
+      <tbody>
+        <tr class="new-row"><td><span class="field-new">projectToAttr</span></td><td>bool</td><td>Fihriste yazılsın mı? (eski projectionLevel yerine)</td></tr>
+        <tr class="new-row"><td><span class="field-new">hasTranslation</span></td><td>bool</td><td>Değer çevirisi kullanılıyor mu?</td></tr>
+      </tbody>
+    </table>
+    <p>Örnek sayım (sadeleştirilmiş çekirdek 6 alan + 2 yeni = <b>8</b> bu kesitte; gerçek Property’de daha çok tipe-özel alan vardır).</p>
+  </div>
+
+  <div class="model-card">
+    <h3><span class="badge-new">LabeledValue</span> — yeni şekil (tablo değil)</h3>
+    <p>value · display · translationCode — JSONB ve Attr/ListItem’a açılır. Ayrı tablo yok.</p>
+  </div>
+
+  <div class="teal"><b>Outbox:</b> metadataVersion alanı yok. Olayda instanceId + version (+ serviceId) yeter; projektör güncel Property’den
+    <code class="inline">projectToAttr</code> / tip okur.</div>
+</section>
+
+<section id="code">
+  <h2><span class="num">13</span> Property.code — neden dondurulur?</h2>
+  <p class="big"><code class="inline">code</code> = teknik kimlik. <code class="inline">definition</code> / çeviri = insanın gördüğü isim.</p>
+  <div class="grid2">
+    <div class="box"><h4>code (dondurulur)</h4>
+      <ul>
+        <li>JSONB anahtarı</li>
+        <li>InstanceAttr.propertyCode</li>
+        <li>İş kuralları, view-profile bağları</li>
+        <li>Customer API / custom code alanı</li>
+      </ul>
+      <p><span class="pill bad">Değiştirmek = kırıcı</span></p>
+    </div>
+    <div class="box"><h4>definition / translation (serbest)</h4>
+      <ul>
+        <li>Ekranda “Tutar” / “Amount”</li>
+        <li>Depolamaya dokunmaz</li>
+        <li>Rename = çeviri düzenlemesi</li>
+      </ul>
+      <p><span class="pill ok">İstediğin zaman değişir</span></p>
+    </div>
+  </div>
+  <div class="bad"><b>code’u sonradan değiştirirsen:</b> Eski JSONB eski anahtarla kalır → yeni sorgu bulamaz; iş kuralları/API kırılır; kitlesel rewrite + rebuild + dış tüketici bildirimi gerekir. Bu “Designer tıkı” olmamalı.</div>
+  <div class="ok"><b>Kurallar:</b>
+    <ul>
+      <li>Tercihen <b>auto-generate</b> (kullanıcı sadece etiketi düzenler).</li>
+      <li><b>Draft penceresi:</b> henüz hiç Instance yokken code değişebilir; ilk veri sonrası kilit.</li>
+      <li>Zorunlu rename = nadir admin migrasyonu (alias + rewrite + API versiyonlama).</li>
+    </ul>
+  </div>
+</section>
+
+<section id="yansima">
+  <h2><span class="num">14</span> Yansıma alanları — UserInfo · FlowInfo · ParentProperty</h2>
+  <p>Bu alanların “kullanıcının yazdığı” bir değeri yoktur; başka yerin yansımasıdır. <b>Tek sync mantığı yoktur</b> — tipe göre karar verilir.</p>
+
+  <h3>Karar kuralı (2 soru)</h3>
+  <ol class="big">
+    <li>Bu değer forma yazıldıktan sonra <b>değişir mi?</b></li>
+    <li>Üzerinde <b>rapor / filtre / sıralama</b> yapacak mıyım?</li>
+  </ol>
+  <table>
+    <thead><tr><th>Cevap</th><th>Yöntem</th><th>Benzetme</th></tr></thead>
+    <tbody>
+      <tr><td>Değişmez</td><td><b>A — Snapshot</b> (JSONB’ye kopyala, dondur)</td><td>Fotoğraf</td></tr>
+      <tr><td>Değişir + sadece göster</td><td><b>B — Canlı</b> (yazma, okurken join/kolon)</td><td>Pencereden bak</td></tr>
+      <tr><td>Değişir + ağır rapor</td><td><b>A′ — Materialized + propagation</b></td><td>Fotoğrafı sürekli tazele (pahalı)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Alan alan karar (Flovo varsayılanları)</h3>
+  <table>
+    <thead><tr><th>Alan</th><th>Yöntem</th><th>Nerede durur</th><th>Neden</th></tr></thead>
+    <tbody>
+      <tr><td>createDate, instanceId, creatorUserId</td><td>Native kolon</td><td><code class="inline">Instance</code></td><td>Zaten var; kopyalamaya gerek yok</td></tr>
+      <tr><td>UserInfo (departman/unvan anı)</td><td><b>A Snapshot</b></td><td>InstanceValue.data</td><td>Audit: “o anki departman”</td></tr>
+      <tr><td>currentStatus (FlowInfo)</td><td><b>B Canlı</b></td><td><code class="inline">Instance.statusId</code></td><td>Sürekli değişir + çok raporlanır</td></tr>
+      <tr><td>ParentProperty (varsayılan)</td><td><b>A Snapshot</b></td><td>InstanceValue.data</td><td>Audit-dostu; ucuz</td></tr>
+      <tr><td>ParentProperty “hep güncel göster”</td><td><b>B</b></td><td>Referans + join</td><td>Rapor zor</td></tr>
+      <tr><td>ParentProperty “güncel + ağır rapor”</td><td><b>A′</b></td><td>data + ReflectionLink + consumer</td><td>Fan-out maliyeti</td></tr>
+    </tbody>
+  </table>
+
+  <h3>A′ propagation nasıl çalışır?</h3>
+  <div class="timeline">
+    <div class="t-item">Parent InstanceValue update → outbox</div>
+    <div class="t-item">Reflection-propagation consumer: ReflectionLink’ten child’ları bul</div>
+    <div class="t-item">Her child’ın InstanceValue’sunu güncelle (kopyayı tazele)</div>
+    <div class="t-item">Child’ın kendi outbox’ı → Attr yeniden yansıtılır</div>
+  </div>
+  <div class="bad"><b>Sınırlar zorunlu:</b> derinlik limiti · döngü tespiti · asenkron · yalnız Designer’da <code class="inline">materialized</code> seçili alanlar. Varsayılan A′ değildir.</div>
+</section>
+
+<section id="form-list">
+  <h2><span class="num">15</span> Form List &amp; RelatedInstance — alt formlar</h2>
+  <p>Form List, JSON içine gömülü kalem <b>değildir</b>. Her satır <b>ayrı bir Instance</b> (çoğu zaman ayrı Service / alt süreç).</p>
+  <div class="grid2">
+    <div class="box"><h4>groupByTax (liste-of-model)</h4>
+      <p>Aynı InstanceValue JSONB içinde dizi.</p>
+      <p>Projeksiyon: <code class="inline">InstanceListItem</code></p>
+    </div>
+    <div class="box"><h4>Form List (alt servis)</h4>
+      <p>Her kalem = child <code class="inline">Instance</code> + kendi <code class="inline">InstanceValue</code>.</p>
+      <p>İlişki: <code class="inline">RelatedInstance</code></p>
+    </div>
+  </div>
+  <h3>RelatedInstance alanları</h3>
+  <ul>
+    <li><code class="inline">instanceId</code> — işaret edilen (child) form</li>
+    <li><code class="inline">relatedInstanceId</code> — ilişkiyi kuran property’nin bulunduğu form (parent)</li>
+    <li><code class="inline">relatedPropertyId</code> — Form List / Combobox property’si</li>
+  </ul>
+  <div class="ok"><b>Değer aktarımı:</b> parameterTransfer / propertyTransferParameters ile parent→child kopyalama <b>uygulama katmanında</b> yazma yapar (normal InstanceValue update). Projeksiyon otomatik yakalar.</div>
+  <div class="warn"><b>Tik / seçim durumu</b> (profil bazlı “seçili mi?”) değer saklama değil; ayrı per-user-per-view tablo (koşullu geliştirme D14).</div>
+</section>
+
+
+<section id="ceviri">
+  <h2><span class="num">16</span> Çeviriler nasıl yönetilir? — LabeledValue · display · Attr</h2>
+  <div class="callout-jr">
+    <strong>Bu bölüm ayrı bir “çeviri mimarisi” paketidir.</strong>
+    Ana değer saklama (JSONB + Attr + Outbox) aynı kalır; burada etiketli seçim değerlerinin
+    <b>value / display / translationCode</b> ile nasıl yazıldığı, raporlandığı ve dinamik listelerin nasıl yönetildiği anlatılır.
+  </div>
+
+  <h3>16.1 Problem — kod ≠ görünen ad</h3>
+  <p class="big">Ekranda <b>“Elma”</b>, sistemde çoğu zaman <b>“1”</b>. Rapor “Elma’ya göre ara” derse yalnız kod yetmez.</p>
+  <div class="purple"><b>Kapsam:</b> Yalnız combobox değil — kodu ile etiketi farklı olan her seçim
+    (radio, key-value value, liste alt-seçimi, multi-select…). Sayı/metin/tarih <b>sarılmaz</b>.</div>
+
+  <h3>16.2 LabeledValue — üç kutu</h3>
+  <table>
+    <thead><tr><th>Kutu</th><th>Ne?</th><th>Örnek</th></tr></thead>
+    <tbody>
+      <tr><td><code class="inline">value</code></td><td>Kod</td><td><code class="inline">1</code></td></tr>
+      <tr><td><code class="inline">display</code></td><td>Org <b>defaultLang</b> görünen ad (snapshot)</td><td><code class="inline">elma</code></td></tr>
+      <tr><td><code class="inline">translationCode</code></td><td>Çeviri anahtarı veya null</td><td><code class="inline">appleTranslationCode</code></td></tr>
+    </tbody>
+  </table>
+  <div class="ok"><b>display dili sabittir:</b> şirket defaultLang. EN UI’da “Apple” seçilse bile DB’ye display=elma yazılır (dağılmasın).</div>
+
+  <h3>16.3 JSONB — önce / sonra</h3>
+  <div class="compare">
+    <div class="before">
+      <h4>Önce</h4>
+<pre>{
+  <span class="s">"amount"</span>: <span class="c">1800</span>,
+  <span class="s">"expenseType"</span>: <span class="s">"1"</span>
+}</pre>
+    </div>
+    <div class="after">
+      <h4>Sonra</h4>
+<pre>{
+  <span class="s">"amount"</span>: <span class="c">1800</span>,
+  <span class="s">"expenseType"</span>: {
+    <span class="s">"value"</span>: <span class="s">"1"</span>,
+    <span class="new">"display"</span>: <span class="s">"elma"</span>,
+    <span class="new">"translationCode"</span>: <span class="s">"apple…"</span>
+  }
+}</pre>
+    </div>
+  </div>
+
+  <h3>16.4 Genel yol vs rapor yolu</h3>
+  <div class="grid2">
+    <div class="box">
+      <h4>Genel (form aç / kaydet)</h4>
+      <p><b>InstanceValue.data</b> — Attr’a bakılmaz. EN UI → translationCode ile Translation’dan çözer; JSONB display’e dokunmaz.</p>
+    </div>
+    <div class="box" style="border-color:#86efac;background:#e8f8ee">
+      <h4>Rapor (ara / sırala)</h4>
+      <p><b>InstanceAttr.display</b> (projectToAttr=true). JSONB taranmaz.
+      <code class="inline">display ILIKE '%elma%'</code></p>
+    </div>
+  </div>
+
+  <h3>16.5 Display nereden gelir? (PropertyItem şart değil)</h3>
+  <div class="warn"><b>Yanlış varsayım:</b> “Tüm seçenekler PropertyItem’da.” Değil —
+    iş kuralı / dataSource / API ile dolan listede backend katalog <b>bilmeyebilir</b>.</div>
+  <table>
+    <thead><tr><th>Yol</th><th>Liste</th><th>display kaynağı</th></tr></thead>
+    <tbody>
+      <tr><td><b>A Statik</b></td><td>PropertyItem</td><td>Backend value→item→definition/Translation</td></tr>
+      <tr><td><b>B Dinamik / iş kuralı</b></td><td>BR / API — sunucu bilmez</td><td>İstek gövdesi <b>LabeledValue zorunlu</b> (value+display)</td></tr>
+      <tr><td><b>C Hibrit</b></td><td>Bazen item</td><td>Bulursa A, bulamazsa B</td></tr>
+    </tbody>
+  </table>
+  <div class="scene">
+    <h4>Senaryo — iş kuralı combobox doldurdu</h4>
+    <div class="timeline">
+      <div class="t-item">BR liste üretti (kalıcı katalog yok).</div>
+      <div class="t-item">Kullanıcı seçti → UI value+display gönderdi.</div>
+      <div class="t-item">Backend PropertyItem aramadı; JSONB’ye LabeledValue yazdı.</div>
+      <div class="t-item">Projektör Attr.display’e bastı → rapor isimle bulur.</div>
+      <div class="t-item">Yarın BR listesi değişse eski kayıtların display’i snapshot kalır.</div>
+    </div>
+  </div>
+
+  <h3>16.6 Çeviri yok / var</h3>
+  <div class="grid2">
+    <div class="box"><h4>Çeviri yok</h4>
+<pre>{ <span class="s">"value"</span>:<span class="s">"123"</span>, <span class="s">"display"</span>:<span class="s">"osmancan"</span>, <span class="s">"translationCode"</span>:<span class="k">null</span> }</pre></div>
+    <div class="box"><h4>Çeviri var</h4>
+<pre>{ <span class="s">"value"</span>:<span class="s">"1"</span>, <span class="s">"display"</span>:<span class="s">"elma"</span>, <span class="s">"translationCode"</span>:<span class="s">"apple…"</span> }</pre></div>
+  </div>
+
+  <h3>16.7 Çeviri DB’de değişti</h3>
+  <p>Translation “elma” → “yeşil elma”. Attr/JSONB <b>otomatik güncellenmez</b> (outbox tetiklenmez).
+  Varsayılan: snapshot kalsın. İstersen çeviri-rebuild job. Form EN UI Translation’dan taze okuyabilir.</p>
+
+  <h3>16.8 Ne değişir? (özet — yeşil)</h3>
+  <ul>
+    <li><span class="badge-new">LabeledValue</span> şekil (tablo değil)</li>
+    <li><span class="badge-chg">InstanceValue.data</span> etiketli alanlar obje</li>
+    <li><span class="badge-chg">InstanceAttr / ListItem</span> +display +translationCode</li>
+    <li><span class="badge-chg">Property</span> +hasTranslation · projectToAttr (bool)</li>
+    <li>PropertyItem / Translation — besleyici; tek zorunlu kaynak değil</li>
+  </ul>
+
+  <div class="callout-jr">
+    <strong>Çeviri check-list:</strong>
+    Etiketli mi? → LabeledValue &nbsp;|&nbsp;
+    Statik? → PropertyItem &nbsp;|&nbsp;
+    Dinamik/BR? → istekte display &nbsp;|&nbsp;
+    Form? → JSONB &nbsp;|&nbsp;
+    Rapor isim? → Attr.display &nbsp;|&nbsp;
+    projectToAttr=true olmalı
+  </div>
+</section>
+
+<section id="dosya">
+  <h2><span class="num">17</span> Dosya / binary — MinIO</h2>
+  <p>PDF, fatura görseli, ekler <b>JSONB içine gömülmez</b>.</p>
+  <div class="step"><span class="sn">1</span>Upload → MinIO (object storage)</div>
+  <div class="step"><span class="sn">2</span>InstanceValue.data’ya sadece URL / object key yazılır</div>
+  <div class="step"><span class="sn">3</span>Render / download MinIO’dan</div>
+  <div class="ok">JSONB küçük kalır → yazma ucuz, TOAST baskısı azalır, “yavaş belge yükleme” şikâyeti çözülür.</div>
+</section>
+
+<section id="audit">
+  <h2><span class="num">18</span> Değer geçmişi (audit) — InstanceValueChange</h2>
+  <p><code class="inline">saveChangeLog=true</code> property’lerde her değişim append-only satır üretir.</p>
+  <ul>
+    <li>instanceId, propertyCode, oldValue, newValue (jsonb/skaler)</li>
+    <li>aktor (userId / apiKeyId), occurredAt, processStepInstanceId?</li>
+  </ul>
+  <div class="warn">Bu tablo projection değildir — <b>kaynak hakikatin parçası</b> (tarihsel kanıt). Partition + retention / KVKK politikası gerekir.
+    Ayar değişiklik logu (<code class="inline">SettingsLog</code>) ayrı konudur; karıştırma.</div>
+</section>
+
+<section id="outbox">
+  <h2><span class="num">19</span> Senkronizasyon — Outbox → NATS → Projektör</h2>
+  <p class="big">Neden DB trigger değil?</p>
+  <table>
+    <thead><tr><th></th><th>Trigger</th><th>Outbox (seçilen)</th></tr></thead>
+    <tbody>
+      <tr><td>Kayıt gecikmesi</td><td class="no">Projeksiyon işi TX’e eklenir</td><td class="yes">Kayıt = 2 küçük yazma</td></tr>
+      <tr><td>Projeksiyon hatası</td><td class="no">Kaydı geri alabilir</td><td class="yes">Kayıt sağlam; retry arka planda</td></tr>
+      <tr><td>Ölçekleme</td><td class="no">DB CPU</td><td class="yes">Projektör yatay ölçek</td></tr>
+    </tbody>
+  </table>
+  <div class="timeline">
+    <div class="t-item"><b>Relay:</b> outbox’tan işlenmemiş olayları okur → NATS JetStream’e publish (<code class="inline">Nats-Msg-Id</code> = idempotency)</div>
+    <div class="t-item"><b>Consumer (Go projektör):</b> olayı alır → InstanceValue’nun güncel halini okur</div>
+    <div class="t-item"><b>Idempotency:</b> <code class="inline">if event.version &lt;= last_projected_version → skip</code></div>
+    <div class="t-item"><b>Tam yansıtma:</b> o instance’ın Attr/ListItem satırlarını sil → metadata’ya göre yeniden yaz (delta değil!)</div>
+    <div class="t-item">Varsa rollup delta UPSERT</div>
+  </div>
+  <div class="analogy"><b>Benzetme:</b> Kasada fiş anında kesilir (InstanceValue). Muhasebe defterine işleme (projeksiyon) arkadaki görevlinin kuyruğundan saniyeler içinde yapılır.</div>
+  <div class="purple"><b>Neden delta değil tam yansıtma?</b> Duplicate, retry, sırasız olay, restart — tek <code class="inline">version</code> karşılaştırması yeter; veri bozulmaz.</div>
+</section>
+
+<section id="projektor">
+  <h2><span class="num">20</span> Generic projektör — alan adı koda gömülü değil</h2>
+  <pre>olay geldi (instanceId, serviceId, version):
+  meta = property_cache[serviceId]  <span class="m"># code + tip + projectToAttr</span>
+  <span class="k">if</span> version &lt;= projection.last_version: skip
+  bu instance’ın InstanceAttr / InstanceListItem satırlarını <span class="c">SIL</span>
+  <span class="k">for</span> (code, value) <span class="k">in</span> InstanceValue.data:
+    prop = meta[code]
+    <span class="k">if</span> !prop.projectToAttr: continue
+    <span class="k">if</span> prop is list-of-model:
+      her kalem/alt-alan → InstanceListItem
+    <span class="k">else</span>:
+      tip kolonuna yaz → InstanceAttr
+  last_version = version</pre>
+  <div class="ok"><b>Yeni servis / yeni alan için projektör kodu değişmez.</b> Sadece Property metadata. Bu mimarinin ölçeklenebilirliğinin kalbi.</div>
+  <div class="warn"><b>Not:</b> metadataVersion kullanılmıyor. Projektör <b>güncel Property</b> tanımına göre yansıtır.
+    Alan tipi kökten değişirse bilinçli rebuild / migrasyon gerekir.</div>
+</section>
+
+<section id="ariza">
+  <h2><span class="num">21</span> Arıza senaryoları — bozulunca ne olur?</h2>
+  <table>
+    <thead><tr><th>Senaryo</th><th>Etki</th><th>Toparlanma</th></tr></thead>
+    <tbody>
+      <tr><td>Projektör çöktü</td><td>Detay formlar sağlam; rapor birkaç sn/dk bayat</td><td>Consumer ayağa kalkar; kuyruk birikir, işler</td></tr>
+      <tr><td>Aynı olay iki kez geldi</td><td>Yok</td><td>version idempotency → skip</td></tr>
+      <tr><td>Attr yanlışlıkla silindi</td><td>Rapor boş/yanlış</td><td><b>Bulk rebuild</b> from InstanceValue — veri kaybı yok</td></tr>
+      <tr><td>NATS down</td><td>Outbox birikir</td><td>Relay tekrar dener; kaynak TX tamam</td></tr>
+      <tr><td>Property / projectToAttr değişti</td><td>—</td><td>Servise bulk rebuild</td></tr>
+      <tr><td>InstanceValue bozuldu</td><td class="no">Felaket</td><td>Backup / PITR — bu yüzden tapuyu koruruz</td></tr>
+      <tr><td>Projection lag &gt; eşik</td><td>Rapor bayat</td><td>Alarm + projektör scale-out</td></tr>
+    </tbody>
+  </table>
+  <div class="ok"><b>Operasyonel metrikler:</b> outbox depth · projection lag p95 · rebuild süresi · GIN pending list · en büyük partition boyutu · WAL hızı.</div>
+</section>
+
+<section id="performans">
+  <h2><span class="num">22</span> Ölçek varsayımları &amp; riskler (dürüstçe)</h2>
+  <div class="kpi">
+    <div class="box"><div class="val">5M+</div><div class="lbl">Instance</div></div>
+    <div class="box"><div class="val">150+</div><div class="lbl">Property / form</div></div>
+    <div class="box"><div class="val">40+</div><div class="lbl">Attr’a yansıyan</div></div>
+    <div class="box"><div class="val">~200M</div><div class="lbl">Attr satırı</div></div>
+  </div>
+  <p><b>Çoğunluk sorunsuz:</b> detay, basit filtre, skaler rapor, API GET/PATCH tek kayıt.</p>
+  <h3>Dikkat edilmesi gerekenler</h3>
+  <ul>
+    <li><b>P1</b> Geniş çok-kolon rapor pivotu (zayıf filtreyle) — gerekirse denormalize rapor projeksiyonu</li>
+    <li><b>P2</b> Cross-form canlı aggregation → incremental rollup zorunlu</li>
+    <li><b>P3</b> Kodlu alan isim-sıralama → translation katmanı</li>
+    <li><b>P5</b> Yazma projection lag → scale-out + projectToAttr disiplini (az true alan)</li>
+    <li><b>P8</b> A′ fan-out → sınırla</li>
+    <li><b>P9</b> Partition sıcak-nokta → dominant tenant için alt partition</li>
+  </ul>
+  <div class="warn">Benchmark kapısı: kendi donanımda p95 doğrulanmadan “onaylandı” sayılmaz.</div>
+</section>
+
+<section id="alternatif">
+  <h2><span class="num">23</span> Neden diğer çözümler seçilmedi?</h2>
+  <table>
+    <thead><tr><th>Alternatif</th><th>Neden değil</th></tr></thead>
+    <tbody>
+      <tr><td>Account başına tablo</td><td>Binlerce tablo; ops/migration ölür</td></tr>
+      <tr><td>Saf kolon-per-field</td><td>DDL cehennemi; müşteri şeması farklı</td></tr>
+      <tr><td>Saf EAV ana veri</td><td>Detay pivot + tip kaybı</td></tr>
+      <tr><td>Her şey Elasticsearch</td><td>İki kaynak; tutarlılık/ops maliyeti; ACID workflow ile uyumsuz tek başına</td></tr>
+      <tr><td>Full Event Sourcing</td><td>Form state’i event’ten kurmak aşırı; biz olayları sadece taşıma için kullanıyoruz</td></tr>
+      <tr><td>Trigger ile projeksiyon</td><td>Yazma yolu şişer; hata kaydı geri alır</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="faz">
+  <h2><span class="num">24</span> Uygulama fazları</h2>
+  <div class="step"><span class="sn">0</span><b>Çekirdek:</b> InstanceValue + InstanceAttr(+display) + InstanceListItem + projectToAttr + code immutable + status kolonu + Outbox/NATS + MinIO</div>
+  <div class="step"><span class="sn">1</span><b>Rapor yüzeyi:</b> Translation-aware sorgu + rollup + bulk rebuild + ready sinyali</div>
+  <div class="step"><span class="sn">2</span><b>Yansıma &amp; geçmiş:</b> reflectionMode + ReflectionLink/A′ + snapshot yazımı + InstanceValueChange</div>
+  <div class="step"><span class="sn">3</span><b>Koşullu:</b> denormalize dashboard projeksiyonu · PostGIS · tik/seçim tablosu</div>
+</section>
+
+<section id="senaryolar-gunluk">
+  <h2><span class="num">25</span> Günlük senaryolar — “şimdi ne olur?” kartları</h2>
+
+  <h3>S1 — Yeni masraf açıldı</h3>
+  <p>Instance Creator → <code class="inline">Instance</code> + boş/default <code class="inline">InstanceValue</code> + outbox.
+  UserInfo snapshot yazılır. statusId = başlangıç durumu.</p>
+
+  <h3>S2 — Onaylayan “Onayla” dedi</h3>
+  <p>changeList ile not yazılır (Value TX) → motor adımı ilerler → <code class="inline">statusId</code> güncellenir (Instance TX, JSONB’ye dokunmayabilir).
+  Attr status’tan değil status kolonundan raporlanır.</p>
+
+  <h3>S3 — Custom code yeni alanla filtre istedi</h3>
+  <p>Eşittir ise GIN yeter. Aralık/sıra/isim ise <code class="inline">projectToAttr=true</code> + rebuild. DDL yok.</p>
+
+  <h3>S4 — groupByTax’a 3. kalem eklendi</h3>
+  <p>JSONB dizisi güncellenir → projektör ListItem’ları sil+yeniden yazar (3 kalem × alt-alan).</p>
+
+  <h3>S5 — Parent projectCode değişti (child snapshot)</h3>
+  <p>Child’daki kopya <b>değişmez</b> (A). Canlı isteniyorsa B; hem canlı hem rapor A′.</p>
+
+  <h3>S6 — 3 gündür onay bekleyen form</h3>
+  <p>InstanceValue diskte kalıcı. “Uyu-uyan” state status + ProcessStepInstance’da. Değerler kaybolmaz.</p>
+
+  <h3>S7 — eventForm pop-up</h3>
+  <p>Instance <b>yok</b>. Değerler parameters ile taşınır; bu mimarinin kalıcı tablolarına yazılmaz.</p>
+
+  <h3>S8 — parameter tipi servis (veri kaynağı)</h3>
+  <p>Instance oluşur, creatorUserId null. InstanceValue aynı şekilde çalışır. Onay kuyruğu yok.</p>
+</section>
+
+<section id="sss">
+  <h2><span class="num">26</span> SSS — junior’ın sık sorduğu 20 soru</h2>
+
+  <div class="qa"><p class="q">1) Formu açarken InstanceAttr’a mı bakıyorum?</p>
+  <p><b>Hayır.</b> Detay = <code class="inline">Instance</code> + <code class="inline">InstanceValue</code>. Attr yalnız liste/rapor/arama içindir. Attr bayat olsa bile formu doğru görürsün.</p></div>
+
+  <div class="qa"><p class="q">2) Neden her alanı Attr’a yazmıyoruz?</p>
+  <p>Satır patlaması + her kayıtta daha çok yazma. %10–20’si yeter. Gerisi JSONB’de; eşittir sorusu GIN ile yine çalışır.</p></div>
+
+  <div class="qa"><p class="q">3) Yeni alan ekleyince migration yazar mıyım?</p>
+  <p><b>Hayır.</b> Property satırı + <code class="inline">projectToAttr</code>. DDL yok. Eski kayıtlarda anahtar yoktur (= boş).</p></div>
+
+  <div class="qa"><p class="q">4) Alanı silince geçmiş veriler uçar mı?</p>
+  <p>Varsayılan soft retire: JSONB’de orphan anahtar kalır. Hard purge ayrı KVKK/job kararıdır.</p></div>
+
+  <div class="qa"><p class="q">5) Combobox’ta isim mi kod mu saklanır?</p>
+  <p><b>Kod.</b> İsim dile bağlı ve değişebilir. Ekranda Translation ile çözülür.</p></div>
+
+  <div class="qa"><p class="q">6) “Tutar’ı Amount yap” diye code değiştirir miyiz?</p>
+  <p><b>Hayır.</b> Etiketi (<code class="inline">definition</code>/çeviri) değiştirirsin. code kilitlidir.</p></div>
+
+  <div class="qa"><p class="q">7) Status neden JSONB’de değil?</p>
+  <p>Sürekli değişir. JSONB’de olsa her onayda tüm kutu yeniden yazılır + rapor bayatlar. <code class="inline">Instance.statusId</code> kolonu hem canlı hem indeksli.</p></div>
+
+  <div class="qa"><p class="q">8) Projeksiyon 2 sn gecikirse kullanıcı ne görür?</p>
+  <p>Kendi formu: anında doğru (JSONB). Liste/rapor: 2 sn eski olabilir → eventual consistency, alarm eşiği izlenir.</p></div>
+
+  <div class="qa"><p class="q">9) Outbox ile NATS aynı şey mi?</p>
+  <p>Hayır. Outbox = DB’de “henüz yayınlanmadı” kaydı (TX ile atomik). NATS = kalıcı kuyruk. Relay outbox’tan NATS’a taşır.</p></div>
+
+  <div class="qa"><p class="q">10) Event sourcing mi bu?</p>
+  <p><b>Değil.</b> Formu olaylardan kurmayız. Olay sadece fihristi besler. Tapu JSONB’dir.</p></div>
+
+  <div class="qa"><p class="q">11) groupByTax ile Form List aynı mı?</p>
+  <p><b>Değil.</b> groupByTax = aynı JSON içinde dizi → ListItem. Form List = ayrı child Instance’lar → RelatedInstance.</p></div>
+
+  <div class="qa"><p class="q">12) PDF’i JSONB’ye koyabilir miyiz?</p>
+  <p>Teknik olarak mümkün, mimari olarak <b>yasak</b>. MinIO’ya koy, JSONB’de URL tut. Aksi halde yazma maliyeti patlar.</p></div>
+
+  <div class="qa"><p class="q">13) 150 property sorun mu?</p>
+  <p>Alan sayısı değil <b>bayt × update sıklığı</b> sorun. Tipik 15–40 KB yönetilebilir. Büyük metin/binary MinIO’da.</p></div>
+
+  <div class="qa"><p class="q">14) Attr’da property_id mi property_code mu?</p>
+  <p><b>property_code.</b> Kaynak JSONB code-keyed; API aynı dili konuşur; join’siz; FK yükü yok.</p></div>
+
+  <div class="qa"><p class="q">15) Parent değişince child otomatik güncellenir mi?</p>
+  <p>Varsayılan <b>hayır</b> (snapshot). Canlı için B; canlı+ağır rapor için A′ (ReflectionLink) — Designer’da bilinçli seçim.</p></div>
+
+  <div class="qa"><p class="q">16) İş kuralı (frontend) Attr’a bakar mı?</p>
+  <p>Hayır. Bellekteki form değerleri üzerinde çalışır. Kalıcılık kaydet ile JSONB’ye düşer.</p></div>
+
+  <div class="qa"><p class="q">17) Motor switch/karşılaştırma nereden okur?</p>
+  <p>Tek instance için JSONB (veya belleğe yüklenmiş data). Çok-kayıt arama değil.</p></div>
+
+  <div class="qa"><p class="q">18) Projection bozulursa veri kaybı mı?</p>
+  <p><b>Hayır</b> — rebuild. Kaybı yalnız InstanceValue kaybı yaratır → yedek/PITR.</p></div>
+
+  <div class="qa"><p class="q">19) Eski araştırmadaki form_value / form_attr ne?</p>
+  <p>Aynı şeyin eski adı. Flovo model dilinde: <code class="inline">InstanceValue</code> / <code class="inline">InstanceAttr</code> / <code class="inline">InstanceListItem</code>.</p></div>
+
+  <div class="qa"><p class="q">20) Bu karar todo’da kapandı mı?</p>
+  <p>Henüz 🟡. Bu sunum <b>önerilen mimari</b>. Ürün onayı sonrası models/ + todo [x].</p></div>
+</section>
+
+<section id="ornek-masraf">
+  <h2><span class="num">27</span> Uçtan uca örnek — Masraf formu (hikâye)</h2>
+  <p class="big">Ayşe bir masraf oluşturuyor. Her adımda hangi tabloya ne yazıldığını izleyelim.</p>
+
+  <div class="timeline">
+    <div class="t-item">
+      <h4>T0 — Servis tasarımı (çoktan yapılmış)</h4>
+      <p><code class="inline">Service</code> “Masraf”, Property’ler: amount (projectToAttr=true), expenseType (true, LabeledValue),
+        groupByTax (liste), receipt (false+MinIO), note (false), creatorDept (userInfo snapshot).</p>
+    </div>
+    <div class="t-item">
+      <h4>T1 — Instance Creator adımı çalışır</h4>
+      <p><code class="inline">ProcessInstance</code> + <code class="inline">Instance</code> (status=Taslak, creator=Ayşe, createdDate=şimdi).</p>
+      <p><code class="inline">InstanceValue</code> oluşur: data ≈ defaults + <code class="inline">creatorDept: "Satınalma"</code> (snapshot).</p>
+      <p>Aynı TX’de outbox. Projektör az sonra projectToAttr=true alanları Attr’a yazar (LabeledValue ise display dahil).</p>
+    </div>
+    <div class="t-item">
+      <h4>T2 — Ayşe formu doldurur</h4>
+      <p>amount=1500, expenseType="2", groupByTax’a 2 kalem, receipt yükler → MinIO URL.</p>
+      <p>Kaydet → validate → InstanceValue.data güncellenir, version=2, outbox.</p>
+      <p>Ayşe ekranda anında 1500 görür.</p>
+    </div>
+    <div class="t-item">
+      <h4>T3 — Projektör (~200ms sonra)</h4>
+      <p>Attr: amount=1500, expenseType="2", …</p>
+      <p>ListItem: 2 kalem × (giderTuru, vergiOrani, tutar).</p>
+      <p>Rapor artık bu tutarı filtreleyebilir.</p>
+    </div>
+    <div class="t-item">
+      <h4>T4 — Ayşe tutarı 1800 yapar (saveAndRefresh)</h4>
+      <p>version=3. Attr yeniden tam yansıtılır (delta değil). ListItem aynı kalırsa yine sil+yaz (basit ve güvenli).</p>
+    </div>
+    <div class="t-item">
+      <h4>T5 — Onaya gönder</h4>
+      <p>Motor: statusId → Onay Bekliyor (Instance kolonu). Belki note changeList ile yazılır.</p>
+      <p>InstanceAwaitingUser oluşur (değer tablosu değil).</p>
+    </div>
+    <div class="t-item">
+      <h4>T6 — Yönetici rapor ister: “tutarı &gt; 1000 onay bekleyenler”</h4>
+      <p><code class="inline">Instance.statusId</code> filtresi + <code class="inline">InstanceAttr</code> amount &gt; 1000. JSONB taranmaz.</p>
+    </div>
+    <div class="t-item">
+      <h4>T7 — Designer’a projectCode eklenir</h4>
+      <p>Property yeni. Ayşe’nin kaydında projectCode yok → boş. Yeni masraflarda dolacak. DDL yok.</p>
+    </div>
+    <div class="t-item">
+      <h4>T8 — Finance “note alanına göre arama” ister</h4>
+      <p>note projectToAttr=false idi → true yapılır → bulk rebuild → eski kayıtlardaki note’lar Attr’a düşer. Yeni index yok.</p>
+    </div>
+  </div>
+  <div class="ok"><b>Bu hikâye mimarinin tamamını özetler:</b> tapu anında doğru, fihrist biraz gecikmeli ama rebuild edilebilir, şema değişimi metadata işi, status ayrı, dosya dışarıda.</div>
+</section>
+
+<section id="ozet">
+  <h2><span class="num">28</span> Tek sayfalık özet — duvara asılacak sözleşme</h2>
+  <div class="contract">
+    <p><b>1.</b> Tapu = <code>InstanceValue.data</code> (JSONB, code-keyed).</p>
+    <p><b>2.</b> Fihrist = <code>InstanceAttr</code> + <code>InstanceListItem</code> (yeniden üretilebilir).</p>
+    <p><b>3.</b> Detay ekranı fihriste bakmaz. Rapor detaya (pivot cehennemine) mahkûm değildir.</p>
+    <p><b>4.</b> Yazma: validate → Value + Outbox (aynı TX) → NATS → idempotent tam-yansıtma.</p>
+    <p><b>5.</b> Status / creator / createdDate = Instance kolonları. Dosya = MinIO URL.</p>
+    <p><b>6.</b> Alan ekle/sil = metadata (+ rebuild), DDL değil.</p>
+    <p><b>7.</b> <code>code</code> dondurulur; etiket serbest. <code>projectToAttr</code> (bool) fihrist büyümesini kısıtlar. metadataVersion yok.</p>
+    <p><b>8.</b> Yansıma: değişmez→snapshot · değişen gösterim→canlı · değişen+ağır rapor→A′.</p>
+    <p><b>9.</b> Etiketli seçimde LabeledValue: kod+display(+translationCode). Raporda isim → Attr.display.</p>
+    <p><b>10.</b> Fihrist yanarsa rebuild. Tapu yanarsa felaket — onu yedekle.</p>
+  </div>
+
+  <div class="flow">
+    <div class="node n-user"><b>Designer</b>Property + projectToAttr + code + hasTranslation</div>
+    <div class="arrow">→</div>
+    <div class="node n-store"><b>InstanceValue</b>JSONB tapu</div>
+    <div class="arrow">→</div>
+    <div class="node n-evt"><b>Outbox/NATS</b></div>
+    <div class="arrow">→</div>
+    <div class="node n-write"><b>Projektör</b></div>
+    <div class="arrow">→</div>
+    <div class="node n-read"><b>Attr / ListItem / Rollup</b></div>
+  </div>
+
+  <div class="callout-jr">
+    <strong>Junior check-list (ezberle):</strong><br>
+    Formu göster → JSONB &nbsp;|&nbsp; Filtrele/sırala → Attr &nbsp;|&nbsp; Kalem rapor → ListItem &nbsp;|&nbsp;
+    Status → kolon &nbsp;|&nbsp; Dosya → MinIO &nbsp;|&nbsp; Yeni alan → metadata &nbsp;|&nbsp; Bozuldu → rebuild
+  </div>
+
+  <h3>İlgili dokümanlar</h3>
+  <ul>
+    <li><code class="inline">research/property-value-storage/form-value-scenarios.md</code> — kullanım senaryoları</li>
+    <li><code class="inline">research/property-value-storage/form_attr_questions.md</code> — S1–S13 soru-cevap</li>
+    <li><code class="inline">research/property-value-storage/form_attr_scenerios_rating.md</code> — 5M ölçek karnesi</li>
+    <li><code class="inline">research/property-value-storage/form-deger-saklama-sunum.html</code> — teknik derin sunum (form_* adlarıyla)</li>
+    <li><code class="inline">models/processInstances/instance.md</code> · <code class="inline">models/service-settings/property.md</code></li>
+    <li><code class="inline">todo.md</code> — Tier 1 “Property value depolaması” (resmi kabul bekliyor)</li>
+  </ul>
+</section>
+
+<div class="foot">
+  Flovo BPM v2 — Form &amp; Değer Saklama Mimarisi A–Z Ana Sunum · 2026-07-27<br>
+  projectToAttr (bool) · LabeledValue/çeviri bölümü · metadataVersion yok · Durum: 🟡 öneri<br>
+  Durum: önerilen mimari (araştırma/sunum) — models/’e resmi işlenmeden önce ürün onayı bekler.
+</div>
+
+</div>
+</body>
+</html>
