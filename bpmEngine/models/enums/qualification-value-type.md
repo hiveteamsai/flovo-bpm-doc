@@ -12,6 +12,6 @@
 | 3 | `combobox` | `comboboxItemId` + kopya `comboboxTranslationCode` / `comboboxDefinition` | Önceden tanımlı seçeneklerden seçim (→ `QualificationItem`). |
 
 ## Notlar
-- **⚠️ Alan adı çakışması:** Bu enum `AdditionalQualification.valueType`'tır (**QualificationValueType**); süreç adımı **Değer Atama**'daki `valueType` ise [`value-assign-type.md`](./value-assign-type.md)'dir (**ValueAssignType** — farklı enum).
+- **Alan adı ayrıştırıldı (v0.18):** Bu enum `AdditionalQualification.`**`valueType`**'tır (**QualificationValueType**); süreç adımı **Değer Atama** alanı ise **`valueAssignType`** (tip **ValueAssignType** → [`value-assign-type.md`](./value-assign-type.md)). Alan adları **farklı** — çakışma yok.
 
 *Oluşturma: 2026-07-10.*

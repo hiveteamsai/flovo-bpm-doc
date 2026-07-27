@@ -55,12 +55,11 @@ veri kaynağı doldurma, stil vb.
 | Aksiyon | Ne yapar |
 |---|---|
 | `setViewForProperties` | Hedef property'lerin `visible` / `enabled` / `required` durumunu ayarlar |
-| `changeViewProfile` | Aktif görüntüleme profilini değiştirir (→ `view-profile.md`) |
 | `applyValidation` | Koşullu validasyon; sağlanmazsa hata mesajı |
 | `showMessage` | Kullanıcıya bilgi mesajı (başlık + içerik; dinamik değer) |
 | `assignValueToProperty` | Bir property'nin **değerine** değer atar (§3.1) |
-| `fillDataSource` | Combobox / Form List gibi seçim alanlarının veri kaynağını doldurur |
-| `assignValueToPropertyAttribute` | Property'nin **değerine değil, bir niteliğine** (attribute) değer atar _(⚠️ isim teyit — §6)_ |
+| `fillDataSource` | Combobox / Radiobutton / Form List gibi seçim alanlarının veri kaynağını **çalışma-zamanında** doldurur. **Kaynak tipleri:** organizasyon verileri · kullanıcı bilgileri · başka bir servisin instance'ları · dış/API kaynağı |
+| `assignValueToPropertyAttribute` | Property'nin **değerine değil, bir niteliğine** (attribute) değer atar |
 | `setStyle` | Property/form'un **tekil görünüm niteliklerini** (örn. `fontSize`, `titleColor`) değiştirir. **`../organization-settings/style.md` Style varlığını seçmez** — daha spesifik, tekil nitelik değişimidir |
 
 ### 3.1 — `assignValueToProperty` değer kaynakları (`ValueAssignType`)

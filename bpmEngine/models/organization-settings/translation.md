@@ -36,6 +36,8 @@ vererek çeviriyi **bilinçli paylaşabilir**.
 
 ## Notlar / açık noktalar
 - Ortak (`null`) kayıt güncellenince, onu **ezmiş** organizasyon kayıtları etkilenmemeli (teyit) → `../../todo.md`.
-- `translationCode` **ad-uzayı kuralı** (otomatik `<varlık>.<code>` üretimi mi, serbest metin mi) → `../../todo.md`.
+- **`translationCode` ad-uzayı kuralı (KARAR, v0.18):** anahtar **otomatik üretilmez** (`<varlık>.<code>` gibi bir şema yok);
+  alan **opsiyoneldir**. Girilmezse çeviri Translation tablosundan **çekilmez**, doğrudan `definition` kullanılır. Serbest
+  metin; namespace kullanımı kullanıcının tercihidir (zorunlu değil).
 
 *Oluşturma: 2026-07-02.*

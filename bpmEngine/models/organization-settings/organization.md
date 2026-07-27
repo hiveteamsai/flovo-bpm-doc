@@ -13,7 +13,7 @@
 | `name` | string | — | Organizasyon **adı** (kullanıcıya görünen). |
 | `defaultLang` | string | — | **Varsayılan dil**; **sabit set** `tr`/`en`/`de` içinden. Çeviri çözümlemesinde aktif dilin başlangıcı. |
 | `logoUrl` | string? | — | Organizasyon **logosu** (görsel URL). Başlık/rapor/bildirimlerde marka. |
-| `idleTimeoutMinute` | int | — | **Boşta kalma zaman aşımı** (dk). **null olamaz, varsayılan `0`**. `0` = disable; `>0` iken süre dolunca oturum kilitlenir. |
+| `idleTimeoutMinute` | int | — | **Boşta kalma zaman aşımı** (dk). **null olamaz, varsayılan `0`**. `0` = disable; `>0` iken süre dolunca oturum kilitlenir → **yeniden giriş (login) gerekir**. |
 | `adminUserIds` | List\<int\> | FK → `user.md` | **Organizasyon adminleri** (**en az 1 aktif**). Yetki yapılandırmasını yalnız bunlar değiştirir; **tüm yetkilere** sahiptir. |
 
 ## Yetkilendirme (Permissions)
@@ -39,7 +39,7 @@ Yetkiler **organizasyon bazında** yönetilir (eski `User.authorizationLevel` ka
 - `organizationId = null` olan Translation/Style kayıtları **ortak/sistem** kabul edilir (organizasyon değil, Flovo sahibi).
 
 ## Notlar / açık noktalar
-- `idleTimeoutMinute` alt/üst sınırı ve kilit davranışı → `../../todo.md`.
+- `idleTimeoutMinute` **alt/üst sınırı** → `../../todo.md`. _(Kilit davranışı **çözüldü** (v0.18): süre dolunca oturum kilitlenir, **yeniden giriş/login** gerekir.)_
 - Sonraki alanlar: plan/abonelik, timezone, para birimi, bölge, güvenlik → `../../todo.md`.
 
 *Oluşturma: 2026-07-02.*

@@ -25,8 +25,8 @@
 
 ### `businessRuleActionType` değerleri (bu modeldeki rol — frontend etkisi)
 Enum tanımı → [`../enums/business-rule-action-type.md`](../enums/business-rule-action-type.md). Bu modelde koşul sağlanınca formda uygulanacak etkiyi belirler:
-- `setViewForProperties` (visible/enabled/required) · `changeViewProfile` · `applyValidation` · `showMessage` ·
-  `assignValueToProperty` · `fillDataSource` · `assignValueToPropertyAttribute` _(isim teyit)_ ·
+- `setViewForProperties` (visible/enabled/required) · `applyValidation` · `showMessage` ·
+  `assignValueToProperty` · `fillDataSource` · `assignValueToPropertyAttribute` ·
   `setStyle` _(tekil görünüm niteliği — fontSize/titleColor; `../organization-settings/style.md` Style varlığını **seçmez**)_.
 
 > `assignValueToProperty` değer kaynakları (`ValueAssignType` → [`../enums/value-assign-type.md`](../enums/value-assign-type.md)): `fixedValue` · `propertyValue` · `fromCalculation` ·

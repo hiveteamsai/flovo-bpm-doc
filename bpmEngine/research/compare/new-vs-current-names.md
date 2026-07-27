@@ -117,18 +117,21 @@
 ## 8. İş Kuralı (`BusinessRule`)
 - `SetViewForFields` > **`setViewForProperties`**
 - `AssignValueToField` > **`assignValueToProperty`**
-- `assignValueToPropertyField` > **`assignValueToPropertyAttribute`** _(⚠️ teyit)_
+- `assignValueToPropertyField` > **`assignValueToPropertyAttribute`**
 - `FieldValue` / `FormValue` > **`PropertyValue`**
 - `Function` (değer kaynağı) > **`httpRequest`**
 - `-- FromEba` (değer kaynağı — Eba kaldırıldı)
-- **↔ Korunan:** `changeViewProfile` · `applyValidation` · `showMessage` · `fillDataSource` · `setStyle`
+- `-- changeViewProfile` (iş-kuralı aksiyonu — **v0.18'de kaldırıldı**)
+- **↔ Korunan:** `applyValidation` · `showMessage` · `fillDataSource` · `setStyle`
 
 ---
 
 ## 9. Süreç Adımı (`ProcessStep`)
 **Yeniden adlandırılan**
 - `Function` > **`HTTP Request`** (+ `async ++`)
-- (Değer Atama) `valueType = FormValue` > **`PropertyValue`** · `targetFieldId` > **`targetPropertyId`** · `fieldId` > **`propertyId`**
+- (Değer Atama) alan `valueType` > **`valueAssignType`** (tip ValueAssignType) · değer `FormValue` > **`PropertyValue`** · `targetFieldId` > **`targetPropertyId`** · `fieldId` > **`propertyId`**
+- `skipWithThisActionId` > **`skipWithThisProcessStepActionId`** (adıma bağlı **ProcessStepAction**'ı işaret eder — Action şablonu değil)
+- (Değer Atama alt-servis) `useRelatedService` > **`useAssociatedService`** · `relatedServiceId` > **`associatedServiceId`** _(Form List `childServiceId` **korunur** — "child" doğru)_
 
 **Eklenen adımlar**
 - `Flovo AI ++` · `Switch ++` · `Processing ++` · `Instance Creator ++` · `Instance Deleter ++` · `Form Yönlendirme ++` · `Süreç Adımı Tetikleme ++`
@@ -283,7 +286,8 @@
 - `-- ProcessStepId`
 - `createdDate ++`
 - `processInstanceId ++`
-- **↔ Korunan:** `Id` > `id` · `ServiceId` > `serviceId` · `delete` (soft-delete; org-ayarı modellerindeki `deleted` ile aynı amaç, farklı ad)
+- `delete` > **`deleted`** (soft-delete; artık org-ayarı modelleriyle **tek/kanonik isim** — v0.18)
+- **↔ Korunan:** `Id` > `id` · `ServiceId` > `serviceId`
 
 ### 15.3 Diğer runtime modelleri — YENİ (eski karşılığı yok)
 > Bu 4 model tamamen yenidir; eski uygulamada birebir karşılığı yoktur.
@@ -293,4 +297,4 @@
 
 ---
 
-*Oluşturma: 2026-07-06 · Güncelleme: 2026-07-10 (v0.7 — runtime & iş-kuralı model adları: ProcessInstance · ProcessStepInstance · Instance · RelatedInstance · InstanceAwaitingUser · BusinessRule) · 2026-07-16 (v0.12 — §9 tipe-özel ayar/enum rename bloğu: stepType/settings, adım-tipi enum'ları, HTTP/Kullanıcı/Bildirim/Timer/Switch/Instance Deleter alan renameleri) · 2026-07-17 (v0.13 — §10 çeviri anahtarı `translationCode` bloğu) · 2026-07-24 (v0.15 — §6 `controlTypeId`→`propertyType` (`ControlType`→`PropertyType`) rename) · 2026-07-24 (v0.17 — §15 `RelatedInstance`→`AssociatedInstance` + `relatedInstanceId`→`associatedInstanceId` · `relatedPropertyId`→`associatedPropertyId`; eski adlar `RelatedForm`/`relatedFormId` korunur). Kaynak: `new-vs-current.md` + `../../models/` + depo kökü `commitNotes/`.*
+*Oluşturma: 2026-07-06 · Güncelleme: 2026-07-10 (v0.7 — runtime & iş-kuralı model adları: ProcessInstance · ProcessStepInstance · Instance · RelatedInstance · InstanceAwaitingUser · BusinessRule) · 2026-07-16 (v0.12 — §9 tipe-özel ayar/enum rename bloğu: stepType/settings, adım-tipi enum'ları, HTTP/Kullanıcı/Bildirim/Timer/Switch/Instance Deleter alan renameleri) · 2026-07-17 (v0.13 — §10 çeviri anahtarı `translationCode` bloğu) · 2026-07-24 (v0.15 — §6 `controlTypeId`→`propertyType` (`ControlType`→`PropertyType`) rename) · 2026-07-24 (v0.17 — §15 `RelatedInstance`→`AssociatedInstance` + `relatedInstanceId`→`associatedInstanceId` · `relatedPropertyId`→`associatedPropertyId`; eski adlar `RelatedForm`/`relatedFormId` korunur) · 2026-07-27 (v0.18 — iş-kuralı aksiyonu `changeViewProfile` **kaldırıldı**; Değer Atama `valueType`→**`valueAssignType`** (§9); Action `defaultAction` **kaldırıldı**; `assignValueToPropertyAttribute` **teyit**; `skipWithThisActionId`→**`skipWithThisProcessStepActionId`** (§9); Değer Atama `relatedServiceId`→**`associatedServiceId`** (§9); Instance `delete`→**`deleted`** (§15)). Kaynak: `new-vs-current.md` + `../../models/` + depo kökü `commitNotes/`.*

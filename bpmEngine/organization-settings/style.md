@@ -48,7 +48,7 @@ Renkler **dinamik** yönetilir; bunun için **ayrı bir Style yönetim sayfası*
 | `fontColor` | string (hex/renk) | Yazı rengi |
 | `organizationId` | int / null | Sahibi organizasyon (FK → `organization.md` `id`). **`null` = sistem stili** (tüm organizasyonlarca kullanılır, salt-okunur). |
 
-> _(Genişletilebilir — bkz. §4: fontSize, isBold, border, iconColor...)_
+> **Kapsam (KARAR, v0.18):** yalnız **bg + font** yeterli; ek görünüm alanları (`fontSize`/`isBold`/`border`/`iconColor`) **eklenmez**.
 
 ---
 
@@ -67,6 +67,7 @@ Renkler **dinamik** yönetilir; bunun için **ayrı bir Style yönetim sayfası*
 > **Çözülenler (yerel karar log'u):**
 - [x] **Style tüketicisi = Action + Status**; form alanları Style **kullanmaz**, adımlar Style **tüketmez** (→ `../../models/index.md` §5).
 - [x] Style **kapsamı:** **organizasyon-bazlı** (`organizationId`) + **sistem** (`organizationId=null`, salt-okunur). Servis-bazlı ayrım yok.
+- [x] **Alan kapsamı (v0.18):** yalnız **bg + font**; `fontSize`/`isBold`/`border`/`iconColor` gibi ek alanlar **eklenmez**.
 
 ---
 

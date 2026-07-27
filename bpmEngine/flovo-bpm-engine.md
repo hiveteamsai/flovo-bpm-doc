@@ -166,6 +166,12 @@ hâle gelir:
 > İnsan-tetiklemeli adımlar = motorun **bekle/devam-et** noktalarıdır (→ §6); süreç state'i kalıcılaştırılıp
 > günlerce bekleyebilmelidir.
 
+> **Adım atlama (skip):** Kullanıcı / Kullanıcı Grubu adımlarında **`skipIfPreApproved`** (önceden onaylanmışsa) veya
+> **`skipIfUserProcessStarter`** (başlatan kullanıcıysa) aktifken, adımda **aksiyon alacak kişi = bu adımdan önce son onayı
+> veren** (veya süreci **başlatan**) ise, form kullanıcıya **sunulmaz**; süreç **döngüye girmesin** diye
+> **`skipWithThisProcessStepActionId`**'deki `ProcessStepAction` **otomatik tetiklenerek** ilerletilir — yani bu durumda adım
+> bir **bekleme noktası olmaz** (→ `service-settings/process-step.md` §2).
+
 ### 4.4 — Yürütme döngüsü (pseudo)
 ```text
 adım        = Başlangıç                               # ana süreç: Süreç Başlangıcı · alt süreç: Alt Süreç Başlangıcı
@@ -184,10 +190,16 @@ while adım bir BİTİŞ düğümü değilse:                   # Süreç Bitiş
         if gelenAction yoksa:                                 # terminal otomatik adım — giden aksiyon yok
             break                                             #   → kol burada sonlanır (ör. Instance Deleter / Form Yönlendirme)
         gelenAction.parameters = adım.ürettiğiParametreler()  # adımın ürettiği (out) — opsiyonel
-    else:  # İNSAN-TETİKLEMELİ
-        form.durum = "aksiyon alınabilir"
-        göster(adım.kullanıcılar(), bekleyenFormListesi)      # atananlar formu listede görür
-        gelenAction = bekle()                                 # frontend: manuel / eventForm (changeList + out parameters taşır)
+    else:  # İNSAN-TETİKLEMELİ (Kullanıcı / Kullanıcı Grubu)
+        atanan = adım.atananıÇöz()                            # userType / userGroupType ile
+        # ── ADIM ATLAMA (skip): önceki son onaylayan/başlatan aynı kişiyse döngüye girme (→ process-step §2) ──
+        if (adım.skipIfPreApproved and atanan == öncekiSonOnaylayan) \
+           or (adım.skipIfUserProcessStarter and atanan == süreçBaşlatan):
+            gelenAction = adım.skipWithThisProcessStepActionId  # otomatik tetiklenir — BEKLENMEZ
+        else:
+            form.durum = "aksiyon alınabilir"
+            göster(atanan, bekleyenFormListesi)               # atananlar formu listede görür
+            gelenAction = bekle()                             # frontend: manuel / eventForm (changeList + out parameters taşır)
 
     # ── PARAMETRE BİRLEŞTİRME: mergeParameter ise gelen(in) korunur, üretilen(out) üstüne yazılır (→ process-actions §2.1)
     if gelenAction.mergeParameter:

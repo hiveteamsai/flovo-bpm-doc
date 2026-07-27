@@ -28,7 +28,7 @@
 - **1 – N** ← `Action.styleId`, `Status.styleId` (bir stil, birçok aksiyon/durumda kullanılır).
 
 ## Notlar / açık noktalar
-- Kapsam: yalnız **bg + font** mı, daha fazlası mı (fontSize/isBold/border/iconColor)? → `../../todo.md`.
+- **Kapsam (KARAR, v0.18):** yalnız **bg + font** yeterli; ek görünüm alanları (`fontSize`/`isBold`/`border`/`iconColor`) **eklenmez**.
 - **Not:** İş kuralı `setStyle` bu varlığı **seçmez**; tekil görünüm niteliğini (fontSize/titleColor) değiştirir.
 
 *Oluşturma: 2026-07-02.*

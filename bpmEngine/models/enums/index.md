@@ -19,10 +19,10 @@
 |---|---|---|---|
 | **ActionType** (aksiyon türü) | `action.md` (`actionType`) · `process-step-action.md` | `manual` · `eventForm` · `takePhoto` · `selectFile` · `scanBarcode` · `webhook` · `autoAction` | [`action-type.md`](./action-type.md) |
 | **ActionDisplayType** | `action.md` (`actionDisplayType`) | `invisible` · `everywhere` · `onlyFormDetail` · `onlyFastApprove` | [`action-display-type.md`](./action-display-type.md) |
-| **BusinessRuleActionType** (iş kuralı aksiyonu) | `business-rule.md` (`businessRuleActionType`) | `setViewForProperties` · `changeViewProfile` · `applyValidation` · `showMessage` · `assignValueToProperty` · `fillDataSource` · `assignValueToPropertyAttribute` · `setStyle` | [`business-rule-action-type.md`](./business-rule-action-type.md) |
+| **BusinessRuleActionType** (iş kuralı aksiyonu) | `business-rule.md` (`businessRuleActionType`) | `setViewForProperties` · `applyValidation` · `showMessage` · `assignValueToProperty` · `fillDataSource` · `assignValueToPropertyAttribute` · `setStyle` | [`business-rule-action-type.md`](./business-rule-action-type.md) |
 | **BusinessRuleRuntimeType** | `business-rule.md` (`businessRuleRuntimeType`) | `always` · `firstOpening` · `whenChanging` | [`business-rule-runtime-type.md`](./business-rule-runtime-type.md) |
 | **BusinessRuleConditionType** | `business-rule.md` · `business-rule-condition.md` · `process-step.md` (Karşılaştırma) | `and` (VE) · `or` (VEYA) | [`business-rule-condition-type.md`](./business-rule-condition-type.md) |
-| **ValueAssignType** (değer kaynağı) | `business-rule.md` (`assignValueToProperty`) · `process-step.md` (Değer Atama `valueType`) | `fixedValue` · `propertyValue` · `fromCalculation` · `fromDataSet` · `search` · `httpRequest` | [`value-assign-type.md`](./value-assign-type.md) |
+| **ValueAssignType** (değer kaynağı) | `business-rule.md` (`assignValueToProperty` — 6 değer) · `process-step.md` (Değer Atama `valueAssignType` — 3-değer alt-küme) | `fixedValue` · `propertyValue` · `fromCalculation` · `fromDataSet` · `search` · `httpRequest` | [`value-assign-type.md`](./value-assign-type.md) |
 | **CriterionType** (operatör) | `business-rule-condition.md` (`criterionType`) · `process-step.md` (Karşılaştırma) | `equals` · `notEquals` · `isEmpty` · `isNotEmpty` · `greaterThan` · `greaterThanOrEqual` · `lessThan` · `lessThanOrEqual` · `startsWith` · `endsWith` · `contains` · `notContains` | [`criterion-type.md`](./criterion-type.md) |
 | **BusinessRuleConditionCompareType** | `business-rule-condition.md` (`referenceValue`/`valueToCompare` tipi) | `propertyValue` · `viewProfile` · `fixedValue` · `fromCalculate` | [`business-rule-condition-compare-type.md`](./business-rule-condition-compare-type.md) |
 | **RelationalType** | `additional-qualification.md` (`relationalType`) | `users` · `departments` · `professions` · `costCenters` · `workerLevels` | [`relational-type.md`](./relational-type.md) |
@@ -51,8 +51,8 @@
   Karışmayı önlemek için BusinessRule tarafı **`businessRuleActionType`** olarak yeniden adlandırıldı:
   **`Action.actionType`** (tip **ActionType** — tetiklenme türü, `manual`/`webhook`…) ↔ **`BusinessRule.businessRuleActionType`**
   (tip **BusinessRuleActionType** — frontend etkisi, `setViewForProperties`/`assignValueToProperty`…). Ayrı varlıklar, ayrı adlar.
-- **`valueType` iki bağlamda:** `AdditionalQualification.valueType` → tip **QualificationValueType**; süreç adımı
-  **Değer Atama** `valueType` → tip **ValueAssignType** (değer kaynağı). Aynı alan adı, farklı enum.
+- **`valueType` ↔ `valueAssignType` ayrıştırıldı (v0.18):** `AdditionalQualification.valueType` → tip **QualificationValueType**;
+  süreç adımı **Değer Atama** alanı **`valueAssignType`** → tip **ValueAssignType** (değer kaynağı). Alan adları **farklı** — çakışma giderildi.
 - Değer setleri model/özellik dokümanlarından çıkarıldı; kesinleşmemiş olanlar dosyalarında işaretlidir.
 - **Süreç adımı tipe-özel enum'ları (2026-07-16):** **ProcessStepType** (adım ayrımlayıcısı) + Kullanıcı/Grup
   (`ProcessStepUserType`, `ProcessStepUserGroupType`), Bildirim (`NotificationChannel`, `NotificationRecipientType`,

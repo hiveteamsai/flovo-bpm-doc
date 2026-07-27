@@ -14,7 +14,7 @@
 | `processInstanceId` | int | FK → ProcessInstance.id | Formu oluşturan iş akışı. |
 | `creatorUserId` | int? | FK → User.id | Instance sahibi / oluşturan kullanıcı. **Null olabilir:** **`parameter` tipi** serviste her zaman boş (sahipsiz veri-kaynağı); **`form` tipinde** ise süreç **API/webhook ile** (tek oluşturan kullanıcı olmadan) başlatılırsa boş kalabilir — başlatan `ProcessInstance.createdByApiKeyId` ile izlenir (→ `../service-settings/service.md` `formType`). |
 | `createdDate` | datetime | — | **Instance Creator** adımının formu **oluşturduğu** tarih. |
-| `delete` | bool | — | **Soft-delete** işareti. `true` = kayıt silinmiş sayılır (fiziksel silme yok). |
+| `deleted` | bool | — | **Soft-delete** işareti. `true` = kayıt silinmiş sayılır (fiziksel silme yok). |
 | `statusId` | int | FK → Status.id | Formun **mevcut durumu** (organizasyon havuzu Status). |
 
 ## İlişkiler
@@ -30,7 +30,7 @@
 - **Property value depolaması (sonraya bırakıldı):** Instance **alan değerlerinin** nerede/nasıl tutulacağı (bu modelde mi,
   ayrı value tablolarında mı) daha detaylı araştırma sonrası kararlaştırılacak; alan-düzeyi tanımlar burada değil, ayrı
   **değer dokümantasyonunda** yapılacak → `../../research/property-value-storage/form-value-scenarios.md` (§12) · `../../todo.md`.
-- **`delete` = soft-delete** işaretidir (fiziksel silme yapılmaz); `delete` alanı içeren tüm modellerde aynı kural geçerlidir.
+- **`deleted` = soft-delete** işaretidir (fiziksel silme yapılmaz); `deleted` alanı içeren tüm modellerde aynı kural geçerlidir (organizasyon-ayar modelleriyle **tek/kanonik isim** — `delete` kullanılmaz).
 - **Validasyon durumu (açık soru):** validasyonları iş akışından **sürekli tekrar yapmamak** ve iş kuralı (`applyValidation`)
   validasyonlarıyla **tutarsızlığı önlemek** için `Instance`'a **`validated` (bool)** alanı mı eklenmeli, yoksa ayrı bir
   **`FormValidation`** tablosu mu oluşturulmalı? → `../../todo.md`.

@@ -64,7 +64,6 @@ yönetim ekranı olacak).
    - `enabled: false` → alan salt-okunur
    - `required: true` → alan zorunlu
    - alanlar `order` değerine göre sıralanır
-5. Çalışma zamanında profil, iş kuralı **`changeViewProfile`** ile değiştirilebilir (→ `business-rule.md` §4).
 
 ---
 

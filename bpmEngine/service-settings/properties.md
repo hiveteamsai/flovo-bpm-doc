@@ -75,6 +75,13 @@ Tipe-özel ayarlar → §3.
 `dataSource` · `dataSourceId` · `dataSourceValue` (dinamik) · `propertyItems` (statik liste — öğe modeli → §2.6) ·
 `propertyTransferParameters` · `lazyLoading` · `manuelEntry` · `isMultiSelect`. _(Kullanımı → §3.3 / §3.7)_
 
+> **Seçenek kaynağı iki yolla dolar (Combobox / Radiobutton):**
+> 1. **Statik** — ayarlardan eklenen **`propertyItems`** ile (yönetici öğeleri elle tanımlar; öğe modeli → §2.6).
+> 2. **Dinamik** — **iş kuralı `fillDataSource`** ile çalışma-zamanında (frontend) doldurulur. Ayarlanan iş kuralına göre
+>    kaynak **farklı tiplerden** beslenebilir: **organizasyon verileri** · **kullanıcı bilgileri** · **başka bir servisin
+>    instance'ları** · dış/API kaynağı vb. (→ `business-rule.md` §3 `fillDataSource`).
+> _(Ayrıca combobox'ın seçilen değeri bir **ilişki kaydı** da üretebilir → §3.3 `isAssociatedCombobox`.)_
+
 ### 2.5 — İlişki alanları (ilişkisel alanlar için)
 `childServiceId` · `serviceItemControlId` · `refPropertyId` · `parentPropertyId` · `relatedPropertyIds`.
 _(Kullanımı → §3.13 Form List, §3.15 Parent Property)_
@@ -120,6 +127,17 @@ Listeden seçim yapmak için olan alan.
 **Ayarlar (veri kaynağı → §2.4):** `propertyItems` (statik öğeler) · `dataSource`/`dataSourceId`/`dataSourceValue`
 (dinamik) · `isMultiSelect` (çoklu) · `manuelEntry` (serbest giriş) · `lazyLoading` · `headerText` (seçim pop-up'ının başlığı).
 > Combobox yalnız **liste seçimi** yapar; alt-servis bağlamaz (alt-servis için → §3.13 Form List).
+
+**İlişkili combobox (başka bir servisin instance'ıyla ilişki kuran seçim):**
+- `isAssociatedCombobox` (bool) — `true` ise bu combobox, düz liste yerine **başka bir servisin instance'larından** seçim
+  yaptırır; seçim, o instance ile bir **ilişki** kurar. `false` (vars.) = ilişki kurmayan düz liste seçimi.
+- `associatedServiceId` (int) — `isAssociatedCombobox=true` iken **zorunludur**; comboboxun **seçenek kaynağı** olan servis.
+  Seçilen instance'ın **id'si** alanın **`value`'suna** (propertyValue) yazılır.
+
+> **Çalışma (ilişki kaydı):** `isAssociatedCombobox=true` iken, alanın instance'taki **`propertyValue`'su her
+> değiştiğinde**, seçilen instance için **`AssociatedInstance`** tablosuna bir **ilişki kaydı** yazılır:
+> `associatedPropertyId` = bu combobox · `associatedInstanceId` = comboboxu **içeren** instance · `instanceId` = combobox'ta
+> **seçilen** instance (→ `../models/processInstances/associated-instance.md`). `false` iken hiçbir ilişki kaydı düşmez.
 
 ### 3.4 — `datepicker` (Datepicker)
 Tarih seçim alanı (tarih+saat opsiyonu).

@@ -16,7 +16,6 @@
 | `icon` | string | — | İkon. |
 | `styleId` | int | FK → Style.id | Renk/görünüm (bg + font). |
 | `actionType` | ActionType | — | Aksiyonun **türü** (aşağıda) — [`../enums/action-type.md`](../enums/action-type.md). |
-| `defaultAction` | bool | — | Varsayılan aksiyon mu (↔ `default` kodu; birleşim açık → `../../todo.md`). |
 | `validation` | bool | — | Form validasyonu gerekli mi. |
 | `stayOnPage` | bool | — | Aksiyon sonrası sayfada kal. |
 | `showHistory` | bool | — | Süreç geçmişini göster. |
@@ -42,6 +41,7 @@ _(davranış kataloğu → `../../service-settings/process-step-action.md` §3.)
 
 ## Notlar / açık noktalar
 - **Karar:** Action → ProcessStepAction **bağımsız kopyadır** (snapshot); canlı referans yok.
-- `defaultAction` (bool) ↔ `default` (kod) birleşimi → `../../todo.md`.
+- **`defaultAction` (bool) kaldırıldı (v0.18):** "varsayılan aksiyon" ayrı bir bool ile tutulmaz; **varsayılan aksiyon =
+  `code = default`** olan aksiyondur (yönlendirme kodu → `../../service-settings/process-step-action.md`). Böyle bir veriye ihtiyaç yok.
 
 *Oluşturma: 2026-07-02.*

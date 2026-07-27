@@ -19,8 +19,7 @@
 ## İlişkiler
 - **N – 1** → `Service` (`serviceId`).
 - **1 – N** ← `ProcessViewProfileProperty` (`viewProfileId`).
-- **Referans:** `ProcessStep`'lerde `processViewProfileId` ile atanır; `BusinessRule.activeViewProfiles` ile kısıtlanır;
-  iş kuralı `changeViewProfile` ile çalışma-zamanı değiştirilebilir.
+- **Referans:** `ProcessStep`'lerde `processViewProfileId` ile atanır; `BusinessRule.activeViewProfiles` ile kısıtlanır.
 
 ## Notlar / açık noktalar
 - Form List alt-servis görüntüleme/seçim; profillerin servis-bazlı mı paylaşımlı mı olduğu → `../../todo.md`.

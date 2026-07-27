@@ -29,5 +29,9 @@
 - **Alt süreç = bağımsız yeni `ProcessInstance`:** **Alt Süreç Başlangıcı** (→ `../../service-settings/process-step.md` §3.20) ile
   başlayan süreçler ana süreçten **bağımsız, yeni bir `ProcessInstance`** olarak oluşur; `parentProcessInstanceId`'ye **tetikleyen ana sürecin
   `ProcessInstance` id'si** yazılır. **Ana süreçlerde** (Süreç Başlangıcı ile başlayan) `parentProcessInstanceId` **null**'dur.
+- **Ayrı tablo yok (KARAR):** Alt süreç çalıştırmaları **ayrı bir tabloda/sayfada tutulmaz** — ana süreçlerle **aynı
+  `ProcessInstance` tablosunda** durur. Ana↔alt ayrımı yalnız **`parentProcessInstanceId`'nin null olup olmamasıyla**
+  yapılır; izolasyon/sorgu/raporlama bu alan + `serviceId` üzerinden çözülür (alt süreç de bir süreçtir, ayrı depolama
+  gerektirmez).
 
 *Oluşturma: 2026-07-06.*

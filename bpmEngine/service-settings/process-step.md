@@ -42,7 +42,13 @@ Tip-bağımsız: bu alanlar **her adımda** ortaktır; tipe özel ayarlar bunun 
 | `hideInHistory` | bool | Süreç geçmişinde gizle |
 | `skipIfPreApproved` | bool | Önceden onaylanmışsa adımı atla |
 | `skipIfUserProcessStarter` | bool | Başlatan kullanıcıysa adımı atla |
-| `skipWithThisActionId` | int | Atlama yapılacak aksiyon ID'si |
+| `skipWithThisProcessStepActionId` | int | Atlamada **otomatik tetiklenecek `ProcessStepAction`** (adıma bağlı aksiyon) |
+
+> **Adım atlama (`skipIfPreApproved` · `skipWithThisProcessStepActionId`):** **Kullanıcı (§3.15) / Kullanıcı Grubu (§3.16)**
+> adımlarında geçerlidir. **`skipIfPreApproved`** aktifken, bu adımdan **önce son onayı veren kişi** ile bu adımda **aksiyon
+> alacak kişi aynıysa**, süreç **döngüye girmesin** diye adım kullanıcıya sunulmadan **otomatik ilerletilir**: bunun için
+> **`skipWithThisProcessStepActionId`**'deki **`ProcessStepAction`** otomatik tetiklenir (Action **şablonuna** değil, adıma
+> bağlı aksiyona işaret eder). _(Benzer: `skipIfUserProcessStarter` — aksiyonu alacak kişi süreci **başlatan** kullanıcıysa atlar.)_
 
 ### 2.1 — Adım ↔ Aksiyon ilişkisi
 Her adıma bir veya birden fazla **aksiyon** tanımlanır; aksiyon, kontrolün bir sonraki adıma **nasıl geçeceğini** taşır.
@@ -67,6 +73,12 @@ Aksiyon türleri: **`manual` · `eventForm` · `takePhoto` · `selectFile` · `s
 > **Tekrarlayan kavramlar:** **default action** (adımın varsayılan ilerleme aksiyonu) · **action modeli**
 > (→ `process-step-action.md` §2) · **aksiyon alınabilir durum** (form atanan kullanıcı için işlem alınabilir hâle gelir =
 > human task) · **alt servis** (form altındaki ilişkili süreç/form → `properties.md` §3.13 Form List).
+>
+> **`default action` hangi adımlarda var?** **Her adımda değildir.** İşini yapıp **tek yolla** ilerleyen otomatik
+> adımlarda bulunur: **Değer Atama · HTTP Request** (response'ta `action` dönmezse / `async`) **· Processing · Bildirim ·
+> Timer Start / Timer End · Custom ID Creator** vb. **Birden fazla çıkışı** olan adımlarda ise ilerleme aksiyonu
+> **adıma-özel / dinamik** belirlenir: **Karşılaştırma** → koşul `true` ise `true`, değilse `false` aksiyonu · **Switch** →
+> seçilen alanın değerine **eşleşen `code`'lu** aksiyon (eşleşme yoksa **default**). _(Motor tarafı → `../flovo-bpm-engine.md` §4.3.)_
 
 ### 3.1 — Süreç Başlangıcı
 **Özet:** **Ana sürecin** başlama noktası (servis başına **1 zorunlu**). Altında yer alan **aksiyonların nasıl
@@ -124,14 +136,14 @@ değer atamak için kullanılır.
 **Veri modeli (atama tanımı):**
 | Alan | Tip | Açıklama |
 |---|---|---|
-| `valueType` | ValueAssignType | `fixedValue` (sabit) / `propertyValue` (form property değeri) / `fromCalculation` (expression ile hesaplanan değer) |
-| `fixedValue` | string | Sabit değer (`valueType=fixedValue`) |
-| `expression` | string | Değeri üreten ifade (`valueType=fromCalculation`) |
+| `valueAssignType` | ValueAssignType | Değer kaynağı — Değer Atama'da geçerli **alt-küme**: `fixedValue` (sabit) / `propertyValue` (form property değeri) / `fromCalculation` (expression ile hesaplanan değer). _(Enum'un `fromDataSet`/`search`/`httpRequest` değerleri yalnız iş kuralı `assignValueToProperty` içindir; bu adımda geçersiz — JSON Schema ile kısıtlanır.)_ |
+| `fixedValue` | string | Sabit değer (`valueAssignType=fixedValue`) |
+| `expression` | string | Değeri üreten ifade (`valueAssignType=fromCalculation`) |
 | `useDisplay` | bool | Görüntü (display) değerini kullan |
 | `targetPropertyId` | int | Hedef property (değerin yazılacağı alan) |
-| `propertyId` | int | Kaynak property (`valueType=propertyValue`) |
+| `propertyId` | int | Kaynak property (`valueAssignType=propertyValue`) |
 
-**Alt-servise değer atama:** `useRelatedService` (bool) · `relatedServiceId` (int) · `targetInstancesPropertyId`
+**Alt-servise değer atama:** `useAssociatedService` (bool) · `associatedServiceId` (int) · `targetInstancesPropertyId`
 (hedef alt-servis kayıt(lar) property'si).
 > İki kapsam: **(a)** aynı formdaki property'ye, **(b)** alt-servis (Form List → `properties.md` §3.13) kayıtlarına.
 
@@ -229,10 +241,20 @@ listesi** (form property'sinden) · **Dinamik kullanıcı grubu**.
 **Diğer ayarlar:** `groupApproval` (hepsi mi / biri mi onaylasın) · görüntüleme profili · bildirim · timeout.
 
 ### 3.17 — Süreç Bitişi
-**Özet:** Sürecin **son adımıdır**; kimsenin onayında beklemez, sürecin **bittiği** anlamına gelir. Yetkili kullanıcılar
-altındaki aksiyonları **görüntüleyebilir** ve aksiyon alarak formu **önceki adımlara taşıyabilir**. Erişim:
-**raporlardan** veya **daha önce aksiyon alınan form listesinden**.
-**Ayarlar:** `processViewProfileId` (bitişte görüntüleme profili) · `organizationUserGroupIds` (bitiş sonrası erişebilecek gruplar).
+**Özet:** Sürecin **son adımıdır**; kimsenin onayında beklemez, sürecin **bittiği** anlamına gelir.
+
+**İstisna — yetkili geri-taşıma (re-open):** Bu adıma da **aksiyonlar bağlanabilir**; istisna durumlar için, **yalnız
+yetkili kullanıcı grupları** (`organizationUserGroupIds`) bu aksiyonları **görüntüleyip tetikleyebilir**. Bir aksiyon
+tetiklendiğinde süreç kapanmış sayılmaz — aksiyonun **`targetProcessStepId`**'sindeki **farklı bir süreç adımına**
+ilerler. Bu, **aynı `ProcessInstance` üzerinde** yeniden başlatmadır (yeni çalıştırma **açılmaz**).
+> **Örnek:** Süreç Bitişi'ne **"ters kayıt"** aksiyonu eklenir; hedefi (**`targetProcessStepId`**) **muhasebe** adımıdır.
+> Yetkili grup bu aksiyonu görüp tetiklediğinde süreç **muhasebe** adımına ilerler.
+
+**Erişim:** **raporlardan** veya **daha önce aksiyon alınan form listesinden**.
+**Ayarlar:** `processViewProfileId` (bitişte görüntüleme profili) · `organizationUserGroupIds` (bitiş sonrası erişip
+geri-taşıma aksiyonu **alabilecek** gruplar).
+> Motor tarafı: BİTİŞ düğümü yürütme döngüsünü sonlandırır; geri-taşıma, yetkilinin **manuel aksiyonu** ile aynı instance'ta
+> **yeniden başlar** (→ `../flovo-bpm-engine.md` §4.4).
 
 ### 3.18 — Processing
 **Özet:** Form, **bir kullanıcıya** (Kullanıcı/Kullanıcı Grubu gibi) atanır; o kullanıcı bunu **"bu işlemin tamamlanmasını
@@ -246,6 +268,10 @@ otomatik adım gibi davranır → `../flovo-bpm-engine.md` §4.3 / §6.1).
 istenmiyorsa **aktif edilir**; frontendde kullanıcı formu **"yükleniyor"** görür (giriş engellenir).
 - **`true`** → form **loading** görünür (detay/değerler gizli). _(örn. `../sampleProcess/expense`.)_
 - **`false`** → form **normal** görünür; genelde bir **durum güncellemesiyle** kullanıcıya güncel bilgi iletilir. _(örn. `../sampleProcess/integration`.)_
+
+> **Processing'in kendine özel bir "durum değişimi" yoktur.** Durum (status), her adımda olduğu gibi **aksiyon ilerlerken**
+> (`default` aksiyonun `changeStatusId`'si) değişir — **adımın içinde** değil. `false` seçeneğindeki "güncel bilgi",
+> ilerleten `default` aksiyonun `changeStatusId`'siyle iletilir; Processing adımında ayrı bir status alanı tutulmaz.
 
 ### 3.19 — Form Yönlendirme
 **Özet:** Form **create edilmeden önce**, belli bir **karşılaştırma/işlem** yapılıp **farklı, var olan bir formun**

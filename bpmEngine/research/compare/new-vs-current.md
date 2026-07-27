@@ -82,8 +82,8 @@ Mevcut **15 adım tipi** (biri, `atama`, enum'da tanımlı ama **kullanılmayan*
 
 **🔧 Adım ortak yapısı (`ProcessStepDto`) değişiklikleri**
 - **Kaldırıldı:** `selectModalItemDeactive`, `canSelectExpenses` → görüntüleme/seçim profili konusu (Form List).
-- **Taşındı → Değer Atama:** `useRelatedService`, `relatedServiceId`, `targetInstancesFieldId` (→ `targetInstancesPropertyId`).
-- **Değer Atama:** `valueType` değeri `FormValue` → **`PropertyValue`**; `targetFieldId`→`targetPropertyId`, `fieldId`→`propertyId`; ayrıca **`fromCalculation`** (+`expression`) değer kaynağı eklendi.
+- **Taşındı → Değer Atama:** `useRelatedService` (→ **`useAssociatedService`**), `relatedServiceId` (→ **`associatedServiceId`**), `targetInstancesFieldId` (→ `targetInstancesPropertyId`).
+- **Değer Atama:** alan `valueType` → **`valueAssignType`** (tip ValueAssignType); değer `FormValue` → **`PropertyValue`**; `targetFieldId`→`targetPropertyId`, `fieldId`→`propertyId`; ayrıca **`fromCalculation`** (+`expression`) değer kaynağı eklendi.
 
 **🧩 Tipe-özel ayarların modellenmesi (yeni)**
 - **`stepType` (ProcessStepType) + `settings` (JSONB):** Tipe-özel ayarlar `ProcessStep.settings` JSONB kolonunda **gömülü**
@@ -196,11 +196,12 @@ Mevcut **30 ControlType** → yeni **19 alan** (16 founder + **3 mevcuttan korun
 |---|---|
 | `SetViewForFields` | `setViewForProperties` |
 | `AssignValueToField` | `assignValueToProperty` |
-| `assignValueToPropertyField` | `assignValueToPropertyAttribute` _(⚠️ teyit)_ |
+| `assignValueToPropertyField` | `assignValueToPropertyAttribute` |
 | `FieldValue` / `FormValue` | `PropertyValue` |
 | `Function` (değer kaynağı) | `httpRequest` |
 
-**↔ Korundu:** `changeViewProfile`, `applyValidation`, `showMessage`, `fillDataSource`, `setStyle`, runtime tipleri (always/firstOpening/whenChanging), recursive koşullar.
+**↔ Korundu:** `applyValidation`, `showMessage`, `fillDataSource`, `setStyle`, runtime tipleri (always/firstOpening/whenChanging), recursive koşullar.
+**🗑️ Kaldırıldı (yeni):** `changeViewProfile` (v0.18) — çalışma-zamanı profil değiştirme iş-kuralı aksiyonu tasarımdan çıkarıldı; profil süreç adımına `processViewProfileId` ile bağlanır, koşullu görünürlük `setViewForProperties` ile yapılır.
 
 ---
 
@@ -371,4 +372,4 @@ olarak çalışır; **`ProcessInstance.parentProcessInstanceId`** ile ana sürec
 
 ---
 
-*Güncelleme: 2026-07-10 · Tasarım dokümanları ile `../current-flovo-bpm-engine/` karşılaştırılarak derlendi (Alt Süreç Başlangıcı adımı eklendi; v0.7 — runtime & iş-kuralı model adları güncellendi: WorkFlow→ProcessInstance · ProcessStepExecution→ProcessStepInstance · Form→Instance · RelatedForm→RelatedInstance · FormAwaitingUser→InstanceAwaitingUser · WorkRule→BusinessRule). · 2026-07-16 (v0.12 — adım tipe-özel ayarlar JSONB `settings` + adım-tipi enum'ları + alan yeniden adlandırmaları: resource→endpoint · method→HttpMethod · stableUserId→fixedUserId · WorkStyle→TimerCalculationType · Function param→DynamicParameter) · 2026-07-17 (v0.13 — ayrı çeviri anahtarı `translationCode`: §0/§9/§10) · 2026-07-24 (v0.15 — Alt Süreç Bitişi adımı → 21 adım/ProcessStepType; `controlTypeId`→`propertyType`; master model sayısı 11) · 2026-07-24 (v0.17 — `RelatedInstance`→`AssociatedInstance` model + `relatedInstanceId`→`associatedInstanceId` · `relatedPropertyId`→`associatedPropertyId`).*
+*Güncelleme: 2026-07-10 · Tasarım dokümanları ile `../current-flovo-bpm-engine/` karşılaştırılarak derlendi (Alt Süreç Başlangıcı adımı eklendi; v0.7 — runtime & iş-kuralı model adları güncellendi: WorkFlow→ProcessInstance · ProcessStepExecution→ProcessStepInstance · Form→Instance · RelatedForm→RelatedInstance · FormAwaitingUser→InstanceAwaitingUser · WorkRule→BusinessRule). · 2026-07-16 (v0.12 — adım tipe-özel ayarlar JSONB `settings` + adım-tipi enum'ları + alan yeniden adlandırmaları: resource→endpoint · method→HttpMethod · stableUserId→fixedUserId · WorkStyle→TimerCalculationType · Function param→DynamicParameter) · 2026-07-17 (v0.13 — ayrı çeviri anahtarı `translationCode`: §0/§9/§10) · 2026-07-24 (v0.15 — Alt Süreç Bitişi adımı → 21 adım/ProcessStepType; `controlTypeId`→`propertyType`; master model sayısı 11) · 2026-07-24 (v0.17 — `RelatedInstance`→`AssociatedInstance` model + `relatedInstanceId`→`associatedInstanceId` · `relatedPropertyId`→`associatedPropertyId`) · 2026-07-27 (v0.18 — iş-kuralı aksiyonu `changeViewProfile` **kaldırıldı** (§6); combobox'a `isAssociatedCombobox`/`associatedServiceId` eklendi; Değer Atama alanı `valueType`→**`valueAssignType`** (§9); Action'dan `defaultAction` (bool) **kaldırıldı**; `assignValueToPropertyAttribute` adı **teyit** edildi).*

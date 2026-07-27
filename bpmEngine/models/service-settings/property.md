@@ -68,7 +68,7 @@
 |---|---|
 | `textbox` | `minLine` · `maxLine` · `charMaxLength` · `showCharCount` · `keyboardType` · maske |
 | `numericTextbox` | `maxDecimalDigits` · `enableNegative` · `enableGroupSeperator` · `integerActive` |
-| `combobox` | `propertyItems`/`dataSource*` · `isMultiSelect` · `manuelEntry` · `lazyLoading` · `headerText` |
+| `combobox` | `propertyItems`/`dataSource*` · `isMultiSelect` · `manuelEntry` · `lazyLoading` · `headerText` · `isAssociatedCombobox` · `associatedServiceId` |
 | `datepicker` | `minimumDate` · `maximumDate` · `setAsToday` · `format` · `headerText` |
 | `timePicker` | `format` · `defaultValue` · `headerText` |
 | `checkbox` | `defaultValue` (bool) |
@@ -85,6 +85,12 @@
 | `groupByTaxReceipt` | `disableTaxAttachmentView` · `isActiveKkegAttachment` |
 | `keyValueList` | `addNewEnabled` · `deleteEnabled` · `keyDescription` · `valueDescription` · `comboBoxItems` · `keyValueItems` |
 | `imageAreaSelector` | `imageUrl` · `aspectRatio` · `dataSource` (nokta: `code`·`x`·`y`·`isSelected`) |
+
+> **İlişkili combobox (`isAssociatedCombobox` · `associatedServiceId`):** `combobox` alanında `isAssociatedCombobox=true`
+> iken **`associatedServiceId` zorunludur**; combobox o servisin **instance'larından** seçim yaptırır ve seçilen
+> **instance id'si** alanın **`value`'suna** yazılır. Alanın instance'taki **`propertyValue`'su her değiştiğinde**, seçilen
+> instance için **`AssociatedInstance`** tablosuna bir **ilişki kaydı** düşer (→ [`../processInstances/associated-instance.md`](../processInstances/associated-instance.md)).
+> `false` (vars.) = düz liste seçimi, ilişki kaydı **düşmez**. Davranış → `../../service-settings/properties.md` §3.3.
 
 ## İlişkiler
 - **N – 1** → `Service` (`serviceId`).

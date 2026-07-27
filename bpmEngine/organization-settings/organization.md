@@ -26,7 +26,7 @@ servisler (formlar/süreçler), durumlar, çeviriler vb. bir organizasyona aitti
 | `name` | string | Evet | Organizasyon **adı** (kullanıcıya görünen) |
 | `defaultLang` | string | Evet | **Varsayılan dil** — **sabit dil seti** (`tr` / `en` / `de`) içinden seçilir; aktif dilin başlangıç değeri |
 | `logoUrl` | string | Hayır | Organizasyon **logosu** (görsel URL) |
-| `idleTimeoutMinute` | int | Evet | **Boşta kalma zaman aşımı** (dakika). **null olamaz, varsayılan `0`.** `0` = zaman aşımı **uygulanmaz** (disable); `> 0` iken süre dolunca oturum kilitlenir |
+| `idleTimeoutMinute` | int | Evet | **Boşta kalma zaman aşımı** (dakika). **null olamaz, varsayılan `0`.** `0` = zaman aşımı **uygulanmaz** (disable); `> 0` iken süre dolunca oturum kilitlenir → **yeniden giriş (login) gerekir** |
 | `adminUserIds` | List\<int\> | Evet | **Organizasyon adminleri** — en az **1 aktif**; yetki yapılandırmasını yalnız bunlar değiştirir, **tüm yetkilere** sahiptir (→ `permissions.md`) |
 
 ---
@@ -34,10 +34,13 @@ servisler (formlar/süreçler), durumlar, çeviriler vb. bir organizasyona aitti
 ## 2. Alan Davranışları
 - **`code`** — Organizasyonun **benzersiz** kimliğidir; API/entegrasyon gibi **dış referanslarda** `id` yerine `code` kullanılır.
 - **`defaultLang`** — **Sabit dil seti** (`tr`/`en`/`de`) içinden seçilir. Kullanıcının aktif dili yoksa/belirsizse
-  çeviriler bu dile göre çözülür (→ `translation.md` §3).
+  çeviriler bu dile göre çözülür (→ `translation.md` §3). **`defaultLang` sonradan değiştirilirse var olan `definition`
+  metinleri otomatik güncellenmez** — mevcut veriler eski dilde kalır; onları güncellemek **organizasyon sahibinin
+  sorumluluğundadır** (verileri kendisi güncellemelidir).
 - **`logoUrl`** — Uygulama başlığı, raporlar ve bildirimlerde organizasyon markası için kullanılır.
 - **`idleTimeoutMinute`** — Güvenlik için hareketsizlik süresi. **null olamaz; varsayılan `0`.** `0` iken zaman aşımı
-  **uygulanmaz** (disable). `> 0` iken kullanıcı o kadar dakika işlem yapmazsa oturum kilitlenir.
+  **uygulanmaz** (disable). `> 0` iken kullanıcı o kadar dakika işlem yapmazsa oturum kilitlenir; kilit açılırken **tam
+  yeniden giriş (login)** yapılması gerekir (yalnız parola girişi değil).
 
 ---
 

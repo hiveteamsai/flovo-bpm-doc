@@ -2,7 +2,7 @@
 
 > **Durum:** 🟡 TASLAK (gözden geçirilecek)
 > **Amaç:** İş akışındaki bir **düğüm/kutu**. Adımlar aksiyonlarla bağlanarak süreci oluşturur.
-> **Davranış/kullanım + adım kataloğu (20 tip):** → `../../service-settings/process-step.md`
+> **Davranış/kullanım + adım kataloğu (21 tip):** → `../../service-settings/process-step.md`
 > **Tipe-özel ayar modellerinin (§3) ham kaynağı + taşıma kararları:** → [`../../research/current-flovo-bpm-engine/step-type-settings-and-enums.md`](../../research/current-flovo-bpm-engine/step-type-settings-and-enums.md)
 
 ## 1. Ortak alanlar (her adımda)
@@ -22,7 +22,7 @@
 | `hideInHistory` | bool | — | Süreç geçmişinde gizle. |
 | `skipIfPreApproved` | bool | — | Önceden onaylanmışsa adımı atla. |
 | `skipIfUserProcessStarter` | bool | — | Başlatan kullanıcıysa adımı atla. |
-| `skipWithThisActionId` | int | — | Atlamayı tetikleyen aksiyon. **Referans tipi açık** → `../../todo.md`. Not: Action **şablonuna canlı FK tutulmaz** (kopya modeli). |
+| `skipWithThisProcessStepActionId` | int | FK → ProcessStepAction | Atlamada **otomatik tetiklenecek aksiyon** — adıma bağlı **`ProcessStepAction`**'ı işaret eder (Action **şablonuna** değil; kopya modeliyle uyumlu). `skipIfPreApproved` ile birlikte kullanılır (davranış → `../../service-settings/process-step.md` §2). |
 
 ## 2. Tipe-özel ayarların depolanması — `settings` (JSONB)
 
@@ -32,7 +32,7 @@ Aşağıdaki §3 modelleri, her `stepType` için bu JSONB'nin **şemasıdır**.
 
 **Neden JSONB (özet):**
 - **Config/tasarım verisi** — düşük hacim (servis başına ~onlarca adım); ayar **değerine göre sorgulanmaz** (adım **id ile** yüklenir).
-- **20 tipin heterojen şeması** + **genişletilebilir** katalog → wide/sparse tablo veya tip-başına tablo her yeni tipte şema göçü ister; JSONB'de **göç yok**.
+- **21 tipin heterojen şeması** + **genişletilebilir** katalog → wide/sparse tablo veya tip-başına tablo her yeni tipte şema göçü ister; JSONB'de **göç yok**.
 - İç içe/tekrarlı yapılar (`headers`, `conditions`, `recipients`…) doğal olarak **doküman**.
 - Yığın zaten **PostgreSQL/JSONB** (→ [`../../tech-stack/postgresql.md`](../../tech-stack/postgresql.md)); yeni teknoloji gerekmez.
 
@@ -108,14 +108,14 @@ Bir property'ye veya alt-servise sabit/hesaplanan değer atar (davranış → `�
 
 | Alan | Tip | Açıklama |
 |---|---|---|
-| `valueType` | ValueAssignType | Değer kaynağı (→ [`../enums/value-assign-type.md`](../enums/value-assign-type.md): `fixedValue`/`propertyValue`/`fromCalculation`…). |
-| `fixedValue` | string | Sabit değer (`valueType = fixedValue`). |
-| `expression` | string | Değeri üreten ifade (`valueType = fromCalculation`). |
+| `valueAssignType` | ValueAssignType | Değer kaynağı — bu adımda geçerli **alt-küme**: `fixedValue`/`propertyValue`/`fromCalculation` (→ [`../enums/value-assign-type.md`](../enums/value-assign-type.md); `fromDataSet`/`search`/`httpRequest` yalnız iş kuralı `assignValueToProperty` içindir, JSON Schema ile kısıtlanır). |
+| `fixedValue` | string | Sabit değer (`valueAssignType = fixedValue`). |
+| `expression` | string | Değeri üreten ifade (`valueAssignType = fromCalculation`). |
 | `useDisplay` | bool | Görüntü (display) değerini kullan. |
 | `targetPropertyId` | int | Hedef property (değerin yazılacağı alan). |
-| `propertyId` | int | Kaynak property (`valueType = propertyValue`). |
-| `useRelatedService` | bool | Atamayı **alt-servis** kayıtlarına yap. |
-| `relatedServiceId` | int? | Hedef alt-servis (`useRelatedService = true`). |
+| `propertyId` | int | Kaynak property (`valueAssignType = propertyValue`). |
+| `useAssociatedService` | bool | Atamayı **alt-servis** kayıtlarına yap. |
+| `associatedServiceId` | int? | Hedef alt-servis (`useAssociatedService = true`). |
 | `targetInstancesPropertyId` | int? | Hedef alt-servis kayıt(lar) property'si. |
 
 ### 3.4 Karşılaştırma — `ProcessStepComparisonSettings` (`stepType = comparison`)

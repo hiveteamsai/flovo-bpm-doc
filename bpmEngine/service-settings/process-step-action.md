@@ -24,7 +24,7 @@
 
 ### 1.1 — Aksiyon Şablonu (`ActionDto`) → `../organization-settings/action.md`
 Aksiyon **tanımı**, yeniden kullanılabilir bir **şablondur (`ActionDto`)**: `code` · `definition` · **`translationCode`** ·
-`icon` · `styleId` · `actionType` · `defaultAction` · `validation` · `stayOnPage` · `showHistory` · `actionDisplayType`.
+`icon` · `styleId` · `actionType` · `validation` · `stayOnPage` · `showHistory` · `actionDisplayType`.
 Bir süreç adımına aksiyon eklenirken, tanımlı ActionDto'lar arasından seçilir ve bu alanlar **kopyalanır**.
 **Detay → `../organization-settings/action.md`.**
 
