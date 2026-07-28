@@ -189,6 +189,12 @@
 
 ## ✅ Bu oturumda çözülen tutarsızlıklar (log)
 
+> **Not (v0.22):** **Commit-bazında (v0.18+) çözülen soruların DETAYI** (cevap + geliştirme + dosya listesi) artık todo'da
+> **tutulmaz**; ilgili **`commitNotes/v0-X.md`** dosyasının "✅ Çözülen açık sorular" bölümündedir (todo'yu sadeleştirmek için):
+> v0.18 → [`../commitNotes/v0-18.md`](../commitNotes/v0-18.md) · v0.20 → [`../commitNotes/v0-20.md`](../commitNotes/v0-20.md) ·
+> v0.21 → [`../commitNotes/v0-21.md`](../commitNotes/v0-21.md). Aşağıdaki **genel log** + **📦 konsolide liste** (sürüm-öncesi /
+> çapraz kararların özeti) todo'da kalır; **bundan sonraki** çözülenler yalnız ilgili commit-notunda toplanır.
+
 - **Kimlik tipi:** `organizationId` her yerde **int** (eski app'teki `accountId` = yeni `organizationCode`'a denk).
   `string` tipler int'e çevrildi.
 - **Style ↔ alan:** Form alanları `style.md` Style varlığını **kullanmaz**; iş kuralı `setStyle` yalnız tekil görünüm
@@ -241,35 +247,6 @@
   `comboboxCode` → `comboboxTranslationCode`. **VacationDay** anahtarsızdı (hiç çevrilemiyordu) — boşluk kapandı.
   Motor `translation.md §3/§3.1`'e işlendi; ad-uzayı kuralı **açık** kaldı.
 
-### 🔎 v0.18 — Kullanıcı yanıtıyla kapatılan açık sorular (2026-07-27)
-- **Combobox/Radiobutton seçenek kaynağı — ÇÖZÜLDÜ.** **Cevap:** datasource **iki yolla** dolar — (1) ayarlardan
-  **statik `propertyItems`**, (2) **iş kuralı `fillDataSource`** ile **dinamik**; ayarlanan iş kuralına göre kaynak farklı
-  tiplerden beslenir: **organizasyon verileri · kullanıcı bilgileri · başka bir servisin instance'ları · dış/API**.
-  **Geliştirme:** `properties.md` §2.4'e iki-yol notu; `service-settings/business-rule.md` §3 + `enums/business-rule-action-type.md`
-  `fillDataSource` satırlarına kaynak tipleri işlendi. _(Eski todo maddesindeki `fillDataSource` kaynak tipleri de bununla kapandı.)_
-- **Süreç Bitişi "önceki adıma taşıma" — ÇÖZÜLDÜ.** **Cevap:** Süreç Bitişi sürecin bittiği anlamına gelir; **istisna**
-  durumlar için Süreç Bitişi'ne bağlı aksiyonları **yalnız yetkili kullanıcı grupları** görüp tetikleyebilir. Tetiklenince
-  aksiyonun **`targetProcessStepId`**'sindeki adıma **geri taşınır** — **aynı `ProcessInstance`** üzerinde (re-open; ayrı
-  akış / yeni çalıştırma değil). Örn. "**ters kayıt**" aksiyonu → **muhasebe** adımını hedefler; tetiklenince muhasebeye
-  ilerler. **Geliştirme:** `process-step.md` §3.17 somut örnek + re-open semantiğiyle netleştirildi (motor §4.4 zaten
-  "yetkililer geri taşıyabilir" diyordu).
-- **`default action` kavramı — ÇÖZÜLDÜ.** **Cevap:** **her adımda yoktur**; işini yapıp **tek yolla** ilerleyen otomatik
-  adımlarda vardır (**Değer Atama · HTTP Request** [response'ta action dönmezse / `async`] **· Processing · Bildirim · Timer
-  Start/End · Custom ID Creator** vb.). **Çok-çıkışlı** adımlarda ilerleme aksiyonu **adıma-özel/dinamik**: **Karşılaştırma**
-  → `true`/`false`; **Switch** → alan değerine **eşleşen `code`'lu** aksiyon, yoksa **default**. **Geliştirme:** `process-step.md`
-  §3 başlığına "`default action` hangi adımlarda var?" notu eklendi (motor §4.3 ile hizalı).
-- **`changeViewProfile` — ÇÖZÜLDÜ (kaldırıldı).** **Cevap:** bu iş-kuralı özelliği **kaldırılacak**. **Geliştirme:**
-  `changeViewProfile`, **BusinessRuleActionType**'tan ve tüm referanslardan çıkarıldı: `service-settings/business-rule.md` §3 ·
-  `models/service-settings/business-rule.md` · `service-settings/view-profile.md` (madde 5) · `models/service-settings/view-profile.md` ·
-  `enums/business-rule-action-type.md` (+ kaldırma notu) · `enums/index.md` · compare ×2 ("korundu"→"kaldırıldı" + footer).
-  Profil süreç adımına `processViewProfileId` ile bağlanır; koşullu görünürlük `setViewForProperties` ile yapılır.
-- **Processing'de "durum değişimi" — ÇÖZÜLDÜ.** **Cevap:** durum değişimi **aksiyon ilerlerken** yapılır (tüm adımlarda
-  olduğu gibi `changeStatusId`), **adımın içinde değil**; Processing'e **özel bir status değişimi yok**. **Geliştirme:**
-  `process-step.md` §3.18'e "Processing'in kendine özel durum değişimi yoktur" notu eklendi.
-- **Alt süreç ProcessInstance'ları ayrı tabloda mı? — ÇÖZÜLDÜ.** **Cevap:** **aynı tabloda** tutulacak; bir alt süreç de
-  bir süreçtir, ayrı tablo gerekmez. **Geliştirme:** `models/processInstances/process-instance.md` Notlar'a "**Ayrı tablo yok
-  (KARAR)**" maddesi — ana↔alt ayrımı yalnız **`parentProcessInstanceId`** null'lığıyla, sorgu/izolasyon `+ serviceId` ile.
-
 ### 📦 Tier listelerinden konsolide edilen çözülmüş maddeler
 > `[x]` işaretli çözülmüş maddeler Tier 0–3 / "eklenen açık sorular" listelerinden buraya taşındı (açık listelerde artık yalnız
 > `[ ]` kalır). _(Zaten yukarıdaki log'da özeti bulunanlar tekrar edilmedi: **Profil-bazlı alan override'ı (B2)** ·
@@ -295,93 +272,3 @@
   `models/service-settings/solution.md` + `service.md` oluşturuldu (alan ayrıntıları — ikon/versiyon/yetki — sonra).
 - **Bildirim dil kapsamı (ÇÖZÜLDÜ — dinamik dil listesi):** bildirim başlık/mesajı sabit TR/EN yerine **dinamik
   `{ languageCode, text }` listesi**; sabit dil setine bağlı kalmadan kayıt-başına-dil genişler. _(process-step §3.6)_
-
-### 🔎 v0.18 (2. tur) — Tier 3 açık sorularının kullanıcı yanıtıyla kapatılması (2026-07-27)
-- **`defaultAction` (bool) — ÇÖZÜLDÜ (kaldırıldı).** **Cevap:** bool **kaldırılabilir**, böyle bir veriye ihtiyaç yok.
-  **Geliştirme:** `defaultAction` alanı Action'dan çıkarıldı — **varsayılan aksiyon = `code = default`** olan aksiyondur.
-  **Dosyalar:** `organization-settings/action.md` · `models/organization-settings/action.md` (alan + not) ·
-  `service-settings/process-step-action.md` (§1.1 alan listesi) · compare footer. _(Eski-Flovo referansı `research/current-flovo-bpm-engine/actions.md` tarihî olarak korundu.)_
-- **`assignValueToPropertyAttribute` adı — ÇÖZÜLDÜ (teyit).** **Cevap:** ad **uygun**. **Geliştirme:** "isim teyit / ⚠️"
-  işaretleri kaldırıldı: `service-settings/business-rule.md` · `models/service-settings/business-rule.md` · compare ×2.
-- **Style kapsamı — ÇÖZÜLDÜ.** **Cevap:** **bg + font yeterli**. **Geliştirme:** `fontSize`/`isBold`/`border`/`iconColor`
-  gibi ek alanların eklenmeyeceği karara bağlandı: `models/organization-settings/style.md` + `organization-settings/style.md`
-  (§2 not + §4 çözülen log).
-- **`translationCode` ad-uzayı kuralı — ÇÖZÜLDÜ.** **Cevap:** `translationCode` **otomatik üretilmez**; alanlar
-  **opsiyoneldir** — girilmezse çeviri Translation tablosundan çekilmez, **`definition` kullanılır**. **Geliştirme:**
-  `models/organization-settings/translation.md` (açık not → karar) + `organization-settings/translation.md` §5 çözülen log.
-- **`idleTimeoutMinute` kilit davranışı — ÇÖZÜLDÜ (kısmi).** **Cevap:** kilitlenince **yeniden giriş (login)** gerekir
-  (yalnız parola değil). **Geliştirme:** `organization-settings/organization.md` (alan + §2) + `models/organization-settings/organization.md`.
-  **Açık kalan:** `idleTimeoutMinute` **alt/üst sınırı** + Organization sonraki alanları (Tier 3'te daraltıldı).
-- **`valueType` isim çakışması — ÇÖZÜLDÜ (rename).** **Cevap:** aynı adları **ayrıştır**, döküman referanslarını düzgün
-  güncelle. **Geliştirme:** süreç adımı **Değer Atama** alanı `valueType` → **`valueAssignType`** (enum ValueAssignType ile
-  hizalı); `AdditionalQualification.valueType` (QualificationValueType) **aynen kaldı** — artık alan adları farklı.
-  **Dosyalar:** `process-step.md` (davranış + model) · `enums/value-assign-type.md` · `enums/qualification-value-type.md` ·
-  `enums/index.md` (tablo + not) · compare ×2 + footer · bu log'daki "Değer Atama" maddesi.
-- **Çeviri `definition` ↔ `defaultLang` tutarlılığı — ÇÖZÜLDÜ.** **Cevap:** `defaultLang`'in sonradan değişmesi **var olan
-  verileri değiştirmez**; bu, **organizasyon sahibinin sorumluluğundadır** (verileri kendisi güncellemelidir). **Geliştirme:**
-  `organization-settings/organization.md` §2 `defaultLang` davranışına not eklendi.
-- **`skipWithThisActionId` referansı — ÇÖZÜLDÜ (rename + netleşme).** **Cevap:** ad `skipWithThisProcessStepActionId` olarak
-  güncellendi; özellik **Kullanıcı / Kullanıcı Grubu** adımlarında **`skipIfPreApproved`** (önceden onaylanmışsa atla) aktifken
-  kullanılır: bu adımdan **önce son onayı veren** ile bu adımda **aksiyon alacak kişi aynıysa**, süreç **döngüye girmesin** diye
-  `skipWithThisProcessStepActionId`'deki aksiyon **otomatik tetiklenip** ilerletilir. **Geliştirme:** referans **`ProcessStepAction`**'a
-  netleştirildi (Action şablonuna canlı FK yok ilkesiyle uyumlu — eski todo'daki "referans tipi açık" böylece kapandı).
-  **Dosyalar:** `service-settings/process-step.md` §2 (alan + davranış notu) · `models/service-settings/process-step.md` §2 (FK) ·
-  compare `new-vs-current-names.md` §9 + footer. _(Eski-Flovo referansı korundu.)_
-- **`Instance.delete` ↔ `deleted` tutarsızlığı — ÇÖZÜLDÜ (rename).** **Cevap:** `delete` olan isimlendirmeler **`deleted`**'e
-  çevrilsin. **Geliştirme:** `models/processInstances/instance.md` alan `delete` → **`deleted`** + "`deleted` alanı içeren tüm
-  modeller" notu (organizasyon-ayar modelleriyle **tek/kanonik isim**; SQL ayrılmış sözcük `delete` kullanılmaz). Başka
-  soft-delete `delete` alanı yoktu (kontrol edildi). Compare `new-vs-current-names.md` §15 ("korunan/farklı ad" → rename) + footer.
-- **Alt-servis alan adı (`child*` ↔ `related*`) — ÇÖZÜLDÜ (baştan-analiz bulgusu).** **Cevap:** Form List'teki **`childServiceId`
-  doğru** (form list altına eklenen instance'lar "child" olduğu için) — **korunur**; Değer Atama'daki `relatedService*` ise
-  **`associatedService*`** olarak güncellensin. **Geliştirme:** `useRelatedService`→**`useAssociatedService`** ·
-  `relatedServiceId`→**`associatedServiceId`** — `service-settings/process-step.md` §3.4 + `models/service-settings/process-step.md`
-  §3.1 + compare `new-vs-current.md` §9 / `new-vs-current-names.md` §9 + footer. _(Combobox'ın `associatedServiceId`'siyle aynı
-  adlandırma — ikisi de "ilişkilendirilen servis"; farklı model/tablo, çakışma yok.)_
-- **Değer Atama `valueAssignType` değer alt-kümesi — ÇÖZÜLDÜ (baştan-analiz bulgusu).** **Cevap:** en uygun yöntem — **ayrı
-  enum açmadan** `ValueAssignType`'ın **alt-kümesi** kabul edilir: Değer Atama yalnız **`fixedValue`/`propertyValue`/`fromCalculation`**
-  kullanır; `fromDataSet`/`search`/`httpRequest` yalnız iş kuralı `assignValueToProperty` içindir. **Gerekçe:** iki bağlam aynı
-  kavramı (değer kaynağı) paylaşır — ayrı enum tekrar/bakım eşleşmesi yaratırdı; kısıt, adım `settings` JSONB'sinin
-  **tip-başına JSON Schema**'sıyla (uygulama-katmanı doğrulama) uygulanır. **Geliştirme:** `enums/value-assign-type.md`
-  ("Geçerli bağlam" sütunu + karar notu) · `service-settings/process-step.md` §3.4 + `models/service-settings/process-step.md`
-  §3.3 (alt-küme notu; yanıltıcı "…" kaldırıldı) · `models/enums/index.md` (kullanan-model satırı).
-
-### 🔎 v0.20 — Üst Form Kullanıcı adımı (alt-servis yaşam döngüsü çözümü) (2026-07-28)
-- **Form List / alt-servis yaşam döngüsü — ÇÖZÜLDÜ (yeni adım tipi).** **Cevap:** Alt-servis kaydı, üst formla **paralel
-  ilerletilmeye çalışılmaz** (senkron + performans yükü); bunun yerine yeni **Üst Form Kullanıcı (`parentInstanceUser`)** insan-görev
-  adımı ile üst forma **bağlanır** — üst formun **güncel atananlarını** (`InstanceAwaitingUser`) ve **`code`-eşleşen** görüntüleme
-  profilini **anlık** devralır. Adım ayarında yalnız `parentServiceId` + `associatedPropertyId` (Form List / `isAssociatedCombobox`
-  Combobox) tutulur; **`processViewProfileId` ve aksiyon-bekleyen seçimi yoktur**. Üst form tespiti `AssociatedInstance` **ters
-  aramasıyla** (`instanceId`=alt-servis, `associatedPropertyId`=alan → `associatedInstanceId`=üst form). **Geliştirme:**
-  `service-settings/process-step.md` §1 taksonomi + §3.22 (davranış) · `models/service-settings/process-step.md` §2 map + §3.17
-  (ayar modeli) · `models/enums/process-step-type.md` (`parentInstanceUser` + 21→22) · `flovo-bpm-engine.md` §4.3/§4.4 (insan-görev
-  dalı) · `models/processInstances/associated-instance.md` (ters-arama tüketicisi notu). **Açık kalan (kenar durumlar):** Tier 2
-  "Üst Form Kullanıcı — kenar durumlar".
-- **Alt-servis süreçlerinde `parentViewProfile` seçeneği — ÇÖZÜLDÜ.** **Cevap:** "parent'ın view-profile'i ile aynı `code`'a
-  sahip profili kullan" ihtiyacı, Kullanıcı/Kullanıcı Grubu adımlarına **opsiyon eklemek yerine** ayrı **Üst Form Kullanıcı**
-  (`parentInstanceUser`) adım tipiyle karşılandı — `code` eşleşmesi (yoksa `isDefault`) bu adımın çekirdeğidir. **Geliştirme:**
-  yukarıdaki maddeyle aynı dosyalar; ayrı `parentViewProfile` bayrağı **eklenmedi**.
-
-### 🔎 v0.21 — `dataSource` çift anlamı + Image Area Selector (2026-07-28)
-- **`dataSource` alan adı çift anlamlı — ÇÖZÜLDÜ.** **Cevap:** **Image Area Selector (`imageAreaSelector`) alan tipi kaldırılsın**;
-  böylece `dataSource`'un ikinci anlamı (görsel statik nokta listesi) ortadan kalkar — `dataSource*` **yalnız** Combobox/Radiobutton
-  **dinamik seçenek kaynağı** olur. **datasource için ayrı tablo ayrıştırmaya gerek yok** — statik seçenek verisi **`propertyItems`**
-  (`PropertyItem` modeli) ile **aynen kullanılmaya devam** edilir (dinamik = iş kuralı `fillDataSource`). **Geliştirme:**
-  `service-settings/properties.md` §1 taksonomi + **§3.19 kaldırıldı** + §2.4 "`dataSource` tek anlamlı" kararı ·
-  `models/service-settings/property.md` §2 tablo (satır kaldırıldı) + Notlar (çözüldü) · `models/enums/property-type.md`
-  (`imageAreaSelector` değeri kaldırıldı + not) · sayaç **19 → 18** (`service-settings/index.md` · `models/enums/index.md` ·
-  `property-type.md`). **Not:** `research/property-value-storage/` sunumları/senaryoları hâlâ Image Area'yı **yapısal-JSON örneği**
-  olarak anıyor — o mimari benimsenirse uyumlanacak (→ o klasörün `index.md` "benimseme öncesi uyumlanacaklar" notu).
-- **Grup onayı (`groupApproval`) — ÇÖZÜLDÜ (kaldırıldı, ilk faz).** **Cevap:** Grup **"hepsi onaylar" (grup onayı) özelliği ilk
-  fazda gereksiz** — kaldırıldı; dokümanda yer kaplamasın. Kullanıcı Grubu adımı kalır ama **üyelerden biri** aksiyon alınca
-  ilerler (varsayılan/tek davranış). **Geliştirme:** adım alanı `groupApproval` **kaldırıldı** (`service-settings/process-step.md`
-  §3.16 + `models/service-settings/process-step.md` §3.11) · `UserGroup.groupApprovalRequired` alanı **kaldırıldı**
-  (`models/organization-settings/user-group.md`) · **`UserGroupApprovedUser` modeli tümden silindi** (yalnız grup onayına hizmet
-  ediyordu; `models/processInstances/user-group-approved-user.md` + `index.md` satırı + `instance-awaiting-user.md` ilişki/not +
-  `models/index.md` ERD/FK/açıklama + `enums/process-step-user-group-type.md` + `enums/process-step-type.md` + compare ×2).
-  _(Bu, eski "grup onayı ↔ groupApprovalRequired sahiplik/örtüşme" açık sorusunu da kapattı — özellik artık yok.)_
-- **Süreç başlatma kısıtı (`ProcessStepProcessStartSettings.userGroupId`) davranışı — ÇÖZÜLDÜ.** **Cevap:** Model tanımı
-  (`userGroupId`: null → herkes, dolu → yalnız o grup) **doğru**; eksik olan **davranış** işlendi. **Karar:** manuel başlatmada
-  **görünürlük = tetikleme yetkisi** — `userGroupId` dolu ise başlangıç aksiyonları **yalnız o grubun** başlatılabilir listesinde
-  görünür, **grup dışı görmez** (ayrı "görür ama tetikleyemez" yok); **webhook / Customer API** başlatımı bu kısıttan
-  **etkilenmez** (kullanıcı değil `ApiKey` ile kimliklenir; erişim ayrı katman). **Geliştirme:** davranış `service-settings/process-step.md`
-  §3.1'e + model `models/service-settings/process-step.md` §3.14'e (userGroupId davranış notu) işlendi. _(v0.15 incelemesinden gelen madde.)_
