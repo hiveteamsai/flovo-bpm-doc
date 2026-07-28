@@ -3,7 +3,7 @@
 > **Kullanan model:** [`process-step.md`](../service-settings/process-step.md) — alan `stepType`, tip **ProcessStepType**
 > **Amaç:** Bir süreç adımının **tipini** belirler; tipe-özel ayarların (**process-step §2**) hangi şekilde yorumlanacağını
 > söyleyen **ayrımlayıcı** (discriminator). Motor ve tasarımcı, `settings`'i bu değere göre okur.
-> **Adım kataloğu (davranış):** → [`../../service-settings/process-step.md`](../../service-settings/process-step.md) §3 (21 adım).
+> **Adım kataloğu (davranış):** → [`../../service-settings/process-step.md`](../../service-settings/process-step.md) §3 (22 adım).
 
 ## Değerler
 | Değer | Anlam (adım) | Ne için |
@@ -24,6 +24,7 @@
 | `switch` | Switch | Alan değerine göre dallanma (default zorunlu). |
 | `user` | Kullanıcı | Tek kullanıcı onayı (human task). |
 | `userGroup` | Kullanıcı Grubu | Grup onayı (human task). |
+| `parentInstanceUser` | Üst Form Kullanıcı | Atananları/görüntülemeyi **üst formdan (parent instance)** devralan human task (alt-servis). |
 | `processEnd` | Süreç Bitişi | Sürecin son adımı. |
 | `processing` | Processing | Forma döner ama beklemez; `default` ile otomatik ilerler. |
 | `formRedirect` | Form Yönlendirme | Create öncesi var olan başka bir formu açma. |
@@ -31,7 +32,7 @@
 | `subProcessEnd` | Alt Süreç Bitişi | Bağımsız alt sürecin **son adımı** (Süreç Bitişi'nin alt-süreç karşılığı; kol burada sonlanır). |
 
 ## Notlar
-- Değerler `service-settings/process-step.md §3`'teki **21 adım** kataloğuyla birebir eşleşir; katalog genişletilebilir
+- Değerler `service-settings/process-step.md §3`'teki **22 adım** kataloğuyla birebir eşleşir; katalog genişletilebilir
   (yeni adım tipi → yeni değer). _(Tier 0 "Genişletilebilirlik" → [`../../todo.md`](../../todo.md).)_
 - `switch` ve `default` gibi değerler yalnız enum **kodu**dur; görünen ad "Anlam" sütunundadır.
 

@@ -17,7 +17,7 @@
 | Kategori | Flovo adımları |
 |---|---|
 | **Başlangıç / Bitiş** | Süreç Başlangıcı · **Alt Süreç Başlangıcı** · Süreç Bitişi · **Alt Süreç Bitişi** |
-| **İnsan görev (human task)** | Kullanıcı · Kullanıcı Grubu |
+| **İnsan görev (human task)** | Kullanıcı · Kullanıcı Grubu · **Üst Form Kullanıcı** (atananları/görüntülemeyi **üst formdan** devralır → §3.22) |
 | **Otomatik / sistem** | HTTP Request · Flovo AI · Değer Atama · Karşılaştırma · Switch · Bildirim · Custom ID Creator · **Processing** (frontende form döner ama `default` ile otomatik ilerler → §3.18) |
 | **Form & alt-servis** | Instance Creator · Instance Deleter · Form Yönlendirme · Süreç Adımı Tetikleme |
 | **Zamanlayıcı** | Timer · Timer Start · Timer End |
@@ -67,7 +67,7 @@ Aksiyon türleri: **`manual` · `eventForm` · `takePhoto` · `selectFile` · `s
 
 ---
 
-## 3. Adım Kataloğu (21 adım)
+## 3. Adım Kataloğu (22 adım)
 > Aşağıda her adımın **özeti** + (varsa) **detay ayarları** vardır. Sıra, kurucunun verdiği sıradır.
 >
 > **Tekrarlayan kavramlar:** **default action** (adımın varsayılan ilerleme aksiyonu) · **action modeli**
@@ -337,6 +337,51 @@ biçimde Alt Süreç Bitişi de **çıkışı** açık bir düğüm yapar. Böyl
 bitirmesi" belirsizliği ortadan kalkar; her alt süreç kolunun **tanımlı bir sonu** olur.
 
 **Ayarlar:** — (**ayarsız**; alt süreç bu adımda sonlanır).
+
+### 3.22 — Üst Form Kullanıcı (Parent Instance User)
+**Özet:** Kullanıcı / Kullanıcı Grubu'na benzer, **aksiyon-onayına giden** bir insan-görev adımı; farkı: **atananları
+(aksiyon bekleyenler) ve görüntüleme profilini kendi ayarında tutmaz — bunları bağlı olduğu üst formdan (parent instance)
+devralır.** Bir formun altında çalışan **yardımcı/alt-servisler** içindir: alt-servis, üst formla **paralel ilerletilmeye
+çalışılmadan** (senkronizasyon + performans yükü olmadan) üst formun **güncel** aksiyon-alabilenlerine ve görünümüne
+**bağlanır**.
+
+**Neden bu adım (motor gerekçesi):** Bir ana form (örn. **masraf formu**) Form List ile alt-servis kayıtları (örn. **masraf**)
+barındırır. Ana form süreçte ilerledikçe (yönetici → muhasebe …) alt-servis kayıtları üzerinde de **aynı kişilerin** düzenleme/
+aksiyon alabilmesi istenir. Alt-servisin sürecini ana forma **paralel ilerletmek** (her adımda ikisini de senkron tutmak)
+hem **sync** hem **performans** açısından pahalıdır. Bu adım, alt-servis kaydını üst formun **o anki** görünümüne/atananlarına
+**bağlar** — kopyalamaz, **anlık çözer**.
+
+**Ayarlar:**
+| Ayar | Açıklama |
+|---|---|
+| `parentServiceId` | **Üst formun servisi** — ilişkiyi kuran alanın bulunduğu servis (örn. *masraf formu*). |
+| `associatedPropertyId` | Üst formdaki **ilişki alanı** — yalnız `AssociatedInstance` bağlantısı kuran alanlar seçilebilir: **Form List** veya **Combobox (`isAssociatedCombobox`)**. |
+
+> **Seçilebilir alan filtresi:** Yalnız **bu servisi hedefleyen** ilişki alanları listelenir — Form List `childServiceId` =
+> bu servis, **veya** Combobox `associatedServiceId` = bu servis. Böylece seçilen alan, üst formdan **bu** alt-servise işaret eder.
+
+> **Bu adımda YOKTUR:** `processViewProfileId` (görüntüleme profili) **seçimi** ve **aksiyon bekleyenler** (atama) seçimi —
+> ikisi de üst formdan devralınır (aşağıdaki çalışma).
+
+**Çalışma (runtime):**
+1. Alt-servis kaydı (Instance) bu adıma girer.
+2. **Üst form tespiti:** `AssociatedInstance` içinde `instanceId = <bu instance>` **ve** `associatedPropertyId =
+   <settings.associatedPropertyId>` olan kayıt bulunur; **`associatedInstanceId` = üst form (parent instance)**'dur.
+   _(Model yönü: ilişkiyi kuran alan üst formun içindedir → `associatedInstanceId` üst forma denk gelir →
+   `../models/processInstances/associated-instance.md`.)_
+3. **Görüntüleme profili (code ile eşleşme):** Üst formun **o anki aktif adımının** görüntüleme profilinin `code`'u alınır;
+   **bu alt-servis içinde aynı `code`'a sahip** `ProcessViewProfile` kullanılır. Aynı kodlu profil **yoksa** alt-servisin
+   **`isDefault = true`** profili kullanılır (→ `view-profile.md`).
+4. **Aksiyon bekleyenler (anlık devralma):** Üst formun **güncel `InstanceAwaitingUser`** kümesi bu alt-servis kaydının
+   aksiyon-alabilenleri olur. _(Öneri: bu küme **kopyalanmaz**, **okuma-zamanında** üst form üzerinden çözülür — senkronizasyon
+   yükünü önlemek bu adımın asıl amacıdır; kopyalama-vs-anlık kararı → `../todo.md`.)_
+5. Devralınan kullanıcı(lar) alt-servis kaydını **code-eşleşen profil** ile görür/düzenler ve **alt-servisin kendi
+   aksiyonlarını** alır; aksiyon alındığında alt-servis **kendi sürecinde** ilerler (yalnız görünüm + atananlar devralınır;
+   veri/aksiyon/ilerleme alt-servisin kendisinindir).
+
+> **Not (kenar durumlar → `../todo.md`):** üst formda **eşleşen kayıt bulunamazsa** (henüz bağlanmamış / bağ kaldırılmış),
+> üst form **otomatik bir adımda** olup aksiyon bekleyeni yokken, **birden fazla üst form** eşleştiğinde ve üst form
+> **Süreç Bitişi**'ne ulaştığında bu adımın davranışı **açık** (→ Tier 2 "Üst Form Kullanıcı — kenar durumlar").
 
 ---
 

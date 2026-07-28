@@ -2,7 +2,7 @@
 
 > **Durum:** 🟡 TASLAK (gözden geçirilecek)
 > **Amaç:** İş akışındaki bir **düğüm/kutu**. Adımlar aksiyonlarla bağlanarak süreci oluşturur.
-> **Davranış/kullanım + adım kataloğu (21 tip):** → `../../service-settings/process-step.md`
+> **Davranış/kullanım + adım kataloğu (22 tip):** → `../../service-settings/process-step.md`
 > **Tipe-özel ayar modellerinin (§3) ham kaynağı + taşıma kararları:** → [`../../research/current-flovo-bpm-engine/step-type-settings-and-enums.md`](../../research/current-flovo-bpm-engine/step-type-settings-and-enums.md)
 
 ## 1. Ortak alanlar (her adımda)
@@ -32,7 +32,7 @@ Aşağıdaki §3 modelleri, her `stepType` için bu JSONB'nin **şemasıdır**.
 
 **Neden JSONB (özet):**
 - **Config/tasarım verisi** — düşük hacim (servis başına ~onlarca adım); ayar **değerine göre sorgulanmaz** (adım **id ile** yüklenir).
-- **21 tipin heterojen şeması** + **genişletilebilir** katalog → wide/sparse tablo veya tip-başına tablo her yeni tipte şema göçü ister; JSONB'de **göç yok**.
+- **22 tipin heterojen şeması** + **genişletilebilir** katalog → wide/sparse tablo veya tip-başına tablo her yeni tipte şema göçü ister; JSONB'de **göç yok**.
 - İç içe/tekrarlı yapılar (`headers`, `conditions`, `recipients`…) doğal olarak **doküman**.
 - Yığın zaten **PostgreSQL/JSONB** (→ [`../../tech-stack/postgresql.md`](../../tech-stack/postgresql.md)); yeni teknoloji gerekmez.
 
@@ -60,6 +60,7 @@ Aşağıdaki §3 modelleri, her `stepType` için bu JSONB'nin **şemasıdır**.
 | `instanceCreator` | `ProcessStepInstanceCreatorSettings` | §3.9 |
 | `user` | `ProcessStepUserSettings` | §3.10 |
 | `userGroup` | `ProcessStepUserGroupSettings` | §3.11 |
+| `parentInstanceUser` | `ProcessStepParentInstanceUserSettings` | §3.17 |
 | `processEnd` | `ProcessStepProcessEndSettings` | §3.12 |
 | `processing` | `ProcessStepProcessingSettings` | §3.13 |
 | `processStart` | `ProcessStepProcessStartSettings` | §3.14 |
@@ -288,6 +289,20 @@ Formu (ve seçime göre ilişkili formları) siler (davranış → `§3.10`).
 | `formRedirect` | Karşılaştırma + açılacak var-olan form; detay **sonra**. |
 | `subProcessStart` | **Ayara ihtiyaç yok** — ayrı özelliği yok; tetikleme kaynağı webhook / iç tetikleme (davranış → `§3.20`). |
 | `subProcessEnd` | **Ayara ihtiyaç yok** — alt sürecin çıkış düğümü; kol burada sonlanır (davranış → `§3.21`; Süreç Bitişi'nin aksine bitiş-sonrası erişim ayarı yoktur). |
+
+### 3.17 Üst Form Kullanıcı — `ProcessStepParentInstanceUserSettings` (`stepType = parentInstanceUser`)
+Aksiyon-onayına giden human-task adım; **atananları ve görüntüleme profilini üst formdan (parent instance) devralır**
+(davranış → `../../service-settings/process-step.md §3.22`).
+
+| Alan | Tip | Açıklama |
+|---|---|---|
+| `parentServiceId` | int | **Üst formun servisi** — ilişkiyi kuran alanın bulunduğu servis. |
+| `associatedPropertyId` | int | Üst formdaki **ilişki alanı** — yalnız `AssociatedInstance` bağlantısı kuran alanlar (**Form List** veya `isAssociatedCombobox` **Combobox**). **Bu servisi hedefleyen** alanlarla sınırlıdır (Form List `childServiceId` = bu servis / Combobox `associatedServiceId` = bu servis). |
+
+> **Bu adımda `processViewProfileId` ve aksiyon-bekleyen (atama) alanı YOKTUR** — ikisi de üst formdan çözülür:
+> görüntüleme profili **`code` eşleşmesiyle** (aynı kodlu profil yoksa alt-servisin `isDefault` profili), atananlar ise
+> üst formun **güncel `InstanceAwaitingUser`** kümesinden (öneri: **okuma-zamanı** çözümü — kopyalama-vs-anlık kararı →
+> `../../todo.md`). Kenar durumlar (üst form bulunamaz / otomatik adımda / çok eşleşme / Süreç Bitişi) → `../../todo.md`.
 
 ## İlişkiler
 - **N – 1** → `Organization` (`organizationId`), `Service` (`serviceId`).

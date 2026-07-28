@@ -157,6 +157,9 @@ sonraki adıma ilerler; insan beklemez:
 hâle gelir:
 - **Kullanıcı / Kullanıcı Grubu** adımları. _(**Processing** de frontende form/response döndürür ama **beklemez**;
   manuel aksiyon almadan `default` ile otomatik ilerler → A grubu. Krş. §6.1.)_
+- **Üst Form Kullanıcı** adımı (alt-servis) — Kullanıcı/Kullanıcı Grubu gibi bekler, **fakat** atananları ve görüntüleme
+  profilini **kendi ayarında tutmaz**: bağlı olduğu **üst formun (parent instance)** güncel atananlarını (`InstanceAwaitingUser`)
+  ve **`code`-eşleşen** görüntüleme profilini **anlık** devralır (→ `service-settings/process-step.md` §3.22).
 - **`manual`, `eventForm`, `takePhoto`, `selectFile`, `scanBarcode`** aksiyonları **kullanıcı tarafından
   frontend'de** tetiklenir.
 - Kullanıcılar, **kendilerinin (kullanıcı veya kullanıcı grubu üyesi olarak) yer aldığı** ve **o süreç adımında
@@ -190,8 +193,10 @@ while adım bir BİTİŞ düğümü değilse:                   # Süreç Bitiş
         if gelenAction yoksa:                                 # terminal otomatik adım — giden aksiyon yok
             break                                             #   → kol burada sonlanır (ör. Instance Deleter / Form Yönlendirme)
         gelenAction.parameters = adım.ürettiğiParametreler()  # adımın ürettiği (out) — opsiyonel
-    else:  # İNSAN-TETİKLEMELİ (Kullanıcı / Kullanıcı Grubu)
+    else:  # İNSAN-TETİKLEMELİ (Kullanıcı / Kullanıcı Grubu / Üst Form Kullanıcı)
         atanan = adım.atananıÇöz()                            # userType / userGroupType ile
+        # Üst Form Kullanıcı (§3.22): atanan = üst formun güncel InstanceAwaitingUser'ı (anlık çözülür),
+        #   görüntüleme profili = üst formun aktif adımının profil code'uyla eşleşen profil (yoksa isDefault)
         # ── ADIM ATLAMA (skip): önceki son onaylayan/başlatan aynı kişiyse döngüye girme (→ process-step §2) ──
         if (adım.skipIfPreApproved and atanan == öncekiSonOnaylayan) \
            or (adım.skipIfUserProcessStarter and atanan == süreçBaşlatan):

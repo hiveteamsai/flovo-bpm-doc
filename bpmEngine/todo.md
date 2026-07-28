@@ -87,8 +87,11 @@
   hata yakalayıcı; telafi/compensation; `action` zinciri **sonsuz döngü** koruması. _(flovo-bpm-engine §7 · process-step-action §7)_
 - [ ] **İnsan-görev ailesi ortak modeli** — Kullanıcı / Kullanıcı Grubu / Processing için atama + bekleme.
   _(process-step §4)_ · _(Processing'in ilerleme farkı **çözüldü**: frontende response döner ama beklemez, `default` ile ilerler → process-step §3.18)_
-- [ ] **Form List / alt-servis yaşam döngüsü** — 3 dokümanda ortak: alt-servisin görüntülenecek alanları/seçilebilirliği
-  view-profile ile nasıl; veri/`changeList`/parametre nasıl akar. _(properties §3.13 · process-step §4 · view-profile §5)_
+- [ ] **Üst Form Kullanıcı (§3.22) — kenar durumlar** — alt-servisin üst formun atananlarını/görünümünü devraldığı yeni
+  adım (Parent Instance User) çekirdeği tanımlandı; **açık kalan:** (a) üst form **bulunamazsa** (bağ yok/kaldırılmış)
+  davranış; (b) üst form **otomatik adımda** olup aksiyon bekleyeni yokken görünüm/atanan; (c) **birden fazla** üst form
+  eşleşirse ayrıştırma kuralı; (d) üst form **Süreç Bitişi**'ne ulaşınca alt-servisin yaşam döngüsü; (e) atananların
+  **kopyalanması vs okuma-zamanı** çözümü (öneri: anlık). _(process-step §3.22 · flovo-bpm-engine §4.3 · AssociatedInstance)_
 - [ ] **Form List ayarları gözden geçir** — `reOrder` · `parameterTransfer` · `propertyTransferParameters` ·
   `editOnlyOwnPosition` nasıl yönetilecek (profil-bazlı mı)? _(properties §4 / §3.13)_ · _(`addNewEnabled`→`activeStartActions`,
   `addFromExistingRecordsIsActive`→`addFromExistingStatusIds` (profil), `selectedEnable`→`selectableVisible` (profil): **çözüldü**.)_
@@ -123,10 +126,6 @@
     (tek oluşturan kullanıcı olmadan, ör. gruba yönlendirilerek → `sampleProcess/referred`) başlatılabildiğinden
     `creatorUserId` **null olabilir**; başlatan **`ProcessInstance.createdByApiKeyId`** ile izlenir. Açık kalan: yalnız
     ActionTransfer.user ile creatorUserId'nin **opsiyonel atanması**.
-- [ ] **Alt-servis süreçlerinde `parentViewProfile` seçeneği** — Kullanıcı/Kullanıcı Grubu adımlarında `processViewProfileId`
-  **statik** seçiliyor. Alt-servis olarak çalışan süreçlerde bunun yerine "**parent'ın view-profile'i ile aynı `code`'a sahip**
-  view-profile'i kullan" gibi bir **parentViewProfile** seçeneği mi eklenmeli, yoksa farklı bir yöntemle mi ilerlenmeli?
-  _(process-step §3.15/§3.16 · view-profile §5)_
 - [ ] **Form List tik (seçim) davranışı** — formların yanındaki **tiklerde** yapılan değişiklikler **aksiyon tetikleyecek mi**?
   **Tik kaldırma nedeni** kullanıcıdan nasıl alınacak ve nasıl kaydedilecek? _(properties §3.13 Form List · `selectableVisible`/
   `selectedEditable` · view-profile §5)_
@@ -363,3 +362,19 @@
   **tip-başına JSON Schema**'sıyla (uygulama-katmanı doğrulama) uygulanır. **Geliştirme:** `enums/value-assign-type.md`
   ("Geçerli bağlam" sütunu + karar notu) · `service-settings/process-step.md` §3.4 + `models/service-settings/process-step.md`
   §3.3 (alt-küme notu; yanıltıcı "…" kaldırıldı) · `models/enums/index.md` (kullanan-model satırı).
+
+### 🔎 v0.20 — Üst Form Kullanıcı adımı (alt-servis yaşam döngüsü çözümü) (2026-07-28)
+- **Form List / alt-servis yaşam döngüsü — ÇÖZÜLDÜ (yeni adım tipi).** **Cevap:** Alt-servis kaydı, üst formla **paralel
+  ilerletilmeye çalışılmaz** (senkron + performans yükü); bunun yerine yeni **Üst Form Kullanıcı (`parentInstanceUser`)** insan-görev
+  adımı ile üst forma **bağlanır** — üst formun **güncel atananlarını** (`InstanceAwaitingUser`) ve **`code`-eşleşen** görüntüleme
+  profilini **anlık** devralır. Adım ayarında yalnız `parentServiceId` + `associatedPropertyId` (Form List / `isAssociatedCombobox`
+  Combobox) tutulur; **`processViewProfileId` ve aksiyon-bekleyen seçimi yoktur**. Üst form tespiti `AssociatedInstance` **ters
+  aramasıyla** (`instanceId`=alt-servis, `associatedPropertyId`=alan → `associatedInstanceId`=üst form). **Geliştirme:**
+  `service-settings/process-step.md` §1 taksonomi + §3.22 (davranış) · `models/service-settings/process-step.md` §2 map + §3.17
+  (ayar modeli) · `models/enums/process-step-type.md` (`parentInstanceUser` + 21→22) · `flovo-bpm-engine.md` §4.3/§4.4 (insan-görev
+  dalı) · `models/processInstances/associated-instance.md` (ters-arama tüketicisi notu). **Açık kalan (kenar durumlar):** Tier 2
+  "Üst Form Kullanıcı — kenar durumlar".
+- **Alt-servis süreçlerinde `parentViewProfile` seçeneği — ÇÖZÜLDÜ.** **Cevap:** "parent'ın view-profile'i ile aynı `code`'a
+  sahip profili kullan" ihtiyacı, Kullanıcı/Kullanıcı Grubu adımlarına **opsiyon eklemek yerine** ayrı **Üst Form Kullanıcı**
+  (`parentInstanceUser`) adım tipiyle karşılandı — `code` eşleşmesi (yoksa `isDefault`) bu adımın çekirdeğidir. **Geliştirme:**
+  yukarıdaki maddeyle aynı dosyalar; ayrı `parentViewProfile` bayrağı **eklenmedi**.

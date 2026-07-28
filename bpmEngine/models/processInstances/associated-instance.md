@@ -36,6 +36,11 @@
 >   (→ [`../service-settings/property.md`](../service-settings/property.md) §2 · `../../service-settings/properties.md` §3.3).
 > - **Form List** için: ilişki, alt-servis kaydının listeye **eklenmesiyle** kurulur.
 
+> **Ters arama tüketicisi — Üst Form Kullanıcı adımı (§3.22):** Bir alt-servis kaydı, üst formunu bu tablodan **ters
+> aramayla** bulur: `instanceId = <alt-servis kaydı>` **ve** `associatedPropertyId = <ilişki alanı>` → **`associatedInstanceId`
+> = üst form**. Böylece alt-servis, üst formun güncel atananlarını/görünümünü devralır
+> (→ [`../../service-settings/process-step.md`](../../service-settings/process-step.md) §3.22).
+
 ## İlişkiler
 - **N – 1** → `Instance` (`instanceId` = işaret edilen, `associatedInstanceId` = property'yi içeren), `Property` (`associatedPropertyId`).
 - Instance ↔ Instance **N–N** köprü tablosu (property boyutuyla). Tek bir Instance birden çok `AssociatedInstance` kaydına bağlı olabilir

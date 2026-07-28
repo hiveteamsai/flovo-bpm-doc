@@ -56,13 +56,15 @@
 ---
 
 ## 2. Süreç Adımları (`../../service-settings/process-step.md`)
-Mevcut **15 adım tipi** (biri, `atama`, enum'da tanımlı ama **kullanılmayan**) → yeni **21 adım** (korunan + yeni;
+Mevcut **15 adım tipi** (biri, `atama`, enum'da tanımlı ama **kullanılmayan**) → yeni **22 adım** (korunan + yeni;
 çıkarılan: **Adım İptali** · **Eba Entegre** · kullanılmayan **`atama`**).
 
 **➕ Eklenen (mevcutta yok)**
 - **Flovo AI** · **Switch** · **Processing** · **Instance Creator** · **Instance Deleter** · **Form Yönlendirme** · **Süreç Adımı Tetikleme** ·
   **Alt Süreç Başlangıcı** (bağımsız alt sürecin **giriş düğümü**; webhook **veya** Süreç Adımı Tetikleme ile tetiklenir → §11 not) ·
-  **Alt Süreç Bitişi** (bağımsız alt sürecin **çıkış düğümü**; Süreç Bitişi'nin alt-süreç karşılığı)
+  **Alt Süreç Bitişi** (bağımsız alt sürecin **çıkış düğümü**; Süreç Bitişi'nin alt-süreç karşılığı) ·
+  **Üst Form Kullanıcı** (`parentInstanceUser` — alt-servis kaydını **üst formun** güncel atananlarına/`code`-eşleşen görüntüleme
+  profiline **anlık** bağlayan human-task adımı; alt-servisi paralel ilerletmenin senkron/performans yükünü çözer → §3.22)
 
 **➖ Çıkarılan**
 - **Adım İptali** (`stepCancellation`) — kaldırıldı.
@@ -372,4 +374,4 @@ olarak çalışır; **`ProcessInstance.parentProcessInstanceId`** ile ana sürec
 
 ---
 
-*Güncelleme: 2026-07-10 · Tasarım dokümanları ile `../current-flovo-bpm-engine/` karşılaştırılarak derlendi (Alt Süreç Başlangıcı adımı eklendi; v0.7 — runtime & iş-kuralı model adları güncellendi: WorkFlow→ProcessInstance · ProcessStepExecution→ProcessStepInstance · Form→Instance · RelatedForm→RelatedInstance · FormAwaitingUser→InstanceAwaitingUser · WorkRule→BusinessRule). · 2026-07-16 (v0.12 — adım tipe-özel ayarlar JSONB `settings` + adım-tipi enum'ları + alan yeniden adlandırmaları: resource→endpoint · method→HttpMethod · stableUserId→fixedUserId · WorkStyle→TimerCalculationType · Function param→DynamicParameter) · 2026-07-17 (v0.13 — ayrı çeviri anahtarı `translationCode`: §0/§9/§10) · 2026-07-24 (v0.15 — Alt Süreç Bitişi adımı → 21 adım/ProcessStepType; `controlTypeId`→`propertyType`; master model sayısı 11) · 2026-07-24 (v0.17 — `RelatedInstance`→`AssociatedInstance` model + `relatedInstanceId`→`associatedInstanceId` · `relatedPropertyId`→`associatedPropertyId`) · 2026-07-27 (v0.18 — iş-kuralı aksiyonu `changeViewProfile` **kaldırıldı** (§6); combobox'a `isAssociatedCombobox`/`associatedServiceId` eklendi; Değer Atama alanı `valueType`→**`valueAssignType`** (§9); Action'dan `defaultAction` (bool) **kaldırıldı**; `assignValueToPropertyAttribute` adı **teyit** edildi).*
+*Güncelleme: 2026-07-10 · Tasarım dokümanları ile `../current-flovo-bpm-engine/` karşılaştırılarak derlendi (Alt Süreç Başlangıcı adımı eklendi; v0.7 — runtime & iş-kuralı model adları güncellendi: WorkFlow→ProcessInstance · ProcessStepExecution→ProcessStepInstance · Form→Instance · RelatedForm→RelatedInstance · FormAwaitingUser→InstanceAwaitingUser · WorkRule→BusinessRule). · 2026-07-16 (v0.12 — adım tipe-özel ayarlar JSONB `settings` + adım-tipi enum'ları + alan yeniden adlandırmaları: resource→endpoint · method→HttpMethod · stableUserId→fixedUserId · WorkStyle→TimerCalculationType · Function param→DynamicParameter) · 2026-07-17 (v0.13 — ayrı çeviri anahtarı `translationCode`: §0/§9/§10) · 2026-07-24 (v0.15 — Alt Süreç Bitişi adımı → 21 adım/ProcessStepType; `controlTypeId`→`propertyType`; master model sayısı 11) · 2026-07-24 (v0.17 — `RelatedInstance`→`AssociatedInstance` model + `relatedInstanceId`→`associatedInstanceId` · `relatedPropertyId`→`associatedPropertyId`) · 2026-07-27 (v0.18 — iş-kuralı aksiyonu `changeViewProfile` **kaldırıldı** (§6); combobox'a `isAssociatedCombobox`/`associatedServiceId` eklendi; Değer Atama alanı `valueType`→**`valueAssignType`** (§9); Action'dan `defaultAction` (bool) **kaldırıldı**; `assignValueToPropertyAttribute` adı **teyit** edildi). · 2026-07-28 (v0.20 — **Üst Form Kullanıcı** (`parentInstanceUser`) insan-görev adımı eklendi: alt-servisi üst formun atananlarına/`code`-eşleşen profiline anlık bağlar → **21 → 22 adım**).*
