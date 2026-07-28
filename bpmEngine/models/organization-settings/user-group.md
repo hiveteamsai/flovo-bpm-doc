@@ -3,7 +3,7 @@
 > **Durum:** 🟡 TASLAK — eski uygulama DTO'sundan türetildi.
 > **Kaynak DTO:** `../../research/current-flovo-bpm-engine/organizations/user-groups.md` (`AccountUserGroupDto`).
 > **Dönüşüm:** `account*`→`organization*`; `accountId` (string) → **`organizationId` (int)**.
-> **Amaç:** Birden fazla kullanıcıyı toplayan grup. BPM'de **grup onayı**, **bildirim hedefi**, **aksiyon görünürlük yetkisi**.
+> **Amaç:** Birden fazla kullanıcıyı toplayan grup. BPM'de **bildirim hedefi**, **aksiyon görünürlük yetkisi**, "Kullanıcı Grubu" adımı hedefi.
 
 ## Alanlar
 | Alan | Tip | Anahtar | Açıklama |
@@ -13,7 +13,6 @@
 | `code` | string | — | Grup kodu. |
 | `definition` | string | — | Grup adı/tanımı. |
 | `translationCode` | string? | çeviri anahtarı | **Çeviri eşleşme anahtarı** (→ [`translation.md`](./translation.md) `code`). `null` = çeviri **es geçilir**, doğrudan `definition` kullanılır. |
-| `groupApprovalRequired` | bool | — | **Grup onayı gerekli mi?** Bu grup bir formu beklerken (`InstanceAwaitingUser.userGroupId`) `true` ise, onaylayan üyeler `UserGroupApprovedUser` tablosundan tespit edilir. |
 | `active` | bool | — | Aktif/pasif — **null olamaz**, varsayılan `true`. `false` = frontend'de **görünür/düzenlenebilir** ama BPM işlemede kullanılmaz. |
 | `deleted` | bool | — | Soft-delete — **null olamaz**, varsayılan `false`. `true` = frontend'de **gizli/aktarılmaz/salt** + BPM işlemede kullanılmaz. |
 | `companyIds` | List\<int\> | FK → `company.md` (N–N) | İlişkili şirketler. |
@@ -32,7 +31,6 @@
 ## İlişkiler
 - **N – 1** → `Organization` · **N – N** → `Company`.
 - **1 – N** ← `UserGroupMember` (`userGroupId`).
-- **BPM kullanımı:** "Kullanıcı Grubu" adımı (grup onayı) · `ProcessStepAction.actionDisplayAuthorizedUserGroupId` · bildirim hedefi · rapor erişimi.
-- **1 – N** ← `UserGroupApprovedUser` (dolaylı, `InstanceAwaitingUser` üzerinden) — yalnız `groupApprovalRequired=true` iken onaylayan üyeler tutulur → `../processInstances/user-group-approved-user.md`.
+- **BPM kullanımı:** "Kullanıcı Grubu" adımı · `ProcessStepAction.actionDisplayAuthorizedUserGroupId` · bildirim hedefi · rapor erişimi.
 
 *Oluşturma: 2026-07-03.*

@@ -12,8 +12,8 @@
 | `dynamicUserGroup` | Dinamik kullanıcı grubu | Formdaki bir property'deki (`dynamicUserListPropertyId`) **kullanıcı grubundan** oluşan liste. |
 
 ## Notlar
-- **Grup onayı eşiği** ayrı bir alandır: `groupApproval` (bool) — `true`: aksiyon alabilen **tüm** kullanıcılar onaylayınca
-  ilerler, `false`: **bir** kişinin onayı yeterli. _(Bkz. [`../../todo.md`](../../todo.md) — `groupApproval` ↔ `UserGroup.groupApprovalRequired` ilişkisi.)_
+- Bu enum yalnız **grubun belirlenme yöntemini** seçer; grup formu beklerken **üyelerden biri** aksiyon alınca süreç ilerler
+  _(ilk fazda "hepsi onaylar" grup-onayı eşiği yoktur)_.
 - **Kaynak:** current Flovo `ProcessSettingUserGroupType` →
   [`../../research/current-flovo-bpm-engine/step-type-settings-and-enums.md`](../../research/current-flovo-bpm-engine/step-type-settings-and-enums.md) §3.
 

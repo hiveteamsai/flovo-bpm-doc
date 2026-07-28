@@ -25,10 +25,12 @@
 | `userInfo` | User Info — salt-okunur kullanıcı metadata. | Kullanıcı bilgisi göstermek. |
 | `groupByTaxReceipt` | Group By Tax Receipt — vergi fişi gruplama. | Fiş bazlı gruplu giriş. |
 | `keyValueList` | Key-Value List — anahtar-değer listesi. | Dinamik anahtar/değer çiftleri. |
-| `imageAreaSelector` | Image Area Selector — görsel üzerinde alan/nokta seçimi. | Görsel üzerinde işaretleme. |
 
 ## Notlar
-- Tam 19 kontrol tipinin tipe-özel alanları ve davranışları → [`../../service-settings/properties.md`](../../service-settings/properties.md) §3.
+- Tam 18 kontrol tipinin tipe-özel alanları ve davranışları → [`../../service-settings/properties.md`](../../service-settings/properties.md) §3.
+- **`imageAreaSelector` (Image Area Selector) kaldırıldı (v0.21):** `dataSource` alan adının **çift anlamı** (Combobox/Radiobutton
+  dinamik kaynak ↔ görsel nokta listesi) bu tip kaldırılarak giderildi; `dataSource*` artık **tek anlamlı** (yalnız seçim alanı
+  dinamik kaynağı). _(Karar → `../../todo.md` çözülen log; davranış → `../../service-settings/properties.md` §2.4.)_
 - `Property.propertyType` alanı bu enum'un değerini taşır; fiziksel depolama **int** üzerindendir, buradaki **kod** kanonik
   metin karşılığıdır (görünen ad "Anlam" sütununda).
 - Kodlar **camelCase** olarak normalize edildi (v0.7).

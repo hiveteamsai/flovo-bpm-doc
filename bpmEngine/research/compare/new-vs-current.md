@@ -31,7 +31,7 @@
 | 16 | **Organizasyon ayarları (yapısal)** | "Account Settings" DTO'ları (`accountId` string) | **13 DB modeli** (Company/User/Department/Profession…) — `organizationId` **int**; **Title→Profession**; typed/combobox ek nitelik |
 | 17 | **Yetkilendirme** | Kullanıcı bazında **sayısal `authorizationLevel`** (dinamik değil) | **Org-bazlı**: `adminUserIds` + grup-bazlı yetkiler (kullanıcı yerine geçme · org/servis ayarları erişimi · tüm raporlar) |
 | 18 | **Master-veri yaşam döngüsü** | `status` (bool) | **`active` + `deleted`** (soft-delete); `(organizationId, code)` **benzersiz** |
-| 19 | **İş akışı / çalıştırma (runtime)** | `ServiceInstances` · `ServiceInstanceRequests` (+ dağınık alanlar) | **`processInstances/` 6 model**: `ProcessInstance` · `ProcessStepInstance` · `Instance` · `InstanceAwaitingUser` · `UserGroupApprovedUser` · `AssociatedInstance` |
+| 19 | **İş akışı / çalıştırma (runtime)** | `ServiceInstances` · `ServiceInstanceRequests` (+ dağınık alanlar) | **`processInstances/` 5 model**: `ProcessInstance` · `ProcessStepInstance` · `Instance` · `InstanceAwaitingUser` · `AssociatedInstance` |
 | 20 | **Adım tipe-özel ayarlar** | Adım DTO'suna gömülü düz alanlar | **`settings` (JSONB)** + **`stepType`** ayrımlayıcı + tip-tip ayar modelleri (§3) + adım-tipi **enum'ları** (ProcessStepType, HttpMethod, TimerCalculationType, NotificationChannel…) |
 | 21 | **Çeviri anahtarı** | Çeviri **iş kodu (`code`) ile** eşleşir → farklı varlıkların kodları (Departman "01" ↔ Şirket "01") **aynı çeviri satırına çakışır** | **Ayrı, nullable `translationCode`** (23 model/alt-model); `code` yalnız iş kodu. **`null` = çeviri es geçilir → `definition`** (opt-in) |
 
@@ -299,7 +299,7 @@ Department/Profession → yönetici atama tipleri · CostCenter/CreditCard → m
 ---
 
 ## 11. İş Akışı / Runtime Modelleri (`../../models/processInstances/`) — YENİ KATMAN
-Motorun **çalışma-zamanı** kayıtları (ayarlardan üretilen instance/execution verisi). 6 model; **tam isim eşlemesi** →
+Motorun **çalışma-zamanı** kayıtları (ayarlardan üretilen instance/execution verisi). 5 model; **tam isim eşlemesi** →
 [`new-vs-current-names.md §15`](./new-vs-current-names.md).
 
 **✏️ Eski modelden yeniden adlandırılan**
@@ -314,11 +314,7 @@ Motorun **çalışma-zamanı** kayıtları (ayarlardan üretilen instance/execut
   **`parentProcessInstanceId`** self-link ile alt süreç → ana süreç bağı).
 - **`InstanceAwaitingUser`** — form üzerinde **atanan/aksiyon alabilecek** kullanıcı-grup kümesi; maliyet için doğrudan tutulur
   (aksiyon alabilecekleri `ProcessStepInstance` filtrelemeden bu tablodan tespit) ve adım geçişlerinde **sync** (eklenir/silinir).
-- **`UserGroupApprovedUser`** — grup onayında onaylayan üye + zaman (yalnız `UserGroup.groupApprovalRequired=true`).
 - **`AssociatedInstance`** — formlar arası ilişki (property boyutuyla; `associatedPropertyId`, `associatedInstanceId`'nin formundaki alan).
-
-**🔧 İlgili yeni alan**
-- **`UserGroup.groupApprovalRequired`** (bool) — grup onayı gerekli mi (yeni).
 
 **✅ Çözülen açık konu:** Webhook bir **aksiyon** olduğundan bağımsız alt süreçte bağlanacağı adım yoktu
 (`ProcessStepInstance.processStepId` zorunlu). Çözüm: yeni **Alt Süreç Başlangıcı** süreç adımı (→
@@ -353,7 +349,7 @@ olarak çalışır; **`ProcessInstance.parentProcessInstanceId`** ile ana sürec
 - **Kararlar netleşti:** Action→ProcessStepAction **bağımsız kopya** (FK yok); Form List ayarları **profil-bazlı override** (B2); Translation **kayıt-başına-dil**; kapsam kararı (havuz ↔ servis) çözüldü.
 - **Organizasyon altyapısı modellendi:** eski Account Settings (kullanıcı/departman/ünvan/şirket/takvim…) **13 DB modeline** dönüştürüldü (account→organization, **Title→Profession**, typed+combobox ek nitelik değerleri).
 - **Yetki modeli modernize edildi:** sabit **sayısal `authorizationLevel`** → **dinamik org-bazlı** (admin + kullanıcı grubu bazlı yetkiler); ayrıca master-verilerde `active`/`deleted` (soft-delete) ve `(organizationId, code)` benzersizlik standardı.
-- **Runtime/instance katmanı modellendi:** eski dağınık `ServiceInstances`/`ServiceInstanceRequests` → **`processInstances/` 6 model** (ProcessInstance · ProcessStepInstance · Instance · InstanceAwaitingUser · UserGroupApprovedUser · AssociatedInstance); aksiyon-alabilenler ayrı tablo (maliyet), grup onayı + formlar-arası ilişki netleşti;
+- **Runtime/instance katmanı modellendi:** eski dağınık `ServiceInstances`/`ServiceInstanceRequests` → **`processInstances/` 5 model** (ProcessInstance · ProcessStepInstance · Instance · InstanceAwaitingUser · AssociatedInstance); aksiyon-alabilenler ayrı tablo (maliyet), formlar-arası ilişki netleşti;
   bağımsız alt süreçler ayrı `ProcessInstance` (**`parentProcessInstanceId`** ile ana sürece bağlı).
 
 ### ⚠️ Başarısız / riskli / henüz eksik
@@ -374,4 +370,4 @@ olarak çalışır; **`ProcessInstance.parentProcessInstanceId`** ile ana sürec
 
 ---
 
-*Güncelleme: 2026-07-10 · Tasarım dokümanları ile `../current-flovo-bpm-engine/` karşılaştırılarak derlendi (Alt Süreç Başlangıcı adımı eklendi; v0.7 — runtime & iş-kuralı model adları güncellendi: WorkFlow→ProcessInstance · ProcessStepExecution→ProcessStepInstance · Form→Instance · RelatedForm→RelatedInstance · FormAwaitingUser→InstanceAwaitingUser · WorkRule→BusinessRule). · 2026-07-16 (v0.12 — adım tipe-özel ayarlar JSONB `settings` + adım-tipi enum'ları + alan yeniden adlandırmaları: resource→endpoint · method→HttpMethod · stableUserId→fixedUserId · WorkStyle→TimerCalculationType · Function param→DynamicParameter) · 2026-07-17 (v0.13 — ayrı çeviri anahtarı `translationCode`: §0/§9/§10) · 2026-07-24 (v0.15 — Alt Süreç Bitişi adımı → 21 adım/ProcessStepType; `controlTypeId`→`propertyType`; master model sayısı 11) · 2026-07-24 (v0.17 — `RelatedInstance`→`AssociatedInstance` model + `relatedInstanceId`→`associatedInstanceId` · `relatedPropertyId`→`associatedPropertyId`) · 2026-07-27 (v0.18 — iş-kuralı aksiyonu `changeViewProfile` **kaldırıldı** (§6); combobox'a `isAssociatedCombobox`/`associatedServiceId` eklendi; Değer Atama alanı `valueType`→**`valueAssignType`** (§9); Action'dan `defaultAction` (bool) **kaldırıldı**; `assignValueToPropertyAttribute` adı **teyit** edildi). · 2026-07-28 (v0.20 — **Üst Form Kullanıcı** (`parentInstanceUser`) insan-görev adımı eklendi: alt-servisi üst formun atananlarına/`code`-eşleşen profiline anlık bağlar → **21 → 22 adım**).*
+*Güncelleme: 2026-07-10 · Tasarım dokümanları ile `../current-flovo-bpm-engine/` karşılaştırılarak derlendi (Alt Süreç Başlangıcı adımı eklendi; v0.7 — runtime & iş-kuralı model adları güncellendi: WorkFlow→ProcessInstance · ProcessStepExecution→ProcessStepInstance · Form→Instance · RelatedForm→RelatedInstance · FormAwaitingUser→InstanceAwaitingUser · WorkRule→BusinessRule). · 2026-07-16 (v0.12 — adım tipe-özel ayarlar JSONB `settings` + adım-tipi enum'ları + alan yeniden adlandırmaları: resource→endpoint · method→HttpMethod · stableUserId→fixedUserId · WorkStyle→TimerCalculationType · Function param→DynamicParameter) · 2026-07-17 (v0.13 — ayrı çeviri anahtarı `translationCode`: §0/§9/§10) · 2026-07-24 (v0.15 — Alt Süreç Bitişi adımı → 21 adım/ProcessStepType; `controlTypeId`→`propertyType`; master model sayısı 11) · 2026-07-24 (v0.17 — `RelatedInstance`→`AssociatedInstance` model + `relatedInstanceId`→`associatedInstanceId` · `relatedPropertyId`→`associatedPropertyId`) · 2026-07-27 (v0.18 — iş-kuralı aksiyonu `changeViewProfile` **kaldırıldı** (§6); combobox'a `isAssociatedCombobox`/`associatedServiceId` eklendi; Değer Atama alanı `valueType`→**`valueAssignType`** (§9); Action'dan `defaultAction` (bool) **kaldırıldı**; `assignValueToPropertyAttribute` adı **teyit** edildi). · 2026-07-28 (v0.20 — **Üst Form Kullanıcı** (`parentInstanceUser`) insan-görev adımı eklendi: alt-servisi üst formun atananlarına/`code`-eşleşen profiline anlık bağlar → **21 → 22 adım**). · 2026-07-28 (v0.21 — `imageAreaSelector` alan tipi **kaldırıldı** (19→18); **grup onayı özelliği kaldırıldı** — `groupApproval`/`UserGroup.groupApprovalRequired`/`UserGroupApprovedUser` silindi, runtime 6→5 model).*

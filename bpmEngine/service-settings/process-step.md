@@ -92,6 +92,12 @@ başlatılabileceğini** ayarlamak için oluşturulur.
   (`ProcessStepInstance.processStepId` sorunsuz atılır).
 - Yani Süreç Başlangıcı, sürecin **nasıl başlatılacağını** (manuel **ve/veya** dış webhook) tanımlar. Altındaki aksiyon
   türleri → `process-step-action.md` §3.
+- **Kim başlatabilir (`userGroupId` kısıtı):** Süreç Başlangıcı, **manuel başlatmayı** bir kullanıcı grubuna kısıtlayabilir
+  (`userGroupId` → `../models/service-settings/process-step.md` §3.14). **Görünürlük = tetikleme yetkisi:** `userGroupId`
+  **boş** → **herkes** başlangıç aksiyonlarını **görür ve** başlatır; **dolu** → **yalnız o gruptaki** kullanıcılar **görür ve**
+  başlatır, **grup dışı kullanıcı bu aksiyonları görmez** (ayrı "görür ama tetikleyemez" durumu yoktur). **Webhook / Customer
+  API** başlatımı bu kısıttan **etkilenmez** — kullanıcı değil **`ApiKey`** ile kimliklendirilir; dış erişim yetkisi ayrı
+  katmandadır (→ `../flovo-customer-api.md`).
 > **Ayrım (anlam karmaşasını önle):** Hem **Süreç Başlangıcı** hem **§3.20 Alt Süreç Başlangıcı** dışarıdan **webhook** ile
 > tetiklenebilir; **farkları:**
 > - **Süreç Başlangıcı** = **ana süreci** başlatır (servis başına **1**); **manuel veya** webhook aksiyonu ile.
@@ -238,7 +244,8 @@ Süreci başlatan · **Sabit kullanıcı** (`fixedUserId`) · **Kullanıcının 
 
 **Grup belirleme yöntemi (`userGroupType`):** **Sabit kullanıcı grubu** (`organizationUserGroupId`) · **Dinamik kullanıcı
 listesi** (form property'sinden) · **Dinamik kullanıcı grubu**.
-**Diğer ayarlar:** `groupApproval` (hepsi mi / biri mi onaylasın) · görüntüleme profili · bildirim · timeout.
+**Diğer ayarlar:** görüntüleme profili · bildirim · timeout.
+> _(İlk fazda **grup "hepsi onaylar" eşiği yok**: gruba iletilen formda **bir** üye aksiyon alınca süreç ilerler.)_
 
 ### 3.17 — Süreç Bitişi
 **Özet:** Sürecin **son adımıdır**; kimsenin onayında beklemez, sürecin **bittiği** anlamına gelir.

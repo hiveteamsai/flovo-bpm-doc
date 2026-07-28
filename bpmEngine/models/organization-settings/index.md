@@ -12,7 +12,7 @@
 | [`profession.md`](./profession.md) | Çalışan **görev/meslek** (ünvan) tanımları; "ünvana göre yönetici" atamaları. |
 | [`position.md`](./position.md) | Organizasyonel **görev yeri** (şirkete bağlı) + **Staff (kadro)** alt modeli (1 kadro ↔ 1 kullanıcı). |
 | [`user.md`](./user.md) | Organizasyondaki **kişiler**; BPM onay mercilerinin (kullanıcı/yönetici/…) temeli. |
-| [`user-group.md`](./user-group.md) | **Kullanıcı grubu**; grup onayı, bildirim hedefi, aksiyon görünürlük yetkisi. |
+| [`user-group.md`](./user-group.md) | **Kullanıcı grubu**; bildirim hedefi, aksiyon görünürlük yetkisi. |
 | [`worker-level.md`](./worker-level.md) | Personel **kademe/seviye** tanımları; kullanıcılara atanır. |
 | [`cost-center.md`](./cost-center.md) | **Masraf merkezi** (Cost Center); masraf süreçlerinde maliyet yansıtma birimi. |
 | [`credit-card.md`](./credit-card.md) | Harcama süreçlerinde kullanılan **kurumsal kartlar**; şirkete/kullanıcıya bağlanır. |

@@ -39,11 +39,10 @@ alabilecek kullanıcılar bu tabloda **güncellenir** (yeni aksiyon alabilecekle
 ## İlişkiler
 - **N – 1** → `Instance` (`instanceId`), `ProcessStepInstance` (`processStepInstanceId`),
   `User` (`userId`), `UserGroup` (`userGroupId`).
-- **1 – N** ← `UserGroupApprovedUser.instanceAwaitingUserId` (grup bekleme durumunda onaylayanlar).
 
 ## Notlar / açık noktalar
 - **`userId` veya `userGroupId`'den biri dolu olmak zorunda** (ikisi birden değil).
-- **Grup onayı:** `userGroupId` dolu **ve** o grubun `UserGroup.groupApprovalRequired = true` ise, onaylayan üyeler
-  `user-group-approved-user.md` tablosundan tespit edilir.
+- **Kullanıcı Grubu ataması:** `userGroupId` dolu olduğunda **gruptaki üyelerden herhangi biri** aksiyon alabilir; ilk aksiyon
+  süreci ilerletir _(ilk fazda "hepsi onaylar" grup-onayı yoktur)_.
 
 *Oluşturma: 2026-07-06.*

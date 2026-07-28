@@ -84,7 +84,6 @@
 | `userInfo` | `userInfoValue` (salt-okunur kullanıcı metadata) |
 | `groupByTaxReceipt` | `disableTaxAttachmentView` · `isActiveKkegAttachment` |
 | `keyValueList` | `addNewEnabled` · `deleteEnabled` · `keyDescription` · `valueDescription` · `comboBoxItems` · `keyValueItems` |
-| `imageAreaSelector` | `imageUrl` · `aspectRatio` · `dataSource` (nokta: `code`·`x`·`y`·`isSelected`) |
 
 > **İlişkili combobox (`isAssociatedCombobox` · `associatedServiceId`):** `combobox` alanında `isAssociatedCombobox=true`
 > iken **`associatedServiceId` zorunludur**; combobox o servisin **instance'larından** seçim yaptırır ve seçilen
@@ -97,6 +96,9 @@
 - **1 – N** ← `PropertyItem` (`propertyId`), `ProcessViewProfileProperty` (`propertyId`).
 
 ## Notlar / açık noktalar
-- Çekirdek ↔ tipe-özel ayrımının nihai listesi; Form List ayarları; `dataSource` çift anlamı → `../../todo.md`.
+- Çekirdek ↔ tipe-özel ayrımının nihai listesi; Form List ayarları → `../../todo.md`.
+- **`dataSource` çift anlamı — ÇÖZÜLDÜ:** `Image Area Selector` (`imageAreaSelector`) alan tipi **kaldırıldı**; `dataSource*`
+  artık yalnız Combobox/Radiobutton **dinamik seçenek kaynağı**. Seçenek verisi için ayrı tablo yok — statik `propertyItems`
+  (`PropertyItem`) **devam** (davranış → `../../service-settings/properties.md` §2.4).
 
 *Oluşturma: 2026-07-02.*

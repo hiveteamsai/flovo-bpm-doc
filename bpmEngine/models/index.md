@@ -35,7 +35,7 @@
 |---|---|---|
 | **organization-settings/** | Kiracıya bağlı **yapısal veri** + **organizasyon havuzu** (eski "Account Settings"): Organization · Company · Department · Profession · Position · User · UserGroup · Translation · Style · Status · Action · CostCenter · WorkerLevel · CreditCard · AdditionalQualification · WorkingSchedule · VacationDay · ProcessTransfer · SchedulerJob. | [`organization-settings/index.md`](./organization-settings/index.md) |
 | **service-settings/** | Bir **Solution/Service** altındaki tasarım modelleri: Solution · Service (`formType`) · Property/PropertyItem · ProcessViewProfile ailesi · ProcessStep · ProcessStepAction · BusinessRule/BusinessRuleCondition. | [`service-settings/index.md`](./service-settings/index.md) |
-| **processInstances/** | Ayarlardan üretilen **çalışma-zamanı (runtime)** kayıtları: ProcessInstance · ProcessStepInstance · Instance · InstanceAwaitingUser · UserGroupApprovedUser · AssociatedInstance. 🟢 TANIMLI. | [`processInstances/index.md`](./processInstances/index.md) |
+| **processInstances/** | Ayarlardan üretilen **çalışma-zamanı (runtime)** kayıtları: ProcessInstance · ProcessStepInstance · Instance · InstanceAwaitingUser · AssociatedInstance. 🟢 TANIMLI. | [`processInstances/index.md`](./processInstances/index.md) |
 | **enums/** | Modellerde kullanılan **enum tanımları** (kanonik değer listeleri; ör. `actionType`, `propertyType`, `formType`). | [`enums/index.md`](./enums/index.md) |
 
 > **Not:** **Organization** kiracının kökü; **Solution · Service** service-settings kırılımının başladığı yerdir
@@ -75,7 +75,6 @@ ProcessInstance (id; createdByUserId → User · createdByApiKeyId → ApiKey[ge
  ├─< ProcessStepInstance (processInstanceId; instanceId → Instance · processStepId → ProcessStep ·
  │        │                 processStepActionId → ProcessStepAction · atUserId/atDelegateUserId → User · atApiKeyId → ApiKey[geçici])
  │        └─< InstanceAwaitingUser (processStepInstanceId; instanceId → Instance · userId → User · userGroupId → UserGroup)
- │                 └─< UserGroupApprovedUser (instanceAwaitingUserId; userId → User)   # yalnız grup onayı
  └─< Instance (processInstanceId; serviceId → Service · creatorUserId → User · statusId → Status)
       └─< AssociatedInstance (instanceId → Instance · associatedInstanceId → Instance · associatedPropertyId → Property)
 ```
@@ -134,8 +133,6 @@ ProcessInstance (id; createdByUserId → User · createdByApiKeyId → ApiKey[ge
 | InstanceAwaitingUser | `instanceId` | Instance.id | N–1 | |
 | InstanceAwaitingUser | `userId` | User.id | N–1 | `userId` **veya** `userGroupId` (biri) |
 | InstanceAwaitingUser | `userGroupId` | UserGroup.id | N–1 | |
-| UserGroupApprovedUser | `instanceAwaitingUserId` | InstanceAwaitingUser.id | N–1 | yalnız grup onayı |
-| UserGroupApprovedUser | `userId` | User.id | N–1 | onaylayan üye |
 | AssociatedInstance | `instanceId` · `associatedInstanceId` | Instance.id | N–1 | formlar arası ilişki |
 | AssociatedInstance | `associatedPropertyId` | Property.id | N–1 | `associatedInstanceId`'nin formundaki property |
 
@@ -149,7 +146,7 @@ ProcessInstance (id; createdByUserId → User · createdByApiKeyId → ApiKey[ge
 | **ExpenseType / Currency / Tax** | Masraf süreçleri | Masraf tipi, para birimi, vergi — referans dokümanında **kapsam dışı**. _(Position/Staff artık modellendi → `organization-settings/position.md`.)_ |
 
 > **Instance (doldurulmuş form) artık modellendi** → `processInstances/` (ProcessInstance · Instance · ProcessStepInstance · InstanceAwaitingUser ·
-> UserGroupApprovedUser · AssociatedInstance). 🟢 TANIMLI — yalnız `Instance` **property value depolaması** açık (→ `../todo.md`).
+> AssociatedInstance). 🟢 TANIMLI — yalnız `Instance` **property value depolaması** açık (→ `../todo.md`).
 
 > **Not:** **User** ve **UserGroup** artık modellendi (→ §1 "Organizasyon ayarları"). `organizationUserGroupId` /
 > `actionDisplayAuthorizedUserGroupId` gibi BPM referansları `UserGroup`'a, kullanıcı atamaları `User`'a bağlanır.

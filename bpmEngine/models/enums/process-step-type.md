@@ -23,7 +23,7 @@
 | `comparison` | Karşılaştırma | Koşula göre `true`/`false` iki dallı yönlendirme. |
 | `switch` | Switch | Alan değerine göre dallanma (default zorunlu). |
 | `user` | Kullanıcı | Tek kullanıcı onayı (human task). |
-| `userGroup` | Kullanıcı Grubu | Grup onayı (human task). |
+| `userGroup` | Kullanıcı Grubu | Kullanıcı grubuna iletilir; **biri** aksiyon alır (human task). |
 | `parentInstanceUser` | Üst Form Kullanıcı | Atananları/görüntülemeyi **üst formdan (parent instance)** devralan human task (alt-servis). |
 | `processEnd` | Süreç Bitişi | Sürecin son adımı. |
 | `processing` | Processing | Forma döner ama beklemez; `default` ile otomatik ilerler. |

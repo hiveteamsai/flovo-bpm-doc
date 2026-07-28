@@ -38,8 +38,9 @@
 
 > **⚠️ Benimseme öncesi uyumlanacaklar (isim güncelliği):** v2 sunumu bazı **eski adları** kullanıyor; `models/`'e işlenirken güncel
 > proje adlarına çevrilmeli: **`controlTypeId` → `propertyType`** (v0.15) · **`RelatedInstance`/`relatedInstanceId`/`relatedPropertyId`
-> → `AssociatedInstance`/`associatedInstanceId`/`associatedPropertyId`** (v0.17) · **`Instance.delete` → `deleted`** (v0.18). _(Sunum
-> araştırma dokümanı olduğundan içerik olduğu gibi bırakıldı; uyumlama models/ tarafında yapılacak.)_
+> → `AssociatedInstance`/`associatedInstanceId`/`associatedPropertyId`** (v0.17) · **`Instance.delete` → `deleted`** (v0.18) ·
+> **`imageAreaSelector` alan tipi kaldırıldı** (v0.21) — sunum/senaryolardaki "Image Area" yapısal-JSON örneği artık geçersiz
+> (yerine `mapViewer` kalır). _(Sunum araştırma dokümanı olduğundan içerik olduğu gibi bırakıldı; uyumlama models/ tarafında yapılacak.)_
 
 ## `form-deger-saklama-sunum.html` — ne öneriyor?
 

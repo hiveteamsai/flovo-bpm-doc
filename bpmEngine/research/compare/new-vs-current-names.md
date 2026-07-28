@@ -160,7 +160,7 @@
 - `accountUserGroupId` > **`organizationUserGroupId`**
 - `dynamicUserListFieldId` > **`dynamicUserListPropertyId`**
 - `-- managerChain` (yönetici zinciri) · `-- managerByTitle` (ünvana göre yönetici) — `userType` değerleri (aktif değildi)
-- `groupApproval` (bool; hepsi/biri) ↔ korunur
+- `groupApproval` — **kaldırıldı** (grup "hepsi onaylar" özelliği ilk fazda yok; Kullanıcı Grubu adımında üyelerden biri aksiyon alır)
 
 **Bildirim**
 - `StepTypeNotificationDto` > **`ProcessStepSendNotification`** · `SendNotificationOnStepDto` > **`SendNotificationMessages`** ·
@@ -251,7 +251,7 @@
 ---
 
 ## 14. Kullanıcı Grubu (`UserGroup`)
-- `groupApprovalRequired ++` (grup onayı gerekli mi? — bkz. `../../models/processInstances/user-group-approved-user.md`)
+- `groupApprovalRequired` — **kaldırıldı** (grup onayı özelliği ilk fazdan çıkarıldı; yalnız buna hizmet eden `UserGroupApprovedUser` runtime modeli de silindi)
 
 ---
 
@@ -290,8 +290,8 @@
 - **↔ Korunan:** `Id` > `id` · `ServiceId` > `serviceId`
 
 ### 15.3 Diğer runtime modelleri — YENİ (eski karşılığı yok)
-> Bu 4 model tamamen yenidir; eski uygulamada birebir karşılığı yoktur.
-- `ProcessInstance ++` · `InstanceAwaitingUser ++` · `UserGroupApprovedUser ++` · `AssociatedInstance ++`
+> Bu 3 model tamamen yenidir; eski uygulamada birebir karşılığı yoktur.
+- `ProcessInstance ++` · `InstanceAwaitingUser ++` · `AssociatedInstance ++`
 - **Alan adı normalizasyonu (taslak görsel → proje kuralı):** `Id` > `id` · `FormId` > `instanceId` · `ProcessStepId` > `processStepId`
   (PK `id`, FK `...Id` camelCase) · `FormAwaitingUser-Id` > `instanceAwaitingUserId`
 

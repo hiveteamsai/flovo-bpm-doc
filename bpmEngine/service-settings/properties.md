@@ -28,7 +28,7 @@ kutusu, tarih seçici, dosya, harita...). Her property bir **kontrol tipi** (`pr
 - **Statik / Bilgi:** Text · Flow Info · User Info
 - **Konum:** Map Viewer
 - **İlişkisel:** Form List · Parent Property
-- **Özel:** Group By Tax Receipt · Key-Value List · Image Area Selector
+- **Özel:** Group By Tax Receipt · Key-Value List
 
 ---
 
@@ -81,6 +81,11 @@ Tipe-özel ayarlar → §3.
 >    kaynak **farklı tiplerden** beslenebilir: **organizasyon verileri** · **kullanıcı bilgileri** · **başka bir servisin
 >    instance'ları** · dış/API kaynağı vb. (→ `business-rule.md` §3 `fillDataSource`).
 > _(Ayrıca combobox'ın seçilen değeri bir **ilişki kaydı** da üretebilir → §3.3 `isAssociatedCombobox`.)_
+
+> **`dataSource` tek anlamlı (KARAR):** `dataSource*` artık **yalnız** seçim alanlarının (Combobox / Radiobutton) **dinamik
+> seçenek kaynağıdır**; eskiden aynı adı statik nokta listesi için kullanan **Image Area Selector alan tipi kaldırıldı**, çift
+> anlam ortadan kalktı. Seçenek verisi için **ayrı tablo açılmaz** — **statik = `propertyItems`** (`PropertyItem` modeli, §2.6),
+> **dinamik = iş kuralı `fillDataSource`**; mevcut `PropertyItem` yapısı **aynen kullanılmaya devam eder**.
 
 ### 2.5 — İlişki alanları (ilişkisel alanlar için)
 `childServiceId` · `serviceItemControlId` · `refPropertyId` · `parentPropertyId` · `relatedPropertyIds`.
@@ -235,14 +240,6 @@ butonuyla satır ekler; **Value** bir **combobox** ile seçilir.
 (sütun başlıkları) · `comboBoxItems` (Value seçenek kaynağı) · `keyValueItems` (başlangıç çiftleri).
 **Çalışma:** Her satır `key` (metin) + `value` (combobox seçimi) taşır. Required ise en az bir satır ve **tüm satırların
 dolu** (key boş değil, value seçili) olması zorunludur.
-
-### 3.19 — `imageAreaSelector` (Image Area Selector)
-Bir **görsel üzerinde nokta/bölge seçimi** yapılan özel alan (örn. ürün/araç fotoğrafında hasar noktası işaretleme).
-Görselin üstünde önceden tanımlı **işaretlenebilir noktalar** bulunur; kullanıcı bir noktaya dokunarak **seçer/kaldırır**.
-**Ayarlar:** `imageUrl` (arka plan görseli) · `aspectRatio` (en-boy oranı: 1:1 · 4:3 · 16:9 · 2:1 · 2:3) · `dataSource`
-(seçilebilir nokta listesi — her nokta: `code` · `x` · `y` · `isSelected`).
-**Çalışma:** Nokta konumları görsel üzerinde checkbox olarak render edilir; kullanıcı seçim yapar. Seçim durumu **JSON**
-olarak `value`'ye yazılır. Required ise en az bir nokta seçili olmalıdır.
 
 ---
 

@@ -9,7 +9,7 @@
 |---|---|
 | [`process-step.md`](./process-step.md) | **Süreç adımları** — adım tipleri katalogu (22 adım) + ortak yapı; "hangi adım tipleri var?". |
 | [`process-step-action.md`](./process-step-action.md) | **Süreç adımı aksiyonları** — aksiyonun adıma bağlanması (binding), veri aktarımı (`parameters`/`changeList`/`action`), actionType kataloğu. |
-| [`properties.md`](./properties.md) | **Form alanları (property)** — formda yer alabilecek alan tipleri (19) ve her birinin detay ayarları + ortak çekirdek. |
+| [`properties.md`](./properties.md) | **Form alanları (property)** — formda yer alabilecek alan tipleri (18) ve her birinin detay ayarları + ortak çekirdek. |
 | [`business-rule.md`](./business-rule.md) | **İş kuralları** — form üzerinde gerçek zamanlı (frontend) koşul→aksiyon tabanlı davranışlar. |
 | [`view-profile.md`](./view-profile.md) | **Görüntüleme profilleri** — formun süreç adımına göre nasıl görüntüleneceği (görünür/düzenlenebilir/zorunlu). |
 

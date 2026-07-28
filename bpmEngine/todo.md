@@ -161,22 +161,12 @@
 
 ## 🆕 Bu oturumda eklenen açık sorular
 
-- [ ] **`dataSource` alan adı çift anlamlı** — Combobox/Radiobutton'da dinamik veri kaynağı (§2.4), Image Area
-  Selector'da statik nokta listesi (`code`·`x`·`y`·`isSelected`, §3.19). Ayrıştırılsın/yeniden adlandırılsın mı?
-  _(properties §4)_
 - [ ] **Customer API dış referans anahtarı** — API'de kiracı `organizationId` (int) mi, `organizationCode` (string) mi
   ile belirtilmeli? (organization §2 dış referanslarda `code` diyor.) _(flovo-customer-api §3)_
 - [ ] **`apiKeyId` içeriği/adı (Customer API kimliği)** — Customer API ile oluşturulan kayıtlarda oluşturan **User**
   olmadığından işlemi kimin yaptığını kaydetmek için `apiKeyId` alanları var (`ProcessInstance.createdByApiKeyId`,
   `ProcessStepInstance.atApiKeyId`). **Ad geçici**; içine gelecek veri Customer API **erişim mekanizması** kesinleşince
   doğrulanacak. _(flovo-customer-api §3 · models/processInstances/process-instance.md · process-step-instance.md)_
-- [ ] **Grup onayı: `groupApproval` (adım) ↔ `groupApprovalRequired` (UserGroup) ilişkisi** — eşik (**hepsi/biri**) adım-düzeyi
-  `groupApproval`'da (process-step §3.16), "grup onayı gerekli mi" ise `UserGroup.groupApprovalRequired` (bool) alanında. İki alanın
-  yakın adı + kapsam örtüşmesi netleştirilmeli (eşiğin ve gerekliliğin tek sahibi kim; opsiyon seti hepsi/biri). _(process-step §3.16 ·
-  models/organization-settings/user-group.md · models/processInstances/user-group-approved-user.md)_
-  - **Netleşen:** adım-düzeyi `groupApproval` **bool** kalır — `true`: aksiyon alabilen **tüm** kullanıcılar onaylayınca ilerler,
-    `false`: **bir** kişinin onayı yeterli. Açık kalan: `UserGroup.groupApprovalRequired` ile sahiplik/örtüşme.
-    _([`research/current-flovo-bpm-engine/step-type-settings-and-enums.md`](./research/current-flovo-bpm-engine/step-type-settings-and-enums.md) §3)_
 - [ ] **Form validasyon durumu — `Instance.validated` (bool) mü, `FormValidation` tablosu mu?** İş akışından validasyonları **sürekli
   tekrar yapmamak** ve **iş kuralı** (BusinessRule `applyValidation`) ile oluşturulan validasyonlarla **tutarsızlık yaşamamak** için:
   `Instance` modeline **`validated` (bool)** alanı mı eklenmeli, yoksa ayrı bir **`FormValidation`** tablosu mu oluşturulmalı? Karar
@@ -194,14 +184,6 @@
 - [ ] **`triggerProcessStep` / `formRedirect` adım ayarları** — henüz modellenmedi (ayarsız grup §3.16). _(process-step §3.16)_
 - [ ] **`DynamicParameter.value` şekli** — değer-kaynağı (**ValueAssignType**: sabit/hesaplama/form property) + değerin JSONB
   temsili (iş-kuralı `AssignValueToFieldDto` muadili). _(process-step §3.1/§3.6)_
-
-### 🔎 v0.15 — Proje incelemesinden (2026-07-24)
-- [ ] **Süreç başlatma kısıtı (`ProcessStepProcessStartSettings.userGroupId`) — davranış tarafı incelenecek.** Modelde
-  başlatmayı **hangi kullanıcı grubunun** yapabileceği tanımlı (`userGroupId`: **null** → herkes, **dolu** → yalnız o grup →
-  `models/service-settings/process-step.md` §3.14); ancak **davranış** dokümanı Süreç Başlangıcı'nı (§3.1) yalnız *nasıl*
-  tetiklendiği (manuel/webhook) üzerinden anlatıyor, **kim başlatabilir** kısıtından söz etmiyor. Kısıtın kapsamı gözden
-  geçirilip (grup dışı kullanıcı başlangıç aksiyonlarını **görür mü**, yalnız tetikleyemez mi? webhook/Customer API
-  tetiklemesinde grup kısıtı nasıl uygulanır?) sonuç **davranış §3.1'e** yazılacak. _(process-step §3.1 · models §3.14)_
 
 ---
 
@@ -378,3 +360,28 @@
   sahip profili kullan" ihtiyacı, Kullanıcı/Kullanıcı Grubu adımlarına **opsiyon eklemek yerine** ayrı **Üst Form Kullanıcı**
   (`parentInstanceUser`) adım tipiyle karşılandı — `code` eşleşmesi (yoksa `isDefault`) bu adımın çekirdeğidir. **Geliştirme:**
   yukarıdaki maddeyle aynı dosyalar; ayrı `parentViewProfile` bayrağı **eklenmedi**.
+
+### 🔎 v0.21 — `dataSource` çift anlamı + Image Area Selector (2026-07-28)
+- **`dataSource` alan adı çift anlamlı — ÇÖZÜLDÜ.** **Cevap:** **Image Area Selector (`imageAreaSelector`) alan tipi kaldırılsın**;
+  böylece `dataSource`'un ikinci anlamı (görsel statik nokta listesi) ortadan kalkar — `dataSource*` **yalnız** Combobox/Radiobutton
+  **dinamik seçenek kaynağı** olur. **datasource için ayrı tablo ayrıştırmaya gerek yok** — statik seçenek verisi **`propertyItems`**
+  (`PropertyItem` modeli) ile **aynen kullanılmaya devam** edilir (dinamik = iş kuralı `fillDataSource`). **Geliştirme:**
+  `service-settings/properties.md` §1 taksonomi + **§3.19 kaldırıldı** + §2.4 "`dataSource` tek anlamlı" kararı ·
+  `models/service-settings/property.md` §2 tablo (satır kaldırıldı) + Notlar (çözüldü) · `models/enums/property-type.md`
+  (`imageAreaSelector` değeri kaldırıldı + not) · sayaç **19 → 18** (`service-settings/index.md` · `models/enums/index.md` ·
+  `property-type.md`). **Not:** `research/property-value-storage/` sunumları/senaryoları hâlâ Image Area'yı **yapısal-JSON örneği**
+  olarak anıyor — o mimari benimsenirse uyumlanacak (→ o klasörün `index.md` "benimseme öncesi uyumlanacaklar" notu).
+- **Grup onayı (`groupApproval`) — ÇÖZÜLDÜ (kaldırıldı, ilk faz).** **Cevap:** Grup **"hepsi onaylar" (grup onayı) özelliği ilk
+  fazda gereksiz** — kaldırıldı; dokümanda yer kaplamasın. Kullanıcı Grubu adımı kalır ama **üyelerden biri** aksiyon alınca
+  ilerler (varsayılan/tek davranış). **Geliştirme:** adım alanı `groupApproval` **kaldırıldı** (`service-settings/process-step.md`
+  §3.16 + `models/service-settings/process-step.md` §3.11) · `UserGroup.groupApprovalRequired` alanı **kaldırıldı**
+  (`models/organization-settings/user-group.md`) · **`UserGroupApprovedUser` modeli tümden silindi** (yalnız grup onayına hizmet
+  ediyordu; `models/processInstances/user-group-approved-user.md` + `index.md` satırı + `instance-awaiting-user.md` ilişki/not +
+  `models/index.md` ERD/FK/açıklama + `enums/process-step-user-group-type.md` + `enums/process-step-type.md` + compare ×2).
+  _(Bu, eski "grup onayı ↔ groupApprovalRequired sahiplik/örtüşme" açık sorusunu da kapattı — özellik artık yok.)_
+- **Süreç başlatma kısıtı (`ProcessStepProcessStartSettings.userGroupId`) davranışı — ÇÖZÜLDÜ.** **Cevap:** Model tanımı
+  (`userGroupId`: null → herkes, dolu → yalnız o grup) **doğru**; eksik olan **davranış** işlendi. **Karar:** manuel başlatmada
+  **görünürlük = tetikleme yetkisi** — `userGroupId` dolu ise başlangıç aksiyonları **yalnız o grubun** başlatılabilir listesinde
+  görünür, **grup dışı görmez** (ayrı "görür ama tetikleyemez" yok); **webhook / Customer API** başlatımı bu kısıttan
+  **etkilenmez** (kullanıcı değil `ApiKey` ile kimliklenir; erişim ayrı katman). **Geliştirme:** davranış `service-settings/process-step.md`
+  §3.1'e + model `models/service-settings/process-step.md` §3.14'e (userGroupId davranış notu) işlendi. _(v0.15 incelemesinden gelen madde.)_

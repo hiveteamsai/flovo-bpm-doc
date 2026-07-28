@@ -243,7 +243,6 @@ Birden fazla kullanıcıya iletilen, biri/hepsi onaylayan human-task adım (davr
 | `userGroupType` | ProcessStepUserGroupType | Grup belirleme yöntemi (→ [`../enums/process-step-user-group-type.md`](../enums/process-step-user-group-type.md)). |
 | `organizationUserGroupId` | int? | `fixedUserGroup` ise sabit grup. |
 | `dynamicUserListPropertyId` | int? | `dynamicUserList`/`dynamicUserGroup` ise listeyi taşıyan form property. |
-| `groupApproval` | bool | `true`: aksiyon alabilen **tüm** kullanıcılar onaylayınca ilerler; `false`: **bir** kişi yeter. |
 | `processViewProfileId` | int | Onaya gidecek kullanıcıların göreceği görüntüleme profili. |
 | `sendNotificationOnStep` | SendNotificationMessages? | Adıma girildiğinde bildirim kısayolu. |
 | `timeout` | ProcessStepTimerSettings? | Adıma girildiğinde otomatik timeout. |
@@ -269,6 +268,14 @@ Ana sürecin giriş düğümü; **kimlerin süreci başlatabileceğini** kısıt
 | Alan | Tip | Açıklama |
 |---|---|---|
 | `userGroupId` | int? | Süreci başlatabilecek **kullanıcı grubu** (FK → UserGroup). **Null** → **herkes** başlangıç aksiyonlarını görüntüleyebilir ve süreci başlatabilir; **dolu** → **yalnız o gruptaki** kişiler başlatabilir. |
+
+> **`userGroupId` kısıtının davranışı (KARAR):**
+> - **Manuel (frontend) başlatma:** **görünürlük = tetikleme yetkisi.** `userGroupId` **dolu** ise başlangıç aksiyonları
+>   **yalnız o gruptaki** kullanıcıların "başlatılabilir" listesinde **görünür**; **grup dışı kullanıcı bu aksiyonları görmez**
+>   (ayrı "görür ama tetikleyemez" durumu **yoktur**). **Boş** ise herkes görür ve başlatır.
+> - **Webhook / Customer API başlatma:** Kısıt **yalnız kullanıcı (manuel)** başlatımına özgüdür. Dış tetikleme bir **kullanıcı
+>   değil `ApiKey`** ile kimliklendirildiğinden `userGroupId` **uygulanmaz** — dış erişim yetkisi **ayrı katmandadır**
+>   (→ [`../../flovo-customer-api.md`](../../flovo-customer-api.md); başlatan → `../processInstances/process-instance.md` `createdByApiKeyId`).
 
 ### 3.15 Instance Deleter — `ProcessStepInstanceDeleterSettings` (`stepType = instanceDeleter`)
 Formu (ve seçime göre ilişkili formları) siler (davranış → `§3.10`).
