@@ -12,7 +12,7 @@
 | `httpRequest` | HTTP Request | Dış endpoint'e HTTP isteği (otomatik). |
 | `flovoAi` | Flovo AI | Flovo AI çalıştırıp parametre üretme (otomatik). |
 | `valueAssignment` | Değer Atama | Property'ye / alt-servise sabit ya da hesaplanan değer atama. |
-| `triggerProcessStep` | Süreç Adımı Tetikleme | Alt-servislerin süreç adımlarını tetikleme. |
+| `triggerProcessStep` | Süreç Adımı Tetikleme | **Akış üzerindeki** adım; akış girince ayarına göre bir **alt süreç veya aksiyon** tetikler. _(Akış-dışı otomatik karşılığı: **ServiceTrigger** → [`../service-settings/service-trigger.md`](../service-settings/service-trigger.md).)_ |
 | `notification` | Bildirim | Mail / Push / Toast bildirim gönderme. |
 | `timer` | Timer | Süreçten bağımsız zamanlayıcı; süre dolunca ilerler. |
 | `timerStart` | Timer Start | Seçili timer'ın süresini başlatır. |

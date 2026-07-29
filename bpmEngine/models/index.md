@@ -34,7 +34,7 @@
 | Klasör | İçerik (özet) | İndeks |
 |---|---|---|
 | **organization-settings/** | Kiracıya bağlı **yapısal veri** + **organizasyon havuzu** (eski "Account Settings"): Organization · Company · Department · Profession · Position · User · UserGroup · Translation · Style · Status · Action · CostCenter · WorkerLevel · CreditCard · AdditionalQualification · WorkingSchedule · VacationDay · ProcessTransfer · SchedulerJob. | [`organization-settings/index.md`](./organization-settings/index.md) |
-| **service-settings/** | Bir **Solution/Service** altındaki tasarım modelleri: Solution · Service (`formType`) · Property/PropertyItem · ProcessViewProfile ailesi · ProcessStep · ProcessStepAction · BusinessRule/BusinessRuleCondition. | [`service-settings/index.md`](./service-settings/index.md) |
+| **service-settings/** | Bir **Solution/Service** altındaki tasarım modelleri: Solution · Service (`formType`) · ServiceTrigger · Property/PropertyItem · ProcessViewProfile ailesi · ProcessStep · ProcessStepAction · BusinessRule/BusinessRuleCondition. | [`service-settings/index.md`](./service-settings/index.md) |
 | **processInstances/** | Ayarlardan üretilen **çalışma-zamanı (runtime)** kayıtları: ProcessInstance · ProcessStepInstance · Instance · InstanceAwaitingUser · AssociatedInstance. 🟢 TANIMLI. | [`processInstances/index.md`](./processInstances/index.md) |
 | **enums/** | Modellerde kullanılan **enum tanımları** (kanonik değer listeleri; ör. `actionType`, `propertyType`, `formType`). | [`enums/index.md`](./enums/index.md) |
 
@@ -50,6 +50,7 @@
 Organization (id)
  ├─< Solution (organizationId)
  │    └─< Service (solutionId)
+ │         ├─< ServiceTrigger       (serviceId; targetServiceId → Service, targetStarterProcessStepId → ProcessStep[timer:processStart | associate:subProcessStart], targetPropertyId → Property)
  │         ├─< Property             (serviceId) ──< PropertyItem  (propertyId; (propertyId,value) benzersiz)
  │         ├─< ProcessViewProfile   (serviceId)
  │         │        └─< ProcessViewProfileProperty (viewProfileId, propertyId → Property)
@@ -89,6 +90,10 @@ ProcessInstance (id; createdByUserId → User · createdByApiKeyId → ApiKey[ge
 |---|---|---|---|---|
 | Solution | `organizationId` | Organization.id | N–1 | |
 | Service | `solutionId` | Solution.id | N–1 | organizasyon dolaylı (solution üzerinden) |
+| ServiceTrigger | `serviceId` | Service.id | N–1 | kaynak servis (olay bunun instance'larında izlenir) |
+| ServiceTrigger | `targetServiceId` | Service.id | N–1 | tetiklenecek hedef servis |
+| ServiceTrigger | `targetStarterProcessStepId` | ProcessStep.id | N–1 | `timer` → `processStart`, associate → `subProcessStart`; `serviceId == targetServiceId` |
+| ServiceTrigger | `targetPropertyId` | Property.id | N–1 | izlenen ilişki alanı (associate tipi); null olabilir; `serviceId` ile aynı serviste |
 | Translation | `organizationId` | Organization.id | N–1 | `null` = ortak (Flovo) |
 | Style | `organizationId` | Organization.id | N–1 | `null` = sistem stili (salt-okunur) |
 | Action | `organizationId` | Organization.id | N–1 | organizasyon havuzu |

@@ -41,6 +41,12 @@
 > = üst form**. Böylece alt-servis, üst formun güncel atananlarını/görünümünü devralır
 > (→ [`../../service-settings/process-step.md`](../../service-settings/process-step.md) §3.22).
 
+> **Yazım-yolu tüketicisi — ServiceTrigger (`whenAddedAssociate`/`whenRemoveAssociate`):** Bu tabloya **AddOrUpdate/silme**
+> yapılırken, **`associatedPropertyId == ServiceTrigger.targetPropertyId`** olan (ve tipi eşleşen aktif) trigger'lar taranıp
+> ateşlenir; **kaynak instance = `associatedInstanceId`** (ilişki alanını içeren üst form; invariant gereği o servise ait).
+> Tespit **DB güncelleme katmanında, çekirdek (core)** olarak yapılır — böylece ilişki kuran her yerde ayrıca tekrarlanmaz
+> (→ [`../service-settings/service-trigger.md`](../service-settings/service-trigger.md)).
+
 ## İlişkiler
 - **N – 1** → `Instance` (`instanceId` = işaret edilen, `associatedInstanceId` = property'yi içeren), `Property` (`associatedPropertyId`).
 - Instance ↔ Instance **N–N** köprü tablosu (property boyutuyla). Tek bir Instance birden çok `AssociatedInstance` kaydına bağlı olabilir

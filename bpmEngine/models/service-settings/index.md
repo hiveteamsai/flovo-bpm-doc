@@ -8,6 +8,7 @@
 |---|---|
 | [`solution.md`](./solution.md) | Bir organizasyona ait, **servisleri gruplayan** tanım (organizasyonda birden çok olabilir). |
 | [`service.md`](./service.md) | Bir **iş sürecinin/formun** tamamı (motorun temel birimi); **`formType`**: form/parameter/eventForm. |
+| [`service-trigger.md`](./service-trigger.md) | Servise bağlı **olay/zaman-güdümlü otomatik tetikleyici**; ilişki eklenince/kaldırılınca veya süre dolunca hedef servisin **`subProcessStart`**'ını başlatır. |
 | [`property.md`](./property.md) | Metadata-driven formdaki tek bir **giriş/görüntüleme elemanı**; `propertyType` ile render edilir. |
 | [`property-item.md`](./property-item.md) | Seçim alanlarının (`combobox`/`radiobuttonList`) **statik seçeneği**. |
 | [`view-profile.md`](./view-profile.md) | Aynı formun **farklı adım/kullanıcılara** nasıl görüneceğini belirleyen **görüntüleme profili**. |

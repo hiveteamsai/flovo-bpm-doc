@@ -48,7 +48,8 @@ Enum tanımı → [`../enums/form-type.md`](../enums/form-type.md). Bir servis, 
 
 ## İlişkiler
 - **N – 1** → `Solution` (`solutionId`) → (dolaylı) `Organization`.
-- **1 – N** ← `Property`, `ProcessViewProfile`, `ProcessStep`, `BusinessRule` (hepsi `serviceId`).
+- **1 – N** ← `Property`, `ProcessViewProfile`, `ProcessStep`, `BusinessRule`, `ServiceTrigger` (hepsi `serviceId`).
+- **← `ServiceTrigger.targetServiceId`:** başka servislerin tetikleyicileri bu servisi **hedef** alabilir (bir `subProcessStart`'ı başlatarak) → [`service-trigger.md`](./service-trigger.md).
 - **Kullanır (organizasyon havuzu):** `Action`, `Status`, `Style`, `Translation` — organizasyona bağlı bu veriler,
   bu servisin modellerinde **kullanılabilir** (örn. adıma aksiyon eklerken `Action` alanları `ProcessStepAction`'a
   **kopyalanır**; durum `ProcessStepAction.changeStatusId` ile atanır).

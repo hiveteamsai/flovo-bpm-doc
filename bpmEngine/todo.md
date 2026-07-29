@@ -103,6 +103,19 @@
   ile birlikte. _(process-step §4)_
   - **Netleşen (v0.12):** **Instance Deleter** `deleteMode` (`InstanceDeleteMode`: `withRelated`/`unlinkRelated`) + **Instance Creator**
     temel ayar modeli tanımlandı; **Form Yönlendirme / Süreç Adımı Tetikleme** hâlâ açık. _(process-step §3.9/§3.15/§3.16)_
+- [ ] **ServiceTrigger — kalan kenar durumlar** _(models/service-settings/service-trigger.md · enums/service-trigger-type.md)_.
+  Model **inşa edildi ve olgunlaştırıldı** (v0.23): `serviceTriggerType` (`timer`/`whenAddedAssociate`/`whenRemoveAssociate`) ·
+  `cronExpression` (timer) · `targetPropertyId` (associate) · `targetServiceId` · `targetStarterProcessStepId` (`subProcessStart`) ·
+  `async` · `parameters` (DynamicParameter[]) + kimlik/yaşam-döngüsü alanları (`code`/`definition`/`order`/`active`/`deleted`).
+  - **Çözülen (v0.23):** associate **tespiti** = `AssociatedInstance` yazımında (DB katmanı, **çekirdek**; ayrı yerlerde
+    tekrarlanmaz) · associate **filtresi** = `targetPropertyId` (`associatedPropertyId == targetPropertyId` → kaynak =
+    `associatedInstanceId`; "hangi taraf" belirsizliği kapandı) · **`timer`** = `cronExpression` + **`processStart`**
+    (alt süreç değil; her cron tetiğinde **yeni bağımsız ana süreç**, servis-global, kaynak instance yok) · associate →
+    `subProcessStart` · **`async=false`** = başlatılan süreç **Süreç Bitişi'ne** ulaşana kadar bekler, `async=true` = beklenmez ·
+    **karşı-instance parametresi gereksiz** · kimlik/yaşam-döngüsü alanları eklendi · **`triggerProcessStep` ile sınır**
+    (triggerProcessStep = akış-üzeri adım, girince alt süreç/aksiyon tetikler ↔ ServiceTrigger = akış-dışı otomatik olay/cron).
+  - **Açık kalan:** **(1) `timer` saat dilimi/DST** — cron'un değerlendirileceği saat dilimi (Organization timezone alanı henüz
+    açık) + DST geçişleri; **(2) döngü koruması** — A→B→A tetikleme recursion'ı (derinlik/çevrim sınırı).
 - [ ] **Raporlama** ayrı özellik olarak nasıl modellenecek? _(view-profile §3 / §5)_
 - [ ] **Customer API** — kimlik/yetki (token kapsam/süre/yenileme); webhook güvenliği (secret/imza) + **idempotency**;
   `POST /instances/search` sorgu dili; rate limit/sayfalama/hata sözleşmesi; request/response şemaları. _(flovo-customer-api §3)_
