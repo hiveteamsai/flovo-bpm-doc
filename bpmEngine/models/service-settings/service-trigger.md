@@ -41,11 +41,15 @@ bir özellik** olur; ilişki kuran/kaldıran her yerde (Form List ekleme, `isAss
 tekrarlamak gerekmez**. Yazılan/silinen satır için, **`AssociatedInstance.associatedPropertyId == trigger.targetPropertyId`**
 olan (ve tipi eşleşen, **aktif**) trigger'lar ateşlenir. `targetPropertyId` trigger'ın **kendi servisine** ait bir ilişki
 alanı olduğundan (değişmez: `Property(targetPropertyId).serviceId == serviceId == Instance(associatedInstanceId).serviceId`),
-**kaynak instance = `AssociatedInstance.associatedInstanceId`** — yani ilişki alanını **içeren üst form**.
+**parametre kaynağı = `AssociatedInstance.associatedInstanceId`** — yani ilişki alanını **içeren üst form** (yalnız `parameters` buradan beslenir).
+> **Yürütme hedefi (target instance) = `AssociatedInstance.instanceId`** — işaret edilen form, **`targetService`'teki mevcut
+> instance** (değişmez: `Instance(instanceId).serviceId == targetServiceId`). Tetiklenen `subProcessStart` **bu var olan instance
+> üzerinde** çalışır — **yeni instance/süreç oluşturmaz** (aşağıda "Ateşlenince").
 
 > _Örnek:_ **masraf formu**'nda **masraf**'ları tutan bir Form List var; trigger `serviceId = masraf formu`, `targetPropertyId =
 > Form List`. Bir masraf listeye eklenince satır `{instanceId=masraf, associatedInstanceId=masraf formu, associatedPropertyId=Form List}`
-> yazılır → `associatedPropertyId == targetPropertyId` → trigger, **masraf formu** instance'ı üzerinden ateşlenir.
+> yazılır → `associatedPropertyId == targetPropertyId` → trigger ateşlenir: **`parameters` kaynağı = masraf formu** (`associatedInstanceId`);
+> **alt süreç, masraf** (`instanceId`; hedef servis) instance'ı **üzerinde** çalışır (var olan masrafın akışına müdahale eder — yeni masraf oluşturmaz).
 
 **Zamanlama (timer):** `serviceTriggerType == timer` iken tetikleme, **`cronExpression`** ile belirlenen takvime göre yapılır
 (olay/kaynak instance yok; servis-global zamanlayıcı). Her cron tetiğinde hedef servisin **`processStart`** düğümü çalışır →
@@ -53,9 +57,10 @@ alanı olduğundan (değişmez: `Property(targetPropertyId).serviceId == service
 `parameters`'ı yalnız `fixedValue`/`fromCalculation` olabilir (`propertyValue` çözülemez).
 
 Ateşlenince:
-1. **Associate tipleri:** `parameters` **kaynak instance** (`associatedInstanceId`) üzerinden hesaplanır; `targetStarterProcessStepId` (**`subProcessStart`**) çalışır → yeni bir **alt** `ProcessInstance` (soy/lineage: `parentProcessInstanceId` = kaynak instance'ın süreci).
-2. **`timer`:** `parameters` (sabit/hesaplanmış) hazırlanır; `targetStarterProcessStepId` (**`processStart`**) çalışır → yeni bir **bağımsız ana** `ProcessInstance` (`parentProcessInstanceId = null`).
-3. `async=false` ise başlatan işlem, başlatılan süreç **Süreç Bitişi'ne** (alt süreçte `subProcessEnd`) ulaşana kadar **bekler**; `async=true` ise **beklemeden** devam eder.
+1. **Associate tipleri:** `parameters` **parametre kaynağı** (`associatedInstanceId`) üzerinden hesaplanır; `targetStarterProcessStepId` (**`subProcessStart`**), **hedef instance** (`instanceId` — `targetService`'teki **mevcut** instance) üzerinde **yardımcı bir dal** olarak çalışır. **Yeni instance/ana süreç oluşturmaz** ve `associatedInstanceId`'nin sürecine **bağlanmaz**; hedef instance'ın **kendi akışıyla** aynı bağlamda koşar — statüsünü okuyabilir ve içindeki `triggerProcessStep` ile **o instance'ın ana akışındaki** aksiyonu (ör. Forma Ekle/Formdan Çıkart webhook) tetikleyebilir. _(Çalışma-zamanı mekaniği — yardımcı ProcessInstance mı, mevcut sürecin dalı mı — motor tasarımına bırakılır → `../../todo.md`.)_
+   - **Kaldırmada (`whenRemoveAssociate`):** hem hedef instance (`instanceId`) hem `parameters` (kaynak `associatedInstanceId`'den), ilişki satırı **silinmeden önce/anında** çözülür (satır kayboluyor).
+2. **`timer`:** `parameters` (sabit/hesaplanmış) hazırlanır; `targetStarterProcessStepId` (**`processStart`**) çalışır → **yalnız burada** yeni bir **bağımsız ana** `ProcessInstance` (`parentProcessInstanceId = null`) oluşur.
+3. `async=false` ise başlatan işlem, başlatılan süreç **Süreç Bitişi'ne** (alt süreçte `subProcessEnd`) ulaşana kadar **bekler**; `async=true` ise **beklemeden** devam eder. _(Kaskad: bir alt süreç yeni ilişki değişikliği yapıp **başka trigger'ı** ateşleyebilir; `async`'in seviyeler boyunca kompozisyonu + derinlik sınırı → "Açık noktalar".)_
 
 ## İlişkiler
 - **N – 1** → `Service` (`serviceId` = kaynak servis; `targetServiceId` = hedef servis — ikisi de Service'e bağlanır, farklı olabilir).
@@ -65,7 +70,8 @@ Ateşlenince:
 
 ## Çözülen kararlar (v0.23)
 - **Associate tespiti = çekirdek, AssociatedInstance yazımında** (yukarı "Çalışma zamanı"). Ayrı yerlerde tekrarlanmaz.
-- **Associate filtresi = `targetPropertyId`:** yalnız `associatedPropertyId == targetPropertyId` olan yazımlar tetikler; **kaynak instance = `associatedInstanceId`** (ilişki alanını içeren üst form). "Hangi taraf" belirsizliği de böylece kapandı.
+- **Associate filtresi = `targetPropertyId`:** yalnız `associatedPropertyId == targetPropertyId` olan yazımlar tetikler. **Parametre kaynağı = `associatedInstanceId`** (üst form); **yürütme hedefi = `instanceId`** (targetService'teki mevcut instance). "Hangi taraf" belirsizliği kapandı.
+- **Kaynak ↔ hedef ayrımı netleşti (v0.24, örnekle):** alt süreç, **`associatedInstanceId`'nin süreci üzerinde değil**, **`instanceId` (targetService'teki mevcut instance)** üzerinde **yardımcı dal** olarak koşar (yeni instance oluşturmaz); `parameters` yalnız `associatedInstanceId`'den beslenir. İçindeki `triggerProcessStep` hedef instance'ın **ana akışındaki** aksiyonu tetikleyebilir. Örnek → [`../../sampleProcess/expenseAndCreditCard/scenarios.md`](../../sampleProcess/expenseAndCreditCard/scenarios.md).
 - **`timer` = `cronExpression` + `processStart`:** zamanlama cron ile belirlenir; timer **alt süreç değil**, hedef servisin **`processStart`** düğümünü çalıştırıp **yeni bağımsız bir ana süreç** başlatır (kaynak instance yok; `parentProcessInstanceId = null`). Associate tipleri ise `subProcessStart` (alt süreç) başlatır.
 - **`async` semantiği:** `true` → beklenmez; `false` → başlatılan süreç **Süreç Bitişi'ne** ulaşana kadar beklenir.
 - **Karşı instance parametresi gereksiz:** tetiklenen alt süreç zaten o instance'ın verisine erişebildiğinden `parameters`'a karşı-instance eklemeye gerek yok.
@@ -74,6 +80,8 @@ Ateşlenince:
 
 ## Açık noktalar (→ `../../todo.md`)
 - **`timer` saat dilimi/DST (ince nokta):** cron'un hangi **saat dilimi**nde değerlendirileceği (Organization timezone alanı henüz açık) + DST geçişleri netleştirilecek. _(Kapsam çözüldü: timer servis-global, her tetikte yeni ana süreç.)_
-- **Döngü koruması:** tetiklenen alt süreç yeni ilişki kurup **aynı trigger'ı** yeniden ateşlerse (A→B→A) sonsuz döngü riski — recursion/derinlik koruması.
+- **Döngü koruması:** tetiklenen alt süreç yeni ilişki kurup **aynı trigger'ı** yeniden ateşlerse (A→B→A) sonsuz döngü riski — recursion/derinlik koruması. _(Tasarım-zamanı bir önleme: geri-referansı **association kurmayan** alanla tutmak — `isAssociatedCombobox = false`; örnek → `../../sampleProcess/expenseAndCreditCard/creditCardStatementLine.md`. Motor-düzeyi güvenlik ağı yine de açık.)_
+- **`async` kaskad kompozisyonu:** bir alt süreç yeni ilişki değişikliği yapıp **başka bir trigger'ı** ateşleyebilir (örnek Senaryo 5 kaskadı: çıkarma → değer temizleme → ikinci kaldırma trigger'ı). `async=false`'lar üst üste binince **senkron derinlik** oluşur; `async`'in **seviyeler boyunca kompozisyonu** + işlem/derinlik sınırı netleştirilecek (döngü korumasıyla bağlı). _(Örnekte 2. seviye bilinçli `async=true` seçilmiş.)_
+- **Alt sürecin mevcut instance üzerinde çalışma mekaniği:** `subProcessStart` hedef instance (`instanceId`) üzerinde **yardımcı bir ProcessInstance** olarak mı, yoksa instance'ın **mevcut sürecinin dalı** olarak mı koşar — çalışma-zamanı/motor tasarımına bağlı, netleştirilecek.
 
 *Oluşturma: 2026-07-29.*

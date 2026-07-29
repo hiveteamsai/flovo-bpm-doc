@@ -43,7 +43,8 @@
 
 > **Yazım-yolu tüketicisi — ServiceTrigger (`whenAddedAssociate`/`whenRemoveAssociate`):** Bu tabloya **AddOrUpdate/silme**
 > yapılırken, **`associatedPropertyId == ServiceTrigger.targetPropertyId`** olan (ve tipi eşleşen aktif) trigger'lar taranıp
-> ateşlenir; **kaynak instance = `associatedInstanceId`** (ilişki alanını içeren üst form; invariant gereği o servise ait).
+> ateşlenir; **parametre kaynağı = `associatedInstanceId`** (ilişki alanını içeren üst form), **yürütme hedefi = `instanceId`**
+> (işaret edilen form; `targetService`'teki **mevcut** instance — alt süreç bunun üzerinde koşar, yeni instance oluşmaz).
 > Tespit **DB güncelleme katmanında, çekirdek (core)** olarak yapılır — böylece ilişki kuran her yerde ayrıca tekrarlanmaz
 > (→ [`../service-settings/service-trigger.md`](../service-settings/service-trigger.md)).
 

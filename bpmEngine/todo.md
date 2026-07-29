@@ -114,8 +114,16 @@
     `subProcessStart` · **`async=false`** = başlatılan süreç **Süreç Bitişi'ne** ulaşana kadar bekler, `async=true` = beklenmez ·
     **karşı-instance parametresi gereksiz** · kimlik/yaşam-döngüsü alanları eklendi · **`triggerProcessStep` ile sınır**
     (triggerProcessStep = akış-üzeri adım, girince alt süreç/aksiyon tetikler ↔ ServiceTrigger = akış-dışı otomatik olay/cron).
+  - **Çözülen (v0.24, expenseAndCreditCard örneğiyle):** **kaynak ↔ hedef ayrımı** — `parameters` **kaynağı = `associatedInstanceId`**
+    (üst form); **yürütme hedefi = `instanceId`** (targetService'teki **mevcut** instance). Associate alt süreci **yeni instance
+    oluşturmaz**; hedef instance üzerinde **yardımcı dal** olarak koşar (statü okur, `triggerProcessStep` ile ana-akış aksiyonu
+    tetikler). Önceki "yeni ProcessInstance / parent=associatedInstanceId" ifadesi düzeltildi.
   - **Açık kalan:** **(1) `timer` saat dilimi/DST** — cron'un değerlendirileceği saat dilimi (Organization timezone alanı henüz
-    açık) + DST geçişleri; **(2) döngü koruması** — A→B→A tetikleme recursion'ı (derinlik/çevrim sınırı).
+    açık) + DST geçişleri; **(2) döngü koruması** — A→B→A tetikleme recursion'ı (derinlik/çevrim sınırı) _(tasarım-zamanı önleme
+    örneği: `isAssociatedCombobox=false` geri-referans — `sampleProcess/expenseAndCreditCard/creditCardStatementLine.md`; motor-düzeyi
+    güvenlik ağı açık)_; **(3) `async` kaskad kompozisyonu** — üst üste `async=false` senkron derinlik yaratır; seviyeler boyunca
+    async + işlem/derinlik sınırı (Senaryo 5 kaskadı); **(4) alt sürecin mevcut instance üzerinde çalışma mekaniği** — yardımcı
+    ProcessInstance mı, mevcut sürecin dalı mı (runtime).
 - [ ] **Raporlama** ayrı özellik olarak nasıl modellenecek? _(view-profile §3 / §5)_
 - [ ] **Customer API** — kimlik/yetki (token kapsam/süre/yenileme); webhook güvenliği (secret/imza) + **idempotency**;
   `POST /instances/search` sorgu dili; rate limit/sayfalama/hata sözleşmesi; request/response şemaları. _(flovo-customer-api §3)_
