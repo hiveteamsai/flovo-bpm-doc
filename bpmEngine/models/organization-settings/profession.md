@@ -1,10 +1,7 @@
 # Model — Profession (organizasyon ayarı)
 
-> **Durum:** 🟡 TASLAK — eski uygulama DTO'sundan türetildi.
-> **Kaynak DTO:** `../../research/current-flovo-bpm-engine/organizations/titles.md` (`AccountProfessionDto`).
-> **Adlandırma:** Eski "Ünvan/Title" → **`Profession`** (kod içinde de `Profession`).
-> **Dönüşüm:** `account*`→`organization*`; `accountId` (string) → **`organizationId` (int)**; `kod`/`tanim`→`code`/`definition`.
-> **Amaç:** Çalışan **görev/meslek** tanımları. BPM'de **"ünvana göre yönetici"** atamalarında kullanılır.
+> **Durum:** 🟡 TASLAK
+> **Amaç:** Çalışan **görev/meslek** (ünvan) tanımları; kullanıcıya `professionId` ile atanır. BPM'de **ek nitelik** (`AdditionalQualification`, `RelationalType=professions`) üzerinden tüketilir.
 
 ## Alanlar
 | Alan | Tip | Anahtar | Açıklama |

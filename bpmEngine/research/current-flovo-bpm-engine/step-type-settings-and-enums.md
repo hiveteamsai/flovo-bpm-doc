@@ -122,7 +122,7 @@ class StepTypeUserGroupDto {
 | Alan | Ne işe yarıyor | Karar |
 |---|---|---|
 | `userGroupType` | Grubun **belirleme yöntemi** (sabit grup / dinamik liste / dinamik grup). | 🔁 tip `ProcessStepUserGroupType` |
-| `accountUserGroupId` | **Sabit kullanıcı grubu** yönteminde seçilen grup. | 🟢 **`organizationUserGroupId`** olacak (`account*→organization*` normalizasyonu) |
+| `accountUserGroupId` | **Sabit kullanıcı grubu** yönteminde seçilen grup. | 🟢 **`userGroupId`** olacak (`account*→organization*` normalizasyonu) |
 | `processViewProfileId` | Onaya gidecek kullanıcıların göreceği görüntüleme profili. | 🟢 kalır |
 | `groupApproval` | Grup onay davranışı. **`true`:** aksiyon alabilen **tüm** kullanıcılar onaylayınca süreç ilerler. **`false`:** gruptaki **bir** kişinin onayı yeterli. | 🟢 **bool kalır** |
 | `sendNotificationOnStepDto` | Adıma girildiğinde bildirim kısayolu. | 🟢 kalır (§4) |
@@ -329,7 +329,7 @@ class FunctionParameterItem {
 | `ProcessSettingUserType` | `ProcessStepUserType` | 🔤 | 2 değer kaldırıldı |
 | `StepTypeUserDto` | `ProcessStepTypeUser` | 🧩 | kaldırılan alanlar var |
 | `ProcessSettingUserGroupType` | `ProcessStepUserGroupType` | 🔤 | 🟢 onaylandı |
-| `StepTypeUserGroupDto` | `ProcessStepTypeUserGroup` | 🧩 | 🟢 onaylandı; `accountUserGroupId→organizationUserGroupId` |
+| `StepTypeUserGroupDto` | `ProcessStepTypeUserGroup` | 🧩 | 🟢 onaylandı; `accountUserGroupId→userGroupId` |
 | `StepTypeNotificationDto` | `ProcessStepSendNotification` | 🧩 | |
 | `SendNotificationOnStepDto` | `SendNotificationMessages` | 🧩 | mesajlar dinamik liste; toast + parametre eklenecek |
 | `NotificationStepTypesDto` | `SendNotificationUsers` | 🧩 | |

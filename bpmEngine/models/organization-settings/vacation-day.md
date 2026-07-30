@@ -1,8 +1,6 @@
 # Model — VacationDay (Tatil Günü — organizasyon ayarı)
 
-> **Durum:** 🟡 TASLAK — eski uygulama DTO'sundan türetildi.
-> **Kaynak DTO:** `../../research/current-flovo-bpm-engine/organizations/vacation-days.md` (`AccountVacationDay`).
-> **Dönüşüm:** `account*`→`organization*`; `accountId` (string) → **`organizationId` (int)**.
+> **Durum:** 🟡 TASLAK
 > **Amaç:** Resmi tatil / çalışılmayan günler. `WorkingSchedule` ile birlikte **iş günü/süre** hesaplamalarında kullanılır.
 
 ## Alanlar

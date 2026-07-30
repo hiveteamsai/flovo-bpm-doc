@@ -1,8 +1,6 @@
 # Model — WorkerLevel (Çalışan Seviyesi — organizasyon ayarı)
 
-> **Durum:** 🟡 TASLAK — eski uygulama DTO'sundan türetildi.
-> **Kaynak DTO:** `../../research/current-flovo-bpm-engine/organizations/worker-levels.md` (`AccountWorkerLevelDto`).
-> **Dönüşüm:** `account*`→`organization*`; `accountId` (string) → **`organizationId` (int)**.
+> **Durum:** 🟡 TASLAK
 > **Amaç:** Personel **kademe/seviye** tanımları (örn. Uzman, Kıdemli Uzman). Kullanıcılara atanır.
 
 ## Alanlar

@@ -69,7 +69,7 @@ bildirim, aşağıdaki **bağımsız alt süreç** tarafından yapılır ve aç�
 **Adımın ürettiği parametre:** — .
 
 **Aksiyonlar:**
-- **`default` (otomatik):** Hedef adım `notifyPdf`. Taşıdığı veri: `parameters: { instanceId, pdfUrl }`.
+- **`default` (otomatik, `mergeParameter = true`):** Hedef adım `notifyPdf`. Taşıdığı veri: `parameters: { instanceId, pdfUrl }` (webhook'tan gelen parametreler `mergeParameter` ile taşınır).
 
 ---
 

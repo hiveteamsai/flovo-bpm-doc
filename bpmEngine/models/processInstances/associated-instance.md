@@ -1,7 +1,7 @@
 # Model — AssociatedInstance (formlar arası ilişki)
 
 > **Durum:** 🟢 TANIMLI
-> **Eski karşılığı:** yok — **yeni model**.
+> **Yeni model.**
 > **Amaç:** Bir formu **başka bir formla ilişkilendirmek**. Bir kayıt birden çok forma bağlı olabilir; ilişki hangi
 > **property** üzerinden kurulduğunu da taşır.
 

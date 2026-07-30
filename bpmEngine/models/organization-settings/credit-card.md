@@ -1,9 +1,6 @@
 # Model — CreditCard (Kredi Kartı — organizasyon ayarı)
 
-> **Durum:** 🟡 TASLAK — eski uygulama DTO'sundan türetildi.
-> **Kaynak DTO:** `../../research/current-flovo-bpm-engine/organizations/credit-cards.md` (`AccountCreditCardDto`).
-> **Dönüşüm:** `account*`→`organization*`; `accountId` (string) → **`organizationId` (int)**; `kod`/`tanim`→`code`/`definition`;
-> `accountCompanyId`→`companyId`.
+> **Durum:** 🟡 TASLAK
 > **Amaç:** Harcama/masraf süreçlerinde kullanılan **kurumsal kartlar**. Şirkete ve isteğe bağlı kullanıcıya bağlanır.
 
 ## Alanlar

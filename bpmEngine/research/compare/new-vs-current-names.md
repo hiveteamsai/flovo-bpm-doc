@@ -47,6 +47,7 @@
 - `reasonRequired` > **`eventForm`** (tür)
 - `-- actionId` (ProcessStepAction'da **canlı FK yok**; alanlar bir kez kopyalanır)
 - **Yeni türler:** `eventForm ++` · `webhook ++` · `autoAction ++`
+- **Yeniden adlandırılan tür:** eski `withForm` (aksiyon türü) > **`eventForm`** (v0.7).
 - **Kaldırılan iş-bazlı custom davranışlar:** `-- fire-event` · `-- new-instance` · `-- new-instance-referenced` ·
   `-- new-instance-other` · `-- take-photo` · `-- select-file` · `-- take-barcode` · `-- manuel-barcode-input` ·
   `-- excel-export` · `-- expform-*` · `-- add-test-receipt`
@@ -157,7 +158,7 @@
 
 **Kullanıcı / Kullanıcı Grubu**
 - `stableUserId` > **`fixedUserId`**
-- `accountUserGroupId` > **`organizationUserGroupId`**
+- `accountUserGroupId` > **`userGroupId`**
 - `dynamicUserListFieldId` > **`dynamicUserListPropertyId`**
 - `-- managerChain` (yönetici zinciri) · `-- managerByTitle` (ünvana göre yönetici) — `userType` değerleri (aktif değildi)
 - `groupApproval` — **kaldırıldı** (grup "hepsi onaylar" özelliği ilk fazda yok; Kullanıcı Grubu adımında üyelerden biri aksiyon alır)
@@ -203,7 +204,28 @@
 
 **Model adı**
 - `Title` / `Ünvan` > **`Profession`** (model · FK'ler · enum değeri)
+- `Pozisyon/Position` > **`Position`**; `Kadro/Staff` (`AccountStaffDto`) > **`Staff`** (alt model)
 - `AccountUserGroupDto` > **`UserGroup`** _(ve diğer `Account*Dto` > `*` karşılıkları)_
+
+**Kaynak DTO (yeni model → eski DTO · araştırma dosyası)**
+> _(Model dosyalarının başlığından buraya taşındı — v0.25 · CLAUDE.md kuralı 4. Alan-düzeyi Dönüşüm notları da: `account*`→`organization*`, `accountId`(string)→`organizationId`(int), `kod`/`tanim`→`code`/`definition`, string FK'ler→int FK, `userId`→`id` vb. — aşağıdaki "Alan" bölümü + §12.)_
+
+| Model | Eski DTO | `research/current-flovo-bpm-engine/organizations/` |
+|---|---|---|
+| Company | `AccountCompanyDto` | companies.md |
+| Department | `AccountDepartmentDto` | departments.md |
+| Profession | `AccountProfessionDto` | titles.md |
+| Position · Staff | `AccountPositionDto` · `AccountStaffDto` | positions.md |
+| User | `AccountUserDto` | users.md |
+| UserGroup | `AccountUserGroupDto` | user-groups.md |
+| CostCenter | `AccountCostCenterDto` | expense-center.md |
+| CreditCard | `AccountCreditCardDto` | credit-cards.md |
+| WorkerLevel | `AccountWorkerLevelDto` | worker-levels.md |
+| WorkingSchedule | `WorkingScheduleDto` | working-schedules.md |
+| VacationDay | `AccountVacationDay` | vacation-days.md |
+| AdditionalQualification | `AccountAdditionalQualificationDto` | additional-qualifications.md |
+| SchedulerJob | `SchedulerJobDto` | scheduler-jobs.md |
+| ProcessTransfer | `ProcessTransferDto` | process-transfer.md |
 
 **Alan (Türkçe → İngilizce)**
 - `kod` > **`code`**

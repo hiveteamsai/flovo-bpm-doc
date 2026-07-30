@@ -8,14 +8,6 @@
 
 ---
 
-## 0. Neden değişti? (eski → yeni)
-- **Eski:** Yetki **kullanıcı bazında** `authorizationLevel` (sayısal) idi; yetki artırmak sayıyı büyütmekti ve
-  **dinamik ayarlanamıyordu** (sabit seviye eşikleri).
-- **Yeni:** `User.authorizationLevel` **kaldırıldı**. Yetkiler **organizasyon bazında**, **admin** + **grup-bazlı** olarak
-  **dinamik** tanımlanır.
-
----
-
 ## 1. Admin Kullanıcılar (`adminUserIds`)
 - Organizasyonun **`adminUserIds`** listesi vardır (bir veya çok kullanıcı).
 - **En az 1 aktif admin** bulunmak zorundadır (aktif = `User.active = true` ve `deleted = false`).

@@ -1,7 +1,7 @@
 # Model — InstanceAwaitingUser (formu bekleyen kullanıcı/grup)
 
 > **Durum:** 🟢 TANIMLI
-> **Eski karşılığı:** yok — **yeni model**.
+> **Yeni model.**
 > **Amaç:** Bir form üzerinde **atanan / aksiyon alabilecek** kullanıcıları tutar (aksiyon bekleyenler). Form üzerinden
 > aksiyon alabilecek kullanıcılar **doğrudan bu tablodan** tespit edilir — `ProcessStepInstance` tablosunu filtreleyerek
 > kullanıcı/kullanıcı grubu/processing adımını bulmaya çalışmak **maliyeti artıracağı** için bu tablo tutulur.

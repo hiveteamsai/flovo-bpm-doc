@@ -1,8 +1,6 @@
 # Model — UserGroup (Kullanıcı Grubu — organizasyon ayarı)
 
-> **Durum:** 🟡 TASLAK — eski uygulama DTO'sundan türetildi.
-> **Kaynak DTO:** `../../research/current-flovo-bpm-engine/organizations/user-groups.md` (`AccountUserGroupDto`).
-> **Dönüşüm:** `account*`→`organization*`; `accountId` (string) → **`organizationId` (int)**.
+> **Durum:** 🟡 TASLAK
 > **Amaç:** Birden fazla kullanıcıyı toplayan grup. BPM'de **bildirim hedefi**, **aksiyon görünürlük yetkisi**, "Kullanıcı Grubu" adımı hedefi.
 
 ## Alanlar

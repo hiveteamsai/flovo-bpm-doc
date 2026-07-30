@@ -1,8 +1,6 @@
 # Model — WorkingSchedule (Çalışma Takvimi — organizasyon ayarı)
 
-> **Durum:** 🟡 TASLAK — eski uygulama DTO'sundan türetildi.
-> **Kaynak DTO:** `../../research/current-flovo-bpm-engine/organizations/working-schedules.md` (`WorkingScheduleDto`).
-> **Dönüşüm:** `account*`→`organization*`; sahiplik → **`organizationId` (int)**.
+> **Durum:** 🟡 TASLAK
 > **Amaç:** Haftalık çalışma saatleri (7 gün, 2 periyot). BPM **Timer / zaman aşımı** "çalışma takvimine göre" hesaplamalarının temeli.
 
 ## Alanlar

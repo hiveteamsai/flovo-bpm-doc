@@ -1,8 +1,6 @@
 # Model — AdditionalQualification (Ek Nitelik — organizasyon ayarı)
 
-> **Durum:** 🟡 TASLAK — eski uygulama DTO'sundan türetildi.
-> **Kaynak DTO:** `../../research/current-flovo-bpm-engine/organizations/additional-qualifications.md` (`AccountAdditionalQualificationDto`).
-> **Dönüşüm:** `account*`→`organization*`; `accountId` (string) → **`organizationId` (int)**; `accountCompanyIds`→`companyIds` (List\<int\>).
+> **Durum:** 🟡 TASLAK
 > **Amaç:** Standart alanların dışında, organizasyon varlıklarına eklenen **dinamik/özel alanlar** (örn. "SGK No", "Sicil No").
 
 ## Alanlar

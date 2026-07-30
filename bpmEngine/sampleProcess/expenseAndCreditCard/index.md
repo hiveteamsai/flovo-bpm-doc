@@ -29,7 +29,7 @@ flowchart TD
 ```
 
 - **Masraf Formu → Masraf:** Masraf Formu içindeki **Form List**'e bir masraf eklenince/çıkınca **ServiceTrigger**,
-  Masraf servisinin **Forma Ekle / Formdan Kaldırma Başlangıcı** alt sürecini tetikler (`async=false`).
+  Masraf servisinin **Forma Ekle / Formdan Çıkart Başlangıcı** alt sürecini tetikler (`async=false`).
 - **Masraf → Ekstre Satırı:** Bir masraf, bir **Ekstre Satırı** ile ilişkilendirilince/ayrılınca **ServiceTrigger**,
   Ekstre Satırı'nın ilgili alt sürecini tetikler; parametre: `expenseId`, `amount` (ekleme `async=false`, kaldırma `async=true`).
 - **Ekstre Satırı → Ekstre:** Ekstre Satırı, **"Ekstre Tutar Alt süreç Başlat"** (`triggerProcessStep`) ile üst
@@ -44,8 +44,8 @@ flowchart TD
   [`../../service-settings/process-step-action.md`](../../service-settings/process-step-action.md)
 
 ## Açık noktalar (taslak → detay)
-- **Başlangıç adı uyumlaması:** Masraf trigger'ının hedef başlangıçları ("Forma Ekle / Formdan Kaldırma Başlangıcı") ↔
-  Ekstre Satırı'ndaki karşılıkları ("Masraf İlişkilendirme / İlişki Kaldırma Başlangıcı") — tek isim setine indirgenecek.
+- **Başlangıç adı setleri (netleşti):** **Masraf**'ın alt süreçleri = **Forma Ekle / Formdan Çıkart Başlangıcı** (Masraf ↔ Masraf Formu);
+  **Ekstre Satırı**'nın alt süreçleri = **Masraf İlişkilendirme / Masraf İlişki Kaldırma Başlangıcı** (Ekstre Satırı ↔ Masraf). İki ayrı çift, çakışmaz.
 - **`targetPropertyId` / ilişki alanları:** her ServiceTrigger'ın izlediği tam alan (Form List / Combobox) detayda belirtilecek.
 - **Ekstre ↔ Ekstre Satırı tetikleme yönü:** "Ekstre Tutar Alt süreç Başlat"ın tam mekaniği (parametreler, hangi ekstre) netleşecek.
 - **`parameters` şekli:** `expenseId`, `amount` parametrelerinin `DynamicParameter` değer kaynağı (propertyValue vb.) detaylanacak.

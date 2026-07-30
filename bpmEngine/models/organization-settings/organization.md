@@ -17,7 +17,7 @@
 | `adminUserIds` | List\<int\> | FK → `user.md` | **Organizasyon adminleri** (**en az 1 aktif**). Yetki yapılandırmasını yalnız bunlar değiştirir; **tüm yetkilere** sahiptir. |
 
 ## Yetkilendirme (Permissions)
-Yetkiler **organizasyon bazında** yönetilir (eski `User.authorizationLevel` kaldırıldı). Her yetki için Organization'da
+Yetkiler **organizasyon bazında** (admin + grup-bazlı) yönetilir. Her yetki için Organization'da
 **tek bir kullanıcı grubu** alanı vardır; seçilen grubun üyeleri o yetkiyi alır. Davranış → `../../organization-settings/permissions.md`.
 
 | Alan | Tip | Anahtar | Yetki |

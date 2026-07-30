@@ -1,11 +1,7 @@
 # Model — User (Kullanıcı — organizasyon ayarı)
 
-> **Durum:** 🟡 TASLAK — eski uygulama DTO'sundan türetildi.
-> **Kaynak DTO:** `../../research/current-flovo-bpm-engine/organizations/users.md` (`AccountUserDto`).
-> **Dönüşüm:** `account*`→`organization*`; `accountId` (string) → **`organizationId` (int)**; `userId`→`id`;
-> string FK'ler int'e: `departmantId`→`departmentId`, `unvanId`→`professionId`, `yoneticiUserId`→`managerUserId`,
-> `masrafYeriId`→`costCenterId`.
-> **Amaç:** Organizasyondaki **kişiler**. BPM onay mercilerinin (kullanıcı / yönetici / yönetici zinciri / departman yöneticisi) temeli.
+> **Durum:** 🟡 TASLAK
+> **Amaç:** Organizasyondaki **kişiler**. BPM onay mercilerinin (kullanıcı / kullanıcının yöneticisi / departman yöneticisi) temeli.
 
 ## Alanlar — temel
 | Alan | Tip | Anahtar | Açıklama |
@@ -26,15 +22,15 @@
 > `email IS NOT NULL OR phone IS NOT NULL` (CHECK kısıtı). Kullanıcı **e-posta ile, telefon ile veya ikisiyle** tanımlanabilir;
 > **hiçbiri olmadan** tanımlanamaz (giriş kimliği ve bildirim kanalları bunlara dayanır → [`../enums/notification-channel.md`](../enums/notification-channel.md)).
 
-> **Yetki:** Eski `authorizationLevel` (sayısal) **kaldırıldı**; yetkiler artık **organizasyon bazında** (admin + grup-bazlı)
-> yönetilir → `../../organization-settings/permissions.md`.
+> **Yetki:** Yetkiler **organizasyon bazında** (admin + grup-bazlı) **dinamik** yönetilir → `../../organization-settings/permissions.md`.
+> (Kullanıcıda ayrı bir yetki-seviyesi alanı tutulmaz.)
 
 ## Alanlar — organizasyon bağlantıları
 | Alan | Tip | Anahtar | Açıklama |
 |---|---|---|---|
 | `departmentId` | int? | FK → `department.md` | Departman. |
 | `professionId` | int? | FK → `profession.md` | Ünvan/meslek. |
-| `managerUserId` | int? | FK → User (self-ref) | **Yönetici** (yönetici zinciri). |
+| `managerUserId` | int? | FK → User (self-ref) | **Yönetici** — kullanıcının doğrudan yöneticisi (`usersManager` atamasında kullanılır). |
 | `costCenterId` | int? | FK → `cost-center.md` | Masraf yeri. |
 | `workerLevelId` | int? | FK → `worker-level.md` | Çalışan seviyesi. |
 | `workingScheduleId` | int? | FK → `working-schedule.md` | Çalışma takvimi. |
@@ -77,6 +73,6 @@
 - **N – N** → `Company` (`companyIds`), `UserGroup` (üyelik → `UserGroupMember`).
 - **1 – N** ← `UserSolution`, `UserQualificationValue`, `CreditCard` (`userId`).
 - **1 – 1** ← `Staff` (`userId`) — kullanıcının **pozisyon/kadro** ataması; User'da depolanmaz, salt-okunur yansıma (→ `position.md`).
-- **BPM:** onay merci atamaları (kullanıcı / yönetici / yönetici zinciri / departman yöneticisi / ünvana göre yönetici).
+- **BPM:** onay merci atamaları (süreci başlatan / sabit kullanıcı / kullanıcının yöneticisi / departman yöneticisi / değişken kullanıcı → `../enums/process-step-user-type.md`).
 
 *Oluşturma: 2026-07-03.*

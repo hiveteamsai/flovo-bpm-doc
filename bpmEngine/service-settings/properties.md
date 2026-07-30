@@ -196,7 +196,7 @@ ilişkilendirilip görüntülendiği **alt-servis** alanı.
 `reOrder` (sıralama) · `parameterTransfer`/`propertyTransferParameters` (ana↔alt parametre aktarımı) ·
 `editOnlyOwnPosition` · `lazyLoading`.
 
-**Profil bazında (görüntüleme profiline göre) ayarlar** → `view-profile.md` §5 / `../models/service-settings/view-profile-property.md`
+**Profil bazında (görüntüleme profiline göre) ayarlar** → `../models/service-settings/view-profile-property.md` (key kataloğu) / `view-profile.md`
 (override; `ProcessViewProfilePropertySetting`):
 - `activeStartActions` (list\<ProcessStepAction id\>) — yeni kayıt oluştururken sunulacak **başlangıç aksiyonları**
   (`childService` Süreç Başlangıcı'na bağlı aksiyonlardan seçilir; **boş = yeni oluşturma yok**). **`addNewEnabled`'in yerini alır.**
@@ -207,7 +207,7 @@ ilişkilendirilip görüntülendiği **alt-servis** alanı.
 - _(öneri)_ `selectedEditable` (bool) — `selectableVisible` açıksa, **tikler bu profilde düzenlenebilir** mi (örn. yönetici ✓ / başlatan ✗).
 > Form List, **liste seçimi** yapan Combobox'tan farklıdır; **alt-servis kayıtları** bağlar/görüntüler.
 > **Açık konu:** alt-servisin **görüntülenecek alanları / seçilebilirliği** view-profile ile ayarlanacak
-> (→ `view-profile.md` §5). Süreç Adımı Tetikleme / Değer Atama bu alt-servisle çalışır.
+> (→ `../models/service-settings/view-profile-property.md`). Süreç Adımı Tetikleme / Değer Atama bu alt-servisle çalışır.
 
 ### 3.14 — `flowInfo` (Flow Info)
 **Akış (süreç) ile ilgili bilgileri** forma getirmek için kullanılır — oluşturulma tarihi (createdDate), oluşturan

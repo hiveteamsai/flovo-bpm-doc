@@ -4,7 +4,6 @@
 > **Amaç:** Bir iş akışında oluşturulan **doldurulmuş form** (runtime veri kaydı). `Property` tanımlarına göre
 > girilen form değerlerinin sahibi/örneği; mevcut `Status`'u taşır.
 > **Oluşturulma:** Instance, **Instance Creator** süreç adımı tarafından oluşturulur.
-> **Eski karşılığı:** `ServiceInstances` (isim eşlemesi → `../../research/compare/new-vs-current-names.md` §15.2).
 
 ## Alanlar
 | Alan | Tip | Anahtar | Açıklama / amaç |

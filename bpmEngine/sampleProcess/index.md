@@ -18,7 +18,7 @@
 | **createPdfAsync/** | **PDF (asenkron)** — **HTTP Request `async=true`** ile beklemeden ilerleme; PDF hazır olunca **Webhook** ile bağımsız alt süreçten bildirim. | [`createPdfAsync/index.md`](./createPdfAsync/index.md) |
 | **integration/** | **Asenkron entegrasyon** — uzun aktarımı **Processing (`showLoading=false`)** ile durum güncelleyerek bekleme; **Webhook** sonucuna göre bitiş/başa dönüş. | [`integration/index.md`](./integration/index.md) |
 | **scanBarcode/** | **Barkod ile var olanı aç** — yanıttaki **`response.action`** koduna göre **koşullu dallanma**; Form Yönlendirme veya Instance Creator. | [`scanBarcode/index.md`](./scanBarcode/index.md) |
-| **referred/** | **Yönlendirmeli onay** — kontrol grubu → yönlendirilen kullanıcı + yönetici zinciri → TransferUser Kontrol (Karşılaştırma) döngüsü → muhasebe. **Odak:** **`mergeParameter`** ile parametrelerin zincir boyunca **birikerek** taşınması. | [`referred/index.md`](./referred/index.md) |
+| **referred/** | **Yönlendirmeli onay** — kontrol grubu → yönlendirilen kullanıcı + **kullanıcının yöneticisi (`usersManager`)** → TransferUser Kontrol (Karşılaştırma) döngüsü → muhasebe. **Odak:** **`mergeParameter`** ile parametrelerin zincir boyunca **birikerek** taşınması. | [`referred/index.md`](./referred/index.md) |
 | **expenseAndCreditCard/** 🟡 | **Masraf & Kredi Kartı Ekstresi** — **4 bağlantılı servis** (Masraf Formu · Masraf · Ekstre · Ekstre Satırı). **Odak:** **ServiceTrigger** (servis-seviyesi otomatik tetikleyici) + **triggerProcessStep** + **Üst Form Kullanıcı (ParentUser)** birlikte. **Her servis ayrı `.md`** (tek `process.md` değil). **TASLAK.** | [`expenseAndCreditCard/index.md`](./expenseAndCreditCard/index.md) |
 
 ---

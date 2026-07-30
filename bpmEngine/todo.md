@@ -86,7 +86,7 @@
 - [ ] **Hata yönetimi** — her adımda `onFail` var mı/zorunlu mu; **retry** (deneme + bekleme); süreç-seviye global
   hata yakalayıcı; telafi/compensation; `action` zinciri **sonsuz döngü** koruması. _(flovo-bpm-engine §7 · process-step-action §7)_
 - [ ] **İnsan-görev ailesi ortak modeli** — Kullanıcı / Kullanıcı Grubu / Processing için atama + bekleme.
-  _(process-step §4)_ · _(Processing'in ilerleme farkı **çözüldü**: frontende response döner ama beklemez, `default` ile ilerler → process-step §3.18)_
+  _(process-step §4)_ · _(Processing'in ilerleme farkı **çözüldü**: `default` kodlu `autoAction` varsa otomatik ilerler, yoksa bekler → process-step §3.18)_
 - [ ] **Üst Form Kullanıcı (§3.22) — kenar durumlar** — alt-servisin üst formun atananlarını/görünümünü devraldığı yeni
   adım (Parent Instance User) çekirdeği tanımlandı; **açık kalan:** (a) üst form **bulunamazsa** (bağ yok/kaldırılmış)
   davranış; (b) üst form **otomatik adımda** olup aksiyon bekleyeni yokken görünüm/atanan; (c) **birden fazla** üst form
@@ -115,18 +115,27 @@
     **karşı-instance parametresi gereksiz** · kimlik/yaşam-döngüsü alanları eklendi · **`triggerProcessStep` ile sınır**
     (triggerProcessStep = akış-üzeri adım, girince alt süreç/aksiyon tetikler ↔ ServiceTrigger = akış-dışı otomatik olay/cron).
   - **Çözülen (v0.24, expenseAndCreditCard örneğiyle):** **kaynak ↔ hedef ayrımı** — `parameters` **kaynağı = `associatedInstanceId`**
-    (üst form); **yürütme hedefi = `instanceId`** (targetService'teki **mevcut** instance). Associate alt süreci **yeni instance
-    oluşturmaz**; hedef instance üzerinde **yardımcı dal** olarak koşar (statü okur, `triggerProcessStep` ile ana-akış aksiyonu
-    tetikler). Önceki "yeni ProcessInstance / parent=associatedInstanceId" ifadesi düzeltildi.
+    (üst form); **yürütme hedefi = `instanceId`** (targetService'teki **mevcut** instance). Associate alt süreci **yeni Instance (form kaydı)
+    oluşturmaz**; hedef instance için **yeni bir alt-`ProcessInstance`** olarak koşar — **`parentProcessInstanceId` = hedef
+    instance'ın ana `ProcessInstance`'ı** (tetikleyen `associatedInstanceId` değil); instance'a bağ bu zincirle **dolaylı**
+    (statü okur, `triggerProcessStep` ile ana-akış aksiyonu tetikler). Önceki "parent=associatedInstanceId" ifadesi düzeltildi.
+  - **Çözülen (v0.25):** **hedef servis ↔ hedef alan invariant'ı** (`targetServiceId == targetPropertyId'nin childServiceId/associatedServiceId`'si;
+    kaydetme-anı doğrulaması) · **`async` bekleme yeri** (bekleme, ilişki değişikliğini/`AssociatedInstance` yazımını yapan **tetikleme noktasında**
+    yapılır) · **`subProcessStart` tetikleme kataloğuna ServiceTrigger (associate) eklendi** (process-step §3.20/§3.16).
   - **Açık kalan:** **(1) `timer` saat dilimi/DST** — cron'un değerlendirileceği saat dilimi (Organization timezone alanı henüz
     açık) + DST geçişleri; **(2) döngü koruması** — A→B→A tetikleme recursion'ı (derinlik/çevrim sınırı) _(tasarım-zamanı önleme
     örneği: `isAssociatedCombobox=false` geri-referans — `sampleProcess/expenseAndCreditCard/creditCardStatementLine.md`; motor-düzeyi
     güvenlik ağı açık)_; **(3) `async` kaskad kompozisyonu** — üst üste `async=false` senkron derinlik yaratır; seviyeler boyunca
-    async + işlem/derinlik sınırı (Senaryo 5 kaskadı); **(4) alt sürecin mevcut instance üzerinde çalışma mekaniği** — yardımcı
-    ProcessInstance mı, mevcut sürecin dalı mı (runtime).
+    async + işlem/derinlik sınırı (Senaryo 5 kaskadı); **(4) `triggerProcessStep` → ilişkili instance (associatedInstance) tetikleme** —
+    Süreç Adımı Tetikleme adımı, ilişkili instanceların **alt sürecini/aksiyonunu** tetikleyebilir; hangi associatedInstance'ların
+    seçileceği (ilişki alanı/yön) + ayar detayları **tanımlanacak** (process-step §3.5/§3.20). _(Not: "alt sürecin mevcut-instance
+    mekaniği" → **ÇÖZÜLDÜ v0.25**: yeni alt-`ProcessInstance`, `parentProcessInstanceId`=hedef instance'ın anası; `ProcessInstance`'a `instance` alanı eklenmez.)_
 - [ ] **Raporlama** ayrı özellik olarak nasıl modellenecek? _(view-profile §3 / §5)_
 - [ ] **Customer API** — kimlik/yetki (token kapsam/süre/yenileme); webhook güvenliği (secret/imza) + **idempotency**;
   `POST /instances/search` sorgu dili; rate limit/sayfalama/hata sözleşmesi; request/response şemaları. _(flovo-customer-api §3)_
+  - **Dış referans anahtarı — statü çelişkisi (O6):** `flovo-customer-api.md` header'da `organizationId` kullanıp konuyu **açık**
+    sayıyor; `organization.md`/`models/index.md` ise **`organizationCode` (string) kararlaştırıldı** diyor. **Customer API detaylanınca
+    tek statüye** bağlanacak (o zamana dek atlandı).
   - 🧱 **Tech-stack (kısmen):** kimlik = **Keycloak** (token) · sözleşme/şema = **OpenAPI** (api-contract) · idempotency deseni =
     **NATS**; API'nin kendi tasarımı (search sorgu dili, rate limit, webhook imza) açık. → [`tech-stack/keycloak.md`](./tech-stack/keycloak.md) · [`tech-stack/api-contract.md`](./tech-stack/api-contract.md)
 - [ ] **Yetkilendirme (permissions) — açık kalanlar:** **(a)** `ProcessStepAction.authorizationLevel` (aksiyon-düzeyi sayısal
@@ -201,7 +210,7 @@
 - [ ] **Flovo AI adım ayarları detayı** — `selectedAi` kanonik AI seti; `fileSourceType` (thumbnail/fileProperty) ayrı enum mü;
   AI'a-özel `aiSettings` şeması. _(process-step §3.2)_
 - [ ] **Adım `settings` JSONB doğrulama & referans bütünlüğü** — tip-başına **JSON Schema**; `settings` içindeki referans id'lerin
-  (`propertyId`/`organizationUserGroupId`/`selectedTimerProcessStepId`…) **uygulama-katmanı** doğrulaması + **silme koruması**. _(process-step §2)_
+  (`propertyId`/`userGroupId`/`selectedTimerProcessStepId`…) **uygulama-katmanı** doğrulaması + **silme koruması**. _(process-step §2)_
 - [ ] **`triggerProcessStep` / `formRedirect` adım ayarları** — henüz modellenmedi (ayarsız grup §3.16). _(process-step §3.16)_
 - [ ] **`DynamicParameter.value` şekli** — değer-kaynağı (**ValueAssignType**: sabit/hesaplama/form property) + değerin JSONB
   temsili (iş-kuralı `AssignValueToFieldDto` muadili). _(process-step §3.1/§3.6)_
@@ -221,9 +230,9 @@
 - **Style ↔ alan:** Form alanları `style.md` Style varlığını **kullanmaz**; iş kuralı `setStyle` yalnız tekil görünüm
   niteliğini (fontSize/titleColor) değiştirir. Style tüketicileri = aksiyon + durum.
 - **Değer Atama:** `valueAssignType`'a `fromCalculation` (+ `expression`) eklendi (özetteki "hesaplayarak" ile hizalandı). _(alan v0.18'de `valueType`→`valueAssignType` olarak ayrıştırıldı)_
-- **Processing:** frontende form/response döner ama beklemez → `default` ile otomatik ilerler (yeniden sınıflandırıldı).
+- **Processing:** frontende form/response döner; **`default` kodlu `autoAction` varsa** otomatik ilerler, **yoksa bekler** (opsiyonel otomatik ilerleme; yeniden sınıflandırıldı).
 - **View-profile + diğer modeller:** eksik primary/secondary key'ler eklendi (`id`, `serviceId`, `processStepId`);
-  alan-referansları `...Id` (FK) yapıldı (`processViewProfileId`, `organizationUserGroupIds`, `styleId`).
+  alan-referansları `...Id` (FK) yapıldı (`processViewProfileId`, `userGroupIds`, `styleId`).
 - **PK adı:** modelin birincil anahtarı `id` (property'de `propertyId`→`id`).
 - **İnsan-tetikli aksiyonlar:** `manual`/`eventForm`'a ek `takePhoto`/`selectFile`/`scanBarcode` da eklendi.
 - **Yazım/casing:** `trealingView`→`trailingView`, `criteritionType`→`criterionType`, `solutionid`/`ServiceId`→`solutionId`/`serviceId`.
@@ -286,9 +295,10 @@
 - **Alt Süreç Başlangıcı adım türü (ÇÖZÜLDÜ):** Bağımsız alt süreçlerin **giriş düğümü** için yeni adım türü (process-step
   §3.20); webhook **ve** Süreç Adımı Tetikleme ile tetiklenir; webhook'u tutan aksiyon bu adıma bağlı **`default`**'a dönüşür;
   `ProcessStepInstance.processStepId` doğru atılır. _(process-step §3.20/§4 · sampleProcess/createPdfAsync)_
-- **Alt süreç yürütmesinin runtime temsili (ÇÖZÜLDÜ):** Alt süreç tetiklenince **ayrı, yeni bir `ProcessInstance`** oluşur;
-  **`parentProcessInstanceId`** = tetikleyen ana sürecin id'si (ana süreçlerde null). _(process-step §3.20/§4 ·
-  models/processInstances/process-instance.md)_
+- **Alt süreç yürütmesinin runtime temsili (ÇÖZÜLDÜ):** Alt süreç tetiklenince **ayrı, yeni bir `ProcessInstance`** oluşur (yeni **Instance/form kaydı** oluşmaz);
+  **`parentProcessInstanceId`** = alt sürecin koştuğu **hedef/host instance'ın ana süreci** (**tetikleyen** değil; ana süreçlerde null);
+  instance'a bağ bu zincirle **dolaylı** (`ProcessInstance`'a `instance` alanı eklenmez). _(process-step §3.20/§4 ·
+  models/processInstances/process-instance.md · service-trigger.md)_
 - **Solution & Service modellendi (ÇÖZÜLDÜ):** hiyerarşi `Organization → Solution → Service` netleşti;
   `models/service-settings/solution.md` + `service.md` oluşturuldu (alan ayrıntıları — ikon/versiyon/yetki — sonra).
 - **Bildirim dil kapsamı (ÇÖZÜLDÜ — dinamik dil listesi):** bildirim başlık/mesajı sabit TR/EN yerine **dinamik

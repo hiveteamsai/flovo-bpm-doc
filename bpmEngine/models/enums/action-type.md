@@ -17,7 +17,6 @@
 
 ## Notlar
 - **İsim ayrımı:** Bu enum **`Action.actionType`**'tır; iş kuralı etkisi olan [`business-rule-action-type.md`](./business-rule-action-type.md) ise **`BusinessRule.businessRuleActionType`** (v0.7'de karışmayı önlemek için yeniden adlandırıldı). Ayrı enum'lardır.
-- `eventForm` değeri, önceki `withForm` değerinin yeni adıdır.
 - Kodlar **camelCase** olarak normalize edildi (v0.7); görünen Türkçe ad "Anlam" sütunundadır.
 
 *Oluşturma: 2026-07-10.*

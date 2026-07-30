@@ -1,9 +1,6 @@
 # Model — SchedulerJob (Zamanlanmış Görev — organizasyon ayarı)
 
-> **Durum:** 🟡 TASLAK — eski uygulama DTO'sundan türetildi.
-> **Kaynak DTO:** `../../research/current-flovo-bpm-engine/organizations/scheduler-jobs.md` (`SchedulerJobDto`).
-> **Dönüşüm:** `account*`→`organization*`; `accountCode` → **`organizationId` (int)** (kiracı sahipliği);
-> `triggeredByUserId` (string) → int.
+> **Durum:** 🟡 TASLAK
 > **Amaç:** Cron tabanlı **arka plan görevleri**. BPM'in zaman tabanlı otomasyonlarını (hatırlatma, zaman aşımı işleme, toplu işlem) besler.
 
 ## Alanlar

@@ -1,8 +1,6 @@
 # Model — Company (organizasyon ayarı)
 
-> **Durum:** 🟡 TASLAK — eski uygulama DTO'sundan türetildi.
-> **Kaynak DTO:** `../../research/current-flovo-bpm-engine/organizations/companies.md` (`AccountCompanyDto`).
-> **Dönüşüm:** `account*`→`organization*`; `accountId` (string) → **`organizationId` (int)**; `kod`/`tanim`→`code`/`definition`.
+> **Durum:** 🟡 TASLAK
 > **Amaç:** Organizasyonun **tüzel kişiliklerini** (şirketler) temsil eder. Çok-şirketli organizasyonlar tek kiracı altında yönetilir.
 
 ## Alanlar

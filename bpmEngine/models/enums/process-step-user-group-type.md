@@ -7,7 +7,7 @@
 ## Değerler
 | Değer | Anlam | Ne için |
 |---|---|---|
-| `fixedUserGroup` | Sabit kullanıcı grubu | Seçilen sabit grup (`organizationUserGroupId`). |
+| `fixedUserGroup` | Sabit kullanıcı grubu | Seçilen sabit grup (`userGroupId`). |
 | `dynamicUserList` | Dinamik kullanıcı listesi | Formdaki bir property'deki (`dynamicUserListPropertyId`) **kullanıcılardan** oluşan liste. |
 | `dynamicUserGroup` | Dinamik kullanıcı grubu | Formdaki bir property'deki (`dynamicUserListPropertyId`) **kullanıcı grubundan** oluşan liste. |
 

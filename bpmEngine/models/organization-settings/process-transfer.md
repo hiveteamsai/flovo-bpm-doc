@@ -1,8 +1,6 @@
 # Model — ProcessTransfer (Süreç Transferi — organizasyon ayarı)
 
-> **Durum:** 🟡 TASLAK — eski uygulama DTO'sundan türetildi.
-> **Kaynak DTO:** `../../research/current-flovo-bpm-engine/organizations/process-transfer.md` (`ProcessTransferDto`).
-> **Dönüşüm:** id'ler int; sahiplik → **`organizationId` (int)**.
+> **Durum:** 🟡 TASLAK
 > **Amaç:** Bir kullanıcının **bekleyen süreç görevlerini** başka kullanıcıya **servis bazında** devretme işlemi
 > (örn. izne çıkan/ayrılan personel).
 

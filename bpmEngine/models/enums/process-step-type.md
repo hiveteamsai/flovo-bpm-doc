@@ -26,7 +26,7 @@
 | `userGroup` | Kullanıcı Grubu | Kullanıcı grubuna iletilir; **biri** aksiyon alır (human task). |
 | `parentInstanceUser` | Üst Form Kullanıcı | Atananları/görüntülemeyi **üst formdan (parent instance)** devralan human task (alt-servis). |
 | `processEnd` | Süreç Bitişi | Sürecin son adımı. |
-| `processing` | Processing | Forma döner ama beklemez; `default` ile otomatik ilerler. |
+| `processing` | Processing | Forma döner; **`default` kodlu `autoAction`** varsa otomatik ilerler, **yoksa bekler** (webhook/aksiyon ile). |
 | `formRedirect` | Form Yönlendirme | Create öncesi var olan başka bir formu açma. |
 | `subProcessStart` | Alt Süreç Başlangıcı | Bağımsız alt sürecin giriş düğümü (servis başına N). |
 | `subProcessEnd` | Alt Süreç Bitişi | Bağımsız alt sürecin **son adımı** (Süreç Bitişi'nin alt-süreç karşılığı; kol burada sonlanır). |
@@ -34,6 +34,7 @@
 ## Notlar
 - Değerler `service-settings/process-step.md §3`'teki **22 adım** kataloğuyla birebir eşleşir; katalog genişletilebilir
   (yeni adım tipi → yeni değer). _(Tier 0 "Genişletilebilirlik" → [`../../todo.md`](../../todo.md).)_
-- `switch` ve `default` gibi değerler yalnız enum **kodu**dur; görünen ad "Anlam" sütunundadır.
+- `switch` gibi değerler yalnız enum **kodu**dur; görünen ad "Anlam" sütunundadır.
+- **Not:** `default` bir **ProcessStepType değeri değildir** — aksiyon-yönlendirme kodudur (Switch/Karşılaştırma vb. eşleşme yoksa/varsayılan ilerleme; → [`../service-settings/process-step-action.md`](../service-settings/process-step-action.md) §0).
 
 *Oluşturma: 2026-07-16.*

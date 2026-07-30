@@ -1,9 +1,6 @@
 # Model — CostCenter (Masraf Merkezi — organizasyon ayarı)
 
-> **Durum:** 🟡 TASLAK — eski uygulama DTO'sundan türetildi.
-> **Kaynak DTO:** `../../research/current-flovo-bpm-engine/organizations/expense-center.md` (`AccountCostCenterDto`).
-> **Dönüşüm:** `account*`→`organization*`; `accountId` (string) → **`organizationId` (int)**; `kod`/`tanim`→`code`/`definition`;
-> `accountCompanyId`→`companyId`.
+> **Durum:** 🟡 TASLAK
 > **Amaç:** Maliyet takibi yapılan muhasebesel birim (Cost Center). Masraf/harcama süreçlerinde maliyet yansıtma birimi.
 
 ## Alanlar

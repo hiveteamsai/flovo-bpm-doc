@@ -1,9 +1,6 @@
 # Model — Department (Departman — organizasyon ayarı)
 
-> **Durum:** 🟡 TASLAK — eski uygulama DTO'sundan türetildi.
-> **Kaynak DTO:** `../../research/current-flovo-bpm-engine/organizations/departments.md` (`AccountDepartmentDto`).
-> **Dönüşüm:** `account*`→`organization*`; `accountId` (string) → **`organizationId` (int)**; `departmanAdi`/`departmanKodu`
-> → `definition`/`code`; `departmanYoneticiUserId`→`managerUserId`; `ustDepartmentId`→`parentDepartmentId`.
+> **Durum:** 🟡 TASLAK
 > **Amaç:** Organizasyonun **hiyerarşik birim** yapısı. BPM'de **"departman yöneticisi"** atamalarında kullanılır.
 
 ## Alanlar

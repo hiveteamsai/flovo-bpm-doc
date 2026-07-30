@@ -37,7 +37,7 @@ Aşağıdaki §3 modelleri, her `stepType` için bu JSONB'nin **şemasıdır**.
 - Yığın zaten **PostgreSQL/JSONB** (→ [`../../tech-stack/postgresql.md`](../../tech-stack/postgresql.md)); yeni teknoloji gerekmez.
 
 **Bütünlük & kurallar:**
-- `settings` içindeki **referans id'ler** (`targetPropertyId` · `propertyId` · `selectedTimerProcessStepId` · `organizationUserGroupId` …)
+- `settings` içindeki **referans id'ler** (`targetPropertyId` · `propertyId` · `selectedTimerProcessStepId` · `userGroupId` …)
   DB FK'siyle değil, **uygulama katmanında** doğrulanır (kaydetme anında + **tip başına JSON Schema**). Referanslanan bir varlık
   silinmeden önce "bunu kullanan adım var mı?" denetimi uygulama tarafındadır.
 - Sürecin **topolojisi** (hangi adıma gidilir) `settings`'te **değil**, ilişkisel **`ProcessStepAction.targetProcessStepId`**'dedir
@@ -95,7 +95,7 @@ Dış endpoint'e HTTP isteği atan otomatik adım (davranış → `../../service
 > değildir (kaydedilen `settings`'e girmez).
 
 ### 3.2 Flovo AI — `ProcessStepFlovoAiSettings` (`stepType = flovoAi`)
-Seçili Flovo AI'ı çalıştırıp parametre üreten otomatik adım (davranış → `§3.3`).
+Seçili Flovo AI'ı çalıştırıp parametre üreten otomatik adım (davranış → `../../service-settings/process-step.md §3.3`).
 
 | Alan | Tip | Açıklama |
 |---|---|---|
@@ -105,7 +105,7 @@ Seçili Flovo AI'ı çalıştırıp parametre üreten otomatik adım (davranış
 | `fileSourcePropertyId` | int? | `fileProperty` ise dosyayı taşıyan file property. |
 
 ### 3.3 Değer Atama — `ProcessStepValueAssignmentSettings` (`stepType = valueAssignment`)
-Bir property'ye veya alt-servise sabit/hesaplanan değer atar (davranış → `§3.4`).
+Bir property'ye veya alt-servise sabit/hesaplanan değer atar (davranış → `../../service-settings/process-step.md §3.4`).
 
 | Alan | Tip | Açıklama |
 |---|---|---|
@@ -120,7 +120,7 @@ Bir property'ye veya alt-servise sabit/hesaplanan değer atar (davranış → `�
 | `targetInstancesPropertyId` | int? | Hedef alt-servis kayıt(lar) property'si. |
 
 ### 3.4 Karşılaştırma — `ProcessStepComparisonSettings` (`stepType = comparison`)
-Koşullara göre `true`/`false` iki dallı yönlendirme (davranış → `§3.13`).
+Koşullara göre `true`/`false` iki dallı yönlendirme (davranış → `../../service-settings/process-step.md §3.13`).
 
 | Alan | Tip | Açıklama |
 |---|---|---|
@@ -138,7 +138,7 @@ Koşullara göre `true`/`false` iki dallı yönlendirme (davranış → `§3.13`
 > `true`/`false` dalları `ProcessStepAction` (aynı kodlu aksiyonlar) ile yönlendirilir; `settings`'te tutulmaz.
 
 ### 3.5 Switch — `ProcessStepSwitchSettings` (`stepType = switch`)
-Seçili alanın değerine göre dallanma (davranış → `§3.14`).
+Seçili alanın değerine göre dallanma (davranış → `../../service-settings/process-step.md §3.14`).
 
 | Alan | Tip | Açıklama |
 |---|---|---|
@@ -148,7 +148,7 @@ Seçili alanın değerine göre dallanma (davranış → `§3.14`).
 > `cases`/eşleme listesi tutulmaz. Eşleşme yoksa **`default`** kodlu aksiyon çalışır (default zorunlu).
 
 ### 3.6 Bildirim — `ProcessStepNotificationSettings` (`stepType = notification`)
-Mail/Push/Toast bildirim gönderir (davranış → `§3.6`).
+Mail/Push/Toast bildirim gönderir (davranış → `../../service-settings/process-step.md §3.6`).
 
 | Alan | Tip | Açıklama |
 |---|---|---|
@@ -181,7 +181,7 @@ Mail/Push/Toast bildirim gönderir (davranış → `§3.6`).
 | `propertyId` | int? | `formProperty` ise. |
 
 ### 3.7 Timer ailesi — `ProcessStepTimerSettings` (`stepType = timer` · `timerStart` · `timerEnd`)
-Zamanlayıcı; ayrıca Kullanıcı/Kullanıcı Grubu adımlarının **timeout** ayarında da aynı yapı gömülü kullanılır (davranış → `§3.7`).
+Zamanlayıcı; ayrıca Kullanıcı/Kullanıcı Grubu adımlarının **timeout** ayarında da aynı yapı gömülü kullanılır (davranış → `../../service-settings/process-step.md §3.7`).
 
 | Alan | Tip | Açıklama |
 |---|---|---|
@@ -200,7 +200,7 @@ Zamanlayıcı; ayrıca Kullanıcı/Kullanıcı Grubu adımlarının **timeout** 
 - **`TimerFixedSchedule`:** `dateTime` (string) · `postponing` (bool) · `timeAdjustmentOption` (TimeAdjustmentOption) · `postponingHour` (string).
 
 ### 3.8 Custom ID Creator — `ProcessStepCustomIdCreatorSettings` (`stepType = customIdCreator`)
-Özel formatlı benzersiz ID üretip bir property'ye yazar (davranış → `§3.11`).
+Özel formatlı benzersiz ID üretip bir property'ye yazar (davranış → `../../service-settings/process-step.md §3.11`).
 
 | Alan | Tip | Açıklama |
 |---|---|---|
@@ -210,7 +210,7 @@ Zamanlayıcı; ayrıca Kullanıcı/Kullanıcı Grubu adımlarının **timeout** 
 | `targetFilePropertyId` | int? | Barkod görselinin yazılacağı file property. |
 
 ### 3.9 Instance Creator — `ProcessStepInstanceCreatorSettings` (`stepType = instanceCreator`)
-Yeni form/instance üretir; init değerler aksiyondan gelen `parameters` ile eşlenir (davranış → `§3.12`).
+Yeni form/instance üretir; init değerler aksiyondan gelen `parameters` ile eşlenir (davranış → `../../service-settings/process-step.md §3.12`).
 
 | Alan | Tip | Açıklama |
 |---|---|---|
@@ -222,7 +222,7 @@ Yeni form/instance üretir; init değerler aksiyondan gelen `parameters` ile eş
 > _(Detay sonra genişletilecek → `../../todo.md`.)_
 
 ### 3.10 Kullanıcı — `ProcessStepUserSettings` (`stepType = user`)
-Tek kullanıcının onayına giden human-task adım (davranış → `§3.15`). _(Kaynak DTO: `ProcessStepTypeUser`.)_
+Tek kullanıcının onayına giden human-task adım (davranış → `../../service-settings/process-step.md §3.15`).
 
 | Alan | Tip | Açıklama |
 |---|---|---|
@@ -236,34 +236,34 @@ Tek kullanıcının onayına giden human-task adım (davranış → `§3.15`). _
 | `timeout` | ProcessStepTimerSettings? | Adıma girildiğinde otomatik timeout (§3.7 yapısı). |
 
 ### 3.11 Kullanıcı Grubu — `ProcessStepUserGroupSettings` (`stepType = userGroup`)
-Birden fazla kullanıcıya iletilen, biri/hepsi onaylayan human-task adım (davranış → `§3.16`). _(Kaynak DTO: `ProcessStepTypeUserGroup`.)_
+Birden fazla kullanıcıya iletilen, biri/hepsi onaylayan human-task adım (davranış → `../../service-settings/process-step.md §3.16`).
 
 | Alan | Tip | Açıklama |
 |---|---|---|
 | `userGroupType` | ProcessStepUserGroupType | Grup belirleme yöntemi (→ [`../enums/process-step-user-group-type.md`](../enums/process-step-user-group-type.md)). |
-| `organizationUserGroupId` | int? | `fixedUserGroup` ise sabit grup. |
+| `userGroupId` | int? | `fixedUserGroup` ise sabit grup. |
 | `dynamicUserListPropertyId` | int? | `dynamicUserList`/`dynamicUserGroup` ise listeyi taşıyan form property. |
 | `processViewProfileId` | int | Onaya gidecek kullanıcıların göreceği görüntüleme profili. |
 | `sendNotificationOnStep` | SendNotificationMessages? | Adıma girildiğinde bildirim kısayolu. |
 | `timeout` | ProcessStepTimerSettings? | Adıma girildiğinde otomatik timeout. |
 
 ### 3.12 Süreç Bitişi — `ProcessStepProcessEndSettings` (`stepType = processEnd`)
-Sürecin son adımı (davranış → `§3.17`).
+Sürecin son adımı (davranış → `../../service-settings/process-step.md §3.17`).
 
 | Alan | Tip | Açıklama |
 |---|---|---|
 | `processViewProfileId` | int | Bitişte görüntüleme profili. |
-| `organizationUserGroupIds` | int[] | Bitiş sonrası erişebilecek gruplar. |
+| `userGroupIds` | int[] | Bitiş sonrası erişebilecek gruplar. |
 
 ### 3.13 Processing — `ProcessStepProcessingSettings` (`stepType = processing`)
-Forma döner ama beklemez; `default` ile otomatik ilerler (davranış → `§3.18`).
+Forma döner; **`default` kodlu `autoAction`** varsa otomatik ilerler, **yoksa bekler** (davranış → `../../service-settings/process-step.md §3.18`).
 
 | Alan | Tip | Açıklama |
 |---|---|---|
 | `showLoading` | bool | `true` ise form detayına giriş/değer görüntüleme engellenir (kullanıcı "yükleniyor" görür). |
 
 ### 3.14 Süreç Başlangıcı — `ProcessStepProcessStartSettings` (`stepType = processStart`)
-Ana sürecin giriş düğümü; **kimlerin süreci başlatabileceğini** kısıtlar (davranış → `§3.1`).
+Ana sürecin giriş düğümü; **kimlerin süreci başlatabileceğini** kısıtlar (davranış → `../../service-settings/process-step.md §3.1`).
 
 | Alan | Tip | Açıklama |
 |---|---|---|
@@ -278,7 +278,7 @@ Ana sürecin giriş düğümü; **kimlerin süreci başlatabileceğini** kısıt
 >   (→ [`../../flovo-customer-api.md`](../../flovo-customer-api.md); başlatan → `../processInstances/process-instance.md` `createdByApiKeyId`).
 
 ### 3.15 Instance Deleter — `ProcessStepInstanceDeleterSettings` (`stepType = instanceDeleter`)
-Formu (ve seçime göre ilişkili formları) siler (davranış → `§3.10`).
+Formu (ve seçime göre ilişkili formları) siler (davranış → `../../service-settings/process-step.md §3.10`).
 
 | Alan | Tip | Açıklama |
 |---|---|---|
@@ -294,8 +294,8 @@ Formu (ve seçime göre ilişkili formları) siler (davranış → `§3.10`).
 |---|---|
 | `triggerProcessStep` | Tetiklenecek alt-servis/adım seçimi; detay **sonra** → `../../todo.md`. |
 | `formRedirect` | Karşılaştırma + açılacak var-olan form; detay **sonra**. |
-| `subProcessStart` | **Ayara ihtiyaç yok** — ayrı özelliği yok; tetikleme kaynağı webhook / iç tetikleme (davranış → `§3.20`). |
-| `subProcessEnd` | **Ayara ihtiyaç yok** — alt sürecin çıkış düğümü; kol burada sonlanır (davranış → `§3.21`; Süreç Bitişi'nin aksine bitiş-sonrası erişim ayarı yoktur). |
+| `subProcessStart` | **Ayara ihtiyaç yok** — ayrı özelliği yok; tetikleme kaynağı webhook / iç tetikleme / **ServiceTrigger (associate)** (davranış → `../../service-settings/process-step.md §3.20`). |
+| `subProcessEnd` | **Ayara ihtiyaç yok** — alt sürecin çıkış düğümü; kol burada sonlanır (davranış → `../../service-settings/process-step.md §3.21`; Süreç Bitişi'nin aksine bitiş-sonrası erişim ayarı yoktur). |
 
 ### 3.17 Üst Form Kullanıcı — `ProcessStepParentInstanceUserSettings` (`stepType = parentInstanceUser`)
 Aksiyon-onayına giden human-task adım; **atananları ve görüntüleme profilini üst formdan (parent instance) devralır**
@@ -314,7 +314,7 @@ Aksiyon-onayına giden human-task adım; **atananları ve görüntüleme profili
 ## İlişkiler
 - **N – 1** → `Organization` (`organizationId`), `Service` (`serviceId`).
 - **1 – N** ← `ProcessStepAction` (`processStepId`); ayrıca `ProcessStepAction.targetProcessStepId` → bu model (graf topolojisi).
-- `settings` içindeki referans id'ler (`propertyId`, `organizationUserGroupId`, `selectedTimerProcessStepId` …) **mantıksal**
+- `settings` içindeki referans id'ler (`propertyId`, `userGroupId`, `selectedTimerProcessStepId` …) **mantıksal**
   referanstır; DB FK'si yoktur, uygulama katmanında doğrulanır (§2).
 
 ## Notlar / açık noktalar

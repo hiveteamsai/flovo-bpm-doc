@@ -79,7 +79,7 @@ Mevcut **15 adım tipi** (biri, `atama`, enum'da tanımlı ama **kullanılmayan*
 **✏️ Yeniden adlandırılan**
 - **Function → HTTP Request** (+ yeni `async` ayarı; query/template/header/body parametreleri explicit). **`resource → endpoint`**,
   **`method` (string) → `HttpMethod` enum**, `returns` **kaldırıldı**, parametreler **`DynamicParameter`** (Bildirim ile ortak alt-model).
-- **Adım ayar alanları:** (Kullanıcı) `stableUserId → fixedUserId`; (Kullanıcı Grubu) `accountUserGroupId → organizationUserGroupId`,
+- **Adım ayar alanları:** (Kullanıcı) `stableUserId → fixedUserId`; (Kullanıcı Grubu) `accountUserGroupId → userGroupId`,
   `dynamicUserListFieldId → dynamicUserListPropertyId`; (Timer) `WorkStyle → TimerCalculationType`.
 
 **🔧 Adım ortak yapısı (`ProcessStepDto`) değişiklikleri**

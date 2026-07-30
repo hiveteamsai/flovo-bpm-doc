@@ -18,7 +18,7 @@ yürütür. Her adım, **kontrol kendisine geldiğinde** kendi işini yapar; iş
 ilerleyeceği **aksiyon ile birlikte** bir sonraki adıma taşır (→ `service-settings/process-step-action.md` §2 veri aktarım modeli).
 Adımlar iki türdür: **otomatik (sistem) adımları** (HTTP Request, Switch, Karşılaştırma, Flovo AI, Değer Atama,
 Timer...) işlerini yapıp **uygun aksiyonla kendiliğinden** ilerler; **insan-tetiklemeli (human task) adımları**
-(Kullanıcı, Kullanıcı Grubu) süreci **durdurur**, formu atanan kullanıcıların **aksiyonuna** bırakır.
+(Kullanıcı, Kullanıcı Grubu, Üst Form Kullanıcı) süreci **durdurur**, formu atanan kullanıcıların **aksiyonuna** bırakır.
 
 ---
 
@@ -149,14 +149,14 @@ sonraki adıma ilerler; insan beklemez:
 | **Değer Atama** | işini yapar, ilerler |
 | **Timer** | süre dolunca **default action** |
 | **Bildirim** | bildirimi atar, ilerler |
-| **Processing** | frontende form/response döner; **manuel aksiyon beklemeden** `default` ile ilerler |
+| **Processing** | frontende form/response döner; **`default` kodlu `autoAction` varsa** onunla otomatik ilerler, **yoksa** bu adımda **bekler** (webhook/aksiyon gelene dek) |
 | **Instance Creator · Süreç Adımı Tetikleme · Custom ID Creator · Timer Start/End** | işini yapıp ilerler |
 | **Silme (Instance Deleter) · Yönlendirme (Form Yönlendirme)** | işini yapar; **giden aksiyonu varsa** ilerler, **yoksa kol burada sonlanır** (terminal olabilir → §4.4) |
 
 **B) İnsan-tetiklemeli (human task) adımları** — süreç burada **durur ve bekler**; form **"aksiyon alınabilir"**
 hâle gelir:
-- **Kullanıcı / Kullanıcı Grubu** adımları. _(**Processing** de frontende form/response döndürür ama **beklemez**;
-  manuel aksiyon almadan `default` ile otomatik ilerler → A grubu. Krş. §6.1.)_
+- **Kullanıcı / Kullanıcı Grubu** adımları. _(**Processing** frontende form/response döndürür; **`default` kodlu `autoAction` varsa**
+  beklemeden ilerler (A grubu), **yoksa** burada **bekler** (B grubu — webhook/aksiyon gelene dek). Krş. §6.1.)_
 - **Üst Form Kullanıcı** adımı (alt-servis) — Kullanıcı/Kullanıcı Grubu gibi bekler, **fakat** atananları ve görüntüleme
   profilini **kendi ayarında tutmaz**: bağlı olduğu **üst formun (parent instance)** güncel atananlarını (`InstanceAwaitingUser`)
   ve **`code`-eşleşen** görüntüleme profilini **anlık** devralır (→ `service-settings/process-step.md` §3.22).
@@ -221,7 +221,9 @@ while adım bir BİTİŞ düğümü değilse:                   # Süreç Bitiş
 - **Paralel dallanma / eşzamanlı kollar** var mı? (Şimdiye kadar anlatım **tek aktif adım / doğrusal-dallı**
   ilerleme; n8n'in çok-girdili "join/senkronizasyon"unun Flovo karşılığı tanımlı değil.)
 - Bir adım **aynı anda birden çok sonraki adımı** tetikleyebilir mi, yoksa her zaman tek `action` → tek hedef mi?
-- **Alt servisler (Form List)** ana süreçle eşzamanlı mı yürür, yoksa Süreç Adımı Tetikleme ile mi sürülür?
+- **Alt servisler (Form List)** ana süreçle eşzamanlı mı yürür? _(Kısmen netleşti: **ServiceTrigger** ilişki değişiminde
+  alt-servisin alt sürecini tetikler — §5.3; **Üst Form Kullanıcı** ile alt-servis üst formun atananlarını devralır. Eşzamanlı
+  **join/senkronizasyon** hâlâ açık.)_
 
 ---
 
@@ -237,8 +239,18 @@ while adım bir BİTİŞ düğümü değilse:                   # Süreç Bitiş
 ### 5.2 — Zaman-tabanlı tetikleme
 - **Timer** adımı (→ `service-settings/process-step.md` §3.7) süreçten bağımsız, **cron-benzeri** dinamik süre tanımlar; süre
   dolunca **default action** ile ilerler. **Timer Start / Timer End** ile yaşam döngüsü yönetilir.
-> _(Açık: olay-tabanlı (webhook/mesaj) ve alt-süreç tetikleme; çok-örneklilikte "en-fazla-bir-kez" / lider
-> seçimi — n8n dersi 3 → §12.)_
+> _(**ServiceTrigger** olay-tabanlı (ilişki değişimi) ve timer tetiklemeyi sağlar → §5.3. Açık kalan: **webhook/mesaj** olay
+> tetikleme + çok-örneklilikte "en-fazla-bir-kez" / lider seçimi — n8n dersi 3 → §12.)_
+
+### 5.3 — Olay/otomatik tetikleme (ServiceTrigger)
+Bir servise bağlı **ServiceTrigger**'lar akıştan bağımsız **otomatik** çalışır (→ `models/service-settings/service-trigger.md`):
+- **`whenAddedAssociate` / `whenRemoveAssociate`** — servisin **ilişki alanı** (Form List / `isAssociatedCombobox` Combobox)
+  değişince (`AssociatedInstance` yazımı/silmesi; **DB-katmanı çekirdek** tespiti) **hedef instance'ın `subProcessStart`'ını**
+  tetikler; parametre kaynağı ilişkiyi kuran üst form (`associatedInstanceId`), yürütme hedefi işaret edilen form (`instanceId`).
+- **`timer`** — `cronExpression`'a göre hedef servisin **`processStart`**'ını çalıştırıp **yeni bağımsız bir ana süreç** başlatır.
+- **`async`** ile tetikleyen işlem beklenir/beklenmez (bekleme **tetiklendiği yerde**).
+> Böylece bir formdaki **ilişki değişikliği** veya bir **zamanlama**, süreci **akıştan bağımsız** tetikler. Alt-süreç mekaniği
+> → `service-settings/process-step.md` §3.20.
 
 ---
 
@@ -249,8 +261,9 @@ while adım bir BİTİŞ düğümü değilse:                   # Süreç Bitiş
 form **"aksiyon alınabilir"** hâle gelir, atanan kullanıcıların **bekleyen formlar** listesinde görünür ve
 süreç, kullanıcı bir **manuel / eventForm aksiyonu** tetikleyene kadar **durur**. Süreç state'i **kalıcılaştırılıp
 günlerce** bekleyebilmelidir (→ §8; n8n dersi 8: kalıcılaştır-ve-devam-et).
-> **Processing** bir bekleme noktası **değildir**: frontende form/response döndürür (§6.3) ama manuel aksiyon
-> beklemeden **`default`** ile otomatik ilerler (→ `service-settings/process-step.md` §3.18).
+> **Processing** — otomatik ilerlemesi **opsiyoneldir:** adımda **`default` kodlu `autoAction`** aksiyonu **varsa** manuel
+> aksiyon beklemeden onunla otomatik ilerler (bekleme noktası değildir); **yoksa** frontende form/response döndürüp bu adımda
+> **bekler** — ilerleme dış **webhook**/başka aksiyonla olur (ör. `sampleProcess/integration`) (→ `service-settings/process-step.md` §3.18).
 
 ### 6.2 — Zaman Aşımı (Timeout)
 Kullanıcı/grup adımlarında **timeout** tanımlanabilir; süre dolunca:
@@ -263,10 +276,10 @@ Hesaplama tipleri: **çalışma takvimine göre** (iş günü/saat) · **normal 
 
 ### 6.3 — Aksiyon tetikleme isteğine response (form bilgileri)
 Kullanıcı bir aksiyonu **manuel** tetiklediğinde frontend bir **HTTP request** gönderir. Süreç, bu aksiyonun ardından
-**Kullanıcı · Kullanıcı Grubu · Processing · Süreç Bitişi** adımlarından birine geldiğinde, **form bilgileri** bu
+**Kullanıcı · Kullanıcı Grubu · Üst Form Kullanıcı · Processing · Süreç Bitişi** adımlarından birine geldiğinde, **form bilgileri** bu
 **tetikleme isteğinin response'unda** kullanıcıya geri döner.
 
-> Yani bu **dört adım** = sürecin **kullanıcıya form döndürdüğü** duraklardır (formun gösterileceği adımlar). Processing'de
+> Yani bu **beş adım** = sürecin **kullanıcıya form döndürdüğü** duraklardır (formun gösterileceği adımlar). Processing'de
 > **`showLoading`** ile form "yükleniyor" gösterilip giriş engellenebilir (→ `service-settings/process-step.md` §3.18). Frontende ek
 > **veri itme**, **Bildirim**'in parametre seçeneğiyle de yapılabilir (→ `service-settings/process-step.md` §3.6).
 

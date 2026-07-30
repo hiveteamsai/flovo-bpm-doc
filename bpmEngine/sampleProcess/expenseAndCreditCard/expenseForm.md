@@ -10,7 +10,7 @@
 ## Ana Süreç Diyagramı
 ```mermaid
 flowchart LR
-  start([Başlangıç]) -->|Form Oluştur · manual| fc[Form Creater · Instance Creator]
+  start([Başlangıç]) -->|Form Oluştur · manual| fc[Form Creator · Instance Creator]
   fc -->|default · Taslak| user[Kullanıcı]
   user -->|Sil · manual| del[Form Sil · Instance Deleter]
   user -->|Gönder · manual · Yönetici Onayında| mgr[Yönetici]
@@ -23,7 +23,7 @@ flowchart LR
 | # | Adım | Tip | Rol |
 |---|---|---|---|
 | 1 | Başlangıç | Süreç Başlangıcı | Form manuel oluşturulur |
-| 2 | Form Creater | Instance Creator | Masraf formu instance'ı üretir |
+| 2 | Form Creator | Instance Creator | Masraf formu instance'ı üretir |
 | 3 | Kullanıcı | Kullanıcı (human task) | Formu doldurur, masraf ekler; gönderir veya siler |
 | 4 | Form Sil | Instance Deleter | Taslağı siler (terminal kol) |
 | 5 | Yönetici | Kullanıcı (human task) | Yönetici onayı |
@@ -34,8 +34,8 @@ flowchart LR
 ## Aksiyonlar (taslak)
 | Kaynak adım | Aksiyon | actionType | Hedef adım | Durum (changeStatus) |
 |---|---|---|---|---|
-| Başlangıç | Form Oluştur | `manual` | Form Creater | — |
-| Form Creater | default | `autoAction` | Kullanıcı | Taslak |
+| Başlangıç | Form Oluştur | `manual` | Form Creator | — |
+| Form Creator | default | `autoAction` | Kullanıcı | Taslak |
 | Kullanıcı | Sil | `manual` | Form Sil | — |
 | Kullanıcı | Gönder | `manual` | Yönetici | Yönetici Onayında |
 | Yönetici | Onayla | `manual` | Muhasebe | Muhasebe Onayında |
@@ -55,7 +55,7 @@ flowchart LR
 
 | # | İzlenen alan | Tetikleme | `businessRuleActionType` | Davranış |
 |---|---|---|---|---|
-| **İK-1** | `creditCardStatement` | Form List'e instance eklendiğinde | `setViewForProperties` | Alanın **`enable = false`** yapılır → **1'den fazla** ekstre eklenmesi önlenir (**max 1**). |
+| **İK-1** | `creditCardStatement` | Form List'e instance eklendiğinde | `setViewForProperties` | Alanın **`enabled = false`** yapılır → **1'den fazla** ekstre eklenmesi önlenir (**max 1**). |
 | **İK-2** | `creditCardStatementId` | `creditCardStatement`'a instance eklendiğinde | `assignValueToProperty` | Eklenen **ilk** ekstre instance'ının `creditCardStatementId` alan değeri bu textbox'a **yazılır**. |
 
 ## ServiceTrigger (otomatik tetikleyiciler)
@@ -66,7 +66,7 @@ flowchart LR
 | serviceTriggerType | targetService | targetPropertyId | targetProcessStarter (`subProcessStart`) | async | parameters |
 |---|---|---|---|---|---|
 | `whenAddedAssociate` | Masraf | `expenses` | Forma Ekle Başlangıcı | `false` | — |
-| `whenRemoveAssociate` | Masraf | `expenses` | Formdan Kaldırma Başlangıcı | `false` | — |
+| `whenRemoveAssociate` | Masraf | `expenses` | Formdan Çıkart Başlangıcı | `false` | — |
 
 ## Notlar / açık noktalar
 - **Masraf Tamamlandı Aksiyon Tetikleme** = `triggerProcessStep` (akış-üzeri); tamamlanan masraf formunda bir alt süreç/

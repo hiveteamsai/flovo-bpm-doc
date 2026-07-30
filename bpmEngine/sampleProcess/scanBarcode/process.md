@@ -12,7 +12,7 @@ form** oluşturulur. Karar, müşteri sunucusunun yanıtındaki **`response.acti
 flowchart LR
   start([start · Barkod Başlangıç]) -->|scanBarcode / enterBarcode| lookup[lookup · Barkod Sorgula · HTTP Request]
   lookup -->|createForm| fc[createForm · Barkodlu Form Oluştur]
-  lookup -->|yonlendir| redir[redirect · Var Olan Formu Aç · Form Yönlendirme]
+  lookup -->|yonlendir| redirect[redirect · Var Olan Formu Aç · Form Yönlendirme]
   fc -->|default| user[user · Form Detayı · Kullanıcı]
 ```
 
@@ -35,7 +35,7 @@ olarak taşınır.
 
 ---
 
-### 2. Barkod Sorgula (`lookup`) — HTTP Request (Function)
+### 2. Barkod Sorgula (`lookup`) — HTTP Request
 **Görev:** Barkodu müşteri sunucusuna sorup, bu barkodla **var olan form olup olmadığını** öğrenmek ve sonuca göre dallanmak.
 **Bu adıma gelen parametre:** `parameters: { barcode }`.
 **Ayarlar ve çalışma:**

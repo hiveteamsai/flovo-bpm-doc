@@ -92,7 +92,7 @@ ProcessInstance (id; createdByUserId → User · createdByApiKeyId → ApiKey[ge
 | Service | `solutionId` | Solution.id | N–1 | organizasyon dolaylı (solution üzerinden) |
 | ServiceTrigger | `serviceId` | Service.id | N–1 | kaynak servis (olay bunun instance'larında izlenir) |
 | ServiceTrigger | `targetServiceId` | Service.id | N–1 | tetiklenecek hedef servis |
-| ServiceTrigger | `targetStarterProcessStepId` | ProcessStep.id | N–1 | `timer` → `processStart`, associate → `subProcessStart`; `serviceId == targetServiceId` |
+| ServiceTrigger | `targetStarterProcessStepId` | ProcessStep.id | N–1 | `timer` → `processStart`, associate → `subProcessStart`; **değişmez:** `ProcessStep(targetStarterProcessStepId).serviceId == targetServiceId` (hedef **adımın** servisi = hedef servis) **ve** `stepType == (timer ? processStart : subProcessStart)` |
 | ServiceTrigger | `targetPropertyId` | Property.id | N–1 | izlenen ilişki alanı (associate tipi); null olabilir; `serviceId` ile aynı serviste |
 | Translation | `organizationId` | Organization.id | N–1 | `null` = ortak (Flovo) |
 | Style | `organizationId` | Organization.id | N–1 | `null` = sistem stili (salt-okunur) |
@@ -153,7 +153,7 @@ ProcessInstance (id; createdByUserId → User · createdByApiKeyId → ApiKey[ge
 > **Instance (doldurulmuş form) artık modellendi** → `processInstances/` (ProcessInstance · Instance · ProcessStepInstance · InstanceAwaitingUser ·
 > AssociatedInstance). 🟢 TANIMLI — yalnız `Instance` **property value depolaması** açık (→ `../todo.md`).
 
-> **Not:** **User** ve **UserGroup** artık modellendi (→ §1 "Organizasyon ayarları"). `organizationUserGroupId` /
+> **Not:** **User** ve **UserGroup** artık modellendi (→ §1 "Organizasyon ayarları"). `userGroupId` /
 > `actionDisplayAuthorizedUserGroupId` gibi BPM referansları `UserGroup`'a, kullanıcı atamaları `User`'a bağlanır.
 
 ---
@@ -178,7 +178,7 @@ ProcessInstance (id; createdByUserId → User · createdByApiKeyId → ApiKey[ge
 - **Organizasyon ayarları (yapısal veri):** eski "Account Settings" DTO'larından türetildi; tümü **`organizationId` (int)**
   ile kiracıya bağlı (`accountId` string→int; `account*`→`organization*`; Türkçe alanlar İngilizceye normalize; **Title→Profession**).
   **Company** ve **User** merkez düğümlerdir. BPM tüketimi: **User/UserGroup** → onay merci/atama · **WorkingSchedule+VacationDay**
-  → Timer/zaman aşımı · **Department/Profession** → yönetici atama tipleri · **Position/Staff** → organizasyonel görev yeri +
+  → Timer/zaman aşımı · **Department** → departman yöneticisi ataması · **Profession** → kullanıcı ünvanı + ek nitelik (`RelationalType=professions`) · **Position/Staff** → organizasyonel görev yeri +
   personel slotu (1 kadro ↔ 1 kullanıcı; kullanıcı pozisyonu `Staff.userId` üzerinden) · **CostCenter/CreditCard** → masraf.
 - **Organizasyon ayarları — `active` / `deleted`:** `active` (eski `status`) + `deleted` bulunan master-veri modellerinde
   (Company · Department · Profession · Position · User · UserGroup · AdditionalQualification · CostCenter · WorkerLevel · WorkingSchedule · CreditCard) **BPM workflow motoru
@@ -198,7 +198,7 @@ ProcessInstance (id; createdByUserId → User · createdByApiKeyId → ApiKey[ge
   `...QualificationValue.comboboxTranslationCode` (QualificationItem'dan).
 - **Yetkilendirme:** `Organization.adminUserIds` (adminler — en az 1 aktif; tüm yetkiler + config'i düzenler) +
   **4 grup alanı** (`impersonationUserGroupId`·`organizationSettingsUserGroupId`·`serviceSettingsUserGroupId`·`viewAllReportsUserGroupId`;
-  her biri **tek** `UserGroup`). Eski `User.authorizationLevel` **kaldırıldı** → `../organization-settings/permissions.md`.
+  her biri **tek** `UserGroup`). Yetki **org-bazlı** (admin + grup) **dinamik** → `../organization-settings/permissions.md`.
 
 ---
 

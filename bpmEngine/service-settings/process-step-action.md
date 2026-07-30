@@ -141,7 +141,10 @@ ilerletir — async HTTP Request'in (→ `process-step.md` §3.2) **geri-dönü�
 ### 3.7 — `autoAction` (Autoaction)
 **Kullanıcı eylemi olmadan otomatik** tetiklenen aksiyon (örn. adıma gelince / koşul sağlanınca). Otomatik adımların
 "kendiliğinden ilerleme"sini aksiyon düzeyinde ifade eder.
-> _(Detaylandırılacak: tetikleme koşulu, `default` ile ilişkisi.)_
+> **`default` ile ilişkisi (Processing):** **Processing** adımının otomatik ilerlemesi **opsiyoneldir** — adımda **`default` kodlu
+> bir `autoAction`** varsa manuel aksiyon beklenmeden onunla ilerler; **yoksa** adım **bekler** (webhook/başka aksiyon gelene dek
+> → `process-step.md` §3.18). _(Diğer otomatik adımlar — Flovo AI, HTTP Request vb. — zaten `default`/`onFail` ile ilerler.)_
+> _(Detaylandırılacak: genel tetikleme koşulu ifadesi.)_
 
 ---
 

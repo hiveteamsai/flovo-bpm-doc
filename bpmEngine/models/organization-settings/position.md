@@ -1,10 +1,6 @@
 # Model — Position (Pozisyon — organizasyon ayarı)
 
-> **Durum:** 🟡 TASLAK — eski uygulama DTO'sundan türetildi.
-> **Kaynak DTO:** `../../research/current-flovo-bpm-engine/organizations/positions.md` (`AccountPositionDto` · `AccountStaffDto`).
-> **Adlandırma:** Eski "Pozisyon/Position" → **`Position`**; eski "Kadro/Staff" (`AccountStaffDto`) → **`Staff`** (alt model).
-> **Dönüşüm:** `account*`→`organization*`; `accountId` (string) → **`organizationId` (int)**; `kod`/`tanim`→`code`/`definition`;
-> `selectedCompanyId`→`companyId`; `status` (bool)→`active`; `sycnronizationStatus`→`synchronizationStatus`; `accountStaffs`→`staff` (alt model).
+> **Durum:** 🟡 TASLAK
 > **Amaç:** Organizasyon şemasındaki **fiili görev yeri** tanımı (örn. "Satış Müdürlüğü"). Bir **şirkete** bağlıdır ve altında
 > somut personel slotları (**Staff / kadro**) tutar.
 

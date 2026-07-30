@@ -3,7 +3,6 @@
 > **Durum:** 🟢 TANIMLI (alanlar netleşti)
 > **Amaç:** Bir iş akışında **tek bir süreç adımının çalıştırılması**. Hangi adımın, hangi aksiyonla, kim/ne tarafından,
 > ne zaman tetiklendiğinin runtime kaydı.
-> **Eski karşılığı:** `ServiceInstanceRequests` (isim eşlemesi → `../../research/compare/new-vs-current-names.md` §15.1).
 
 ## Alanlar
 | Alan | Tip | Anahtar | Açıklama / amaç |
@@ -42,8 +41,8 @@ Adım **bir aksiyon tetiklenerek** ilerlediğinde şu alanlar birlikte dolar:
 - **Bağımsız alt süreç & `processStepId`:** Dışarıdan (webhook / Customer API) veya **Süreç Adımı Tetikleme** ile başlayan
   bağımsız alt süreçlerin giriş düğümü bir **süreç adımıdır** (**Alt Süreç Başlangıcı** → `../../service-settings/process-step.md`
   §3.20); bu sayede alt süreç yürütmesi de **geçerli bir `processStepId` ile** kaydedilir (webhook'un bir adıma bağlı
-  olmama sorunu çözüldü). Alt süreç ana süreçten **bağımsız, yeni bir `ProcessInstance`** olarak çalışır (`processInstanceId` = o yeni akış;
-  `ProcessInstance.parentProcessInstanceId` = tetikleyen ana süreç → `process-instance.md`).
+  olmama sorunu çözüldü). Alt süreç **yeni bir `ProcessInstance`** olarak çalışır (`processInstanceId` = o yeni akış;
+  `ProcessInstance.parentProcessInstanceId` = alt sürecin koştuğu **hedef/host instance'ın ana süreci** — **tetikleyen** değil → `process-instance.md`).
 - **`ActionTransfer`** = aksiyonla sonraki adıma taşınan **veri aktarım paketi** (`parameters`/`changeList`/`action`);
   `processStepActionParameter` bu paketin JSON kaydıdır → `../../service-settings/process-step-action.md` §2.
 - `atDelegateUserId` ↔ yetkilendirme **impersonation/vekalet** ilişkisi → `../../organization-settings/permissions.md`.

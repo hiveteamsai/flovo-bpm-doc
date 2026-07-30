@@ -18,7 +18,7 @@
 |---|---|
 | **Başlangıç / Bitiş** | Süreç Başlangıcı · **Alt Süreç Başlangıcı** · Süreç Bitişi · **Alt Süreç Bitişi** |
 | **İnsan görev (human task)** | Kullanıcı · Kullanıcı Grubu · **Üst Form Kullanıcı** (atananları/görüntülemeyi **üst formdan** devralır → §3.22) |
-| **Otomatik / sistem** | HTTP Request · Flovo AI · Değer Atama · Karşılaştırma · Switch · Bildirim · Custom ID Creator · **Processing** (frontende form döner ama `default` ile otomatik ilerler → §3.18) |
+| **Otomatik / sistem** | HTTP Request · Flovo AI · Değer Atama · Karşılaştırma · Switch · Bildirim · Custom ID Creator · **Processing** (`default` kodlu `autoAction` varsa otomatik ilerler, yoksa bekler → §3.18) |
 | **Form & alt-servis** | Instance Creator · Instance Deleter · Form Yönlendirme · Süreç Adımı Tetikleme |
 | **Zamanlayıcı** | Timer · Timer Start · Timer End |
 
@@ -75,7 +75,7 @@ Aksiyon türleri: **`manual` · `eventForm` · `takePhoto` · `selectFile` · `s
 > human task) · **alt servis** (form altındaki ilişkili süreç/form → `properties.md` §3.13 Form List).
 >
 > **`default action` hangi adımlarda var?** **Her adımda değildir.** İşini yapıp **tek yolla** ilerleyen otomatik
-> adımlarda bulunur: **Değer Atama · HTTP Request** (response'ta `action` dönmezse / `async`) **· Processing · Bildirim ·
+> adımlarda bulunur: **Değer Atama · HTTP Request** (response'ta `action` dönmezse / `async`) **· Processing** (koşullu: `default autoAction` varsa; yoksa bekler → §3.18) **· Bildirim ·
 > Timer Start / Timer End · Custom ID Creator** vb. **Birden fazla çıkışı** olan adımlarda ise ilerleme aksiyonu
 > **adıma-özel / dinamik** belirlenir: **Karşılaştırma** → koşul `true` ise `true`, değilse `false` aksiyonu · **Switch** →
 > seçilen alanın değerine **eşleşen `code`'lu** aksiyon (eşleşme yoksa **default**). _(Motor tarafı → `../flovo-bpm-engine.md` §4.3.)_
@@ -242,7 +242,7 @@ Süreci başlatan · **Sabit kullanıcı** (`fixedUserId`) · **Kullanıcının 
 ### 3.16 — Kullanıcı Grubu
 **Özet:** **Birden fazla kullanıcıya** form, aksiyon alınabilir durumda iletilir; bunlardan **biri** manuel aksiyon alarak ilerletir.
 
-**Grup belirleme yöntemi (`userGroupType`):** **Sabit kullanıcı grubu** (`organizationUserGroupId`) · **Dinamik kullanıcı
+**Grup belirleme yöntemi (`userGroupType`):** **Sabit kullanıcı grubu** (`userGroupId`) · **Dinamik kullanıcı
 listesi** (form property'sinden) · **Dinamik kullanıcı grubu**.
 **Diğer ayarlar:** görüntüleme profili · bildirim · timeout.
 > _(İlk fazda **grup "hepsi onaylar" eşiği yok**: gruba iletilen formda **bir** üye aksiyon alınca süreç ilerler.)_
@@ -251,14 +251,14 @@ listesi** (form property'sinden) · **Dinamik kullanıcı grubu**.
 **Özet:** Sürecin **son adımıdır**; kimsenin onayında beklemez, sürecin **bittiği** anlamına gelir.
 
 **İstisna — yetkili geri-taşıma (re-open):** Bu adıma da **aksiyonlar bağlanabilir**; istisna durumlar için, **yalnız
-yetkili kullanıcı grupları** (`organizationUserGroupIds`) bu aksiyonları **görüntüleyip tetikleyebilir**. Bir aksiyon
+yetkili kullanıcı grupları** (`userGroupIds`) bu aksiyonları **görüntüleyip tetikleyebilir**. Bir aksiyon
 tetiklendiğinde süreç kapanmış sayılmaz — aksiyonun **`targetProcessStepId`**'sindeki **farklı bir süreç adımına**
 ilerler. Bu, **aynı `ProcessInstance` üzerinde** yeniden başlatmadır (yeni çalıştırma **açılmaz**).
 > **Örnek:** Süreç Bitişi'ne **"ters kayıt"** aksiyonu eklenir; hedefi (**`targetProcessStepId`**) **muhasebe** adımıdır.
 > Yetkili grup bu aksiyonu görüp tetiklediğinde süreç **muhasebe** adımına ilerler.
 
 **Erişim:** **raporlardan** veya **daha önce aksiyon alınan form listesinden**.
-**Ayarlar:** `processViewProfileId` (bitişte görüntüleme profili) · `organizationUserGroupIds` (bitiş sonrası erişip
+**Ayarlar:** `processViewProfileId` (bitişte görüntüleme profili) · `userGroupIds` (bitiş sonrası erişip
 geri-taşıma aksiyonu **alabilecek** gruplar).
 > Motor tarafı: BİTİŞ düğümü yürütme döngüsünü sonlandırır; geri-taşıma, yetkilinin **manuel aksiyonu** ile aynı instance'ta
 > **yeniden başlar** (→ `../flovo-bpm-engine.md` §4.4).
@@ -267,9 +267,13 @@ geri-taşıma aksiyonu **alabilecek** gruplar).
 **Özet:** Form, **bir kullanıcıya** (Kullanıcı/Kullanıcı Grubu gibi) atanır; o kullanıcı bunu **"bu işlemin tamamlanmasını
 bekleyenler"** listesinde görür. Form üzerinde **işlem alınamaz**.
 
-**İlerleme (Kullanıcı/Kullanıcı Grubu'ndan farkı):** Bu adıma girildiğinde Kullanıcı/Kullanıcı Grubu gibi **frontende
-form/response döner**; **fakat manuel aksiyon beklenmez** — adım **`default`** aksiyonuyla **otomatik ilerler** (motorda
-otomatik adım gibi davranır → `../flovo-bpm-engine.md` §4.3 / §6.1).
+**İlerleme (opsiyonel otomatik ilerleme):** Bu adıma girildiğinde Kullanıcı/Kullanıcı Grubu gibi **frontende form/response döner.**
+Otomatik ilerleme **opsiyoneldir**:
+- Adımda **`default` kodlu, `actionType = autoAction`** bir aksiyon **varsa** → manuel aksiyon beklenmeden onunla **otomatik ilerler**
+  (motorda otomatik adım gibi davranır; ör. `../sampleProcess/expense` — loading gösterip AI adımına ilerler).
+- **Yoksa** → süreç bu adımda **bekler**; ilerleme, adıma tanımlı bir **webhook** (veya başka) aksiyonun dışarıdan tetiklenmesiyle
+  olur (ör. `../sampleProcess/integration` — aktarım sonucunu webhook ile bekler).
+_(→ `../flovo-bpm-engine.md` §4.3 / §6.1.)_
 
 **Ayar — `showLoading` (bool):** Bu adımdayken formun **detayına girilmesi** veya **alan değerlerinin görüntülenmesi**
 istenmiyorsa **aktif edilir**; frontendde kullanıcı formu **"yükleniyor"** görür (giriş engellenir).
@@ -277,8 +281,8 @@ istenmiyorsa **aktif edilir**; frontendde kullanıcı formu **"yükleniyor"** g�
 - **`false`** → form **normal** görünür; genelde bir **durum güncellemesiyle** kullanıcıya güncel bilgi iletilir. _(örn. `../sampleProcess/integration`.)_
 
 > **Processing'in kendine özel bir "durum değişimi" yoktur.** Durum (status), her adımda olduğu gibi **aksiyon ilerlerken**
-> (`default` aksiyonun `changeStatusId`'si) değişir — **adımın içinde** değil. `false` seçeneğindeki "güncel bilgi",
-> ilerleten `default` aksiyonun `changeStatusId`'siyle iletilir; Processing adımında ayrı bir status alanı tutulmaz.
+> (aksiyonun `changeStatusId`'si) değişir — **adımın içinde** değil. `false` seçeneğindeki "güncel bilgi", adıma
+> **girişini sağlayan** (Processing'e ilerleten) aksiyonun `changeStatusId`'siyle iletilir; Processing adımında ayrı bir status alanı tutulmaz.
 
 ### 3.19 — Form Yönlendirme
 **Özet:** Form **create edilmeden önce**, belli bir **karşılaştırma/işlem** yapılıp **farklı, var olan bir formun**
@@ -298,10 +302,13 @@ PDF geldiğinde bildirim gönderen kol). **Servis başına birden fazla** olabil
 | Nasıl başlar | Manuel (frontend) **veya** webhook aksiyonu | **Tetiklenerek** — webhook / Süreç Adımı Tetikleme (**manuel yok**) |
 | Konum | Ana akış | Ana akıştan **bağımsız** alt akış |
 
-**Nasıl tetiklenir (2 yol):**
+**Nasıl tetiklenir (3 yol):**
 1. **Dış — Webhook:** Uygulama dışından, **Flovo Customer API** ile tetiklenir (örn. müşteri sunucusu işini bitirince).
    "Kim tetikledi" → `ProcessStepInstance.atApiKeyId` (→ `../models/processInstances/process-step-instance.md`).
 2. **İç — Süreç Adımı Tetikleme:** Başka bir sürecin **Süreç Adımı Tetikleme** (§3.5) adımı tarafından tetiklenir.
+3. **Otomatik — ServiceTrigger (associate):** Servisin ilişki alanı (Form List / `isAssociatedCombobox` Combobox) değişince
+   `whenAddedAssociate`/`whenRemoveAssociate` trigger'ı, **hedef instance'ın** `subProcessStart`'ını **akış-dışı** otomatik
+   çalıştırır (→ `../models/service-settings/service-trigger.md`).
 
 **Kısıtlar (alt süreç):**
 - **Bağımsızlık:** Alt süreç ana sürecin **içinde yer almaz**; ana akıştan ayrık kurulur.
@@ -316,8 +323,8 @@ PDF geldiğinde bildirim gönderen kol). **Servis başına birden fazla** olabil
 - Tetikleme **girdisi bir `ActionTransfer` modelidir** (`parameters` · `changeList` · `action` → `process-step-action.md` §2).
   Bu girdi, **`default`** aksiyonu ile **bir sonraki adıma taşınır** (`changeList`, evrensel giriş kuralı gereği adım işini
   yapmadan **önce** forma uygulanır → `../flovo-bpm-engine.md` §4.2).
-- **Yeni `ProcessInstance` (bağımsız çalıştırma):** Tetiklenen alt süreç, ana süreçten **bağımsız, yeni bir `ProcessInstance`** olarak
-  çalışır; `ProcessInstance.parentProcessInstanceId`'ye **tetikleyen ana sürecin `ProcessInstance` id'si** yazılır (→ `../models/processInstances/process-instance.md`).
+- **Yeni `ProcessInstance` (bağımsız çalıştırma):** Tetiklenen alt süreç **yeni bir `ProcessInstance`** olarak
+  çalışır (yeni **Instance/form kaydı** oluşmaz); `ProcessInstance.parentProcessInstanceId`'ye alt sürecin koştuğu **hedef/host instance'ın ana `ProcessInstance` id'si** yazılır (**tetikleyen** süreç değil; instance'a bağ bu zincirle **dolaylı**dır) (→ `../models/processInstances/process-instance.md`).
 > Örn. `../sampleProcess/createPdfAsync`: webhook `parameters: { pdfUrl }` ile `pdfReady` (Alt Süreç Başlangıcı) tetiklenir;
 > **`default`**, `parameters: { instanceId, pdfUrl }`'i `notifyPdf` adımına taşır.
 
@@ -337,7 +344,7 @@ ulaştığında alt süreç yürütmesi **sonlanır** (yürütme döngüsünün 
 
 **Süreç Bitişi'nden (§3.17) farkı:** Alt süreç bağımsız ve yardımcı bir koldur; **kimseyi onayda bekletmez** ve
 **geri-taşıma / re-open** yoktur. Bu yüzden Süreç Bitişi'nin bitiş-sonrası erişim ayarları (`processViewProfileId` /
-`organizationUserGroupIds`) **burada yoktur** — Alt Süreç Bitişi **ayarsızdır**.
+`userGroupIds`) **burada yoktur** — Alt Süreç Bitişi **ayarsızdır**.
 
 **Neden ayrı adım tipi:** Alt Süreç Başlangıcı (§3.20) alt sürecin girişini açık bir süreç adımı yaptı; simetrik
 biçimde Alt Süreç Bitişi de **çıkışı** açık bir düğüm yapar. Böylece "aksiyonu olmayan otomatik adımın kolu ima yoluyla
@@ -405,8 +412,9 @@ hem **sync** hem **performans** açısından pahalıdır. Bu adım, alt-servis k
   gerekiyorsa **Webhook aksiyonu** (`process-step-action.md` §3.6) kullanımı **korunur**. _(Örnek:
   `../sampleProcess/createPdfAsync/process.md` · `../models/processInstances/process-step-instance.md`.)_
 - [x] **Alt süreç yürütmesinin runtime temsili — ÇÖZÜLDÜ:** Bağımsız alt süreç (Alt Süreç Başlangıcı ile başlayan) tetiklenince
-  **ayrı, yeni bir `ProcessInstance`** oluşur; **`ProcessInstance.parentProcessInstanceId`**'ye tetikleyen **ana sürecin `ProcessInstance` id'si** yazılır
-  (ana süreçlerde null). _(../models/processInstances/process-instance.md · process-step-instance.md · index.md)_
+  **ayrı, yeni bir `ProcessInstance`** oluşur (yeni **Instance/form kaydı** oluşmaz); **`ProcessInstance.parentProcessInstanceId`**'ye alt sürecin koştuğu
+  **hedef/host instance'ın ana `ProcessInstance` id'si** yazılır (**tetikleyen** süreç değil; ana süreçlerde null). Instance'a bağ `parentProcessInstanceId`
+  zinciriyle **dolaylı**dır (`ProcessInstance`'a ayrı `instance` alanı eklenmez). _(../models/processInstances/process-instance.md · process-step-instance.md · index.md)_
 
 ---
 

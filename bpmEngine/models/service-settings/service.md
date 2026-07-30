@@ -19,7 +19,7 @@
 Enum tanımı → [`../enums/form-type.md`](../enums/form-type.md). Bir servis, `formType` değerine göre **üç farklı davranış** sergiler:
 
 ### `form` — standart iş süreci (varsayılan)
-- **Akışı vardır**; akış ilerledikçe **`Instance` oluşabilir**.
+- **Akışı vardır**; akış içindeki **Instance Creator** adımlarıyla **`Instance` oluşturulur** (`Instance` yalnız Instance Creator ile oluşur).
 - Oluşan `Instance`'ın **genelde bir sahibi vardır**: **`Instance.creatorUserId` dolu**. Ancak süreç **API/webhook ile
   başlatılıp** (tek bir oluşturan kullanıcı olmadan, ör. bir gruba yönlendirilerek) çalışabilir; bu durumda
   **`creatorUserId` null olabilir** ve başlatan **`ProcessInstance.createdByApiKeyId`** ile izlenir. Yani `form` tipinde

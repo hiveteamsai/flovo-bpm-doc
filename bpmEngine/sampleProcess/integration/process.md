@@ -58,6 +58,8 @@ Geri dönüşte (`transferFail`) hata mesajı kullanıcıya görünür.
 - Kaydın **durumu = "Aktarım Bekleniyor"** olarak güncellenir; aksiyonu tetikleyen kullanıcıya **güncel form bilgileri**
   iletilir (durum etiketiyle).
 - Dışarıdan tetiklenecek **iki Webhook aksiyonu** tanımlıdır (sonuç koluna göre dallanır).
+- **`default` kodlu `autoAction` YOKTUR** → Processing burada **otomatik ilerlemez, bekler**; ilerleme yalnız aşağıdaki
+  webhook'larla olur (Processing'in opsiyonel-otomatik davranışı → `../../service-settings/process-step.md` §3.18).
 **Adımın ürettiği parametre:** — .
 
 **Aksiyonlar:**

@@ -34,7 +34,7 @@ flowchart LR
 **Adımın ürettiği parametre:** `pdfUrl` (response'tan).
 
 **Aksiyonlar:**
-- **`default` (otomatik):** Hedef adım `notifyPdf`. Taşıdığı veri: `parameters: { instanceId, pdfUrl }`.
+- **`default` (otomatik, `mergeParameter = true`):** Hedef adım `notifyPdf`. Taşıdığı veri: `parameters: { instanceId, pdfUrl }` (gelen `instanceId` + üretilen `pdfUrl`; `mergeParameter` ile gelen parametre korunur).
   → Bildirim adımı, mesajı bu parametrelerle (özellikle `pdfUrl`) üretecek.
 - _(Opsiyonel `onFail`: PDF üretimi başarısızsa hata kolu — bu örnekte tanımlanmadı.)_
 
@@ -48,7 +48,7 @@ flowchart LR
 **Adımın ürettiği parametre:** — .
 
 **Aksiyonlar:**
-- **`default` (otomatik):** Hedef adım `pdfReady`. Taşıdığı veri: `parameters: { instanceId, pdfUrl }`.
+- **`default` (otomatik, `mergeParameter = true`):** Hedef adım `pdfReady`. Taşıdığı veri: `parameters: { instanceId, pdfUrl }` (gelen parametreler `mergeParameter` ile bir sonraki adıma taşınır).
 
 ---
 

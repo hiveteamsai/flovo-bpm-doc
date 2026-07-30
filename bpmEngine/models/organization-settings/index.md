@@ -9,7 +9,7 @@
 | [`organization.md`](./organization.md) | Flovo'yu kullanan **kurumu (tenant)** temsil eder; verinin en üst kapsayıcısı. |
 | [`company.md`](./company.md) | Organizasyonun **tüzel kişilikleri** (şirketler); çok-şirket temeli. |
 | [`department.md`](./department.md) | **Hiyerarşik birim** yapısı; "departman yöneticisi" atamalarında kullanılır. |
-| [`profession.md`](./profession.md) | Çalışan **görev/meslek** (ünvan) tanımları; "ünvana göre yönetici" atamaları. |
+| [`profession.md`](./profession.md) | Çalışan **görev/meslek** (ünvan) tanımları; kullanıcıya atanır, ek nitelik (`RelationalType=professions`) ile tüketilir. |
 | [`position.md`](./position.md) | Organizasyonel **görev yeri** (şirkete bağlı) + **Staff (kadro)** alt modeli (1 kadro ↔ 1 kullanıcı). |
 | [`user.md`](./user.md) | Organizasyondaki **kişiler**; BPM onay mercilerinin (kullanıcı/yönetici/…) temeli. |
 | [`user-group.md`](./user-group.md) | **Kullanıcı grubu**; bildirim hedefi, aksiyon görünürlük yetkisi. |
