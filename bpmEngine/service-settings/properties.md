@@ -64,16 +64,25 @@ Tipe-özel ayarlar → §3.
 | `format` | Format (tarih/sayı/maske) |
 | `saveAndRefreshOnAfterChange` | Alanın değeri değişince **kaydet isteği atıp formu yeniler** (refresh) |
 | `backingField` | Gizli/arka-plan alan |
-| `savePropertyToDb` | Veritabanına kaydet |
-| `saveChangeLog` | Değişiklik geçmişi tut |
+| `savePropertyToDb` | Değeri kaynak JSONB'ye (`InstanceValue.data`) kaydet |
+| `saveChangeLog` | Değişiklik geçmişi tut (→ `InstanceValueChange`) |
+| `projectToAttr` | **Fihriste (projeksiyona) yansı** — `true` = değer `InstanceAttr`/`InstanceListItem`'a yazılır (rapor/filtre/sıra/aralık/isim-arama); `false` = yalnız JSONB (eşittir için GIN yeter). Tipik %10–20 `true`. |
 | `state` · `environmentRestriction` · `organizationRestriction` | Durum / kapsam kısıtı |
+
+> **Değer saklama:** `savePropertyToDb` (kaynağa yaz) · `projectToAttr` (fihriste yansı) · `saveChangeLog` (geçmiş) alanları,
+> değerlerin **JSONB kaynak-hakikat + türetilebilir fihrist** (CQRS + Outbox) mimarisini besler. Model + mimari →
+> [`../models/processInstances/instance-value.md`](../models/processInstances/instance-value.md) · `instance-attr.md` · `../research/property-value-storage/form-deger-saklama-v2.html`.
 
 > **Görünürlük/zorunluluk ayrımı:** **Zorunluluk (`required`) / görünürlük (`visible`) / düzenlenebilirlik (`enabled`)**
 > property'de **değil**, **görüntüleme profilinde** tutulur (→ `view-profile.md` §2): *alan = ne olduğu*, *profil = nerede nasıl göründüğü*.
 
 ### 2.4 — Veri kaynağı alanları (seçim alanları için)
 `dataSource` · `dataSourceId` · `dataSourceValue` (dinamik) · `propertyItems` (statik liste — öğe modeli → §2.6) ·
-`propertyTransferParameters` · `lazyLoading` · `manuelEntry` · `isMultiSelect`. _(Kullanımı → §3.3 / §3.7)_
+`propertyTransferParameters` · `lazyLoading` · `manuelEntry` · `isMultiSelect` · `hasTranslation`. _(Kullanımı → §3.3 / §3.7)_
+
+> **`hasTranslation` + etiketli değer (`LabeledValue`):** Kodu ile görünen adı farklı olan seçim değerleri (combobox/radio/
+> key-value…) depoya `{value, display, translationCode}` şekliyle yazılır (rapor isim-araması `InstanceAttr.display`). Statik
+> liste display'i `propertyItems`'ten, dinamik/iş-kuralı listede istekle gelir. → [`../models/processInstances/propertyValuesTemplates/labeled-value.md`](../models/processInstances/propertyValuesTemplates/labeled-value.md).
 
 > **Seçenek kaynağı iki yolla dolar (Combobox / Radiobutton):**
 > 1. **Statik** — ayarlardan eklenen **`propertyItems`** ile (yönetici öğeleri elle tanımlar; öğe modeli → §2.6).
@@ -216,8 +225,10 @@ kullanıcı (creator user), durum (status) vb. **Salt-okunur** akış metadata's
 
 ### 3.15 — `parentProperty` (Parent Property)
 **Düzenlenebilir bir alan değildir.** Bağlı olduğu **parent**'taki (üst süreç/form) hangi alanın forma getirilmesi
-isteniyorsa seçim yapılır; parent'ın **seçilmiş alanının kopyasını** bu alana getirir (salt-okunur yansıma).
-**Modelleme (ilişki → §2.5):** `parentPropertyId` (üst alan) · `refPropertyId` (referans alınan alan) · `relatedPropertyIds`.
+isteniyorsa seçim yapılır; parent'ın seçilmiş alanını **`reflectionMode`'a göre** getirir (salt-okunur yansıma):
+`snapshot` (kopyala+dondur, **vars.**) · `live` (kopyalamaz, okurken join/referans) · `materialized` (kopya + `ReflectionLink`
+ile yayılım). → [`../models/enums/reflection-mode.md`](../models/enums/reflection-mode.md).
+**Modelleme (ilişki → §2.5):** `parentPropertyId` (üst alan) · `refPropertyId` (referans alınan alan) · `relatedPropertyIds` · `reflectionMode`.
 
 ### 3.16 — `userInfo` (User Info)
 **Kullanıcı bilgilerini** forma getirmek için kullanılır — örn. **giriş yapan kullanıcının** adı, e-postası, departmanı,

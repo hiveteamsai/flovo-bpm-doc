@@ -9,6 +9,7 @@
 | Alan | Tip | Anahtar | Açıklama / amaç |
 |---|---|---|---|
 | `id` | int | PK | İlişki kaydı ID'si. |
+| `organizationId` | int | (denormalize) | Kiracı — **RLS/tenant izolasyonu** (RLS Pattern B v2: her tenant-tabloda `organizationId`; DB-seviyesi izolasyon). |
 | `instanceId` | int | FK → Instance.id | İlişkinin **işaret ettiği** (bağlanan) form. |
 | `associatedInstanceId` | int | FK → Instance.id | İlişkiyi **kuran** property'yi (`associatedPropertyId`) **içeren** form. |
 | `associatedPropertyId` | int | FK → Property.id | İlişkiyi kuran property (Form List / Combobox). **`associatedInstanceId`'nin formu/servisi içinde yer alır.** |

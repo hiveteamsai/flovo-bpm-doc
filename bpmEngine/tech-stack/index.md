@@ -28,7 +28,7 @@ AI         : Python AI Service (🟡 post-MVP)
 ### Çekirdek runtime
 | Teknoloji | Rol | Doküman |
 |---|---|---|
-| **PostgreSQL** | Birincil DB & depolama substratı (JSONB source-of-truth, RLS, form_attr projeksiyon) | [`postgresql.md`](./postgresql.md) |
+| **PostgreSQL** | Birincil DB & depolama substratı (JSONB source-of-truth, RLS, instance_attr projeksiyon) | [`postgresql.md`](./postgresql.md) |
 | **Go** | Backend dili & çalışma zamanı (Hexagonal, generic projektör) | [`go.md`](./go.md) |
 | **NATS + JetStream** | Mesajlaşma & **event/outbox omurgası** + realtime | [`nats-jetstream.md`](./nats-jetstream.md) |
 
@@ -58,7 +58,7 @@ AI         : Python AI Service (🟡 post-MVP)
 ## İlişkili tasarım
 
 - **Depolama tasarımı bu yığına bağlı:** [`../research/property-value-storage/`](../research/property-value-storage/index.md)
-  (JSONB source-of-truth = PostgreSQL · outbox→projektör omurgası = NATS + Go · binary = MinIO). `form_attr` uygunluk
+  (JSONB source-of-truth = PostgreSQL · outbox→projektör omurgası = NATS + Go · binary = MinIO). `instance_attr` uygunluk
   değerlendirmesindeki **S2/D9 "NATS stack açık"** notu bu kararlarla **kapandı**.
 - **Karar/karşılaştırma gerekçesi:** [`../research/tech-stack/tech_rating.md`](../research/tech-stack/tech_rating.md) (10 katman puanlama).
 - **Mimari paradigma** (Hexagonal + Bounded Context + Partial Event Sourcing) ayrı bir "teknoloji" değil, `go.md` · `postgresql.md`

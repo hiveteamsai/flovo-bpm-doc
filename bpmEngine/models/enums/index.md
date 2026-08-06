@@ -32,6 +32,7 @@
 | **PropertyType** (kontrol tipi) | `property.md` (`propertyType`) | 18 kontrol tipi (`textbox` · `combobox` · `file` · `formList` …) | [`property-type.md`](./property-type.md) |
 | **KeyboardType** | `property.md` (`keyboardType` — Textbox/Phone) | `default`·`plain`·`text`·`numeric`·`email`·`url`·`telephone` | [`keyboard-type.md`](./keyboard-type.md) |
 | **BarcodeFormat** | `property.md` (`barcodeFormat` — Barcode) | `aztec`·`code39`·`ean13`·`code128`·`dataMatrix`·`qr`·`pdf417`… (10) | [`barcode-format.md`](./barcode-format.md) |
+| **ReflectionMode** | `property.md` (`reflectionMode` — parentProperty) | `snapshot` · `live` · `materialized` | [`reflection-mode.md`](./reflection-mode.md) |
 | **ProcessStepType** (adım tipi) | `process-step.md` (`stepType`) | 22 adım: `processStart`·`httpRequest`·`user`·`userGroup`·`parentInstanceUser`·`notification`·`timer`… `subProcessStart`·`subProcessEnd` | [`process-step-type.md`](./process-step-type.md) |
 | **ProcessStepUserType** | `process-step.md` (Kullanıcı `userType`) | `processStarter`·`fixedUser`·`usersManager`·`departmentManager`·`variableUser` | [`process-step-user-type.md`](./process-step-user-type.md) |
 | **ProcessStepUserGroupType** | `process-step.md` (Kul. Grubu `userGroupType`) | `fixedUserGroup`·`dynamicUserList`·`dynamicUserGroup` | [`process-step-user-group-type.md`](./process-step-user-group-type.md) |

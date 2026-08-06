@@ -35,7 +35,7 @@
 |---|---|---|
 | **organization-settings/** | Kiracıya bağlı **yapısal veri** + **organizasyon havuzu** (eski "Account Settings"): Organization · Company · Department · Profession · Position · User · UserGroup · Translation · Style · Status · Action · CostCenter · WorkerLevel · CreditCard · AdditionalQualification · WorkingSchedule · VacationDay · ProcessTransfer · SchedulerJob. | [`organization-settings/index.md`](./organization-settings/index.md) |
 | **service-settings/** | Bir **Solution/Service** altındaki tasarım modelleri: Solution · Service (`formType`) · ServiceTrigger · Property/PropertyItem · ProcessViewProfile ailesi · ProcessStep · ProcessStepAction · BusinessRule/BusinessRuleCondition. | [`service-settings/index.md`](./service-settings/index.md) |
-| **processInstances/** | Ayarlardan üretilen **çalışma-zamanı (runtime)** kayıtları: ProcessInstance · ProcessStepInstance · Instance · InstanceAwaitingUser · AssociatedInstance. 🟢 TANIMLI. | [`processInstances/index.md`](./processInstances/index.md) |
+| **processInstances/** | Ayarlardan üretilen **çalışma-zamanı (runtime)** kayıtları: ProcessInstance · ProcessStepInstance · Instance · InstanceAwaitingUser · AssociatedInstance **+ değer saklama:** InstanceValue · InstanceAttr · InstanceListItem · InstanceValueOutbox · InstanceValueChange · ReflectionLink **+ `propertyValuesTemplates/`** (tip-bazlı değer şablonları + core LabeledValue). 🟢 TANIMLI. | [`processInstances/index.md`](./processInstances/index.md) |
 | **enums/** | Modellerde kullanılan **enum tanımları** (kanonik değer listeleri; ör. `actionType`, `propertyType`, `formType`). | [`enums/index.md`](./enums/index.md) |
 
 > **Not:** **Organization** kiracının kökü; **Solution · Service** service-settings kırılımının başladığı yerdir
@@ -77,7 +77,15 @@ ProcessInstance (id; createdByUserId → User · createdByApiKeyId → ApiKey[ge
  │        │                 processStepActionId → ProcessStepAction · atUserId/atDelegateUserId → User · atApiKeyId → ApiKey[geçici])
  │        └─< InstanceAwaitingUser (processStepInstanceId; instanceId → Instance · userId → User · userGroupId → UserGroup)
  └─< Instance (processInstanceId; serviceId → Service · creatorUserId → User · statusId → Status)
-      └─< AssociatedInstance (instanceId → Instance · associatedInstanceId → Instance · associatedPropertyId → Property)
+      ├─< AssociatedInstance (instanceId → Instance · associatedInstanceId → Instance · associatedPropertyId → Property)
+      ├─1:1─ InstanceValue     (instanceId [PK=FK]; data jsonb code-keyed · version)          ← kaynak-hakikat (tapu)
+      ├─< InstanceAttr         (instanceId, serviceId, propertyCode; num/text/date/bool · display · translationCode)  ← projeksiyon
+      ├─< InstanceListItem     (instanceId, serviceId, listCode, itemIndex, attrCode; …)       ← projeksiyon
+      ├─< InstanceValueChange  (instanceId; propertyCode · old/newValue · changedByUserId/ApiKeyId · processStepInstanceId)
+      └─< InstanceValueOutbox  (instanceId; serviceId · version · occurred/processedDate)
+
+ReflectionLink (parentInstanceId → Instance · parentPropertyCode · childInstanceId → Instance · childPropertyCode)   ← parentProperty A′ yayılımı
+LabeledValue = değer şekli (tablo değil): {value, display, translationCode} — InstanceValue.data'ya gömülü, Attr/ListItem'a açılır
 ```
 
 ---
@@ -120,6 +128,7 @@ ProcessInstance (id; createdByUserId → User · createdByApiKeyId → ApiKey[ge
 | BusinessRuleCondition | `parentConditionId` | BusinessRuleCondition.id | N–1 | iç içe (recursive) |
 | Translation | `code` | (kod eşleşmesi) | — | FK değil; kaynak modellerin **`translationCode`**'u + `languageCode` + `organizationId` ile çözülür (`translationCode=null` → çeviri es geçilir) |
 | **— İş akışı / çalıştırma (runtime — `processInstances/`) —** | | | | |
+| Tüm runtime modelleri (ProcessInstance · ProcessStepInstance · Instance · InstanceAwaitingUser · AssociatedInstance · InstanceValue · InstanceAttr · InstanceListItem · InstanceValueOutbox · InstanceValueChange · ReflectionLink) | `organizationId` | Organization.id | N–1 | **denormalize** — RLS Pattern B v2 (her tenant-tabloda `organizationId`; DB-seviyesi izolasyon) |
 | ProcessInstance | `createdByUserId` | User.id | N–1 | null olabilir (kullanıcı **ya da** API) |
 | ProcessInstance | `createdByApiKeyId` | ApiKey | N–1 | null olabilir; **ApiKey geçici** |
 | ProcessInstance | `serviceId` | Service.id | N–1 | |
@@ -140,6 +149,25 @@ ProcessInstance (id; createdByUserId → User · createdByApiKeyId → ApiKey[ge
 | InstanceAwaitingUser | `userGroupId` | UserGroup.id | N–1 | |
 | AssociatedInstance | `instanceId` · `associatedInstanceId` | Instance.id | N–1 | formlar arası ilişki |
 | AssociatedInstance | `associatedPropertyId` | Property.id | N–1 | `associatedInstanceId`'nin formundaki property |
+| **— Değer saklama (form değerleri — `processInstances/`) —** | _(organizationId: yukarıdaki konsolide runtime satırında)_ | | | |
+| InstanceValue | `instanceId` | Instance.id | 1–1 | PK=FK; kaynak-hakikat JSONB tapu |
+| InstanceValue | `serviceId` | Service.id | N–1 | partition (HASH) + pruning |
+| InstanceAttr | `instanceId` | Instance.id | N–1 | skaler fihrist (projeksiyon) |
+| InstanceAttr | `serviceId` | Service.id | N–1 | PK parçası + izolasyon |
+| InstanceAttr | `propertyCode` | Property.code | — | **code-keyed** (id-FK değil) |
+| InstanceListItem | `instanceId` | Instance.id | N–1 | liste kalemleri fihristi |
+| InstanceListItem | `serviceId` | Service.id | N–1 | PK parçası + izolasyon |
+| InstanceListItem | `listCode` · `attrCode` | Property.code | — | **code-keyed** (liste + alt-alan) |
+| InstanceValueOutbox | `instanceId` | Instance.id | N–1 | değer-değişim olayı |
+| InstanceValueOutbox | `serviceId` | Service.id | N–1 | projektör metadata + izolasyon |
+| InstanceValueChange | `instanceId` | Instance.id | N–1 | değer geçmişi (append-only) |
+| InstanceValueChange | `serviceId` | Service.id | N–1 | izolasyon/partition |
+| InstanceValueChange | `propertyCode` | Property.code | — | **code-keyed** |
+| InstanceValueChange | `changedByUserId` | User.id | N–1 | null olabilir (kullanıcı **ya da** API) |
+| InstanceValueChange | `changedByApiKeyId` | ApiKey | N–1 | null olabilir; **ApiKey geçici** |
+| InstanceValueChange | `processStepInstanceId` | ProcessStepInstance.id | N–1 | null olabilir (değişime yol açan adım) |
+| ReflectionLink | `parentInstanceId` · `childInstanceId` | Instance.id | N–1 | parentProperty A′ yayılımı |
+| ReflectionLink | `parentPropertyCode` · `childPropertyCode` | Property.code | — | **code-keyed** |
 
 ---
 
@@ -150,8 +178,11 @@ ProcessInstance (id; createdByUserId → User · createdByApiKeyId → ApiKey[ge
 | **ApiKey** (Customer API anahtarı) | `ProcessInstance.createdByApiKeyId`, `ProcessStepInstance.atApiKeyId` | API üzerinden başlatım/tetikleme kimliği (oluşturan `User` değilken "kim yaptı"). **Ad geçici**; Customer API erişim mekanizması kesinleşince doğrulanacak → `../todo.md`. |
 | **ExpenseType / Currency / Tax** | Masraf süreçleri | Masraf tipi, para birimi, vergi — referans dokümanında **kapsam dışı**. _(Position/Staff artık modellendi → `organization-settings/position.md`.)_ |
 
-> **Instance (doldurulmuş form) artık modellendi** → `processInstances/` (ProcessInstance · Instance · ProcessStepInstance · InstanceAwaitingUser ·
-> AssociatedInstance). 🟢 TANIMLI — yalnız `Instance` **property value depolaması** açık (→ `../todo.md`).
+> **Instance (doldurulmuş form) + property value depolaması artık modellendi** → `processInstances/` (ProcessInstance · Instance ·
+> ProcessStepInstance · InstanceAwaitingUser · AssociatedInstance **+ InstanceValue · InstanceAttr · InstanceListItem · InstanceValueOutbox ·
+> InstanceValueChange · ReflectionLink · LabeledValue**). 🟢 TANIMLI. Değer saklama mimarisi (CQRS + Outbox + NATS) →
+> `../research/property-value-storage/form-deger-saklama-v2.html`. _(Açık kalan operasyonel kararlar — rollup, yansıma yayılım
+> sınırları, retention/KVKK — → `../todo.md`.)_
 
 > **Not:** **User** ve **UserGroup** artık modellendi (→ §1 "Organizasyon ayarları"). `userGroupId` /
 > `actionDisplayAuthorizedUserGroupId` gibi BPM referansları `UserGroup`'a, kullanıcı atamaları `User`'a bağlanır.
@@ -165,6 +196,12 @@ ProcessInstance (id; createdByUserId → User · createdByApiKeyId → ApiKey[ge
   `InstanceAwaitingUser`); **`parameter`** onaysız veri-kaynağı (`Instance` oluşur, `creatorUserId`
   **null**, `InstanceAwaitingUser`'a bakılmaz); **`eventForm`** akışsız/`Instance`'sız (pop-up viewprofile → `parameters`;
   `eventForm` actionType ile). Ayrıntı → `service-settings/service.md`.
+- **Değer saklama (CQRS + Outbox + NATS):** Form alan değerleri `Instance`'ta **değil**, ayrı **kaynak-hakikat** tablosunda
+  (`InstanceValue.data` — **JSONB, code-keyed** = `Property.code`) tutulur. `InstanceAttr`/`InstanceListItem` bundan **türetilen,
+  yeniden üretilebilir** projeksiyon fihristleridir (**detay/form ekranı fihriste bakmaz**; rapor/filtre/sıra fihristten). Değer
+  update'i + `InstanceValueOutbox` **tek TX**; arka planda projektör tam-yansıtma (`version` idempotency). `Property` metadata'sı
+  (`code` immutable · `projectToAttr` · `savePropertyToDb` · `saveChangeLog` · `hasTranslation` · `reflectionMode`) yansımayı
+  yönetir. Değer katmanı **code-keyed**tir (id-FK değil). Mimari → `../research/property-value-storage/form-deger-saklama-v2.html`.
 - **Organizasyon havuzu** (Translation/Style/Status/Action) `organization-settings/`'a; **servise bağlı** modeller `service-settings/`'ya karşılık gelir.
 - **ProcessStep / BusinessRule** asıl kapsayıcısı **Service**'tir; `organizationId` kiracı izolasyonu için denormalize edilmiş referanstır (gözden geçirilebilir → `../todo.md`).
 - **Style tüketicileri:** yalnız **Action** ve **Status** (`styleId`). Form alanları bu Style varlığını kullanmaz.

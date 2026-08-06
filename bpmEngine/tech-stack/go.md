@@ -40,7 +40,7 @@ internal/
 **property-value-storage bağı — Go'nun kritik rolü:** Değer saklama mimarisinin senkron omurgası Go'da çalışır:
 
 ```
-form_value UPDATE + outbox_event  →  NATS JetStream  →  [Go idempotent generic projektör]  →  form_attr / form_list_item
+instance_value UPDATE + instance_value_outbox  →  NATS JetStream  →  [Go idempotent generic projektör]  →  instance_attr / instance_list_item
 ```
 
 - **Generic projektör (D9):** tek Go tüketici tüm servisleri besler; alan adı koda gömülü değil, metadata'dan okunur (property-value-storage S11/D9). Goroutine havuzuyla **yatay ölçeklenir** → projection lag (P5) ve 5M/200M ölçekli reproject yükü Go'nun eşzamanlılığıyla karşılanır.
@@ -49,7 +49,7 @@ form_value UPDATE + outbox_event  →  NATS JetStream  →  [Go idempotent gener
 
 ## Konfigürasyon / desen notları
 
-- **`sqlc` derleme-zamanı SQL:** dinamik SQL yerine tip-güvenli üretilmiş sorgular; `form_attr`/`form_list_item` projeksiyon sorguları burada tanımlı.
+- **`sqlc` derleme-zamanı SQL:** dinamik SQL yerine tip-güvenli üretilmiş sorgular; `instance_attr`/`instance_list_item` projeksiyon sorguları burada tanımlı.
 - **`pgxpool` + PgBouncer:** uygulama havuzu + PgBouncer transaction-mode (bkz. `postgresql.md`).
 - **RLS ile uyum:** her sorgu `organization_id` (tenant) bağlamı taşır; oturum değişkeni RLS Pattern B v2 için ayarlanır.
 - **Partial Event Sourcing:** `workflow_events` append-only tablosu + Aggregate/Apply/Replay Go domain katmanında modellenir (optimistic locking).

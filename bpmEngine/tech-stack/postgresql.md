@@ -29,22 +29,25 @@ PostgreSQL, [`property-value-storage`](../research/property-value-storage/index.
 
 | Katman | Postgres nesnesi | Rol |
 |---|---|---|
-| **Kaynak-hakikat** | `form_value` (**JSONB** `data` kolonu) | Formun tüm alanları tek satırda; DDL'siz esnek şema (S1/S9) |
-| **Skaler projeksiyon** | `form_attr` (tipli EAV: num/text/date/bool) | Arama/filtre/sıralama/rapor için türetilmiş okuma modeli (S1-S13) |
-| **Liste projeksiyonu** | `form_list_item` | List-of-model (groupByTax vb.) kalem-bazlı sorgu (S7) |
+| **Kaynak-hakikat** | `instance_value` (**JSONB** `data` kolonu) | Formun tüm alanları tek satırda; DDL'siz esnek şema (S1/S9) |
+| **Skaler projeksiyon** | `instance_attr` (tipli EAV: num/text/date/bool) | Arama/filtre/sıralama/rapor için türetilmiş okuma modeli (S1-S13) |
+| **Liste projeksiyonu** | `instance_list_item` | List-of-model (groupByTax vb.) kalem-bazlı sorgu (S7) |
 | **Süreç durumu** | `workflow_events` (append-only) + `workflow_projection` | **Partial Event Sourcing**; replay + audit + saga temeli |
-| **Statü** | `Instance.status` **ayrı indeksli kolon** | Volatile akış durumu — JSONB'ye **konmaz** (S3/S4/S10, D3) |
+| **Statü** | `Instance.statusId` **ayrı indeksli kolon** | Volatile akış durumu — JSONB'ye **konmaz** (S3/S4/S10, D3) |
 | **Organizasyon ayarları** | `models/organization-settings/*` tabloları | Kiracıya bağlı yapısal veri (Position, User, Translation…) |
 
-**Eşittir/içerir aramaları** `form_value.data` üzerindeki tek **GIN index** (`jsonb_path_ops`) ile herhangi bir alanda karşılanır
-(S5: yeni eşittir sorgusu rebuild bile gerektirmez). **Aralık/sıralama/metin** ise `form_attr`'ın sabit btree seti + `pg_trgm`
+> **Fiziksel ad = model adının snake_case'i:** `instance_value`=`InstanceValue` · `instance_attr`=`InstanceAttr` ·
+> `instance_list_item`=`InstanceListItem` · `instance_value_outbox`=`InstanceValueOutbox` → [`../models/processInstances/index.md`](../models/processInstances/index.md).
+
+**Eşittir/içerir aramaları** `instance_value.data` üzerindeki tek **GIN index** (`jsonb_path_ops`) ile herhangi bir alanda karşılanır
+(S5: yeni eşittir sorgusu rebuild bile gerektirmez). **Aralık/sıralama/metin** ise `instance_attr`'ın sabit btree seti + `pg_trgm`
 GIN'i ile çözülür.
 
 ## Konfigürasyon / desen notları
 
 - **RLS Pattern B v2:** her tenant-tabloda `organizationId` + RLS politikası; sorgu-zamanı tenant context ile satır izolasyonu
   (application filtresine güvenilmez, DB garanti eder). Multi-tenancy'nin **kritik** bileşeni.
-- **Partition — `HASH(service_id)`:** `form_value`/`form_attr`/`form_list_item` partition'lı; her sorgu `service_id` (mümkünse
+- **Partition — `HASH(service_id)`:** `instance_value`/`instance_attr`/`instance_list_item` partition'lı; her sorgu `service_id` (mümkünse
   `organizationId`) filtresi taşır → partition pruning. Dominant tenant sıcak-nokta olursa alt-`HASH(organizationId)` (S9, P9).
 - **Yazma maliyeti tuning (S9/S10):** JSONB update = MVCC ile **tüm satır** yeniden yazımı → JSONB küçük tutulur (dosyalar MinIO'da,
   yalnız URL JSONB'de); `fillfactor=85` + **agresif autovacuum** (`autovacuum_vacuum_scale_factor≈0.02`); GIN pending list için
@@ -52,8 +55,9 @@ GIN'i ile çözülür.
 - **Statü ayrı kolon (D3):** sık değişen `status` JSONB'de değil, indeksli kolonda — MVCC yeniden-yazımını ve bayatlamayı önler.
 - **JSONB code-keyed (S11/S12):** `data` anahtarları `Property.code` (numeric id değil) → kaynakla tutarlı, join'siz; `code`
   **immutable** kuralı bu yüzden zorunlu.
-- **projectionLevel (D1):** hangi alanın `form_attr`'a yansıyacağı `Property.projectionLevel` (NONE/SEARCH/SORT/AGGREGATE) ile
-  kontrol edilir → satır patlaması + write-amp kontrolü.
+- **projectToAttr (D1):** hangi alanın skaler fihriste (`InstanceAttr`/`InstanceListItem`) yansıyacağı `Property.projectToAttr`
+  (**bool**) ile kontrol edilir → satır patlaması + write-amp kontrolü (tipik alanların %10–20'si `true`; çok-seviyeli eski
+  `projectionLevel` **yok**). → [`../models/service-settings/property.md`](../models/service-settings/property.md).
 
 ## İlişkili tasarım
 
@@ -65,7 +69,7 @@ GIN'i ile çözülür.
 
 ## Dikkat / açık noktalar
 
-- **Benchmark kapısı (P1–P9):** 5M instance / ~200M `form_attr` satırı ölçeğinde p95 (yazma, projection lag, rapor, rebuild ~100dk,
+- **Benchmark kapısı (P1–P9):** 5M instance / ~200M `instance_attr` satırı ölçeğinde p95 (yazma, projection lag, rapor, rebuild ~100dk,
   autovacuum, WAL) kendi donanımımızda spike ile doğrulanmadan depolama tasarımı "onaylandı" sayılmaz.
 - **Ağır raporlama:** çok-kolon rapor pivotu (P1) ve cross-form aggregation (P2) için Postgres **materialized view / incremental
   rollup tabloları** (D6) gerekir — DB destekliyor, tasarım ayrıca yapılacak.

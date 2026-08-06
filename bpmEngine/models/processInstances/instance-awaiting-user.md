@@ -15,6 +15,7 @@
 |---|---|---|---|
 | `id` | int | PK | Bekleme kaydı ID'si. |
 | `instanceId` | int | FK → Instance.id | Beklenen form. |
+| `organizationId` | int | (denormalize) | Kiracı — **RLS/tenant izolasyonu** (RLS Pattern B v2: her tenant-tabloda `organizationId`; DB-seviyesi izolasyon). |
 | `processStepInstanceId` | int | FK → ProcessStepInstance.id | Bekleme hangi adım çalıştırmasında oluştu. |
 | `userId` | int? | FK → User.id | Aksiyon alabilecek **kullanıcı**. _(`userId` **veya** `userGroupId`'den biri dolu olmak zorunda.)_ |
 | `userGroupId` | int? | FK → UserGroup.id | Aksiyon alabilecek **kullanıcı grubu** (gruptaki üyeler aksiyon alabilir). |

@@ -9,7 +9,7 @@ NATS, Flovo'da **üç işi** üstlenir:
 
 1. **Domain event bus** — bir aggregate (workflow, form, auth, notify) durum değiştirdiğinde olayını yayınlar; ilgilenen tüketiciler dinler (audit, saga, projeksiyon).
 2. **Realtime push** — FE bildirim merkezi (bell + badge + canlı akış) ve süreç durumu değişimleri WebSocket üzerinden kullanıcıya iletilir.
-3. **Projeksiyon senkronizasyonu (asıl kritik iş)** — form/property değerleri değiştiğinde `form_attr` / `form_list_item` okuma-modellerini güncelleyen **idempotent projektörü** besler.
+3. **Projeksiyon senkronizasyonu (asıl kritik iş)** — form/property değerleri değiştiğinde `instance_attr` / `instance_list_item` okuma-modellerini güncelleyen **idempotent projektörü** besler.
 
 Çekirdek NATS (pub/sub) *anlık* mesajlaşmayı; **JetStream** ise *kalıcı, sıralı, yeniden-okunabilir* akışı sağlar — olayların asla kaybolmaması ve tüketici çökse bile kaldığı yerden devam etmesi buna dayanır.
 
@@ -32,13 +32,13 @@ NATS, Flovo'da **üç işi** üstlenir:
 **Projeksiyon akışı (property value depolamasının kalbi):**
 
 ```
-form_value UPDATE + outbox_event  (tek Postgres transaction — olay kaybolamaz)
+instance_value UPDATE + instance_value_outbox  (tek Postgres transaction — olay kaybolamaz)
         │  outbox relay (poll / logical decoding)
         ▼
    NATS JetStream  (FLOVO_EVENTS, kalıcı, sıralı)
         │  durable consumer (kaldığı yerden devam)
         ▼
-   Go generic projektör (idempotent)  →  form_attr / form_list_item / rollup güncellenir
+   Go generic projektör (idempotent)  →  instance_attr / instance_list_item / rollup güncellenir
 ```
 
 Bu, [`../research/property-value-storage/`](../research/property-value-storage/index.md) tasarımındaki **D9 (Outbox + kuyruk + projektör omurgası)** ihtiyacının fiili karşılığıdır. **Not:** [`../research/property-value-storage/form_attr_questions.md`](../research/property-value-storage/form_attr_questions.md) içindeki **S2/D9 "senkron altyapısı (NATS) henüz commit edilmedi"** açık notu bu kararla **KAPANDI** — omurga NATS JetStream olarak sabitlendi.
@@ -61,6 +61,6 @@ Bu, [`../research/property-value-storage/`](../research/property-value-storage/i
 
 ## Dikkat / açık noktalar
 
-- **Projection lag** eventual consistency getirir (rapor/liste birkaç yüz ms bayat olabilir; form_value anında tutarlıdır). BPM için kabul edilebilir; **benchmark kalemidir** (yazma yükü altında lag + tüketici throughput → property-value-storage P5).
+- **Projection lag** eventual consistency getirir (rapor/liste birkaç yüz ms bayat olabilir; instance_value anında tutarlıdır). BPM için kabul edilebilir; **benchmark kalemidir** (yazma yükü altında lag + tüketici throughput → property-value-storage P5).
 - **Yatay ölçek:** projektör durumsuz olduğundan JetStream consumer'ları **yatay ölçeklenir** (lag büyürse tüketici ekle / batch büyüt).
 - **WAL/replikasyon:** Outbox relay yöntemi (poll vs logical decoding) benchmark'ta kesinleşir.

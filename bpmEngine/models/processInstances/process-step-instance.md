@@ -9,6 +9,7 @@
 |---|---|---|---|
 | `id` | int | PK | Adım çalıştırma ID'si. |
 | `processInstanceId` | int | FK → ProcessInstance.id | Ait olduğu iş akışı. |
+| `organizationId` | int | (denormalize) | Kiracı — **RLS/tenant izolasyonu** (RLS Pattern B v2: her tenant-tabloda `organizationId`; DB-seviyesi izolasyon). |
 | `instanceId` | int? | FK → Instance.id | İlgili form. **Null olabilir:** yeni form oluşturulmadan başka bir iş akışına yönlendiren adımlarda (bkz. aşağıdaki not — Form Yönlendirme). |
 | `processStepId` | int | FK → ProcessStep.id | Çalıştırılan tasarım adımı. |
 | `atUserId` | int? | FK → User.id | **Aksiyonu tetikleyen kullanıcı** (AT = ActionTrigger). Aksiyon tetiklendiğinde dolar. |

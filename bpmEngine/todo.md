@@ -32,19 +32,31 @@
   (new/running/waiting/done); saklama/pruning. _(flovo-bpm-engine §8)_
   - 🧱 **Tech-stack:** kalıcılık **substratı** = PostgreSQL + **Partial Event Sourcing** (`workflow_events` append-only); *ne
     saklanır / yaşam döngüsü / pruning* tasarımı açık. → [`tech-stack/postgresql.md`](./tech-stack/postgresql.md)
-- [ ] **Property value (form alan değerleri) depolaması** — `Instance`'un alan değerleri **nerede/nasıl** tutulacak: `Instance`
-  modelinde mi, ayrı value tablo(lar)ında mı; tip-bazlı sütun mu, referans mı? Daha detaylı araştırma sonrası
-  kararlaştırılacak; alan-düzeyi tanımlar ayrı **değer dokümantasyonunda** yapılacak.
-  _(form-value-scenarios §5/§12 · models/processInstances/instance.md)_
-  - Alt-sorular (form-value-scenarios §12): **(1)** EAV ↔ kolon ↔ JSON ↔ hibrit; **(2)** yansıma alanları A (kopya+senkron)
-    ↔ B (on-read), snapshot ↔ canlı; **(3)** çeviri-bağımlı sorgu/indeksleme; **(4)** list-of-model (alt-servis) unnest /
-    cross-form; **(5)** binary/dosya ayrımı; **(6)** value geçmişi/sürümleme; **(7)** instance/state serileştirme.
-  - 📎 **Araştırma girdisi (değerlendirme bekliyor):** [`research/property-value-storage/`](./research/property-value-storage/index.md)
-    — **GÜNCEL ana öneri:** [`form-deger-saklama-v2.html`](./research/property-value-storage/form-deger-saklama-v2.html) (CQRS + Outbox +
-    NATS; `InstanceValue`/`InstanceAttr`/`InstanceListItem` · **`projectToAttr` (bool)** · LabeledValue/çeviri · `metadataVersion` yok).
-    Yukarıdaki 7 alt-sorunun çoğunu ele alıyor. **Karara bağlanınca `models/processInstances/` altına InstanceValue/InstanceAttr/
-    InstanceListItem + `property.md`'ye `projectToAttr`/`hasTranslation` işlenecek**; benimsemeden önce v2'deki eski adlar (`controlTypeId`→
-    `propertyType` · `RelatedInstance`→`AssociatedInstance` · `Instance.delete`→`deleted`) güncellenmeli.
+- [ ] **Property value (form alan değerleri) depolaması — MODEL KATMANI İŞLENDİ (2026-08-04); operasyonel kararlar açık.**
+  Değerler `Instance`'ta değil, **`InstanceValue.data` (JSONB, code-keyed)** kaynak-hakikatinde; fihristler `InstanceAttr`/
+  `InstanceListItem` projeksiyonu (CQRS + Outbox + NATS). Model dosyaları `models/processInstances/` altında oluşturuldu
+  (InstanceValue · InstanceAttr · InstanceListItem · InstanceValueOutbox · InstanceValueChange · ReflectionLink · LabeledValue);
+  `Property` += `projectToAttr`/`hasTranslation`/`reflectionMode` + `code` immutable; **ReflectionMode** enum'u eklendi.
+  _(→ v0.26 · models/processInstances/index.md · research/property-value-storage/index.md 🟢)_
+  - **7 alt-sorunun (form-value-scenarios §12) karşılığı:** **(1)** hibrit — JSONB kaynak + tipli projeksiyon; **(2)** yansıma
+    `reflectionMode` (snapshot/live/materialized=A′) + `ReflectionLink`; **(3)** çeviri — `LabeledValue` + `Attr.display`/
+    `translationCode`; **(4)** list-of-model → `InstanceListItem`, Form List → `AssociatedInstance`; **(5)** binary → MinIO URL
+    (JSONB'de değil); **(6)** value geçmişi → `InstanceValueChange` (append-only); **(7)** durum → `Instance.statusId` kolonu.
+  - **Açık kalan operasyonel kararlar:** **rollup/denormalize dashboard projeksiyonu** (ağır cross-form toplam) · **yansıma
+    yayılım (A′) sınırları** (derinlik/döngü — motor **O3** ile ortak) · **retention/pruning + KVKK** (outbox işlenmiş olay ·
+    `InstanceValueChange` saklama) · **davranış-dokümanı entegrasyonu** (`service-settings/properties.md` · `flovo-bpm-engine.md`
+    yazma/okuma yolu · JSON Schema kapı doğrulama) · GIN/tipli index stratejisi (araştırma dokümanında, kesinleşecek).
+  - 🔍 **`ReflectionLink` yapısı gözden geçirilecek (AÇIK):** modelin **alanları/benzersizliği/`organizationId`'si** ve **A′
+    yayılım mekaniği** (parent→child tazeleme; derinlik/döngü/asenkron sınırları; `reflectionMode=materialized` ile bağı)
+    daha detaylı incelenip kesinleştirilecek. → [`models/processInstances/reflection-link.md`](./models/processInstances/reflection-link.md) · yukarıdaki "yansıma yayılım (A′)" + motor **O3**.
+  - 📐 **Tip-bazlı değer şablonları → [`models/processInstances/propertyValuesTemplates/`](./models/processInstances/propertyValuesTemplates/index.md)** (18 tip + core
+    `labeled-value.md`). Her `propertyType` için `data` JSONB şekli + `projectToAttr` projeksiyon eşlemesi. **Q1–Q11, Q13 kullanıcı
+    kararlarıyla çözüldü** (combobox `value`/id-iki-kolon · groupByTax şema+türetilmiş toplam · formList `AssociatedInstance`-senkron +
+    durum→ListItem + `rejectedBy` user-obj · mapViewer `address`→Attr · timePicker `textValue` · phone maskeli · file her-zaman-dizi +
+    `fileInfo`{user-obj,date,location-str} · **kullanıcı-referans konvansiyonu** `{userId,nameSurname}`). **Q12 çözüldü:** `InstanceListItem.attrCode`
+    = nesne kaleminde **alt-alan adı**, tek atomik değerde sabit **`"value"`**. **Q1–Q13 kapandı**; şablonlar 🟡 TASLAK (ince ayar kullanıcı iterasyonuyla).
+  - 📎 **Kaynak/mimari referans:** [`research/property-value-storage/`](./research/property-value-storage/index.md) —
+    [`form-deger-saklama-v2.html`](./research/property-value-storage/form-deger-saklama-v2.html) (A'dan Z'ye). _(İsim uyumlaması models/ tarafında yapıldı: `controlTypeId`→`propertyType` · `RelatedInstance`→`AssociatedInstance` · `Instance.delete`→`deleted`.)_
   - 🧱 **Tech-stack:** depolama **substratı** karara bağlandı — PostgreSQL/JSONB · **NATS JetStream** (outbox omurgası) · MinIO
     (binary) · Go (projektör); bu, `form_attr` değerlendirmesindeki **S2/D9 "NATS stack açık" notunu kapatır**. Depolama **MODELİ**
     hâlâ karara bağlanacak. → [`tech-stack/index.md`](./tech-stack/index.md)

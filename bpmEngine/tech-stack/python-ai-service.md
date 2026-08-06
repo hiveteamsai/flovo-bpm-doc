@@ -26,7 +26,7 @@
 
 - **Aynı DB, ayrı servis:** Python servisi çekirdek BPM'in Postgres'ine (pgvector) bağlanır ama **kendi bounded context'inde** çalışır; yazma yolu çekirdekten geçer (kaynak-hakikat tutarlılığı).
 - **Ayrı deploy:** SOA split (post-MVP) ile Core BPM + AI + Workers ayrı K8s dağıtımı olur.
-- **Sınır:** AI servisi form değerlerini **doğrudan** projeksiyona yazmaz; çıkarım sonuçları normal yazma yolundan (form_value → outbox → projektör) akar.
+- **Sınır:** AI servisi form değerlerini **doğrudan** projeksiyona yazmaz; çıkarım sonuçları normal yazma yolundan (instance_value → outbox → projektör) akar.
 
 ## İlişkili tasarım
 
@@ -38,4 +38,4 @@
 
 - **MVP DIŞI:** Sprint 5+ kapsamı; MVP demo'da yer almaz — scope creep önleme kararı.
 - **pgvector post-MVP:** vektör indeksleme AI Service ile birlikte devreye alınır (o ana kadar Postgres'te yalnız extension hazır).
-- **Kaynak-hakikat kuralı:** AI çıkarımları da form_value üzerinden yazılır; projeksiyon/AI ayrımı korunur.
+- **Kaynak-hakikat kuralı:** AI çıkarımları da instance_value üzerinden yazılır; projeksiyon/AI ayrımı korunur.

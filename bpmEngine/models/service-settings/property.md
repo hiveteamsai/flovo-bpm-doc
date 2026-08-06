@@ -14,7 +14,7 @@
 |---|---|---|---|
 | `id` | int | PK | Alan ID'si. |
 | `serviceId` | int | FK → Service | Bağlı servis. |
-| `code` | string | benzersiz (binding key) | Alanın veriye bağlandığı anahtar — yalnız **bağlama**; çeviri için kullanılmaz → `translationCode`. |
+| `code` | string | benzersiz (binding key) | Alanın veriye bağlandığı anahtar — yalnız **bağlama**; çeviri için kullanılmaz → `translationCode`. **Immutable:** `InstanceValue.data` JSONB anahtarı + `InstanceAttr.propertyCode` + API/iş kuralı kimliği olduğundan **dondurulur** (yalnız **draft penceresi** — ilk `Instance` yokken — değişebilir; sonrası kilit). Değiştirmek = eski JSONB anahtarı öksüz kalır, sorgu/API/iş kuralı kırılır. |
 | `definition` | string | — | Alan tanımı / kullanıcıya görünen etiket — **varsayılan dildeki** metin (çeviri: `translationCode` → Translation). |
 | `translationCode` | string? | çeviri anahtarı | **Çeviri eşleşme anahtarı** (→ [`../organization-settings/translation.md`](../organization-settings/translation.md) `code`). `null` = çeviri **es geçilir**, doğrudan `definition` kullanılır. |
 | `propertyType` | PropertyType | — | Kontrol tipi (§2 tipe-özel alanları belirler) — [`../enums/property-type.md`](../enums/property-type.md). |
@@ -33,8 +33,9 @@
 | `format` | string | Format (tarih/sayı/maske). |
 | `saveAndRefreshOnAfterChange` | bool | Değer değişince **kaydet isteği atıp formu yeniler** (refresh). |
 | `backingField` | — | Gizli/arka-plan alan. |
-| `savePropertyToDb` | bool | Veritabanına kaydet. |
-| `saveChangeLog` | bool | Değişiklik geçmişi tut. |
+| `savePropertyToDb` | bool | Değerin `InstanceValue.data`'ya (kaynak JSONB'ye) yazılıp yazılmayacağı. |
+| `saveChangeLog` | bool | Değişiklik geçmişi tut → değer değişince `InstanceValue.data` update TX'inde [`../processInstances/instance-value-change.md`](../processInstances/instance-value-change.md) satırı düşer. |
+| `projectToAttr` | bool | **Fihriste (projeksiyona) yazılsın mı?** `true` = değer `InstanceValue.data`'dan [`../processInstances/instance-attr.md`](../processInstances/instance-attr.md) / [`../processInstances/instance-list-item.md`](../processInstances/instance-list-item.md)'a yansıtılır (rapor/filtre/sıra/aralık/isim-arama). `false` = yalnız JSONB'de kalır (**eşittir** sorgusu için GIN yeter). Tipik alanların **%10–20'si** `true`. `savePropertyToDb`'den **farklı**: o kaynağa yazımı, bu fihriste yansımayı belirler. |
 | `state` | — | Alan durumu. |
 | `environmentRestriction` | string | Ortam kısıtı. |
 | `organizationRestriction` | string | Organizasyon kapsam kısıtı. |
@@ -50,6 +51,7 @@
 | `lazyLoading` | bool | Tembel yükleme. |
 | `manuelEntry` | bool | Serbest giriş. |
 | `isMultiSelect` | bool | Çoklu seçim. |
+| `hasTranslation` | bool | Alanın **değer seçenekleri çeviri kullanıyor mu** (yardımcı bayrak). Etiketli seçimler `LabeledValue` şekliyle (`{value, display, translationCode}`) yazılır → [`../processInstances/propertyValuesTemplates/labeled-value.md`](../processInstances/propertyValuesTemplates/labeled-value.md). Liste her zaman `PropertyItem` olmak zorunda değildir (dinamik/iş-kuralı listede display istekle gelir). |
 
 ### 1.5 İlişki alanları (ilişkisel alanlar için)
 | Alan | Tip | Açıklama / amaç |
@@ -59,10 +61,11 @@
 | `refPropertyId` | int | Referans alınan alan (Parent Property). |
 | `parentPropertyId` | int | Üst alan. |
 | `relatedPropertyIds` | List\<int\> | İlişkili alanlar. |
+| `reflectionMode` | ReflectionMode | **Yalnız `parentProperty` tipi** — üst değerin nasıl takip edileceği: `snapshot` (kopyala+dondur, **vars.**) · `live` (canlı okuma) · `materialized` (kopya + `ReflectionLink` ile yayılım). → [`../enums/reflection-mode.md`](../enums/reflection-mode.md). |
 
 ## 2. Tipe-özel alanlar (`propertyType`'a göre — özet)
 > Tam açıklama → `../../service-settings/properties.md` §3.
-> **Enum'lar:** kontrol tipi → [`../enums/property-type.md`](../enums/property-type.md) · `keyboardType` (Textbox/Phone) → [`../enums/keyboard-type.md`](../enums/keyboard-type.md) · `barcodeFormat` (Barcode) → [`../enums/barcode-format.md`](../enums/barcode-format.md).
+> **Enum'lar:** kontrol tipi → [`../enums/property-type.md`](../enums/property-type.md) · `keyboardType` (Textbox/Phone) → [`../enums/keyboard-type.md`](../enums/keyboard-type.md) · `barcodeFormat` (Barcode) → [`../enums/barcode-format.md`](../enums/barcode-format.md) · `reflectionMode` (parentProperty) → [`../enums/reflection-mode.md`](../enums/reflection-mode.md).
 
 | Kontrol tipi | Alanlar |
 |---|---|
@@ -80,7 +83,7 @@
 | `mapViewer` | konum seçimi/görüntüleme; koordinat/adres |
 | `formList` | `childServiceId` · `serviceItemControlId` · `reOrder` · `parameterTransfer`/`propertyTransferParameters` · `editOnlyOwnPosition` · `lazyLoading` · **profil-bazlı ayarlar → `view-profile-property.md`:** `activeStartActions`, `addFromExistingStatusIds`, `selectableVisible`, `selectedEditable` |
 | `flowInfo` | `flowInfoValue` (salt-okunur akış metadata) |
-| `parentProperty` | `parentPropertyId` · `refPropertyId` · `relatedPropertyIds` (salt-okunur) |
+| `parentProperty` | `parentPropertyId` · `refPropertyId` · `relatedPropertyIds` · `reflectionMode` (`snapshot`/`live`/`materialized`) (salt-okunur) |
 | `userInfo` | `userInfoValue` (salt-okunur kullanıcı metadata) |
 | `groupByTaxReceipt` | `disableTaxAttachmentView` · `isActiveKkegAttachment` |
 | `keyValueList` | `addNewEnabled` · `deleteEnabled` · `keyDescription` · `valueDescription` · `comboBoxItems` · `keyValueItems` |
@@ -94,8 +97,15 @@
 ## İlişkiler
 - **N – 1** → `Service` (`serviceId`).
 - **1 – N** ← `PropertyItem` (`propertyId`), `ProcessViewProfileProperty` (`propertyId`).
+- **Mantıksal (`code` üzerinden, id-FK değil):** `InstanceAttr.propertyCode` · `InstanceListItem.listCode`/`attrCode` ·
+  `InstanceValueChange.propertyCode` · `ReflectionLink.parentPropertyCode`/`childPropertyCode` — değer katmanı **code-keyed**dir.
 
 ## Notlar / açık noktalar
+- **Değer saklama bağı (metadata-driven projeksiyon):** `Property`, değerlerin **nasıl saklanıp fihristleneceğini**
+  belirleyen metadata'yı taşır — `code` (JSONB anahtarı, immutable) · `projectToAttr` (fihriste yansı) · `savePropertyToDb`
+  (kaynağa yaz) · `saveChangeLog` (geçmiş) · `hasTranslation`/`reflectionMode`. Generic projektör bu metadata'ya bakarak
+  `InstanceValue.data`'dan `InstanceAttr`/`InstanceListItem` üretir (alan adı koda gömülü değildir). Değer modelleri →
+  [`../processInstances/instance-value.md`](../processInstances/instance-value.md) · [`instance-attr.md`](../processInstances/instance-attr.md) · [`instance-list-item.md`](../processInstances/instance-list-item.md) · [`labeled-value.md`](../processInstances/propertyValuesTemplates/labeled-value.md).
 - Çekirdek ↔ tipe-özel ayrımının nihai listesi; Form List ayarları → `../../todo.md`.
 - **`dataSource` çift anlamı — ÇÖZÜLDÜ:** `Image Area Selector` (`imageAreaSelector`) alan tipi **kaldırıldı**; `dataSource*`
   artık yalnız Combobox/Radiobutton **dinamik seçenek kaynağı**. Seçenek verisi için ayrı tablo yok — statik `propertyItems`

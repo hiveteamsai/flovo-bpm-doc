@@ -1,11 +1,15 @@
 # Property Value — Depolama Mimarisi (Araştırma) — İndeks
 
-> **Amaç:** Form/property **değerlerinin veritabanında nasıl saklanacağı** açık sorusunu besleyen mimari araştırma.
-> Bu klasör, `todo.md`'deki **"Property value depolama modeli"** (Tier 1) açık sorusunun **girdisidir**.
+> **Amaç:** Form/property **değerlerinin veritabanında nasıl saklanacağı** sorusunu besleyen mimari araştırma.
+> Bu klasör, `todo.md`'deki "Property value depolama modeli" sorusunun **girdisi olmuştur**; **model katmanı 2026-08-04'te işlendi**
+> (→ `models/processInstances/`) ve klasör artık **kaynak/mimari referans** olarak durur (yalnız operasyonel kararlar `todo.md`'de açık).
 >
-> **⚠️ Durum:** 🟡 **DEĞERLENDİRME BEKLİYOR** — bu bir araştırma/öneri dokümanıdır; **henüz tasarıma dahil edilmemiştir.**
-> İçerik değerlendirilip karara bağlandıktan sonra ilgili tasarım dokümanlarına ([`form-value-scenarios.md`](./form-value-scenarios.md),
-> `../../models/service-settings/property.md`, `../../models/` PropertyValue modeli) işlenecektir.
+> **Durum:** 🟢 **MODEL KATMANI İŞLENDİ (2026-08-04)** — v2 önerisi (`form-deger-saklama-v2.html`) **model dokümanlarına**
+> alındı: `models/processInstances/` altına **InstanceValue · InstanceAttr · InstanceListItem · InstanceValueOutbox ·
+> InstanceValueChange · ReflectionLink · LabeledValue** oluşturuldu; `Property`'ye `projectToAttr`/`hasTranslation`/`reflectionMode`
+> + `code` immutable eklendi; `Instance` 1–1 `InstanceValue`'ya bağlandı; **ReflectionMode** enum'u eklendi.
+> **Bu klasör** artık **kaynak/mimari referans** olarak durur (araştırma; alt-senaryo/rating dosyaları besleyici).
+> **Açık kalan** operasyonel kararlar (rollup, yansıma yayılım sınırları, retention/KVKK, davranış-dokümanı entegrasyonu) → `../../todo.md`.
 
 ## Dosyalar
 | Dosya | İçerik (özet) |
@@ -67,7 +71,8 @@ NATS JetStream · kapıda **JSON Schema** doğrulama.
 **Kapsam çerçevesi:** kabul kriterleri (hedefler) · 2–3 günlük ölçüm (spike) planı · çok dilli sıralama · dosya/fatura görseli ·
 değişiklik geçmişi (audit/KVKK) · "kazandıklarımız / bilinçli reddettiklerimiz" · 30 saniyelik kapanış diyagramı.
 
-## İlgili tasarım dokümanları (değerlendirme sonrası işlenecek)
+## İlgili tasarım dokümanları (model katmanı işlendi)
+- [`../../models/processInstances/index.md`](../../models/processInstances/index.md) — **değer modelleri** (InstanceValue/InstanceAttr/InstanceListItem/InstanceValueOutbox/InstanceValueChange/ReflectionLink/LabeledValue).
+- [`../../models/service-settings/property.md`](../../models/service-settings/property.md) — Property (`projectToAttr`/`hasTranslation`/`reflectionMode` + `code` immutable).
 - [`form-value-scenarios.md`](./form-value-scenarios.md) — form değeri senaryoları (bu klasörde).
-- [`../../models/service-settings/property.md`](../../models/service-settings/property.md) — Property (alan) modeli.
-- `../../todo.md` — **"Property value depolama modeli"** açık sorusu (Tier 1).
+- `../../todo.md` — Property value **operasyonel kararları** (rollup · yansıma yayılım sınırları · retention/KVKK · davranış-dokümanı entegrasyonu).

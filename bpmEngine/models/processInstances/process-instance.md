@@ -13,6 +13,7 @@
 | `createdByApiKeyId` | int? | FK → ApiKey (geçici) | Customer API ile oluşturulan kayıtlarda **kim yaptı** bilgisi — oluşturan doğrudan bir `User` olmadığından. Ad **geçici**; içeriği Customer API erişim mekanizması kesinleşince doğrulanacak. |
 | `createdDate` | datetime | — | Oluşturulma zamanı. |
 | `serviceId` | int | FK → Service.id | Hangi servisin süreci çalıştırılıyor. |
+| `organizationId` | int | (denormalize) | Kiracı — **RLS/tenant izolasyonu** (RLS Pattern B v2: her tenant-tabloda `organizationId`; DB-seviyesi izolasyon). |
 | `parentProcessInstanceId` | int? | FK → ProcessInstance.id (self) | **Alt süreç** ise **alt sürecin koştuğu (hedef/host) instance'ın ana `ProcessInstance`** id'si (**tetikleyen** süreç değil). **Null = ana süreç** (üst akış yok). |
 
 ## İlişkiler
