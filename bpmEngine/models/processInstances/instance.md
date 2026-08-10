@@ -21,8 +21,8 @@
 - **N – 1** → `Service` (`serviceId`), `ProcessInstance` (`processInstanceId`), `User` (`creatorUserId`), `Status` (`statusId`).
 - **1 – 1** ↔ `InstanceValue` (`instanceId` — **alan değerlerinin JSONB tapusu**).
 - **1 – N** ← `InstanceAwaitingUser.instanceId`, `ProcessStepInstance.instanceId`, `AssociatedInstance.instanceId` / `.associatedInstanceId`,
-  `InstanceAttr.instanceId`, `InstanceListItem.instanceId`, `InstanceValueChange.instanceId`, `InstanceValueOutbox.instanceId`,
-  `ReflectionLink.parentInstanceId` / `.childInstanceId`.
+  `InstanceAttr.instanceId`, `InstanceListItem.instanceId`, `InstanceValueChange.instanceId`, `InstanceValueOutbox.instanceId`.
+  _(A′ yansıma yayılımı ayrı bir bağ tablosu kullanmaz; parent↔child `AssociatedInstance` üzerinden çözülür → [`reflection-propagation.md`](./reflection-propagation.md).)_
 
 ## Notlar / açık noktalar
 - **Servis `formType`'ına göre oluşma (→ `../service-settings/service.md`):** **`form`** → akışla oluşur, `creatorUserId`
@@ -34,7 +34,7 @@
   tablosunda (`InstanceValue.data`, **JSONB, code-keyed**) tutulur ve buradan `InstanceAttr`/`InstanceListItem` fihristlerine
   yansıtılır (CQRS + Outbox + NATS). Değer modelleri → [`instance-value.md`](./instance-value.md) · [`instance-attr.md`](./instance-attr.md) ·
   [`instance-list-item.md`](./instance-list-item.md) · [`instance-value-outbox.md`](./instance-value-outbox.md) · [`instance-value-change.md`](./instance-value-change.md) ·
-  [`reflection-link.md`](./reflection-link.md) · [`labeled-value.md`](./propertyValuesTemplates/labeled-value.md). Kaynak mimari →
+  [`labeled-value.md`](./propertyValuesTemplates/labeled-value.md) (+ A′ yansıma yayılım mekanizması → [`reflection-propagation.md`](./reflection-propagation.md)). Kaynak mimari →
   `../../research/property-value-storage/form-deger-saklama-v2.html`.
 - **`statusId` neden `InstanceValue.data`'da değil:** Form durumu **sık değişir** (her onayda). JSONB'de olsa her status
   değişiminde tüm `data` yeniden yazılır (MVCC) + rapor bayatlardı; bu yüzden `statusId` **kolonda** tutulur (hem canlı hem indeksli).

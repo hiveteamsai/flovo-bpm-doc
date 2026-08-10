@@ -50,7 +50,7 @@
 | Tip | Döküman | JSONB şekli | Projeksiyon |
 |---|---|---|---|
 | `userInfo` | [`user-info.md`](./user-info.md) | snapshot skaler/labeled | Attr (normal alan gibi) |
-| `parentProperty` | [`parent-property.md`](./parent-property.md) | `reflectionMode`'a göre | snapshot/materialized → Attr; live → yok |
+| `parentProperty` | [`parent-property.md`](./parent-property.md) | `reflectionMode`'a göre | snapshot/materialized → Attr; live → yok. `materialized` yayılımı → [`../reflection-propagation.md`](../reflection-propagation.md) (`async`/`sync`) |
 | `flowInfo` | [`flow-info.md`](./flow-info.md) | **yazılmaz** (canlı) | yok — `Instance` kolonları / join |
 | `text` | [`text.md`](./text.md) | **yok** (statik label) | yok |
 

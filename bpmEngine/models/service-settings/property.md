@@ -36,6 +36,7 @@
 | `savePropertyToDb` | bool | Değerin `InstanceValue.data`'ya (kaynak JSONB'ye) yazılıp yazılmayacağı. |
 | `saveChangeLog` | bool | Değişiklik geçmişi tut → değer değişince `InstanceValue.data` update TX'inde [`../processInstances/instance-value-change.md`](../processInstances/instance-value-change.md) satırı düşer. |
 | `projectToAttr` | bool | **Fihriste (projeksiyona) yazılsın mı?** `true` = değer `InstanceValue.data`'dan [`../processInstances/instance-attr.md`](../processInstances/instance-attr.md) / [`../processInstances/instance-list-item.md`](../processInstances/instance-list-item.md)'a yansıtılır (rapor/filtre/sıra/aralık/isim-arama). `false` = yalnız JSONB'de kalır (**eşittir** sorgusu için GIN yeter). Tipik alanların **%10–20'si** `true`. `savePropertyToDb`'den **farklı**: o kaynağa yazımı, bu fihriste yansımayı belirler. |
+| `isReflectionSource` | bool | **Türetilmiş (servis yayınında hesaplanır):** bu alan, başka bir servisin `parentProperty` (`materialized`) alanı tarafından **yansıtılan kaynak** mı? `true` ise değeri değişince yansıma yayılımı tetiklenir; `false` (çoğu alan) → yayılım consumer'ı **hızlı çıkış** yapar (ek maliyet yok). Mekanizma → [`../processInstances/reflection-propagation.md`](../processInstances/reflection-propagation.md). |
 | `state` | — | Alan durumu. |
 | `environmentRestriction` | string | Ortam kısıtı. |
 | `organizationRestriction` | string | Organizasyon kapsam kısıtı. |
@@ -61,11 +62,12 @@
 | `refPropertyId` | int | Referans alınan alan (Parent Property). |
 | `parentPropertyId` | int | Üst alan. |
 | `relatedPropertyIds` | List\<int\> | İlişkili alanlar. |
-| `reflectionMode` | ReflectionMode | **Yalnız `parentProperty` tipi** — üst değerin nasıl takip edileceği: `snapshot` (kopyala+dondur, **vars.**) · `live` (canlı okuma) · `materialized` (kopya + `ReflectionLink` ile yayılım). → [`../enums/reflection-mode.md`](../enums/reflection-mode.md). |
+| `reflectionMode` | ReflectionMode | **Yalnız `parentProperty` tipi** — üst değerin nasıl takip edileceği: `snapshot` (kopyala+dondur, **vars.**) · `live` (canlı okuma) · `materialized` (kopya + **`AssociatedInstance` üzerinden yayılımla** tazelenir). → [`../enums/reflection-mode.md`](../enums/reflection-mode.md). |
+| `reflectionPropagation` | ReflectionPropagation | **Yalnız `parentProperty` + `reflectionMode=materialized`** — kopyanın üst değişince **ne zaman** tazeleneceği: `async` (arka planda, **vars.**) · `sync` (yazma anında, guardrail'li). → [`../enums/reflection-propagation.md`](../enums/reflection-propagation.md) · mekanizma [`../processInstances/reflection-propagation.md`](../processInstances/reflection-propagation.md). |
 
 ## 2. Tipe-özel alanlar (`propertyType`'a göre — özet)
 > Tam açıklama → `../../service-settings/properties.md` §3.
-> **Enum'lar:** kontrol tipi → [`../enums/property-type.md`](../enums/property-type.md) · `keyboardType` (Textbox/Phone) → [`../enums/keyboard-type.md`](../enums/keyboard-type.md) · `barcodeFormat` (Barcode) → [`../enums/barcode-format.md`](../enums/barcode-format.md) · `reflectionMode` (parentProperty) → [`../enums/reflection-mode.md`](../enums/reflection-mode.md).
+> **Enum'lar:** kontrol tipi → [`../enums/property-type.md`](../enums/property-type.md) · `keyboardType` (Textbox/Phone) → [`../enums/keyboard-type.md`](../enums/keyboard-type.md) · `barcodeFormat` (Barcode) → [`../enums/barcode-format.md`](../enums/barcode-format.md) · `reflectionMode` (parentProperty) → [`../enums/reflection-mode.md`](../enums/reflection-mode.md) · `reflectionPropagation` (parentProperty A′) → [`../enums/reflection-propagation.md`](../enums/reflection-propagation.md).
 
 | Kontrol tipi | Alanlar |
 |---|---|
@@ -83,7 +85,7 @@
 | `mapViewer` | konum seçimi/görüntüleme; koordinat/adres |
 | `formList` | `childServiceId` · `serviceItemControlId` · `reOrder` · `parameterTransfer`/`propertyTransferParameters` · `editOnlyOwnPosition` · `lazyLoading` · **profil-bazlı ayarlar → `view-profile-property.md`:** `activeStartActions`, `addFromExistingStatusIds`, `selectableVisible`, `selectedEditable` |
 | `flowInfo` | `flowInfoValue` (salt-okunur akış metadata) |
-| `parentProperty` | `parentPropertyId` · `refPropertyId` · `relatedPropertyIds` · `reflectionMode` (`snapshot`/`live`/`materialized`) (salt-okunur) |
+| `parentProperty` | `parentPropertyId` · `refPropertyId` · `relatedPropertyIds` · `reflectionMode` (`snapshot`/`live`/`materialized`) · `reflectionPropagation` (`async`/`sync` — yalnız `materialized`) (salt-okunur) |
 | `userInfo` | `userInfoValue` (salt-okunur kullanıcı metadata) |
 | `groupByTaxReceipt` | `disableTaxAttachmentView` · `isActiveKkegAttachment` |
 | `keyValueList` | `addNewEnabled` · `deleteEnabled` · `keyDescription` · `valueDescription` · `comboBoxItems` · `keyValueItems` |
@@ -98,7 +100,7 @@
 - **N – 1** → `Service` (`serviceId`).
 - **1 – N** ← `PropertyItem` (`propertyId`), `ProcessViewProfileProperty` (`propertyId`).
 - **Mantıksal (`code` üzerinden, id-FK değil):** `InstanceAttr.propertyCode` · `InstanceListItem.listCode`/`attrCode` ·
-  `InstanceValueChange.propertyCode` · `ReflectionLink.parentPropertyCode`/`childPropertyCode` — değer katmanı **code-keyed**dir.
+  `InstanceValueChange.propertyCode` — değer katmanı **code-keyed**dir. Yansıma yayılımı da (`materialized`) üst↔child alan eşlemesini **`code`** ile yapar (→ [`../processInstances/reflection-propagation.md`](../processInstances/reflection-propagation.md)).
 
 ## Notlar / açık noktalar
 - **Değer saklama bağı (metadata-driven projeksiyon):** `Property`, değerlerin **nasıl saklanıp fihristleneceğini**

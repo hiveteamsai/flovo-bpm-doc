@@ -35,7 +35,7 @@
 |---|---|---|
 | **organization-settings/** | Kiracıya bağlı **yapısal veri** + **organizasyon havuzu** (eski "Account Settings"): Organization · Company · Department · Profession · Position · User · UserGroup · Translation · Style · Status · Action · CostCenter · WorkerLevel · CreditCard · AdditionalQualification · WorkingSchedule · VacationDay · ProcessTransfer · SchedulerJob. | [`organization-settings/index.md`](./organization-settings/index.md) |
 | **service-settings/** | Bir **Solution/Service** altındaki tasarım modelleri: Solution · Service (`formType`) · ServiceTrigger · Property/PropertyItem · ProcessViewProfile ailesi · ProcessStep · ProcessStepAction · BusinessRule/BusinessRuleCondition. | [`service-settings/index.md`](./service-settings/index.md) |
-| **processInstances/** | Ayarlardan üretilen **çalışma-zamanı (runtime)** kayıtları: ProcessInstance · ProcessStepInstance · Instance · InstanceAwaitingUser · AssociatedInstance **+ değer saklama:** InstanceValue · InstanceAttr · InstanceListItem · InstanceValueOutbox · InstanceValueChange · ReflectionLink **+ `propertyValuesTemplates/`** (tip-bazlı değer şablonları + core LabeledValue). 🟢 TANIMLI. | [`processInstances/index.md`](./processInstances/index.md) |
+| **processInstances/** | Ayarlardan üretilen **çalışma-zamanı (runtime)** kayıtları: ProcessInstance · ProcessStepInstance · Instance · InstanceAwaitingUser · AssociatedInstance **+ değer saklama:** InstanceValue · InstanceAttr · InstanceListItem · InstanceValueOutbox · InstanceValueChange **+ `propertyValuesTemplates/`** (tip-bazlı değer şablonları + core LabeledValue) **+ A′ yansıma yayılım mekanizması** (`reflection-propagation.md` — tablo değil). 🟢 TANIMLI. | [`processInstances/index.md`](./processInstances/index.md) |
 | **enums/** | Modellerde kullanılan **enum tanımları** (kanonik değer listeleri; ör. `actionType`, `propertyType`, `formType`). | [`enums/index.md`](./enums/index.md) |
 
 > **Not:** **Organization** kiracının kökü; **Solution · Service** service-settings kırılımının başladığı yerdir
@@ -82,9 +82,9 @@ ProcessInstance (id; createdByUserId → User · createdByApiKeyId → ApiKey[ge
       ├─< InstanceAttr         (instanceId, serviceId, propertyCode; num/text/date/bool · display · translationCode)  ← projeksiyon
       ├─< InstanceListItem     (instanceId, serviceId, listCode, itemIndex, attrCode; …)       ← projeksiyon
       ├─< InstanceValueChange  (instanceId; propertyCode · old/newValue · changedByUserId/ApiKeyId · processStepInstanceId)
-      └─< InstanceValueOutbox  (instanceId; serviceId · version · occurred/processedDate)
+      └─< InstanceValueOutbox  (instanceId; serviceId · version · changedPropertyCodes · hopCount · occurred/processedDate)
 
-ReflectionLink (parentInstanceId → Instance · parentPropertyCode · childInstanceId → Instance · childPropertyCode)   ← parentProperty A′ yayılımı
+parentProperty A′ yansıma yayılımı = ayrı tablo YOK — child'lar AssociatedInstance ters aramasıyla, eşleme Property.refPropertyId/code ile çözülür (→ reflection-propagation.md)
 LabeledValue = değer şekli (tablo değil): {value, display, translationCode} — InstanceValue.data'ya gömülü, Attr/ListItem'a açılır
 ```
 
@@ -128,7 +128,7 @@ LabeledValue = değer şekli (tablo değil): {value, display, translationCode} �
 | BusinessRuleCondition | `parentConditionId` | BusinessRuleCondition.id | N–1 | iç içe (recursive) |
 | Translation | `code` | (kod eşleşmesi) | — | FK değil; kaynak modellerin **`translationCode`**'u + `languageCode` + `organizationId` ile çözülür (`translationCode=null` → çeviri es geçilir) |
 | **— İş akışı / çalıştırma (runtime — `processInstances/`) —** | | | | |
-| Tüm runtime modelleri (ProcessInstance · ProcessStepInstance · Instance · InstanceAwaitingUser · AssociatedInstance · InstanceValue · InstanceAttr · InstanceListItem · InstanceValueOutbox · InstanceValueChange · ReflectionLink) | `organizationId` | Organization.id | N–1 | **denormalize** — RLS Pattern B v2 (her tenant-tabloda `organizationId`; DB-seviyesi izolasyon) |
+| Tüm runtime modelleri (ProcessInstance · ProcessStepInstance · Instance · InstanceAwaitingUser · AssociatedInstance · InstanceValue · InstanceAttr · InstanceListItem · InstanceValueOutbox · InstanceValueChange) | `organizationId` | Organization.id | N–1 | **denormalize** — RLS Pattern B v2 (her tenant-tabloda `organizationId`; DB-seviyesi izolasyon) |
 | ProcessInstance | `createdByUserId` | User.id | N–1 | null olabilir (kullanıcı **ya da** API) |
 | ProcessInstance | `createdByApiKeyId` | ApiKey | N–1 | null olabilir; **ApiKey geçici** |
 | ProcessInstance | `serviceId` | Service.id | N–1 | |
@@ -166,8 +166,8 @@ LabeledValue = değer şekli (tablo değil): {value, display, translationCode} �
 | InstanceValueChange | `changedByUserId` | User.id | N–1 | null olabilir (kullanıcı **ya da** API) |
 | InstanceValueChange | `changedByApiKeyId` | ApiKey | N–1 | null olabilir; **ApiKey geçici** |
 | InstanceValueChange | `processStepInstanceId` | ProcessStepInstance.id | N–1 | null olabilir (değişime yol açan adım) |
-| ReflectionLink | `parentInstanceId` · `childInstanceId` | Instance.id | N–1 | parentProperty A′ yayılımı |
-| ReflectionLink | `parentPropertyCode` · `childPropertyCode` | Property.code | — | **code-keyed** |
+
+> **parentProperty A′ yansıma yayılımı** ayrı bir bağ tablosu (eski `ReflectionLink`) kullanmaz — child'lar `AssociatedInstance` ters aramasıyla, üst↔child alan eşlemesi `Property.refPropertyId`/`code` ile çözülür (→ [`processInstances/reflection-propagation.md`](./processInstances/reflection-propagation.md)).
 
 ---
 
@@ -180,7 +180,7 @@ LabeledValue = değer şekli (tablo değil): {value, display, translationCode} �
 
 > **Instance (doldurulmuş form) + property value depolaması artık modellendi** → `processInstances/` (ProcessInstance · Instance ·
 > ProcessStepInstance · InstanceAwaitingUser · AssociatedInstance **+ InstanceValue · InstanceAttr · InstanceListItem · InstanceValueOutbox ·
-> InstanceValueChange · ReflectionLink · LabeledValue**). 🟢 TANIMLI. Değer saklama mimarisi (CQRS + Outbox + NATS) →
+> InstanceValueChange · LabeledValue** + A′ yansıma yayılım mekanizması). 🟢 TANIMLI. Değer saklama mimarisi (CQRS + Outbox + NATS) →
 > `../research/property-value-storage/form-deger-saklama-v2.html`. _(Açık kalan operasyonel kararlar — rollup, yansıma yayılım
 > sınırları, retention/KVKK — → `../todo.md`.)_
 

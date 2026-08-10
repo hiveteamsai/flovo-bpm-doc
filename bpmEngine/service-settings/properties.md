@@ -226,9 +226,13 @@ kullanıcı (creator user), durum (status) vb. **Salt-okunur** akış metadata's
 ### 3.15 — `parentProperty` (Parent Property)
 **Düzenlenebilir bir alan değildir.** Bağlı olduğu **parent**'taki (üst süreç/form) hangi alanın forma getirilmesi
 isteniyorsa seçim yapılır; parent'ın seçilmiş alanını **`reflectionMode`'a göre** getirir (salt-okunur yansıma):
-`snapshot` (kopyala+dondur, **vars.**) · `live` (kopyalamaz, okurken join/referans) · `materialized` (kopya + `ReflectionLink`
-ile yayılım). → [`../models/enums/reflection-mode.md`](../models/enums/reflection-mode.md).
-**Modelleme (ilişki → §2.5):** `parentPropertyId` (üst alan) · `refPropertyId` (referans alınan alan) · `relatedPropertyIds` · `reflectionMode`.
+`snapshot` (kopyala+dondur, **vars.**) · `live` (kopyalamaz, okurken join/referans) · `materialized` (kopya + **`AssociatedInstance`
+üzerinden yayılımla tazelenir**). → [`../models/enums/reflection-mode.md`](../models/enums/reflection-mode.md).
+`materialized` iken tazelemenin **ne zaman** yapılacağı **`reflectionPropagation`** ile ayarlanır: `async` (arka planda, **vars.**) ·
+`sync` (yazma anında, guardrail'li) → [`../models/enums/reflection-propagation.md`](../models/enums/reflection-propagation.md). Yayılım
+mekanizması (ayrı bir "link" tablosu **yok**; `AssociatedInstance` + `Property` metadata ile çözülür) →
+[`../models/processInstances/reflection-propagation.md`](../models/processInstances/reflection-propagation.md).
+**Modelleme (ilişki → §2.5):** `parentPropertyId` (üst alan) · `refPropertyId` (referans alınan alan) · `relatedPropertyIds` · `reflectionMode` · `reflectionPropagation` (yalnız `materialized`).
 
 ### 3.16 — `userInfo` (User Info)
 **Kullanıcı bilgilerini** forma getirmek için kullanılır — örn. **giriş yapan kullanıcının** adı, e-postası, departmanı,

@@ -22,7 +22,7 @@
 | [`instance-list-item.md`](./instance-list-item.md) | **Liste kalemleri fihristi** — liste-of-model (`groupByTax`, key-value) alanları için kalem-bazlı projeksiyon. |
 | [`instance-value-outbox.md`](./instance-value-outbox.md) | **Outbox olayı** — değer update'iyle aynı TX'te; relay → NATS → projektör. |
 | [`instance-value-change.md`](./instance-value-change.md) | **Değer geçmişi** (append-only audit; `saveChangeLog=true` alanlar) — projeksiyon değil, kaynak kanıt. |
-| [`reflection-link.md`](./reflection-link.md) | **Yansıma yayılım bağı** — `parentProperty` `reflectionMode=materialized` (A′) için parent→child tazeleme. |
+| [`reflection-propagation.md`](./reflection-propagation.md) | **Yansıma yayılım mekanizması** (tablo değil, runtime akış) — `parentProperty` `reflectionMode=materialized` (A′) parent→child tazeleme; `AssociatedInstance` + `Property` metadata ile çözülür; `async` (vars.) / `sync`. |
 | [`propertyValuesTemplates/`](./propertyValuesTemplates/index.md) | **Değer şablonları (property tipine göre)** — her `propertyType` için `data` içindeki JSONB şekli + `projectToAttr` projeksiyon eşlemesi; **core `labeled-value.md`** (etiketli değer şekli) bu klasördedir. |
 
 *Oluşturma: 2026-07-13.*

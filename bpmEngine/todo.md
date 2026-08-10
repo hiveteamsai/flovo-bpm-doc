@@ -35,20 +35,24 @@
 - [ ] **Property value (form alan değerleri) depolaması — MODEL KATMANI İŞLENDİ (2026-08-04); operasyonel kararlar açık.**
   Değerler `Instance`'ta değil, **`InstanceValue.data` (JSONB, code-keyed)** kaynak-hakikatinde; fihristler `InstanceAttr`/
   `InstanceListItem` projeksiyonu (CQRS + Outbox + NATS). Model dosyaları `models/processInstances/` altında oluşturuldu
-  (InstanceValue · InstanceAttr · InstanceListItem · InstanceValueOutbox · InstanceValueChange · ReflectionLink · LabeledValue);
-  `Property` += `projectToAttr`/`hasTranslation`/`reflectionMode` + `code` immutable; **ReflectionMode** enum'u eklendi.
+  (InstanceValue · InstanceAttr · InstanceListItem · InstanceValueOutbox · InstanceValueChange · LabeledValue);
+  `Property` += `projectToAttr`/`hasTranslation`/`reflectionMode`/`reflectionPropagation`/`isReflectionSource` + `code` immutable; **ReflectionMode** + **ReflectionPropagation** enum'ları eklendi.
   _(→ v0.26 · models/processInstances/index.md · research/property-value-storage/index.md 🟢)_
   - **7 alt-sorunun (form-value-scenarios §12) karşılığı:** **(1)** hibrit — JSONB kaynak + tipli projeksiyon; **(2)** yansıma
-    `reflectionMode` (snapshot/live/materialized=A′) + `ReflectionLink`; **(3)** çeviri — `LabeledValue` + `Attr.display`/
+    `reflectionMode` (snapshot/live/materialized=A′) + `reflectionPropagation` (async/sync); yayılım `AssociatedInstance` + `Property` metadata ile (ayrı tablo yok); **(3)** çeviri — `LabeledValue` + `Attr.display`/
     `translationCode`; **(4)** list-of-model → `InstanceListItem`, Form List → `AssociatedInstance`; **(5)** binary → MinIO URL
     (JSONB'de değil); **(6)** value geçmişi → `InstanceValueChange` (append-only); **(7)** durum → `Instance.statusId` kolonu.
   - **Açık kalan operasyonel kararlar:** **rollup/denormalize dashboard projeksiyonu** (ağır cross-form toplam) · **yansıma
     yayılım (A′) sınırları** (derinlik/döngü — motor **O3** ile ortak) · **retention/pruning + KVKK** (outbox işlenmiş olay ·
     `InstanceValueChange` saklama) · **davranış-dokümanı entegrasyonu** (`service-settings/properties.md` · `flovo-bpm-engine.md`
     yazma/okuma yolu · JSON Schema kapı doğrulama) · GIN/tipli index stratejisi (araştırma dokümanında, kesinleşecek).
-  - 🔍 **`ReflectionLink` yapısı gözden geçirilecek (AÇIK):** modelin **alanları/benzersizliği/`organizationId`'si** ve **A′
-    yayılım mekaniği** (parent→child tazeleme; derinlik/döngü/asenkron sınırları; `reflectionMode=materialized` ile bağı)
-    daha detaylı incelenip kesinleştirilecek. → [`models/processInstances/reflection-link.md`](./models/processInstances/reflection-link.md) · yukarıdaki "yansıma yayılım (A′)" + motor **O3**.
+  - ✅ **`ReflectionLink` yapısı gözden geçirildi → tablo KALDIRILDI (v0.27):** instance-seviyesi bağ tablosu `AssociatedInstance`'ı
+    kopyalıyordu (redundant + staleness). Yeni tasarım: **eşleme `Property.refPropertyId`/`code`** (mevcut) + **instance çözümü
+    `AssociatedInstance` ters araması**; ayarlanabilir **`reflectionPropagation` (async vars. / sync guardrail'li)**; outbox +=
+    `changedPropertyCodes`/`hopCount`; kaynak alanda `isReflectionSource` hızlı-çıkış bayrağı. → [`models/processInstances/reflection-propagation.md`](./models/processInstances/reflection-propagation.md).
+    - 🔶 **Açık kalan tek karar:** `parentProperty` yalnız **doğrudan üst formu** mu referans alır (varsayım — `AssociatedInstance`
+      tek-hop yeterli), yoksa **herhangi bir ata** formu mu (o zaman zincir traversal veya non-adjacent edge-cache gerekir)? ·
+      ayrıca **A′ yayılım sınırları** (derinlik/döngü — motor **O3**) + `sync` fan-out eşiği değeri kesinleşecek.
   - 📐 **Tip-bazlı değer şablonları → [`models/processInstances/propertyValuesTemplates/`](./models/processInstances/propertyValuesTemplates/index.md)** (18 tip + core
     `labeled-value.md`). Her `propertyType` için `data` JSONB şekli + `projectToAttr` projeksiyon eşlemesi. **Q1–Q11, Q13 kullanıcı
     kararlarıyla çözüldü** (combobox `value`/id-iki-kolon · groupByTax şema+türetilmiş toplam · formList `AssociatedInstance`-senkron +
