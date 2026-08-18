@@ -9,6 +9,6 @@
 | `propertyValue` | Bir alanın değeri. | Alanın anlık değerini karşılaştırmaya sokmak. |
 | `viewProfile` | Aktif görüntüleme profili. | Hangi profilin aktif olduğuna göre koşullamak. |
 | `fixedValue` | Sabit değer. | Bilinen sabitle karşılaştırmak. |
-| `fromCalculate` | İfade/hesaplama sonucu. | Türetilen değerle karşılaştırmak. |
+| `fromCalculation` | İfade/hesaplama sonucu. | Türetilen değerle karşılaştırmak. |
 
 *Oluşturma: 2026-07-10.*

@@ -24,7 +24,7 @@ etkilemez.** İki **ayrı katman** vardır:
 ---
 
 ## 1. İş Kuralı Nedir?
-Bir **iş kuralı (work rule)**, form üzerinde **koşul → aksiyon** tabanlı dinamik bir davranıştır. Belirli koşullar
+Bir **iş kuralı (business rule)**, form üzerinde **koşul → aksiyon** tabanlı dinamik bir davranıştır. Belirli koşullar
 sağlandığında **frontend'de anlık** olarak tetiklenir ve formu değiştirir: validasyon, değer atama, alan görünürlüğü,
 veri kaynağı doldurma, stil vb.
 
@@ -81,7 +81,7 @@ Her koşul iki değerin bir **operatörle** karşılaştırılmasıdır; koşull
 | `businessRuleConditions` | İç içe koşullar (recursive) |
 
 **Karşılaştırma değer tipleri (`BusinessRuleConditionCompareType`):** `propertyValue` · `viewProfile` (aktif görüntüleme
-profili) · `fixedValue` · `fromCalculate` (expression).
+profili) · `fixedValue` · `fromCalculation` (expression).
 
 ---
 
@@ -100,7 +100,7 @@ profili) · `fixedValue` · `fromCalculate` (expression).
 
 ## 6. Açık Kararlar / Sorular
 > **Açık sorular tek yerde:** Bu dokümanın açık kararları/soruları, tutarsızlığı önlemek için **yalnız** merkezi
-> [`todo.md`](../todo.md) dosyasında toplanır (önceliklendirilmiş tüm-doküman listesi). İlgili maddeler orada `(work-rule §..)`
+> [`todo.md`](../todo.md) dosyasında toplanır (önceliklendirilmiş tüm-doküman listesi). İlgili maddeler orada `(business-rule §..)`
 > atfıyla bulunur; verilen kararlar bu dokümanın **gövdesinde** anlatılır.
 
 > **Çözülenler (yerel karar log'u):**

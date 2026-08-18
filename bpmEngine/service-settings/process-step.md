@@ -39,7 +39,7 @@ Tip-bağımsız: bu alanlar **her adımda** ortaktır; tipe özel ayarlar bunun 
 | `serviceId` | int | Bağlı servis ID'si |
 | `icon` | string | Adım ikonu |
 | `order` | int | Sıralama (sürükle-bırak) |
-| `hideInHistory` | bool | Süreç geçmişinde gizle |
+| `showInHistory` | bool | Süreç geçmişinde göster (vars. `true`) |
 | `skipIfPreApproved` | bool | Önceden onaylanmışsa adımı atla |
 | `skipIfUserProcessStarter` | bool | Başlatan kullanıcıysa adımı atla |
 | `skipWithThisProcessStepActionId` | int | Atlamada **otomatik tetiklenecek `ProcessStepAction`** (adıma bağlı aksiyon) |

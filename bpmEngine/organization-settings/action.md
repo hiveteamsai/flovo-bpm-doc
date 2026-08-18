@@ -33,7 +33,8 @@ yetki...) ise **binding**'de tutulur → `../service-settings/process-step-actio
 | `actionType` | ActionType | Aksiyonun **türü** (`manual` / `eventForm` / `takePhoto` / `selectFile` / `scanBarcode` / `webhook` / `autoAction`); tür kataloğu → `../service-settings/process-step-action.md` §3 |
 | `validation` | bool | Form validasyonu gerekli mi |
 | `stayOnPage` | bool | Aksiyon sonrası sayfada kal |
-| `showHistory` | bool | Süreç geçmişini göster |
+| `showInHistory` | bool | Geçmiş görüntülemede bu aksiyon görünür mü |
+| `showHistory` | bool | Aksiyon tamamlanınca kullanıcıya akış tarihçesini otomatik göster |
 | `actionDisplayType` | ActionDisplayType | Görünürlük: `invisible` / `everywhere` / `onlyFormDetail` / `onlyFastApprove` |
 
 > **[Karar]** `actionType` ve `styleId` **ActionDto şablonunda** yaşar; adıma eklenince **kopyalanır**. Adım-binding

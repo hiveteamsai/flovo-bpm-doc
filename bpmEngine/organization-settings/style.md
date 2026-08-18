@@ -65,7 +65,7 @@ Renkler **dinamik** yönetilir; bunun için **ayrı bir Style yönetim sayfası*
 > atfıyla bulunur; verilen kararlar bu dokümanın **gövdesinde** anlatılır.
 
 > **Çözülenler (yerel karar log'u):**
-- [x] **Style tüketicisi = Action + Status**; form alanları Style **kullanmaz**, adımlar Style **tüketmez** (→ `../../models/index.md` §5).
+- [x] **Style tüketicisi = Action + Status**; form alanları Style **kullanmaz**, adımlar Style **tüketmez** (→ `../models/index.md` §5).
 - [x] Style **kapsamı:** **organizasyon-bazlı** (`organizationId`) + **sistem** (`organizationId=null`, salt-okunur). Servis-bazlı ayrım yok.
 - [x] **Alan kapsamı (v0.18):** yalnız **bg + font**; `fontSize`/`isBold`/`border`/`iconColor` gibi ek alanlar **eklenmez**.
 

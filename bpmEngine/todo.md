@@ -15,7 +15,7 @@
   _(process-step §4 · process-step-action §7 · properties §4)_
 - [ ] **İki-katman sınırı** — **değer atama & karşılaştırma** hem süreç adımı hem iş kuralı olarak var. Sınır:
   iş kuralı = anlık form UX (frontend), adım = kalıcı/akış kararı (motor). Netleşince #Tier1 veri/motor ve
-  tutarlılık kalemleri de oturur. _(flovo-bpm-engine §1.4/§12 · work-rule §6 · process-step §3.4/§3.13)_
+  tutarlılık kalemleri de oturur. _(flovo-bpm-engine §1.4/§12 · business-rule §6 · process-step §3.4/§3.13)_
   - **Not:** İş kuralı (`business-rule.md`) motordan bağımsız frontend'de çalıştığı için **en son** şekillenecek.
 
 ---
@@ -193,7 +193,7 @@
 - [ ] **`actionDisplayType`** gözden geçir (`invisible`/`everywhere`/`onlyFormDetail`/`onlyFastApprove`). _(action §3)_
 - [ ] **`changeList` öğe yapısı** (alan id + yeni değer + tip?) ve **`action` nesnesinin şekli**. _(process-step-action §7)_
 - [ ] **İş kuralı performansı** — `always` kuralları yalnız ilgili property değişince (alan-bağımlı) tetiklensin mi?
-  _(work-rule §6)_
+  _(business-rule §6)_
 - [ ] **Status: kategori/grup** — raporlama/filtreleme için `code`/`definition` yeterli mi, ayrı kategori boyutu gerekli mi?
   _(status §4)_ · _(icon/definition rengi = `styleId`.`fontColor` — **çözüldü**.)_
 - [ ] **Çeviri** — ortak (`null`) kayıt sonradan güncellenince, onu **ezmiş** organizasyon kayıtları etkilenmemeli (teyit).
@@ -209,8 +209,8 @@
 
 ## 🆕 Bu oturumda eklenen açık sorular
 
-- [ ] **Customer API dış referans anahtarı** — API'de kiracı `organizationId` (int) mi, `organizationCode` (string) mi
-  ile belirtilmeli? (organization §2 dış referanslarda `code` diyor.) _(flovo-customer-api §3)_
+- [x] **Customer API dış referans anahtarı (O6) — Tier 2'ye konsolide edildi:** aynı soru Tier 2 "Customer API" alt-maddesinde
+  (**O6**, `organizationId` int ↔ `organizationCode` string) izleniyor; mükerrer kayıt kaldırıldı.
 - [ ] **`apiKeyId` içeriği/adı (Customer API kimliği)** — Customer API ile oluşturulan kayıtlarda oluşturan **User**
   olmadığından işlemi kimin yaptığını kaydetmek için `apiKeyId` alanları var (`ProcessInstance.createdByApiKeyId`,
   `ProcessStepInstance.atApiKeyId`). **Ad geçici**; içine gelecek veri Customer API **erişim mekanizması** kesinleşince
@@ -301,7 +301,7 @@
 > **Action→ProcessStepAction bağımsız kopya** · **Çeviri anahtarı `translationCode` (v0.13)**.)_
 - **Kapsam kararı — servis-bazlı mı, paylaşımlı mı? (ÇÖZÜLDÜ):** hiyerarşi ile — **organizasyon havuzu** = Translation / Style /
   Status / Action (organizasyona bağlı, tüm servislerde); **servis-bazlı** = Property / ProcessViewProfile / ProcessStep /
-  BusinessRule. _(action §3 · status §4 · work-rule §6 · view-profile §5)_
+  BusinessRule. _(action §3 · status §4 · business-rule §6 · view-profile §5)_
 - **Bulut + on-prem hibrit dağıtım (ÇÖZÜLDÜ — tech-stack):** **on-prem + Private Cloud ready** (K8s OpenShift + BYO + tek Helm
   umbrella); merkezi-kimlik çelişkisi **Keycloak AD/LDAP federasyonu** ile giderildi. Kalan minör: saf-on-prem'de sosyal-login
   kapsamı. → [`tech-stack/kubernetes-helm.md`](./tech-stack/kubernetes-helm.md) · [`tech-stack/keycloak.md`](./tech-stack/keycloak.md)

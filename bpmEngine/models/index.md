@@ -78,7 +78,7 @@ ProcessInstance (id; createdByUserId → User · createdByApiKeyId → ApiKey[ge
  │        └─< InstanceAwaitingUser (processStepInstanceId; instanceId → Instance · userId → User · userGroupId → UserGroup)
  └─< Instance (processInstanceId; serviceId → Service · creatorUserId → User · statusId → Status)
       ├─< AssociatedInstance (instanceId → Instance · associatedInstanceId → Instance · associatedPropertyId → Property)
-      ├─1:1─ InstanceValue     (instanceId [PK=FK]; data jsonb code-keyed · version)          ← kaynak-hakikat (tapu)
+      ├─1:1─ InstanceValue     (PK (instanceId, serviceId); instanceId=FK · data jsonb code-keyed · version)  ← kaynak-hakikat (tapu)
       ├─< InstanceAttr         (instanceId, serviceId, propertyCode; num/text/date/bool · display · translationCode)  ← projeksiyon
       ├─< InstanceListItem     (instanceId, serviceId, listCode, itemIndex, attrCode; …)       ← projeksiyon
       ├─< InstanceValueChange  (instanceId; propertyCode · old/newValue · changedByUserId/ApiKeyId · processStepInstanceId)
@@ -150,8 +150,8 @@ LabeledValue = değer şekli (tablo değil): {value, display, translationCode} �
 | AssociatedInstance | `instanceId` · `associatedInstanceId` | Instance.id | N–1 | formlar arası ilişki |
 | AssociatedInstance | `associatedPropertyId` | Property.id | N–1 | `associatedInstanceId`'nin formundaki property |
 | **— Değer saklama (form değerleri — `processInstances/`) —** | _(organizationId: yukarıdaki konsolide runtime satırında)_ | | | |
-| InstanceValue | `instanceId` | Instance.id | 1–1 | PK=FK; kaynak-hakikat JSONB tapu |
-| InstanceValue | `serviceId` | Service.id | N–1 | partition (HASH) + pruning |
+| InstanceValue | `instanceId` | Instance.id | 1–1 | **PK'nin parçası** (=FK); kaynak-hakikat JSONB tapu |
+| InstanceValue | `serviceId` | Service.id | N–1 | **PK'ye dâhil** — partition (HASH) + pruning (`Attr`/`ListItem` simetrisi) |
 | InstanceAttr | `instanceId` | Instance.id | N–1 | skaler fihrist (projeksiyon) |
 | InstanceAttr | `serviceId` | Service.id | N–1 | PK parçası + izolasyon |
 | InstanceAttr | `propertyCode` | Property.code | — | **code-keyed** (id-FK değil) |

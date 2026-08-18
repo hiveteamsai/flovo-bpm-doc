@@ -53,6 +53,9 @@
   `-- excel-export` · `-- expform-*` · `-- add-test-receipt`
 - **↔ Korunan:** `targetProcessStepId` · `changeStatusId` · `authorizationLevel` · `actionDisplayAuthorizedUserGroupId` ·
   `showInHistory` · `environmentRestriction`
+- **Geçmiş alanları (v0.29):** adım `hideInHistory` > **`showInHistory`** (pozitif polarite). **`showInHistory`** (öğe **geçmişte
+  görünür** mü) ile **`showHistory`** (aksiyon **tamamlanınca** tarihçeyi **otomatik göster**) **iki AYRI alandır** — Action +
+  ProcessStepAction ikisini de taşır.
 
 ---
 

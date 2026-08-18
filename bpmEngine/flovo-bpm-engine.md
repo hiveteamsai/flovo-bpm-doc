@@ -1,6 +1,6 @@
 # Flovo BPM Motoru — Çalışma Prensibi (Tasarım Dokümanı)
 
-> **Durum:** 🟢 DETAYLANIYOR — temel kavramlar / çalışma prensibi / yürütme algoritması dolduruldu; bazı bölümler (§2.2, §8, §10, §11) founder/teknik girdi bekliyor.
+> **Durum:** 🟢 DETAYLANIYOR — temel kavramlar / çalışma prensibi / yürütme algoritması dolduruldu; bazı bölümler (§2.2, §3, §7, §8, §10, §11) founder/teknik girdi bekliyor.
 > **Amaç:** Yeni Flovo'nun **BPM motorunun** nasıl çalışacağını (mimari + yürütme prensibi) tanımlamak.
 > Bu doküman "hangi adımlar var" değil (→ `service-settings/process-step.md`), "adımlar ne yapar" değil (→ `service-settings/process-step-action.md`);
 > **"motor bu adımları nasıl çalıştırır"** sorusunu cevaplar.
@@ -93,8 +93,8 @@ Bir servis **yedi yapı taşından** oluşur ve bunlar **iki katmana** ayrılır
 > _(Founder/teknik karar bekliyor. n8n dersi 1–2: orkestrasyonu yürütmeden ayır; durum DB'de, kuyruk yalnız iş
 > ID'leri, worker'lar durumsuz.)_
 - Süreçler/bileşenler: **(açık)**
-- Tek-süreç mi, kuyruk-tabanlı dağıtık worker mı?: **(açık → §12)**
-- **Bulut + on-prem hibrit** dağıtım: **(açık → §12)**
+- Tek-süreç mi, kuyruk-tabanlı dağıtık worker mı?: **teknoloji kararı verildi** (MVP Core BPM monolith → Hexagonal + **NATS kuyruk** + **durumsuz worker** → [`tech-stack/`](tech-stack/index.md)); **motor-içi orkestrasyon↔yürütme detayı açık → §12.**
+- **Bulut + on-prem hibrit** dağıtım: **teknoloji kararı verildi** (on-prem + Private Cloud ready — K8s/Helm + Keycloak federasyon → [`tech-stack/`](tech-stack/index.md)); **operasyon detayı → §12.**
 
 ---
 
@@ -300,7 +300,7 @@ bir aksiyon kodu** olarak modellenir (`default` ↔ `onFail`).
 ---
 
 ## 8. Kalıcılık, Durum ve Denetim
-- **Süreç geçmişi:** adımlar/aksiyonlar geçmiş olarak tutulur (`showHistory` / `hideInHistory`).
+- **Süreç geçmişi:** adımlar/aksiyonlar geçmişte tutulur — `showInHistory` (öğe **geçmişte görünür** mü); aksiyon tamamlanınca kullanıcıya tarihçeyi **otomatik gösterme** = `showHistory` (ayrı alan).
 - **Çoklu dil:** metin alanları çeviri destekli; bildirimler TR/EN ayrı.
 > _(Doldurulacak: ne saklanır — süreç tanımı · çalıştırma kaydı (instance/state) · veri · dosya/binary. Durum yaşam
 > döngüsü (new / running / waiting / done). Saklama/pruning. **Denetim izi** (kurumsal/KVKK). **Dosya/binary depolama performansı**.)_

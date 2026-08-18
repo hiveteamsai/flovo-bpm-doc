@@ -25,7 +25,7 @@ Enum tanımı → [`../enums/criterion-type.md`](../enums/criterion-type.md). Bu
 
 ### `BusinessRuleConditionCompareType` (karşılaştırma değer tipleri — bu modeldeki rol)
 Enum tanımı → [`../enums/business-rule-condition-compare-type.md`](../enums/business-rule-condition-compare-type.md). Bu modelde `referenceValue`/`valueToCompare`'in neyi ifade ettiğini belirler:
-`propertyValue` · `viewProfile` (aktif profil) · `fixedValue` · `fromCalculate` (expression).
+`propertyValue` · `viewProfile` (aktif profil) · `fixedValue` · `fromCalculation` (expression).
 
 ## İlişkiler
 - **N – 1** → `BusinessRule` (`businessRuleId`), `BusinessRuleCondition` (`parentConditionId`, recursive).

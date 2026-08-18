@@ -1,6 +1,6 @@
 # Yansıma Yayılımı — `parentProperty` A′ (materialized) runtime mekanizması
 
-> **Durum:** 🟢 TANIMLI (v0.27 — instance-seviyesi `ReflectionLink` tablosu **kaldırıldı**; yayılım `AssociatedInstance` + `Property` metadata ile çözülür).
+> **Durum:** 🟢 TANIMLI (v0.27 — instance-seviyesi `ReflectionLink` tablosu **kaldırıldı**; yayılım `AssociatedInstance` + `Property` metadata ile çözülür · v0.28 — §9 ata-referansı kararı + §3 ters-arama yön nüansı).
 > **Bu bir veri modeli DEĞİLDİR** — `parentProperty` `reflectionMode=materialized` (A′) alanların, üst kaynak değişince child kopyalarının **nasıl tazelendiğini** anlatan **çalışma-zamanı mekanizmasıdır**.
 > **İlgili:** [`../enums/reflection-mode.md`](../enums/reflection-mode.md) (snapshot/live/materialized — **ne**) · [`../enums/reflection-propagation.md`](../enums/reflection-propagation.md) (async/sync — **ne zaman**) · [`propertyValuesTemplates/parent-property.md`](./propertyValuesTemplates/parent-property.md) (değer şekli) · [`associated-instance.md`](./associated-instance.md) (ilişki) · [`instance-value-outbox.md`](./instance-value-outbox.md) (olay) · [`instance-value.md`](./instance-value.md) (kaynak).
 

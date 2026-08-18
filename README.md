@@ -1,20 +1,29 @@
-# Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+# Flovo BPM — Tasarım & Analiz Dokümanları
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+Bu depo bir **kod deposu değildir.** Flovo'nun **yeni BPM motorunun** tasarım/analiz dökümanlarını (**Markdown**) içerir.
+Gerçek kod ayrı bir repoda geliştirilecektir. Çalışma dili **Türkçe**dir; tanımlayıcılar (alan/kod/enum adları) İngilizcedir.
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+## Flovo nedir?
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+Flovo, **Coden** tarafından geliştirilen **bulut tabanlı, yapay zekâ destekli kurumsal iş süreçleri yönetim (BPM)
+platformudur.** Çekirdeği **masraf yönetimi** olup **görev, İK, envanter ve denetim** modülleriyle genişler.
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+## İçerik
+
+- **[`bpmEngine/`](bpmEngine/index.md)** — asıl çalışma: yeni BPM motoru tasarımı.
+  - `flovo-bpm-engine.md` · `flovo-customer-api.md` — motor çalışma prensibi · Customer API
+  - `organization-settings/` · `service-settings/` — ayar (davranış) dokümanları
+  - `models/` — veri modelleri (şema referansı) + `enums/`
+  - `models/processInstances/propertyValuesTemplates/` — tip-bazlı değer saklama şablonları (18 tip)
+  - `sampleProcess/` — uçtan uca örnek süreçler
+  - `research/` — BPM referansları + karşılaştırmalar (`compare/`)
+  - `todo.md` — açık kararlar/sorular (önceliklendirilmiş, Tier 0–3)
+- **`commitNotes/`** — sürüm-bazlı değişiklik notları (`v0-X.md`)
+- **`archive/`** — önceki pazar/ürün araştırması + sunum arşivi
+
+## Nereden başlamalı?
+
+Motor tasarımına giriş için **[`bpmEngine/index.md`](bpmEngine/index.md)**; açık kararlar için
+**[`bpmEngine/todo.md`](bpmEngine/todo.md)**.
+
+> Ayrıntılı çalışma kuralları ve klasör yapısı: **[`CLAUDE.md`](CLAUDE.md)**.

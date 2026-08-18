@@ -31,7 +31,7 @@ grubu** seçilir; **seçilen gruptaki kullanıcılar** o yetkiye sahip olur.
 | **Tüm raporları görme** | `viewAllReportsUserGroupId` | Organizasyondaki **tüm raporları** görüntüleme. |
 
 > **Yapılandırma vs erişim:** Yetki **yapılandırmasını** (admin listesi + grup atamaları) yalnız **adminler** değiştirir.
-> `OrganizationSettings` yetkisi ise gruba **yapısal veriyi** yönetme erişimi verir; **admin/yetki yapılandırması** yine admin'e özeldir.
+> `organizationSettings` yetkisi ise gruba **yapısal veriyi** yönetme erişimi verir; **admin/yetki yapılandırması** yine admin'e özeldir.
 
 ---
 

@@ -11,14 +11,17 @@
 |---|---|---|---|
 | `instanceId` | int | PK · FK → Instance.id | Hangi form. `Instance` ile **1–1** (PK aynı zamanda FK). |
 | `organizationId` | int | (denormalize) | Kiracı kimliği — **RLS/tenant izolasyonu** + partition için `Instance`'tan denormalize edilir. |
-| `serviceId` | int | FK → Service.id | Hangi servis — **partition (HASH)** + sorgu pruning. |
+| `serviceId` | int | **PK** · FK → Service.id | Hangi servis — **partition (HASH)** + sorgu pruning. **PK'ye dâhildir:** partition kolonu PK'de olmalı (HASH partition gereği); ayrıca `InstanceAttr`/`InstanceListItem` ile simetri + **servis-kapsamlı join'siz** sorgu. |
 | `data` | jsonb | — | **Tüm alan değerleri — `code`-keyed** (JSON anahtarı = `Property.code`, id değil). API, iş kuralı ve custom code aynı dili konuşur. Etiketli seçimler `LabeledValue` şekliyle (`{value, display, translationCode}`) yazılır → [`labeled-value.md`](./propertyValuesTemplates/labeled-value.md). |
 | `version` | int | — | Her update'te **+1**; projektör **idempotency** anahtarı (`event.version <= last_projected_version → skip`). |
 | `createdDate` | datetime | — | Oluşturulma zamanı. |
 | `updatedDate` | datetime | — | Son güncelleme zamanı. |
 
+> **Birincil anahtar:** `(instanceId, serviceId)`. `instanceId` tek başına da benzersizdir (Instance ile **1–1**); `serviceId`
+> **partition kolonu** olduğundan PK'ye dâhil edilir (`InstanceAttr`/`InstanceListItem` PK deseniyle simetri).
+
 ## İlişkiler
-- **1 – 1** ↔ `Instance` (`instanceId` — PK=FK).
+- **1 – 1** ↔ `Instance` (`instanceId` — PK'nin parçası, aynı zamanda FK).
 - **N – 1** → `Service` (`serviceId`).
 - **1 – N** → `InstanceAttr` · `InstanceListItem` · `InstanceValueChange` · `InstanceValueOutbox` (hepsi `instanceId` ile;
   fihrist/olay/geçmiş kayıtları bu tapudan türetilir/beslenir).

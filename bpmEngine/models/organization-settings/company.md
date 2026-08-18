@@ -22,7 +22,7 @@
 ## İlişkiler
 - **N – 1** → `Organization` (`organizationId`).
 - **N – N** ← `companyIds` ile bağlananlar: `Department`, `Profession`, `User`, `UserGroup`, `AdditionalQualification`.
-- **N – 1** ← `companyId` (tekil) ile bağlananlar: `CostCenter`, `CreditCard`.
+- **N – 1** ← `companyId` (tekil) ile bağlananlar: `CostCenter`, `CreditCard`, `Position`.
 
 ## Notlar
 - Diğer bileşenlerin **şirket bağlantısının temelidir**. UI seçim listelerinde (`IOrganizationParameter`) veri kaynağı olarak kullanılır.

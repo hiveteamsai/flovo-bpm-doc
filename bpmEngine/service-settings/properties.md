@@ -97,8 +97,8 @@ Tipe-özel ayarlar → §3.
 > **dinamik = iş kuralı `fillDataSource`**; mevcut `PropertyItem` yapısı **aynen kullanılmaya devam eder**.
 
 ### 2.5 — İlişki alanları (ilişkisel alanlar için)
-`childServiceId` · `serviceItemControlId` · `refPropertyId` · `parentPropertyId` · `relatedPropertyIds`.
-_(Kullanımı → §3.13 Form List, §3.15 Parent Property)_
+`childServiceId` · `serviceItemControlId` · `refPropertyId` · `parentPropertyId` · `relatedPropertyIds` · `reflectionMode` · `reflectionPropagation`.
+_(Kullanımı → §3.13 Form List, §3.15 Parent Property; `reflectionMode` ayrıca **§3.14 Flow Info / §3.16 User Info**'da da geçerli — `reflectionPropagation` yalnız `parentProperty`+`materialized`)_
 
 ### 2.6 — PropertyItem (seçim öğesi — statik liste elemanı)
 `propertyItems`, seçim alanlarının (Combobox §3.3 · Radiobutton List §3.7) **statik seçeneklerini** tutan listedir.
@@ -215,13 +215,14 @@ ilişkilendirilip görüntülendiği **alt-servis** alanı.
   **boş/false = kapalı**). **Eski alan-düzeyi `selectableModeActive`'in yerini alır.**
 - _(öneri)_ `selectedEditable` (bool) — `selectableVisible` açıksa, **tikler bu profilde düzenlenebilir** mi (örn. yönetici ✓ / başlatan ✗).
 > Form List, **liste seçimi** yapan Combobox'tan farklıdır; **alt-servis kayıtları** bağlar/görüntüler.
-> **Açık konu:** alt-servisin **görüntülenecek alanları / seçilebilirliği** view-profile ile ayarlanacak
+> Alt-servisin **görüntülenecek alanları / seçilebilirliği** view-profile ile ayarlanır
 > (→ `../models/service-settings/view-profile-property.md`). Süreç Adımı Tetikleme / Değer Atama bu alt-servisle çalışır.
+> **Kalan açık ayarlar** (`reOrder`/`editOnlyOwnPosition` profil-bazlılığı) → [`../todo.md`](../todo.md).
 
 ### 3.14 — `flowInfo` (Flow Info)
 **Akış (süreç) ile ilgili bilgileri** forma getirmek için kullanılır — oluşturulma tarihi (createdDate), oluşturan
 kullanıcı (creator user), durum (status) vb. **Salt-okunur** akış metadata'sı.
-**Ayarlar:** `flowInfoValue` (hangi akış bilgisi getirilecek). Girdi değildir. _(Kullanıcı bilgisi → §3.16 User Info.)_
+**Ayarlar:** `flowInfoValue` (hangi akış bilgisi getirilecek) · **`reflectionMode`** — değerin **oluşturma-anı mı (snapshot) güncel mi (live)** gösterileceği: `live` (canlı, **vars.**) · `snapshot` (dondurulmuş). `materialized` **yok** (yalnız parentProperty). → [`../models/enums/reflection-mode.md`](../models/enums/reflection-mode.md). Girdi değildir. _(Kullanıcı bilgisi → §3.16 User Info.)_
 
 ### 3.15 — `parentProperty` (Parent Property)
 **Düzenlenebilir bir alan değildir.** Bağlı olduğu **parent**'taki (üst süreç/form) hangi alanın forma getirilmesi
@@ -237,7 +238,7 @@ mekanizması (ayrı bir "link" tablosu **yok**; `AssociatedInstance` + `Property
 ### 3.16 — `userInfo` (User Info)
 **Kullanıcı bilgilerini** forma getirmek için kullanılır — örn. **giriş yapan kullanıcının** adı, e-postası, departmanı,
 ünvanı, yöneticisi vb. **Salt-okunur** kullanıcı metadata'sı (Flow Info'nun **kullanıcı karşılığı**).
-**Ayarlar:** `userInfoValue` (hangi kullanıcı bilgisi getirilecek). Girdi değildir.
+**Ayarlar:** `userInfoValue` (hangi kullanıcı bilgisi getirilecek) · **`reflectionMode`** — `snapshot` (oluşturma-anı dondurulmuş, **vars.**) · `live` (User'dan güncel). `materialized` **yok** (yalnız parentProperty). → [`../models/enums/reflection-mode.md`](../models/enums/reflection-mode.md). Girdi değildir.
 
 ### 3.17 — `groupByTaxReceipt` (Group By Tax Receipt)
 Masraf/fiş kalemlerini **vergiye göre gruplandıran** özel alan (masraf süreçleri). Kullanıcı **satır satır** kalem ekler;

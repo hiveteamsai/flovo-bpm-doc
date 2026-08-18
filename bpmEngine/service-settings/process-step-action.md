@@ -24,7 +24,7 @@
 
 ### 1.1 — Aksiyon Şablonu (`ActionDto`) → `../organization-settings/action.md`
 Aksiyon **tanımı**, yeniden kullanılabilir bir **şablondur (`ActionDto`)**: `code` · `definition` · **`translationCode`** ·
-`icon` · `styleId` · `actionType` · `validation` · `stayOnPage` · `showHistory` · `actionDisplayType`.
+`icon` · `styleId` · `actionType` · `validation` · `stayOnPage` · `showInHistory` · `showHistory` · `actionDisplayType`.
 Bir süreç adımına aksiyon eklenirken, tanımlı ActionDto'lar arasından seçilir ve bu alanlar **kopyalanır**.
 **Detay → `../organization-settings/action.md`.**
 
@@ -45,7 +45,8 @@ _(`translationCode` `null` ise doğrudan `definition` kullanılır → çeviri e
 | `mergeParameter` | **Parametre birleştirme** (bool) — hedefe taşınan `parameters`, adıma **gelen** parametrelerle birleştirilsin mi (§2.1). |
 | `authorizationLevel` | **Yetki seviyesi** (aksiyonu kim yürütebilir) |
 | `actionDisplayAuthorizedUserGroupId` | Aksiyonu **görebilecek** kullanıcı grubu |
-| `showInHistory` | Süreç geçmişinde göster |
+| `showInHistory` | Geçmiş görüntülemede bu aksiyon görünür mü |
+| `showHistory` | Aksiyon tamamlanınca kullanıcıya akış tarihçesini **otomatik göster** |
 | `environmentRestriction` | Ortam kısıtı |
 
 > **[İki ayrı katman]** **Aksiyon kodu** ile **`targetProcessStepId`** farklı işler yapar:

@@ -19,7 +19,7 @@
 | `icon` | string | — | Adım ikonu. |
 | `order` | int | — | Sıralama (sürükle-bırak). |
 | `environmentRestriction` | string | — | Ortam kısıtı. _(Alan formatı açık → [`../../todo.md`](../../todo.md) "Ortam modeli".)_ |
-| `hideInHistory` | bool | — | Süreç geçmişinde gizle. |
+| `showInHistory` | bool | — | Süreç geçmişinde **göster** (vars. `true` — önceki `hideInHistory` ters-polaritesi kaldırıldı). |
 | `skipIfPreApproved` | bool | — | Önceden onaylanmışsa adımı atla. |
 | `skipIfUserProcessStarter` | bool | — | Başlatan kullanıcıysa adımı atla. |
 | `skipWithThisProcessStepActionId` | int | FK → ProcessStepAction | Atlamada **otomatik tetiklenecek aksiyon** — adıma bağlı **`ProcessStepAction`**'ı işaret eder (Action **şablonuna** değil; kopya modeliyle uyumlu). `skipIfPreApproved` ile birlikte kullanılır (davranış → `../../service-settings/process-step.md` §2). |

@@ -18,7 +18,8 @@
 | `actionType` | ActionType | — | Aksiyonun **türü** (aşağıda) — [`../enums/action-type.md`](../enums/action-type.md). |
 | `validation` | bool | — | Form validasyonu gerekli mi. |
 | `stayOnPage` | bool | — | Aksiyon sonrası sayfada kal. |
-| `showHistory` | bool | — | Süreç geçmişini göster. |
+| `showInHistory` | bool | — | Kullanıcı süreç geçmişini görüntülerken bu aksiyon **geçmişte görünür** mü. |
+| `showHistory` | bool | — | Aksiyon tetiklenip **BPM işleri tamamlandıktan sonra** kullanıcıya **akış tarihçesini otomatik göster**. |
 | `actionDisplayType` | ActionDisplayType | — | Görünürlük — [`../enums/action-display-type.md`](../enums/action-display-type.md): `invisible` / `everywhere` / `onlyFormDetail` / `onlyFastApprove`. |
 
 ### `actionType` değerleri (bu modeldeki rol)

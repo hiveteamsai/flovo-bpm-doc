@@ -90,7 +90,7 @@ Mevcut **15 adım tipi** (biri, `atama`, enum'da tanımlı ama **kullanılmayan*
 **🧩 Tipe-özel ayarların modellenmesi (yeni)**
 - **`stepType` (ProcessStepType) + `settings` (JSONB):** Tipe-özel ayarlar `ProcessStep.settings` JSONB kolonunda **gömülü**
   (ayrı alt-tablo yok); şekli `stepType`'a göre yorumlanır. Tip-tip ayar modelleri → `../../models/service-settings/process-step.md` §3.
-- **Yeni adım-tipi enum'ları:** `ProcessStepType` (21) · `HttpMethod` · `ProcessStepUserType` · `ProcessStepUserGroupType` ·
+- **Yeni adım-tipi enum'ları:** `ProcessStepType` (22) · `HttpMethod` · `ProcessStepUserType` · `ProcessStepUserGroupType` ·
   `NotificationChannel` · `NotificationRecipientType` · `NotificationUserType` · `TimerCalculationType` · `WorkTimeSelection` ·
   `TimeAdjustmentOption` · `InstanceDeleteMode`; ayrıca `KeyboardType`/`BarcodeFormat` placeholder'ları dolduruldu. → `../../models/enums/index.md`.
 - **Bildirim:** sabit TR/EN mesaj alanları → **dinamik dil listesi** (`{languageCode, text}`); **Toast** kanalı eklendi; `parameters` → `DynamicParameter[]`;
@@ -124,12 +124,12 @@ Mevcut **15 adım tipi** (biri, `atama`, enum'da tanımlı ama **kullanılmayan*
 | `actionType` (ProcessActionDto) | renk/stil (success/danger…) | **`styleId`** (dinamik Style varlığına FK) |
 | `action` (ProcessStepActionDto) | davranış (fire-event…) | **`actionType`** (tür: `manual`/`eventForm`…) |
 
-**↔ Korundu (binding'de):** **`targetProcessStepId`** (hedef adım), `changeStatusId`, `authorizationLevel`, `actionDisplayAuthorizedUserGroupId`, `showInHistory`, `environmentRestriction`.
+**↔ Korundu (binding'de):** **`targetProcessStepId`** (hedef adım), `changeStatusId`, `authorizationLevel`, `actionDisplayAuthorizedUserGroupId`, `showInHistory`, `showHistory`, `environmentRestriction`.
 
 ---
 
 ## 4. Form Alanları (`../../service-settings/properties.md`)
-Mevcut **30 ControlType** → yeni **19 alan** (16 founder + **3 mevcuttan korunan**; bazıları birleştirildi/çıkarıldı).
+Mevcut **30 ControlType** → yeni **18 alan** (16 founder + **2 mevcuttan korunan**; bazıları birleştirildi/çıkarıldı).
 
 **➕ Eklendi**
 - **İnce çekirdek + tipe-özel ayar** ayrımı (şişman ~60 alanlık `PropertyDto` sadeleştirildi).
@@ -148,7 +148,7 @@ Mevcut **30 ControlType** → yeni **19 alan** (16 founder + **3 mevcuttan korun
 - **`precition`** (Numeric) — `maxDecimalDigits` ile birleşti.
 
 **↔ Mevcuttan korunan (ayarları belgelendi)**
-- `GroupByTaxReceiptController` · `KeyValueListControl` · `ImageAreaSelector` (§3.17–§3.19) — davranış+ayarları kaynaktan çıkarıldı.
+- `GroupByTaxReceiptController` · `KeyValueListControl` (§3.17–§3.18) — davranış+ayarları kaynaktan çıkarıldı. _(`ImageAreaSelector` v0.21'de **kaldırıldı** → footer changelog; 19→18.)_
 
 **✏️ Yeniden adlandırılan**
 - **ModalList → `formList`** (Form List; alt-servis alanı; **`combobox` değil**).
@@ -321,6 +321,16 @@ Motorun **çalışma-zamanı** kayıtları (ayarlardan üretilen instance/execut
 `../../service-settings/process-step.md` §3.20) — bağımsız alt sürecin **giriş düğümü**; webhook **veya** Süreç Adımı Tetikleme
 ile tetiklenir, webhook aksiyonu bu adıma bağlı **`default`**'a dönüşür. Alt süreç ana süreçten **bağımsız, yeni bir `ProcessInstance`**
 olarak çalışır; **`ProcessInstance.parentProcessInstanceId`** ile ana sürece bağlanır.
+
+**➕ Değer saklama katmanı (v0.26–v0.28 — eski app'te karşılığı yok)**
+Eski app form değerlerini satır-bazlı/dağınık tutarken, yeni motor **CQRS + Outbox** deseniyle ayrık kaynak/fihrist katmanı kurar:
+- **`InstanceValue`** — kaynak-hakikat: bir instance'ın **tüm alan değerleri** tek **JSONB** (`data`), **code-keyed** (anahtar = `Property.code`). PK `(instanceId, serviceId)`; `serviceId` HASH-partition kolonu. **Anahtar konvansiyonu:** değer saklayan her alan `data`'da anahtarıyla temsil edilir, anahtar **her zaman bulunur**; boş = `null`/`[]` (istisna: `text` + `live` yansımalar + `savePropertyToDb=false`).
+- **`InstanceAttr`** (skaler) · **`InstanceListItem`** (liste/çok-değerli — `groupByTax`/`keyValueList`/çoklu combobox/formList satır durumu/file) — `data`'dan **yeniden üretilebilir** tipli projeksiyon (rapor/filtre/sıra); `Property.projectToAttr=true` olanlar yansır.
+- **`InstanceValueOutbox`** (transactional outbox — değer+olay aynı TX; `version` idempotency + `changedPropertyCodes` delta + `hopCount`) · **`InstanceValueChange`** (append-only değer geçmişi) · **`LabeledValue`** (etiketli seçim `{value, display, translationCode}` şekli). Altyapı: PostgreSQL/JSONB + **NATS JetStream** + MinIO (binary) + Go projektör.
+- **Yansıma alanları (A′):** `parentProperty` için `reflectionMode` (`snapshot`/`live`/`materialized`) + `reflectionPropagation` (`async`/`sync`). **Instance-seviyesi `ReflectionLink` tablosu YOK** — yayılım `AssociatedInstance` ters araması + `Property` metadata ile çözülür; **ata-referansı** = röle zinciri (materialized hop-hop) veya `live`. `reflectionMode` ayrıca **`userInfo`/`flowInfo`**'da (oluşturma-anı ↔ güncel seçimi) kullanılır.
+- **Tip-bazlı değer şablonları:** 18 `propertyType` için `data` şekli + projeksiyon eşlemesi → [`../../models/processInstances/propertyValuesTemplates/index.md`](../../models/processInstances/propertyValuesTemplates/index.md).
+
+_(Ayrıntı → [`../../models/processInstances/index.md`](../../models/processInstances/index.md) · [`../property-value-storage/index.md`](../property-value-storage/index.md).)_
 
 ---
 
