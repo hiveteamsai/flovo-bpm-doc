@@ -10,7 +10,7 @@
 ```json
 { "priority": { "value": "1", "display": "Yüksek", "translationCode": "high…" } }
 ```
-- Seçilmemiş: anahtar **yok** ya da `null`.
+- Seçilmemiş: değer **`null`** (anahtar her zaman bulunur — `code` ile; → [`../instance-value.md`](../instance-value.md)).
 
 ## 2. Projeksiyon — `projectToAttr=true`
 | Kaynak | Hedef | Kolon eşlemesi |

@@ -10,7 +10,7 @@ Sabit-genişlikli **`"HH:mm"`** (veya `format`'a göre `"HH:mm:ss"`) **`string`*
 ```json
 { "startTime": "14:30" }
 ```
-- Boş/girilmemiş: anahtar **yok** ya da `null`.
+- Boş/girilmemiş: değer **`null`** (anahtar her zaman bulunur — `code` ile; → [`../instance-value.md`](../instance-value.md)).
 
 ## 2. Projeksiyon — `projectToAttr=true`
 | Kaynak | Hedef | Kolon |

@@ -10,7 +10,7 @@ Düz **`string`**. `minLine`/`maxLine` yalnız görünümü (tek/çok satır) de
 ```json
 { "note": "Ödeme açıklaması...\nİkinci satır" }
 ```
-- Boş/girilmemiş: anahtar **yok** ya da `null`.
+- Boş/girilmemiş: değer **`null`** (anahtar her zaman bulunur — `code` ile; → [`../instance-value.md`](../instance-value.md)).
 
 ## 2. Projeksiyon — `projectToAttr=true`
 | Kaynak | Hedef | Kolon |

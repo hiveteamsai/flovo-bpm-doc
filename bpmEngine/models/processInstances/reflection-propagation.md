@@ -23,15 +23,18 @@ Bu yüzden **instance-seviyesi `ReflectionLink` tablosu kaldırıldı:** `(paren
 > Eşleme runtime'da **`code` ile** eşlenir (değer katmanı **code-keyed**): değişen üst alanın `code`'u ↔ child tanımının referans aldığı alanın `code`'u.
 
 ## 3. Child'ları bulma (`AssociatedInstance` ters araması)
-Parent instance **P** güncellenince, P'yi üst kabul eden child'lar:
+Parent instance **P** güncellenince, P'yi üst kabul eden child'lar bulunur. **Ters aramanın yönü, bağlayan alanın tipine göre
+değişir** — çünkü `AssociatedInstance`'ta "üst" tarafın hangi kolonda durduğu Form List ↔ Combobox'ta farklıdır
+(bkz. [`associated-instance.md`](./associated-instance.md) alan semantiği):
 
-```
-AssociatedInstance
-  WHERE associatedInstanceId = P            -- ilişki alanını (Form List) İÇEREN üst form
-    AND associatedPropertyId = <bağlayan Form List>
-  → instanceId = child'lar
-```
-(Aynı tablo/yön, **Üst Form Kullanıcı** adımının ters aramasının tersidir — bkz. [`associated-instance.md`](./associated-instance.md). `associatedInstanceId` indekslidir → **tarama yok**.)
+| Bağlayan alan | Üst (P) hangi kolon | Sorgu | Child'lar |
+|---|---|---|---|
+| **Form List** (üst form listeyi **içerir**) | `associatedInstanceId` | `WHERE associatedInstanceId = P AND associatedPropertyId = <Form List>` | `instanceId` |
+| **Combobox** (child, P'yi **seçer**) | `instanceId` | `WHERE instanceId = P AND associatedPropertyId = <Combobox>` | `associatedInstanceId` |
+
+Eşleme (`parentPropertyId`/`refPropertyId`) **hangi bağlayan alanı** işaret ettiğinden alanın tipi bellidir → runtime **doğru kolonu**
+seçer. Her iki yön de indekslidir (`associatedInstanceId` / `instanceId`) → **tarama yok**. (Bu ters arama, **Üst Form Kullanıcı**
+adımının aramasının yön olarak tersidir — bkz. [`associated-instance.md`](./associated-instance.md).)
 
 ## 4. Async akış (VARSAYILAN — `reflectionPropagation=async`)
 ```
@@ -82,7 +85,28 @@ Parent commit anı ile child tazeleme arası: **eventual consistency** (A′'in 
 ## 8. Eventual consistency (kabul)
 `async`'te üst commit olduğu an child kopya **kısa süre eski** olabilir; tazeleme arka planda tamamlanır. Değer okuması hep **somut** (hızlı), güncelliği **eventual**. Anında tutarlılık gerekiyorsa `sync` (guardrail'li) seçilir.
 
-## Açık sınır (varsayım — v0.27)
-`parentProperty` **doğrudan üst formu** referans alır (ata/grandparent değil) → `AssociatedInstance` **tek-hop** yeterli, bu mekanizma tam oturur. **Ata-referansı** gerekirse: `AssociatedInstance` zincirinde **traversal** ya da yalnız o **non-adjacent** kenarlar için **opsiyonel edge-cache** (varsayılanda yok) — açık karar → `../../todo.md`.
+## 9. Referans kapsamı — doğrudan üst vs ata (KARAR, v0.28)
+**Her `parentProperty` kenarı daima yalnız DOĞRUDAN üst formu referans alır** (`AssociatedInstance` **tek-hop**). **Ata (grandparent+)
+referansı ayrı/non-adjacent bir mekanizma değildir** — `AssociatedInstance`'ta "ata instance" diye bir satır yoktur (iki kenar ortak
+bir ara-formu paylaşır); ata ancak zincir yürünerek bulunur. Bu yüzden ata değeri iki mevcut yolla modellenir:
 
-*Oluşturma: 2026-08-04. Güncelleme: 2026-08-10 (ReflectionLink tablosu kaldırıldı → AssociatedInstance + Property metadata mekanizması).*
+1. **Röle zinciri (materialized — sorgulanabilir/indekslenebilir ata değeri, önerilen varsayılan):** **ara form**, ata alanını **kendi
+   `parentProperty`'si** olarak (gizli olabilir) yeniden yayınlar; yaprak, **ara formun bu alanını** yansıtır. Böylece her kenar tek-hop
+   kalır ve değer **hop başına** aşağı iner. Yayılım **§4 kaskadının kendisidir**: ara alan `isReflectionSource=true` olduğundan üst
+   değişince önce ara form (hop 1), sonra yaprak (hop 2) tazelenir; derinlik/döngü **`hopCount` + O3** ile sınırlı.
+
+   ```
+   Proje.budget değişti  →  reverse(Combobox): masraf formu.projeBudget (hop1)  →  reverse(FormList): masraf.projeBudget (hop2)
+   ```
+   **Bedel:** ara form o alanı (görünmese de) **taşımak zorundadır**; ve her hop **eventual-consistency** penceresi ekler (async).
+
+2. **`live` okuma-anı zincir join (yalnız gösterim — depolama/yayılım yok):** yaprağın `parentProperty`'si `reflectionMode=live` ise
+   ata değeri **okuma anında** `AssociatedInstance` zinciri yürünerek çözülür. Sıfır depolama + sıfır yayılım, ama **okuma pahalı**
+   ve **indekslenemez/aggregate edilemez**. Ata alanı yalnız görüntüleniyor + sorgu/toplam gerekmiyorsa tercih edilir.
+
+> **Reddedilen seçenek:** non-adjacent kenarlar için ayrı **edge-cache** tablosu — kaldırılan `ReflectionLink`'i geri getirir
+> (redundant + staleness). Recursive reverse-join (path expression) ise fan-out patlaması + ordering/döngü karmaşası getirir; tek
+> generic yolu bozar. İkisi de **kullanılmaz**. _(Kalan açık: yalnız **sayısal** eşikler — O3 derinlik/döngü limiti + `sync` fan-out
+> eşiği → `../../todo.md`.)_
+
+*Oluşturma: 2026-08-04. Güncelleme: 2026-08-10 (ReflectionLink tablosu kaldırıldı → AssociatedInstance + Property metadata mekanizması) · 2026-08-17 (ata referansı = röle zinciri / `live`; ters arama yön nüansı).*

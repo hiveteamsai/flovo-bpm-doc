@@ -10,7 +10,7 @@ Düz **`string`** — barkodun **ham değeri**. `barcodeFormat` yalnız render/o
 ```json
 { "barcode": "8690123456789" }
 ```
-- Boş/girilmemiş: anahtar **yok** ya da `null`.
+- Boş/girilmemiş: değer **`null`** (anahtar her zaman bulunur — `code` ile; → [`../instance-value.md`](../instance-value.md)).
 
 ## 2. Projeksiyon — `projectToAttr=true`
 | Kaynak | Hedef | Kolon |

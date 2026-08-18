@@ -25,7 +25,7 @@
     } }
 ] }
 ```
-- Boş: anahtar **yok** / `null` / `[]`.
+- Boş: değer **`[]`** (anahtar her zaman bulunur — `code` ile; → [`../instance-value.md`](../instance-value.md)).
 
 ## 2. Projeksiyon — `projectToAttr=true`
 Çoğunlukla **`projectToAttr=false`** (dosya nadiren aranır). Gerekirse **InstanceListItem** (her dosya = `itemIndex`):

@@ -10,7 +10,7 @@ Düz **`number`** (tam sayı veya ondalık). `maxDecimalDigits`/`enableNegative`
 ```json
 { "amount": 1800.50 }
 ```
-- Boş/girilmemiş: anahtar **yok** ya da `null`.
+- Boş/girilmemiş: değer **`null`** (anahtar her zaman bulunur — `code` ile; → [`../instance-value.md`](../instance-value.md)).
 
 ## 2. Projeksiyon — `projectToAttr=true`
 | Kaynak | Hedef | Kolon |

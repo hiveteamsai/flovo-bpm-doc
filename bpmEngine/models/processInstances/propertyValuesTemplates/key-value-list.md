@@ -13,7 +13,7 @@
   { "key": "Beden", "value": {"value":"L","display":"L","translationCode":null} }
 ] }
 ```
-- Boş: anahtar **yok** ya da `[]`.
+- Boş: değer **`[]`** (anahtar her zaman bulunur — `code` ile; → [`../instance-value.md`](../instance-value.md)).
 
 ## 2. Projeksiyon — `projectToAttr=true`
 **Satır × alt-alan** → [`InstanceListItem`](../instance-list-item.md). Her satır `itemIndex`:

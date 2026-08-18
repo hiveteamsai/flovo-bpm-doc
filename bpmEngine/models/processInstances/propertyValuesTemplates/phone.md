@@ -15,16 +15,17 @@
 ```json
 { "phone": { "countryCode": "+90", "number": "532 123 45 67" } }
 ```
-- Boş/girilmemiş: anahtar **yok** ya da `null`.
+- Boş/girilmemiş: değer **`null`** (anahtar her zaman bulunur — `code` ile; → [`../instance-value.md`](../instance-value.md)).
 - `number` **maskeli (görünen) biçimde** `text` olarak tutulur (Q9) — ham rakama normalize edilmez.
 
 ## 2. Projeksiyon — `projectToAttr=true`
 | Kaynak | Hedef | Kolon |
 |---|---|---|
-| `data["<code>"]` (`countryCode`+`number` birleşik) | **InstanceAttr** | `textValue` = tam numara (ör. `"+905321234567"`) |
+| `data["<code>"]` (`countryCode`+`number` birleşik) | **InstanceAttr** | `textValue` = **normalize** tam numara (ör. `"+905321234567"`) |
 
+- **Projektör maskeyi soyar:** `number`'daki rakam-dışı karakterler (boşluk/tire/parantez) **atılır** ve `countryCode` ile birleştirilir → yalnız-rakam (E.164 benzeri) tam numara `textValue`'ya yazılır. **Kaynak `data`'daki `number` maskeli kalır** (normalize yalnız fihrist içindir; §1 Q9).
 - Diğer kolonlar = **null**.
-- Arama tam numara üzerinden `textValue`; tam eşitlik ayrıca `data` GIN'iyle (alt-alan `countryCode`/`number` bazlı da sorgulanabilir).
+- Arama normalize numara üzerinden `textValue`; tam eşitlik ayrıca `data` GIN'iyle (alt-alan `countryCode`/`number` bazlı da sorgulanabilir).
 
 ## 3. Notlar
 - `number` **maskeli metin** olarak saklanır (Q9); arama maskeli değer üzerinden `textValue`.

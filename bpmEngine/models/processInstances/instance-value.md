@@ -30,6 +30,10 @@
 - **Yazım = tek atomik TX:** `UPDATE InstanceValue (data, version+1, updatedDate)` ile `INSERT InstanceValueOutbox`
   **aynı DB transaction'ında** yazılır (biri yazılır diğeri yazılmaz durumu imkânsız). `saveChangeLog=true` alanlar için
   aynı TX'te `InstanceValueChange` de yazılır. Arka planda: Outbox → NATS → generic projektör (tam-yansıtma, delta değil).
+- **Anahtar konvansiyonu (KARAR):** Değer saklayan her alan `data`'da **`Property.code`** anahtarıyla temsil edilir ve **anahtar
+  her zaman bulunur** (anahtarlar **daima** `code`; id değil). Boş değer **anahtar yokluğuyla değil**, değerin **`null`** (skaler) /
+  **`[]`** (liste) olmasıyla gösterilir. **İstisna — `data`'ya hiç yazmayan alanlar:** `text` (statik label) · **`live`** yansımalar
+  (`flowInfo`/`userInfo`/`parentProperty`) · **`savePropertyToDb=false`** (geçici/backing alan) → bunların anahtarı olmaz.
 - **`data` küçük tutulur:** JSONB update = satırın **tümünün** yeniden yazılması (MVCC). Bu yüzden dosya/binary
   **JSONB'ye gömülmez** — MinIO'ya konur, `data`'da yalnız URL/object key durur (→ `tech-stack/minio.md`).
 - **`status` `data`'da değildir:** formun canlı durumu `Instance.statusId` **kolonundadır** (her onayda tüm `data` yeniden

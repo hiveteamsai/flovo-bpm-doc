@@ -10,7 +10,7 @@ Düz **`bool`** (`true`/`false`). `defaultValue` başlangıç değerini belirler
 ```json
 { "isUrgent": true }
 ```
-- Girilmemiş: anahtar **yok** (uygulama katmanında `defaultValue`/`false` gibi yorumlanır).
+- Girilmemiş: değer **`defaultValue`/`false`** (anahtar her zaman bulunur — `code` ile; → [`../instance-value.md`](../instance-value.md)).
 
 ## 2. Projeksiyon — `projectToAttr=true`
 | Kaynak | Hedef | Kolon |

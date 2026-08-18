@@ -44,14 +44,14 @@
 |---|---|---|---|
 | `mapViewer` | [`map-viewer.md`](./map-viewer.md) | `{lat,lng,address}` obje | `address`→Attr.textValue; `lat`/`lng`→data (GIN/PostGIS) |
 | `file` | [`file.md`](./file.md) | **list-of-model** (`url`+`fileInfo{user,date,location}`) — hep dizi | genelde yok; gerekirse ListItem |
-| `formList` | [`form-list.md`](./form-list.md) | **list-of-model** (`instanceId`+`status`+`rejectedBy`+`rejectedDate`+`rejectedByReason`) | child değeri + `AssociatedInstance` (**senkron**); satır durumu → `InstanceListItem` |
+| `formList` | [`form-list.md`](./form-list.md) | **list-of-model** (`instanceId`+`selected`+`rejectedBy`+`rejectedDate`+`rejectedByReason`) | child değeri + `AssociatedInstance` (**senkron**); satır durumu → `InstanceListItem` |
 
 ### Yansıma & statik (yazılmaz veya reflectionMode'a bağlı)
 | Tip | Döküman | JSONB şekli | Projeksiyon |
 |---|---|---|---|
-| `userInfo` | [`user-info.md`](./user-info.md) | snapshot skaler/labeled | Attr (normal alan gibi) |
+| `userInfo` | [`user-info.md`](./user-info.md) | `reflectionMode`'a göre (`snapshot` vars.: skaler/labeled · `live`: yazılmaz) | `snapshot`→Attr; `live`→yok (User join) |
 | `parentProperty` | [`parent-property.md`](./parent-property.md) | `reflectionMode`'a göre | snapshot/materialized → Attr; live → yok. `materialized` yayılımı → [`../reflection-propagation.md`](../reflection-propagation.md) (`async`/`sync`) |
-| `flowInfo` | [`flow-info.md`](./flow-info.md) | **yazılmaz** (canlı) | yok — `Instance` kolonları / join |
+| `flowInfo` | [`flow-info.md`](./flow-info.md) | `reflectionMode`'a göre (`live` vars.: yazılmaz · `snapshot`: donmuş) | `live`→`Instance` kolonları/join; `snapshot`→Attr |
 | `text` | [`text.md`](./text.md) | **yok** (statik label) | yok |
 
 ## Notlar

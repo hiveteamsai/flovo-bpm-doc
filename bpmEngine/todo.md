@@ -50,9 +50,11 @@
     kopyalıyordu (redundant + staleness). Yeni tasarım: **eşleme `Property.refPropertyId`/`code`** (mevcut) + **instance çözümü
     `AssociatedInstance` ters araması**; ayarlanabilir **`reflectionPropagation` (async vars. / sync guardrail'li)**; outbox +=
     `changedPropertyCodes`/`hopCount`; kaynak alanda `isReflectionSource` hızlı-çıkış bayrağı. → [`models/processInstances/reflection-propagation.md`](./models/processInstances/reflection-propagation.md).
-    - 🔶 **Açık kalan tek karar:** `parentProperty` yalnız **doğrudan üst formu** mu referans alır (varsayım — `AssociatedInstance`
-      tek-hop yeterli), yoksa **herhangi bir ata** formu mu (o zaman zincir traversal veya non-adjacent edge-cache gerekir)? ·
-      ayrıca **A′ yayılım sınırları** (derinlik/döngü — motor **O3**) + `sync` fan-out eşiği değeri kesinleşecek.
+    - ✅ **Referans kapsamı çözüldü (v0.28):** kenarlar **daima doğrudan üst** (tek-hop); **ata** referansı ayrı/non-adjacent
+      mekanizma **değil** — ya **röle zinciri** (ara form ata alanını kendi `parentProperty`'si olarak yeniden yayınlar → §4
+      kaskadı hop-hop indirir; materialized, sorgulanabilir) ya da **`live`** okuma-anı zincir join (yalnız gösterim). Edge-cache
+      ve recursive reverse-join **reddedildi**. → [`reflection-propagation.md` §9](./models/processInstances/reflection-propagation.md).
+    - 🔶 **Açık kalan (yalnız sayısal eşikler):** **A′ derinlik/döngü limiti** (motor **O3**) + **`sync` fan-out eşiği** değeri kesinleşecek.
   - 📐 **Tip-bazlı değer şablonları → [`models/processInstances/propertyValuesTemplates/`](./models/processInstances/propertyValuesTemplates/index.md)** (18 tip + core
     `labeled-value.md`). Her `propertyType` için `data` JSONB şekli + `projectToAttr` projeksiyon eşlemesi. **Q1–Q11, Q13 kullanıcı
     kararlarıyla çözüldü** (combobox `value`/id-iki-kolon · groupByTax şema+türetilmiş toplam · formList `AssociatedInstance`-senkron +

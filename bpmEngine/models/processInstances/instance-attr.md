@@ -15,7 +15,7 @@
 | `propertyCode` | string | PK | Hangi alan (`Property.code`) — **`code`-keyed** (id-FK değil; kaynak JSONB de code-keyed, join yükü yok). |
 | `numValue` | numeric? | — | Sayısal değer (aralık/sıra). |
 | `textValue` | string? | — | Metin / seçim kodu (combobox `value`). |
-| `dateValue` | datetime? | — | Tarih değeri. |
+| `dateValue` | date/datetime? | — | Tarih değeri. `datepicker` → **takvim tarihi** (`date`; saat/tz **yok** — gün kaymaz); `flowInfo`(snapshot)/`file` tarihleri → **UTC datetime**. |
 | `boolValue` | bool? | — | Checkbox değeri. |
 | `display` | string? | — | Etiketli değerde **görünen ad** (`LabeledValue.display` — org varsayılan dili, `PropertyItem.definition`'dan). Kullanıcı dili org diliyle **aynıysa join'siz doğrudan** kullanılır; rapor **isim araması/sıralaması** için (`display ILIKE '%…%'`). Skaler (etiketsiz) satırlarda **null**. |
 | `translationCode` | string? | — | `PropertyItem.translationCode`'dan (`→ Translation.code`). **Dil uyuşmazlığında** doğru dilin metni Translation'dan getirilir. Yoksa **null** (→ okuma kuralı: [`labeled-value.md`](./propertyValuesTemplates/labeled-value.md)). |

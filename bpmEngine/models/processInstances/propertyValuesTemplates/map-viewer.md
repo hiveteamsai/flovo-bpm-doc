@@ -10,7 +10,7 @@
 ```json
 { "location": { "lat": 41.0082, "lng": 28.9784, "address": "İstanbul, TR" } }
 ```
-- Seçilmemiş: anahtar **yok** ya da `null`.
+- Seçilmemiş: değer **`null`** (anahtar her zaman bulunur — `code` ile; → [`../instance-value.md`](../instance-value.md)).
 
 ## 2. Projeksiyon — `projectToAttr=true`
 Projekte **edilir** (Q7). Yapısal obje tek `InstanceAttr` satırının skaler kolonlarına tümüyle sığmadığından alt-alan bazlı:

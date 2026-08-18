@@ -10,21 +10,21 @@ Form List satırları **ayrı child `Instance`'lardır** (gömülü kalem değil
 | Alan | Tip | Açıklama |
 |---|---|---|
 | `instanceId` | int | Satırın **child instance**'ı (→ [`../instance.md`](../instance.md)). |
-| `status` | bool | **Selectable** checkbox değeri — satırın seçili/aktif durumu; `false` = **reddedilmiş** (ilişki **kaldırılmaz**, satır kalır). _(Profil ayarı `selectableVisible`/`selectedEditable` görünürlük/düzenlenebilirlik; **değer** burada.)_ |
-| `rejectedBy` | obje? | `status=false` yapan (**reddeden**) kullanıcı — `{ userId: int, nameSurname: string }` (kullanıcı-referans konvansiyonu — Q11/Q13). `status=true` iken null. |
-| `rejectedDate` | datetime? | Reddin (**`status=false`**) yapıldığı **tarih**. `status=true` iken null. |
-| `rejectedByReason` | string? | Red **gerekçesi**. `status=true` iken null. |
+| `selected` | bool | **Selectable** checkbox değeri — satırın seçili/aktif durumu; `false` = **reddedilmiş** (ilişki **kaldırılmaz**, satır kalır). _(Profil ayarı `selectableVisible`/`selectedEditable` görünürlük/düzenlenebilirlik; **değer** burada.)_ **Not:** iş-akışı durumu (`Instance.statusId`/`Status`) ile karıştırılmamalı — bu yalnız satır seçim/red bayrağıdır. |
+| `rejectedBy` | obje? | `selected=false` yapan (**reddeden**) kullanıcı — `{ userId: int, nameSurname: string }` (kullanıcı-referans konvansiyonu — Q11/Q13). `selected=true` iken null. |
+| `rejectedDate` | datetime? | Reddin (**`selected=false`**) yapıldığı **tarih**. `selected=true` iken null. |
+| `rejectedByReason` | string? | Red **gerekçesi**. `selected=true` iken null. |
 
 ```json
 { "expenseLines": [
-  { "instanceId": 45821, "status": true },
-  { "instanceId": 45822, "status": false,
+  { "instanceId": 45821, "selected": true },
+  { "instanceId": 45822, "selected": false,
     "rejectedBy": { "userId": 12, "nameSurname": "Ayşe Yılmaz" },
     "rejectedDate": "2026-08-06T14:30:00Z", "rejectedByReason": "Belge eksik" }
 ] }
 ```
-> **`AssociatedInstance` ile senkron (KARAR — Q5):** Form List değeri `data`'da (instance value) tutulur; **her satır** aynı zamanda [`AssociatedInstance`](../associated-instance.md)'e **kayıt edilir**, form listeden **kaldırılan** instance ise `AssociatedInstance`'tan **silinir** → üyelik iki tarafta **senkron**. **`status=false` (reddedilme) ilişkiyi KALDIRMAZ** — satır hem `data`'da hem `AssociatedInstance`'ta **kalır**, yalnız seçili-değil/reddedilmiş işaretlenir.
-- Boş: anahtar **yok** ya da `[]`.
+> **`AssociatedInstance` ile senkron (KARAR — Q5):** Form List değeri `data`'da (instance value) tutulur; **her satır** aynı zamanda [`AssociatedInstance`](../associated-instance.md)'e **kayıt edilir**, form listeden **kaldırılan** instance ise `AssociatedInstance`'tan **silinir** → üyelik iki tarafta **senkron**. **`selected=false` (reddedilme) ilişkiyi KALDIRMAZ** — satır hem `data`'da hem `AssociatedInstance`'ta **kalır**, yalnız seçili-değil/reddedilmiş işaretlenir.
+- Boş: değer **`[]`** (anahtar her zaman bulunur — `code` ile; → [`../instance-value.md`](../instance-value.md)).
 
 ## 2. Projeksiyon — `projectToAttr`
 - **Child değerleri** parent'ın Attr'ına projekte **edilmez** — her child kendi `InstanceValue`/`InstanceAttr`'ıyla raporlanır; parent↔child ilişkisi `AssociatedInstance` üzerinden **join**'lenir.
@@ -33,7 +33,7 @@ Form List satırları **ayrı child `Instance`'lardır** (gömülü kalem değil
 | `attrCode` | Kolon(lar) |
 |---|---|
 | `instanceId` | `numValue` |
-| `status` | `boolValue` |
+| `selected` | `boolValue` |
 | `rejectedBy` | `numValue`=userId · `textValue`=nameSurname |
 | `rejectedDate` | `dateValue` |
 | `rejectedByReason` | `textValue` |

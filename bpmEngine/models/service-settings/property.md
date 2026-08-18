@@ -62,12 +62,12 @@
 | `refPropertyId` | int | Referans alınan alan (Parent Property). |
 | `parentPropertyId` | int | Üst alan. |
 | `relatedPropertyIds` | List\<int\> | İlişkili alanlar. |
-| `reflectionMode` | ReflectionMode | **Yalnız `parentProperty` tipi** — üst değerin nasıl takip edileceği: `snapshot` (kopyala+dondur, **vars.**) · `live` (canlı okuma) · `materialized` (kopya + **`AssociatedInstance` üzerinden yayılımla** tazelenir). → [`../enums/reflection-mode.md`](../enums/reflection-mode.md). |
+| `reflectionMode` | ReflectionMode | **Salt-okunur/türetilen alanlarda** (`parentProperty` · `userInfo` · `flowInfo`) — değerin **oluşturma-anı mı (dondurulmuş)** yoksa **güncel mi** gösterileceği: `snapshot` (kopyala+dondur) · `live` (canlı okuma) · `materialized` (kopya + **`AssociatedInstance` üzerinden yayılımla** tazelenir — **yalnız `parentProperty`**). **Tipe-göre varsayılan:** `parentProperty`/`userInfo` → `snapshot` · `flowInfo` → `live`. → [`../enums/reflection-mode.md`](../enums/reflection-mode.md). |
 | `reflectionPropagation` | ReflectionPropagation | **Yalnız `parentProperty` + `reflectionMode=materialized`** — kopyanın üst değişince **ne zaman** tazeleneceği: `async` (arka planda, **vars.**) · `sync` (yazma anında, guardrail'li). → [`../enums/reflection-propagation.md`](../enums/reflection-propagation.md) · mekanizma [`../processInstances/reflection-propagation.md`](../processInstances/reflection-propagation.md). |
 
 ## 2. Tipe-özel alanlar (`propertyType`'a göre — özet)
 > Tam açıklama → `../../service-settings/properties.md` §3.
-> **Enum'lar:** kontrol tipi → [`../enums/property-type.md`](../enums/property-type.md) · `keyboardType` (Textbox/Phone) → [`../enums/keyboard-type.md`](../enums/keyboard-type.md) · `barcodeFormat` (Barcode) → [`../enums/barcode-format.md`](../enums/barcode-format.md) · `reflectionMode` (parentProperty) → [`../enums/reflection-mode.md`](../enums/reflection-mode.md) · `reflectionPropagation` (parentProperty A′) → [`../enums/reflection-propagation.md`](../enums/reflection-propagation.md).
+> **Enum'lar:** kontrol tipi → [`../enums/property-type.md`](../enums/property-type.md) · `keyboardType` (Textbox/Phone) → [`../enums/keyboard-type.md`](../enums/keyboard-type.md) · `barcodeFormat` (Barcode) → [`../enums/barcode-format.md`](../enums/barcode-format.md) · `reflectionMode` (parentProperty/userInfo/flowInfo) → [`../enums/reflection-mode.md`](../enums/reflection-mode.md) · `reflectionPropagation` (parentProperty A′) → [`../enums/reflection-propagation.md`](../enums/reflection-propagation.md).
 
 | Kontrol tipi | Alanlar |
 |---|---|
@@ -84,16 +84,17 @@
 | `phone` | `format`/maske · `keyboardType` |
 | `mapViewer` | konum seçimi/görüntüleme; koordinat/adres |
 | `formList` | `childServiceId` · `serviceItemControlId` · `reOrder` · `parameterTransfer`/`propertyTransferParameters` · `editOnlyOwnPosition` · `lazyLoading` · **profil-bazlı ayarlar → `view-profile-property.md`:** `activeStartActions`, `addFromExistingStatusIds`, `selectableVisible`, `selectedEditable` |
-| `flowInfo` | `flowInfoValue` (salt-okunur akış metadata) |
+| `flowInfo` | `flowInfoValue` · `reflectionMode` (`snapshot`/`live` — vars. `live`; salt-okunur akış metadata) |
 | `parentProperty` | `parentPropertyId` · `refPropertyId` · `relatedPropertyIds` · `reflectionMode` (`snapshot`/`live`/`materialized`) · `reflectionPropagation` (`async`/`sync` — yalnız `materialized`) (salt-okunur) |
-| `userInfo` | `userInfoValue` (salt-okunur kullanıcı metadata) |
+| `userInfo` | `userInfoValue` · `reflectionMode` (`snapshot`/`live` — vars. `snapshot`; salt-okunur kullanıcı metadata) |
 | `groupByTaxReceipt` | `disableTaxAttachmentView` · `isActiveKkegAttachment` |
 | `keyValueList` | `addNewEnabled` · `deleteEnabled` · `keyDescription` · `valueDescription` · `comboBoxItems` · `keyValueItems` |
 
 > **İlişkili combobox (`isAssociatedCombobox` · `associatedServiceId`):** `combobox` alanında `isAssociatedCombobox=true`
 > iken **`associatedServiceId` zorunludur**; combobox o servisin **instance'larından** seçim yaptırır ve seçilen
 > **instance id'si** alanın **`value`'suna** yazılır. Alanın instance'taki **`propertyValue`'su her değiştiğinde**, seçilen
-> instance için **`AssociatedInstance`** tablosuna bir **ilişki kaydı** düşer (→ [`../processInstances/associated-instance.md`](../processInstances/associated-instance.md)).
+> **her** instance için **`AssociatedInstance`** tablosuna bir **ilişki kaydı** düşer (→ [`../processInstances/associated-instance.md`](../processInstances/associated-instance.md)).
+> **`isMultiSelect` ile birleşebilir:** çoklu ilişkili combobox tek alanla **birden çok instance'ı** ilişkilendirir (her seçim ayrı `AssociatedInstance` kaydı — Form List benzeri).
 > `false` (vars.) = düz liste seçimi, ilişki kaydı **düşmez**. Davranış → `../../service-settings/properties.md` §3.3.
 
 ## İlişkiler
