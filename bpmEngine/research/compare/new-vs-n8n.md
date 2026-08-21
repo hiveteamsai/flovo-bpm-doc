@@ -19,7 +19,7 @@
 | **Merkezî varlık** | **Workflow** (node graf'ı) + akan **item dizisi** | **Servis/Form** (kayıt) + **süreç adımı/aksiyon** |
 | **Kullanıcı** | Otomasyon kuran teknik/yarı-teknik kişi | **Self-servis** süreç kuran kurumsal kullanıcı + son kullanıcı (form dolduran) |
 | **İnsan görevi** | Wait (form/onay) ikincil | **Birinci sınıf** (Kullanıcı / Kullanıcı Grubu adımları, yetki, durum) |
-| **Veri akışı** | Öğe (item) **dizisi** node'dan node'a | **Form kaydı** + adımlar arası `parameters`/`changeList`/`action` |
+| **Veri akışı** | Öğe (item) **dizisi** node'dan node'a (**örtük** konveyör) | **Form kaydı** + **koleksiyon-tabanlı** aksiyon aktarımı (`parameters`/`changeList`/`action`) — **`InstanceValue` ile ortak değer-modeli** (`propertyValuesTemplates`/`LabeledValue`), **açık/niyetli** taşıma, kayıpsız (v0.30) |
 | **UI** | Serbest canvas (soldan sağa graf) | Form + süreç adımı + görüntüleme profili (adım-bazlı görünüm) |
 
 > **Sonuç:** n8n **veri-akışı** motorudur; Flovo **kayıt/süreç** motorudur. Ortak çekirdek: adım grafiği, koşullu
@@ -132,6 +132,7 @@ resume URL** ilkelinin karşılığıdır.
 - **Çok-kiracılık:** `Organization` + ortak/organizasyon çevirisi ayrımı; n8n org-seviye i18n sunmaz.
 - **Domain-özel AI:** Flovo AI (Masraf) süreç-entegre, kullanıma hazır; n8n jenerik AI'ı kurmayı gerektirir.
 - **Determinizm/denetlenebilirlik:** tek-kayıt + durum + geçmiş modeli, n8n'in item-dizi + otonom ajan modeline göre kurumsal denetim için daha öngörülebilir.
+- **Kapalı, satıcı-geliştirmeli tip seti (bilinçli karar, v0.30):** adım/aksiyon/alan tipleri **sabit settir**; plugin/SDK ile üçüncü-taraf tip **yok** — hepsini **Flovo** geliştirir/bakar. n8n'in **açık community-node** ekosistemi entegrasyon genişliği verir; Flovo'nun tercihi ise **determinizm · güvenlik (rastgele kod/node yürütmez) · destek/kalite kontrolü** yönünde bilinçli bir ödünleşmedir. _(→ `../../service-settings/process-step.md` §1.)_
 
 ### ⚠️ Başarısız / eksik / n8n'in kanıtlayıp bizde olmayanlar
 - **Motor iç mekaniği yok:** yürütme durumu/kalıcılık, **bekleme-noktası serileştirme**, `runData` eşdeğeri, ölçekleme (queue/worker) `flovo-bpm-engine.md`'de **placeholder**. n8n'in en olgun kısmı tam da bu.
@@ -141,7 +142,8 @@ resume URL** ilkelinin karşılığıdır.
 - **Credentials katmanı yok:** HTTP Request/Customer API kimlikleri için ayrı, şifreli, paylaşılabilir kimlik yönetimi tasarlanmadı.
 - **Tetikleyici çeşitliliği dar:** Schedule/cron, poll, e-posta, chat tetikleyicileri yok (yalnız manuel başlangıç + Webhook).
 - **Alt-süreç semantiği yarım:** Süreç Adımı Tetikleme'nin senkron/async + veri-geri-dönüş + lineage davranışı yazılmadı.
-- **Toplu/koleksiyon işleme belirsiz:** bir adımda N kayıt işleme (n8n item-dizi) senaryosu Flovo'da nasıl karşılanacak açık.
+- **Çok-kayıt iterasyonu / fan-out belirsiz:** veri **temsili** koleksiyon-tabanlı karara bağlandı (v0.30 — değer-modeli ortak),
+  ama **bir adımda N kaydı otomatik iterasyonla işleme** (n8n item-dizisi + `runIndex` fan-out) semantiği hâlâ açık → "Paralel dallanma".
 
 ---
 

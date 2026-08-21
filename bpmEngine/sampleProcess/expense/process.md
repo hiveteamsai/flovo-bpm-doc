@@ -87,7 +87,7 @@ alan değerlerini üretir.
 
 **Aksiyonlar:**
 - **`default` — başarı (`autoAction`):** Hedef adım `notifyOk`. Taşıdığı veri:
-  `changeList: [ extractedFields → form alanları ]` **+** `parameters: { instanceId }`.
+  `changeList: { "amount": 500, "expenseType": {…}, … }` (obje-map — AI'nin çıkardığı alanlar `Property.code` anahtarıyla) **+** `parameters: { instanceId }`.
   → `changeList`, bir sonraki adım (notifyOk) iş yapmadan **önce forma uygulanır** (alanlar AI değerleriyle güncellenir).
 - **`onFail` — hata (`autoAction`):** Hedef adım `notifyErr`. Taşıdığı veri: `parameters: { instanceId, errorMessage }`.
 

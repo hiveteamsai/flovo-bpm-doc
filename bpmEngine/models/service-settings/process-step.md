@@ -32,7 +32,7 @@ Aşağıdaki §3 modelleri, her `stepType` için bu JSONB'nin **şemasıdır**.
 
 **Neden JSONB (özet):**
 - **Config/tasarım verisi** — düşük hacim (servis başına ~onlarca adım); ayar **değerine göre sorgulanmaz** (adım **id ile** yüklenir).
-- **22 tipin heterojen şeması** + **genişletilebilir** katalog → wide/sparse tablo veya tip-başına tablo her yeni tipte şema göçü ister; JSONB'de **göç yok**.
+- **22 tipin heterojen şeması** + zamanla **Flovo tarafından evrilen** katalog (set kapalı ama çekirdek geliştirmesiyle büyür) → wide/sparse tablo veya tip-başına tablo her yeni tipte şema göçü ister; JSONB'de **göç yok**.
 - İç içe/tekrarlı yapılar (`headers`, `conditions`, `recipients`…) doğal olarak **doküman**.
 - Yığın zaten **PostgreSQL/JSONB** (→ [`../../tech-stack/postgresql.md`](../../tech-stack/postgresql.md)); yeni teknoloji gerekmez.
 
@@ -320,8 +320,10 @@ Aksiyon-onayına giden human-task adım; **atananları ve görüntüleme profili
 ## Notlar / açık noktalar
 - **Depolama kararı — ÇÖZÜLDÜ (JSONB):** tipe-özel ayarlar `ProcessStep.settings` JSONB kolonunda gömülü tutulur; ayrı
   alt-tablo/model açılmaz (§2). Tip başına şema §3'te; doğrulama uygulama katmanında (tip başına JSON Schema).
-- `default action` kavramı; Timer yaşam döngüsü; Süreç Bitişi re-open; human-task ailesi ortak modeli; adım seti
-  genişletilebilirliği; `instanceDeleter`/`triggerProcessStep`/`formRedirect`/`subProcessStart` ayar detayları → `../../todo.md`.
+- `default action` kavramı; Timer yaşam döngüsü; Süreç Bitişi re-open; human-task ailesi ortak modeli;
+  `instanceDeleter`/`triggerProcessStep`/`formRedirect`/`subProcessStart` ayar detayları → `../../todo.md`.
+- **Adım seti genişletilebilirliği — ÇÖZÜLDÜ (v0.30):** set **kapalı**; plugin/SDK yok, yeni tip yalnız **Flovo çekirdek
+  geliştirmesiyle** (→ `../service-settings/process-step.md` §1 karar notu).
 - `environmentRestriction` alan formatı (enum/string) "Ortam modeli" ile netleşecek → `../../todo.md`.
 
 *Oluşturma: 2026-07-02. Güncelleme: 2026-07-16 — `settings` JSONB kararı + §3 tip-tip ayar modelleri.*

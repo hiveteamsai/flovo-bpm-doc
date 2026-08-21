@@ -19,7 +19,7 @@ metin döndürülür.
 > doğrudan `definition` kullanılır. Gerekçe ve alanı taşıyan modellerin listesi → **§3.1**.
 
 İki tür çeviri vardır:
-- **Ortak (global) çeviriler** — `organizationId = null`. **Flovo (Coden)** tarafından oluşturulur; **tüm
+- **Ortak (global) çeviriler** — `organizationId = null`. **Flovo** tarafından oluşturulur; **tüm
   organizasyonlar görüntüleyip kullanabilir**, fakat **güncelleyemez** (salt-okunur).
 - **Organizasyon çevirileri** — `organizationId = <org>`. İlgili organizasyon **kendi çevirilerini** oluşturur ve
   **yalnız kendi kayıtlarını** güncelleyebilir.
@@ -45,7 +45,7 @@ Her **dil için ayrı kayıt** tutulur (kolon-başına-dil değil, **kayıt-baş
 ## 2. Sahiplik & Yetki (kim neyi güncelleyebilir?)
 | Kayıt | `organizationId` | Kim oluşturur | Kim görüntüler | Kim günceller |
 |---|---|---|---|---|
-| **Ortak (global)** | `null` | Flovo (Coden) | Herkes | **Yalnız Flovo** — organizasyonlar **güncelleyemez** |
+| **Ortak (global)** | `null` | Flovo | Herkes | **Yalnız Flovo** — organizasyonlar **güncelleyemez** |
 | **Organizasyon** | `<org>` | O organizasyon | O organizasyon | **Yalnız o organizasyon** (kendi `organizationId`'si) |
 
 - Bir organizasyon, **başka bir organizasyonun** veya **ortak (null)** kayıtları **güncelleyemez**.

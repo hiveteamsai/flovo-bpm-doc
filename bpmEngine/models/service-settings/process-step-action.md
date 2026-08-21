@@ -51,6 +51,9 @@ değişince bu binding güncellenmez, binding değişince Action etkilenmez. _(`
 - **Action:** yalnız **kopya kaynağı** (oluşturmada alanlar kopyalanır); **FK/canlı bağ tutulmaz** (bkz. yukarıda).
 
 ## Notlar / açık noktalar
-- `changeList` öğe yapısı, `action` nesnesi şekli, `action` zinciri döngü koruması → `../../todo.md`.
+- **`changeList`/`parameters` değer modeli — ÇÖZÜLDÜ (v0.30):** motor **koleksiyon-tabanlı**; `changeList` = **obje-map**
+  `{ Property.code: value }` (değer `propertyValuesTemplates` şeklinde, `InstanceValue` ile ortak) → forma **doğrudan JSONB merge**;
+  `parameters` = aynı değer şekli + **serbest anahtar** (forma yazılmaz). → `../../service-settings/process-step-action.md` §2.2 · `../../flovo-bpm-engine.md` §3.
+- `action` nesnesi şekli, `action` zinciri döngü koruması → `../../todo.md`.
 
 *Oluşturma: 2026-07-02.*

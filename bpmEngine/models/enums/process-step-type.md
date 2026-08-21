@@ -32,8 +32,9 @@
 | `subProcessEnd` | Alt Süreç Bitişi | Bağımsız alt sürecin **son adımı** (Süreç Bitişi'nin alt-süreç karşılığı; kol burada sonlanır). |
 
 ## Notlar
-- Değerler `service-settings/process-step.md §3`'teki **22 adım** kataloğuyla birebir eşleşir; katalog genişletilebilir
-  (yeni adım tipi → yeni değer). _(Tier 0 "Genişletilebilirlik" → [`../../todo.md`](../../todo.md).)_
+- Değerler `service-settings/process-step.md §3`'teki **22 adım** kataloğuyla birebir eşleşir. Set **kapalıdır**
+  (plugin/SDK ile üçüncü-taraf tip **yok**); yeni adım tipi yalnız **Flovo'nun çekirdek motor geliştirmesiyle** eklenir
+  → yeni enum değeri. _(KARAR v0.30 — `service-settings/process-step.md` §1 karar notu.)_
 - `switch` gibi değerler yalnız enum **kodu**dur; görünen ad "Anlam" sütunundadır.
 - **Not:** `default` bir **ProcessStepType değeri değildir** — aksiyon-yönlendirme kodudur (Switch/Karşılaştırma vb. eşleşme yoksa/varsayılan ilerleme; → [`../service-settings/process-step-action.md`](../service-settings/process-step-action.md) §0).
 

@@ -22,6 +22,12 @@
 | **Form & alt-servis** | Instance Creator · Instance Deleter · Form Yönlendirme · Süreç Adımı Tetikleme |
 | **Zamanlayıcı** | Timer · Timer Start · Timer End |
 
+> **Adım tipi seti = sabit / kapalı (KARAR).** Adım tipleri **önceden tanımlı, kapalı bir settir**; plugin/SDK ile
+> üçüncü-taraf yeni bir adım tipi **eklenemez**. Her adım tipinin ayarları **ve** motordaki yürütme davranışı **Flovo
+> tarafından** geliştirilir/bakılır. Yeni bir adım ihtiyacı = **çekirdek motor geliştirmesi** (kataloğa yeni tip
+> eklenir), harici bir genişletme noktası değil. Aynı kural **aksiyon tipleri** (`process-step-action.md` §3) ve **alan
+> tipleri** (`properties.md` §3) için de geçerlidir.
+
 ---
 
 ## 2. Adım Ortak Yapısı (her adımın temel alanları)
@@ -405,6 +411,10 @@ hem **sync** hem **performans** açısından pahalıdır. Bu adım, alt-servis k
 > atfıyla bulunur; verilen kararlar bu dokümanın **gövdesinde** anlatılır.
 
 > **Çözülenler (yerel karar log'u):**
+- [x] **Genişletilebilirlik (adım/aksiyon/alan setleri) — ÇÖZÜLDÜ (v0.30):** Tipler **sabit / kapalı settir**; plugin/SDK
+  ile üçüncü-taraf yeni **adım** tipi **eklenemez**. Tüm adım tipleri ve motordaki yürütme davranışları **Flovo tarafından**
+  geliştirilir/bakılır; yeni ihtiyaç = **çekirdek motor geliştirmesi** (→ §1 karar notu). Aynı karar aksiyon (`process-step-action.md`
+  §3) ve alan (`properties.md` §3) tipleri için de geçerli.
 - [x] **Alt Süreç Başlangıcı adım türü — ÇÖZÜLDÜ** (eski "Webhook/Triggered" açık sorusu): Bağımsız alt süreçlerin **giriş
   düğümü** için yeni **§3.20 Alt Süreç Başlangıcı** adımı eklendi. ("webhook" adı dar kaldığından — webhook **ve** Süreç Adımı
   Tetikleme (§3.5) ile tetiklenir.) Webhook'u tutan aksiyon artık bu adıma bağlı **`default`**'a dönüşür; Alt Süreç Başlangıcı

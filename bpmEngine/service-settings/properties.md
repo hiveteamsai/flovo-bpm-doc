@@ -125,6 +125,10 @@ Listedeki her eleman bir **PropertyItem**'dir:
 
 ## 3. Alan Kataloğu (form alan tipleri)
 
+> **Alan tipi seti = sabit / kapalı (KARAR).** `propertyType` değerleri **önceden tanımlı, kapalı bir settir**; plugin/SDK
+> ile yeni bir alan tipi **eklenemez**. Her tipin ayarları, değer saklama şekli (`models/processInstances/propertyValuesTemplates/`)
+> ve motordaki davranışı **Flovo tarafından** geliştirilir/bakılır (→ `process-step.md` §1 karar notu).
+
 ### 3.1 — `textbox` (Textbox)
 Yazı yazılabilen alan. `minLine`/`maxLine` ile **tek satır** ya da **çok satırlı** metin girişi yapılır (ayrı bir
 çok-satır alanı yoktur).
@@ -265,6 +269,8 @@ dolu** (key boş değil, value seçili) olması zorunludur.
 > atfıyla bulunur; verilen kararlar bu dokümanın **gövdesinde** anlatılır.
 
 > **Çözülenler (yerel karar log'u):**
+- [x] **Genişletilebilirlik (alan seti) — ÇÖZÜLDÜ (v0.30):** `propertyType` **sabit / kapalı settir**; plugin/SDK ile yeni
+  alan tipi **eklenemez**; ayarları, değer şeması ve davranışı **Flovo** geliştirir/bakar (→ §3 karar notu · `process-step.md` §1).
 - [x] **Form List ayarlarının profil bazında değişmesi** — **KARAR (B2):** profil-bazlı override `ProcessViewProfilePropertySetting {key,value}`
   (→ `../models/service-settings/view-profile-property.md`). Form List: `addNewEnabled`→**`activeStartActions`**, `addFromExistingRecordsIsActive`→**`addFromExistingStatusIds`** (profil); `selectedEnable`→**`selectableVisible`** (profil-bazlı; eski alan-düzeyi `selectableModeActive` **kaldırıldı**).
 

@@ -5,8 +5,9 @@ Gerçek kod ayrı bir repoda geliştirilecektir. Çalışma dili **Türkçe**dir
 
 ## Flovo nedir?
 
-Flovo, **Coden** tarafından geliştirilen **bulut tabanlı, yapay zekâ destekli kurumsal iş süreçleri yönetim (BPM)
-platformudur.** Çekirdeği **masraf yönetimi** olup **görev, İK, envanter ve denetim** modülleriyle genişler.
+Flovo, **bulut tabanlı, yapay zekâ destekli kurumsal iş süreçleri yönetim (BPM) platformudur.** Çekirdeği **masraf
+yönetimi** olup **görev, İK, envanter ve denetim** modülleriyle genişler. Uygulamanın **tüm geliştirmesini Flovo firması**
+yürütür (Coden ile Flovo **ayrı firmalardır**).
 
 ## İçerik
 

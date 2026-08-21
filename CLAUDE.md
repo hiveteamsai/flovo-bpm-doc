@@ -11,9 +11,10 @@ Amaç: **Flovo'nun yeni BPM motorunun tasarım/analiz dökümanlarını** oluşt
 
 ## Flovo Nedir? (Kısa)
 
-Flovo, **Coden** tarafından geliştirilen, **bulut tabanlı, yapay zeka destekli** bir
-**kurumsal iş süreçleri yönetim platformudur**. Çekirdeği **masraf yönetimi** olup
-**görev, İK, envanter ve denetim** modülleriyle genişler.
+Flovo, **bulut tabanlı, yapay zeka destekli** bir **kurumsal iş süreçleri yönetim platformudur**.
+Çekirdeği **masraf yönetimi** olup **görev, İK, envanter ve denetim** modülleriyle genişler.
+Hem mevcut Flovo uygulamasının hem de bu yeni motorun **tüm geliştirme sürecini Flovo firması** yürütür
+(Coden ile Flovo **ayrı firmalardır**).
 
 ## Mevcut Projenin Kaynak Kodu
 

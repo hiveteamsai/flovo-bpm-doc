@@ -1,6 +1,6 @@
 # Flovo BPM Motoru — Çalışma Prensibi (Tasarım Dokümanı)
 
-> **Durum:** 🟢 DETAYLANIYOR — temel kavramlar / çalışma prensibi / yürütme algoritması dolduruldu; bazı bölümler (§2.2, §3, §7, §8, §10, §11) founder/teknik girdi bekliyor.
+> **Durum:** 🟢 DETAYLANIYOR — temel kavramlar / çalışma prensibi / yürütme algoritması dolduruldu; **§3 veri modeli = koleksiyon-tabanlı (v0.30)**; bazı bölümler (§2.2, §7, §8, §10, §11) founder/teknik girdi bekliyor.
 > **Amaç:** Yeni Flovo'nun **BPM motorunun** nasıl çalışacağını (mimari + yürütme prensibi) tanımlamak.
 > Bu doküman "hangi adımlar var" değil (→ `service-settings/process-step.md`), "adımlar ne yapar" değil (→ `service-settings/process-step-action.md`);
 > **"motor bu adımları nasıl çalıştırır"** sorusunu cevaplar.
@@ -99,14 +99,30 @@ Bir servis **yedi yapı taşından** oluşur ve bunlar **iki katmana** ayrılır
 ---
 
 ## 3. Veri Modeli ve Akışı
-> _(Doldurulacak. Adımlar arası veri nasıl temsil edilir/akar? n8n'in "öğe dizisi (json+binary+pairedItem)"
-> + iki kanal modeli (konveyör `$json` vs arşiv `$('Adım')`) referans. Flovo token-tabanlı mı, koleksiyon-tabanlı mı?)_
+> **KARAR (v0.30) — koleksiyon-tabanlı.** Adımlar arası veri, **yapılandırılmış bir değer koleksiyonu** olarak **açıkça**
+> (aksiyonla) akar; klasik BPMN'in token-tabanlı (kontrol token'ı + yan-kanal süreç değişkenleri) modeli **değildir**.
 
-- Veri birimi (öğe / token / vaka?):
-- Adımlar arası aktarım (komşu-akış + geri-eriş): **Aksiyon veri aktarım modeli** ile tanımlanır →
-  `service-settings/process-step-action.md` §2 (`parameters` = adıma taşınan veri · `changeList` = form alan güncellemeleri ·
-  `action` = HTTP Request response'undan zincirleme tetikleme).
-- Soy ağacı / lineage yaklaşımı (n8n dersi 5):
+- **Veri birimi = `InstanceValue.data` ile aynı değer-modeli.** Akan koleksiyon, **`propertyValuesTemplates`** şekillerinden
+  oluşur: skaler · `LabeledValue {value, display, translationCode}` · user-ref `{userId, nameSurname}` · phone
+  `{countryCode, number}` · list-of-model (formList/file/groupByTaxReceipt) … Böylece **kullanıcı formu · aksiyon aktarımı
+  (`changeList`/`parameters`) · Customer API** aynı **tek değer dilini** konuşur; bir değer adımdan adıma **veya** forma
+  **kayıpsız** taşınır (ara dönüşüm/stringify yok). _(→ `models/processInstances/propertyValuesTemplates/index.md` · `instance-value.md`.)_
+- **Adımlar arası aktarım = Aksiyon veri aktarım modeli** (→ `service-settings/process-step-action.md` §2):
+  - **`changeList`** = **forma yazılan kalıcı** alan değerleri; **obje-map** `{ Property.code: value }`; §4.2'de forma
+    **doğrudan JSONB merge** (`data = data || changeList`). Yalnız **yazılabilir** alanlara dokunur (`text` / `live` yansıma /
+    `savePropertyToDb=false` istisnaları — bunlara değer yazılmaz).
+  - **`parameters`** = adımlar arası **geçici** veri (**forma yazılmaz**); değer şekli aynı, ama **anahtar serbesttir**
+    (bir form alanını besliyorsa konvansiyon olarak hedef `Property.code` kullanılır — zorunlu değil); `mergeParameter` ile
+    zincir boyunca birikir (§2.1).
+  - **`action`** = HTTP Request response'undan **zincirleme tetikleme** (kod eşleşmesi).
+- **Bütünsel değer taşıma (KARAR):** Bir alanın değeri **model/dizi** ise (formList/groupByTaxReceipt/phone/mapViewer…),
+  alt-alanlardan biri değişse bile o alanın **tüm değeri komple** taşınır — **kısmi patch yok** (merge o `code`'daki değeri
+  bütünüyle değiştirir).
+- **Kapsam sınırı:** Buradaki "koleksiyon-tabanlı" **temsil**i anlatır (payload = yapılandırılmış değer koleksiyonu).
+  n8n'in **item-dizisi + otomatik per-item fan-out** (`runIndex`) semantiği **bu kararla gelmez**; çok-kayıt iterasyonu /
+  loop / join hâlâ **ayrı açık başlıktır** (→ §4.5 · paralel dallanma, `todo.md`).
+- **Soy ağacı (lineage):** parametre kaynağı, `mergeParameter` zinciri + `ProcessStepInstance` geçmişiyle izlenir
+  (n8n `pairedItem` muadili ayrıntı sonra netleşecek).
 
 ---
 

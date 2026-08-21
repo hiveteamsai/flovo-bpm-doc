@@ -11,8 +11,6 @@
 
 ## ⭐ Tier 0 — Çapraz-kesen kararlar (önce bunlar; bir karar → çok doküman)
 
-- [ ] **Genişletilebilirlik — sabit set mi, plugin/SDK ile eklenebilir mi?** Adım / aksiyon / alan setleri.
-  _(process-step §4 · process-step-action §7 · properties §4)_
 - [ ] **İki-katman sınırı** — **değer atama & karşılaştırma** hem süreç adımı hem iş kuralı olarak var. Sınır:
   iş kuralı = anlık form UX (frontend), adım = kalıcı/akış kararı (motor). Netleşince #Tier1 veri/motor ve
   tutarlılık kalemleri de oturur. _(flovo-bpm-engine §1.4/§12 · business-rule §6 · process-step §3.4/§3.13)_
@@ -26,8 +24,13 @@
   durum DB'de, kuyruk yalnız iş ID'leri, worker'lar durumsuz. _(flovo-bpm-engine §2.2 / §12)_
   - 🧱 **Tech-stack (kısmen kapandı):** dağıtım/ölçekleme kararı verildi — MVP **Core BPM monolith** → Hexagonal + **NATS kuyruk** +
     **durumsuz worker** + durum **Postgres/NATS**'ta (SOA-ready); motor-içi **orkestrasyon↔yürütme** ayrımı hâlâ açık. → [`tech-stack/`](./tech-stack/index.md) · [`research/tech-stack/tech_rating.md`](./research/tech-stack/tech_rating.md)
-- [ ] **Veri modeli** — token-tabanlı (klasik BPMN) mı, koleksiyon-tabanlı (n8n) mı? Adımlar arası veri temsili/akışı,
-  soy ağacı (lineage). _(flovo-bpm-engine §3 / §12)_
+- [ ] **Veri modeli** — **temsil/akış ÇÖZÜLDÜ (v0.30): koleksiyon-tabanlı.** Adımlar arası veri, `InstanceValue` ile **ortak
+  değer-modeli** (`propertyValuesTemplates` + `LabeledValue`) taşıyan bir **değer koleksiyonu** olarak aksiyonla **açıkça** akar:
+  `changeList` = obje-map `{ Property.code: value }` → forma **doğrudan JSONB merge**; `parameters` = aynı değer şekli + **serbest
+  anahtar** (forma yazılmaz). Alan değeri model/dizi ise **tüm değer komple** taşınır (kısmi patch yok). _(→ flovo-bpm-engine §3 ·
+  process-step-action §2.2)_
+  - **Açık kalan:** **soy ağacı (lineage)** ayrıntısı (n8n `pairedItem` muadili) + **çok-kayıt iterasyonu / loop / join**
+    (item-dizisi otomatik fan-out) — bu karar **temsili** çözer, **iterasyon semantiğini değil** → "Paralel dallanma" maddesi. _(flovo-bpm-engine §3 / §4.5 / §12)_
 - [ ] **Kalıcılık & durum** — ne saklanır (süreç tanımı · instance/state · veri · dosya/binary); durum yaşam döngüsü
   (new/running/waiting/done); saklama/pruning. _(flovo-bpm-engine §8)_
   - 🧱 **Tech-stack:** kalıcılık **substratı** = PostgreSQL + **Partial Event Sourcing** (`workflow_events` append-only); *ne
@@ -191,7 +194,9 @@
 ## 🧩 Tier 3 — Detay / sonraya
 
 - [ ] **`actionDisplayType`** gözden geçir (`invisible`/`everywhere`/`onlyFormDetail`/`onlyFastApprove`). _(action §3)_
-- [ ] **`changeList` öğe yapısı** (alan id + yeni değer + tip?) ve **`action` nesnesinin şekli**. _(process-step-action §7)_
+- [ ] **`action` nesnesinin şekli** (HTTP Request response'undan gelen tetikleme-kodu paketi). _(process-step-action §7)_
+  - ✅ **`changeList` öğe yapısı — ÇÖZÜLDÜ (v0.30):** **obje-map** `{ Property.code: value }`; değer `propertyValuesTemplates`
+    şeklinde (InstanceValue ile ortak, code-keyed); forma **doğrudan JSONB merge**. Yalnız yazılabilir alanlar. → process-step-action §2.2.
 - [ ] **İş kuralı performansı** — `always` kuralları yalnız ilgili property değişince (alan-bağımlı) tetiklensin mi?
   _(business-rule §6)_
 - [ ] **Status: kategori/grup** — raporlama/filtreleme için `code`/`definition` yeterli mi, ayrı kategori boyutu gerekli mi?
@@ -299,6 +304,10 @@
 > `[x]` işaretli çözülmüş maddeler Tier 0–3 / "eklenen açık sorular" listelerinden buraya taşındı (açık listelerde artık yalnız
 > `[ ]` kalır). _(Zaten yukarıdaki log'da özeti bulunanlar tekrar edilmedi: **Profil-bazlı alan override'ı (B2)** ·
 > **Action→ProcessStepAction bağımsız kopya** · **Çeviri anahtarı `translationCode` (v0.13)**.)_
+- **Genişletilebilirlik — sabit set mi, plugin/SDK mı? (ÇÖZÜLDÜ — v0.30):** Adım / aksiyon / alan tipleri **sabit, kapalı
+  bir settir**; plugin/SDK ile üçüncü-taraf yeni tip **eklenemez**. Tüm tipler ve bunların motordaki yürütme davranışı **Flovo
+  tarafından** geliştirilir/bakılır; yeni ihtiyaç = **çekirdek motor geliştirmesi** (harici genişletme noktası yok).
+  _(process-step §1/§4 · process-step-action §3/§7 · properties §3/§4)_
 - **Kapsam kararı — servis-bazlı mı, paylaşımlı mı? (ÇÖZÜLDÜ):** hiyerarşi ile — **organizasyon havuzu** = Translation / Style /
   Status / Action (organizasyona bağlı, tüm servislerde); **servis-bazlı** = Property / ProcessViewProfile / ProcessStep /
   BusinessRule. _(action §3 · status §4 · business-rule §6 · view-profile §5)_

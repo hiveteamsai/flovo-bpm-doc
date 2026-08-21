@@ -62,19 +62,20 @@ Bir aksiyon tetiklendiğinde taşıdığı veri modeli **3 alandan** oluşur. **
 
 | Alan | Ne için | Ne zaman dolar |
 |---|---|---|
-| **`parameters`** | Bir süreç adımından **diğer süreç adımına aktarılacak veriyi** taşır. | Adımlar arası veri geçişi gerekiyorsa. |
-| **`changeList`** | **Formdaki alan değişikliklerini** taşır; aksiyon tetiklendiğinde listedeki form alanlarının **yeni değerleri güncellenir.** | Form alanlarında değişiklik olduğunda. |
+| **`parameters`** | Bir süreç adımından **diğer süreç adımına aktarılacak (geçici) veriyi** taşır (forma yazılmaz). Değer şekli `InstanceValue` ile **ortak**; **anahtar serbest**. | Adımlar arası veri geçişi gerekiyorsa. |
+| **`changeList`** | **Formdaki alan değişikliklerini** taşır — **obje-map** `{ Property.code: value }`; aksiyon tetiklendiğinde bu alanların **yeni değerleri forma yazılır (kalıcı).** | Form alanlarında değişiklik olduğunda. |
 | **`action`** | **HTTP Request** adımının **response**'undan gelebilen alan. Response'ta bir `action` (kod) varsa, adımdaki **aynı kodlu aksiyon** tetiklenir. | HTTP Request adımı çalışıp response döndüğünde. |
 
 ```jsonc
 {
-  "parameters": { /* adımdan adıma taşınacak veri                  — opsiyonel */ },
-  "changeList": [ /* güncellenecek form alanları + yeni değerleri    — opsiyonel */ ],
-  "action":     { /* HTTP response'undan gelen, tetiklenecek aksiyon — opsiyonel */ }
+  "parameters": { /* adımdan adıma taşınacak GEÇİCİ veri — obje-map, serbest anahtar        — opsiyonel */ },
+  "changeList": { /* forma yazılacak KALICI değerler   — obje-map { "Property.code": value } — opsiyonel */ },
+  "action":     { /* HTTP response'undan gelen, tetiklenecek aksiyon                          — opsiyonel */ }
 }
 ```
 
-> **`changeList`**, her adım **iş yapmadan ÖNCE** forma uygulanır (evrensel giriş kuralı → `../flovo-bpm-engine.md` §4.2).
+> **`changeList`**, her adım **iş yapmadan ÖNCE** forma uygulanır (evrensel giriş kuralı → `../flovo-bpm-engine.md` §4.2):
+> `InstanceValue.data = data || changeList` (**doğrudan JSONB merge**).
 
 ### 2.1 — Parametre birleştirme (`mergeParameter`)
 Varsayılan davranışta bir aksiyon, hedefe **yalnız kendi ürettiği** `parameters`'ı taşır; adıma **gelen** (`in`)
@@ -96,10 +97,33 @@ zincirinde başlatıcı/atanan/aktarım-hedefi bilgisinin hop'tan hop'a taşınm
 > **`changeList` ile farkı:** `changeList` **forma** yazılan **kalıcı** alan değerleridir; `parameters` ise adımlar arası
 > taşınan **geçici** veridir (forma yazılmaz). `mergeParameter` yalnız **`parameters`**'ı ilgilendirir.
 
+### 2.2 — Değer modeli (ortak değer dili)
+Motor **koleksiyon-tabanlıdır** (→ `../flovo-bpm-engine.md` §3): hem `changeList` hem `parameters` içindeki değerler,
+**`InstanceValue.data` ile aynı değer-modelini** kullanır — yani **`propertyValuesTemplates`** şekilleri (skaler ·
+`LabeledValue {value, display, translationCode}` · user-ref `{userId, nameSurname}` · phone `{countryCode, number}` ·
+list-of-model …). Böylece bir değer **kayıpsız** akar: forma yazmak = düz JSONB merge, adıma taşımak = aynı objeyi geçirmek.
+
+| Boyut | `changeList` | `parameters` |
+|---|---|---|
+| **Yapı** | **obje-map** `{ code: value }` | **obje-map** `{ key: value }` |
+| **Anahtar** | **zorunlu `Property.code`** (yazılan servisin **yazılabilir** alanı) | **serbest** — bir form alanını besliyorsa konvansiyon olarak hedef `Property.code` |
+| **Değer şekli** | `propertyValuesTemplates` (InstanceValue ile ortak) | `propertyValuesTemplates` (aynı) |
+| **Hedef / ömür** | **forma yazılır** (`InstanceValue.data`, kalıcı, Attr'a projeksiyon, Change'e log) | **forma yazılmaz** (geçici; `mergeParameter` ile birikir) |
+
+- **Yazılamaz alanlar `changeList`'e konmaz:** `text` (statik label) · **`live`** yansımalar (`flowInfo`/`userInfo`/`parentProperty`) ·
+  `savePropertyToDb=false` — bunlar `InstanceValue.data`'ya da yazılmaz (→ `../models/processInstances/instance-value.md` anahtar konvansiyonu).
+- **Bütünsel değer taşıma:** Bir alanın değeri **model/dizi** ise (formList/groupByTaxReceipt/phone/mapViewer…), alt-alanlardan
+  biri değişse bile o alanın **tüm değeri komple** taşınır — **kısmi patch yok** (merge o `code`'daki değeri bütünüyle değiştirir).
+- **Doğrulama:** `changeList` değerleri de tip-başına **JSON Schema kapısıyla** doğrulanır (kullanıcı girişi / API ile **aynı** kapı).
+
 ---
 
 ## 3. `actionType` — Aksiyon Türleri (kataloğu)
 `actionType` = aksiyonun **türü / tetiklenme-davranış biçimi**.
+
+> **Aksiyon tipi seti = sabit / kapalı (KARAR).** `actionType` değerleri **önceden tanımlı, kapalı bir settir**; plugin/SDK
+> ile yeni bir aksiyon tipi **eklenemez**. Her tipin davranışı **Flovo tarafından** geliştirilir/bakılır (→ `process-step.md`
+> §1 karar notu).
 
 ### 3.1 — `manual` (Manuel)
 Kullanıcı frontend'de **elle** tetikler (ek form/pop-up yok). İnsan-tetiklemeli adımlarda kullanılır.
@@ -188,6 +212,10 @@ varlıktır (aksiyon, durum) ve **ayrı dokümanda** tanımlanır → **`../orga
 > **Açık sorular tek yerde:** Bu dokümanın açık kararları/soruları, tutarsızlığı önlemek için **yalnız** merkezi
 > [`todo.md`](../todo.md) dosyasında toplanır (önceliklendirilmiş tüm-doküman listesi). İlgili maddeler orada `(process-step-action §..)`
 > atfıyla bulunur; verilen kararlar bu dokümanın **gövdesinde** anlatılır.
+
+> **Çözülenler (yerel karar log'u):**
+- [x] **Genişletilebilirlik (aksiyon seti) — ÇÖZÜLDÜ (v0.30):** `actionType` **sabit / kapalı settir**; plugin/SDK ile yeni
+  aksiyon tipi **eklenemez**; davranışları **Flovo** geliştirir/bakar (→ §3 karar notu · `process-step.md` §1).
 
 ---
 
