@@ -108,13 +108,19 @@
   - 🧱 **Tech-stack:** AI **substratı** = **Python AI Service** (🟡 post-MVP) + **pgvector**; entegrasyon **MODELİ** açık. → [`tech-stack/python-ai-service.md`](./tech-stack/python-ai-service.md)
 - [ ] **Hata yönetimi** — her adımda `onFail` var mı/zorunlu mu; **retry** (deneme + bekleme); süreç-seviye global
   hata yakalayıcı; telafi/compensation; `action` zinciri **sonsuz döngü** koruması. _(flovo-bpm-engine §7 · process-step-action §7)_
-- [ ] **İnsan-görev ailesi ortak modeli** — Kullanıcı / Kullanıcı Grubu / Processing için atama + bekleme.
-  _(process-step §4)_ · _(Processing'in ilerleme farkı **çözüldü**: `default` kodlu `autoAction` varsa otomatik ilerler, yoksa bekler → process-step §3.18)_
-- [ ] **Üst Form Kullanıcı (§3.22) — kenar durumlar** — alt-servisin üst formun atananlarını/görünümünü devraldığı yeni
-  adım (Parent Instance User) çekirdeği tanımlandı; **açık kalan:** (a) üst form **bulunamazsa** (bağ yok/kaldırılmış)
-  davranış; (b) üst form **otomatik adımda** olup aksiyon bekleyeni yokken görünüm/atanan; (c) **birden fazla** üst form
-  eşleşirse ayrıştırma kuralı; (d) üst form **Süreç Bitişi**'ne ulaşınca alt-servisin yaşam döngüsü; (e) atananların
-  **kopyalanması vs okuma-zamanı** çözümü (öneri: anlık). _(process-step §3.22 · flovo-bpm-engine §4.3 · AssociatedInstance)_
+- [x] **İnsan-görev ailesi ortak modeli — ÇÖZÜLDÜ (v0.32):** Kullanıcı / Kullanıcı Grubu / Üst Form Kullanıcı / Processing ortak
+  insan-görev iskeletini paylaşır (atama `InstanceAwaitingUser` → bekle → bildirim + timeout + profil); adım tipleri **ayrı kalır**.
+  Politikalar: **grup-onay eşiği yok** (tek üye yeterli) · **grup üyeliği dinamik** (`userGroupId` okuma-anı) · **atama çözülemezse
+  hata/fallback** · **eskalasyon = timeout aksiyonu hedefi** (no-code; ayrı mekanizma yok) · **görev-devri yok → vekalet** (aşağıda).
+  _(→ process-step §3.15/§3.16/§3.22 + §4 log · flovo-bpm-engine §4.3/§6.2 · instance-awaiting-user.md)_
+- [ ] **Vekalet (proxy / yetki verme) sistemi** — **görev-devri yerine** kalıcı vekalet: kullanıcılar başka kişilere vekalet verir;
+  **vekil, vekaleti veren kişinin yerine geçerek onun adına işlem yapar** (aksiyon alabilenler kümesi atananın **aktif vekilleriyle**
+  genişler). **Ayrıntı sonra** verilecek — model (`UserProxy`: grantor/grantee/süre/kapsam) + kapsam (tüm servis ↔ servis-bazlı) +
+  iz/log ("X adına Y") + grup görevlerini kapsama + zincir/tek-kademe kararları açık. _(process-step §3.15/§3.16 · instance-awaiting-user.md)_
+- [x] **Üst Form Kullanıcı (§3.22) — kenar durumlar — ÇÖZÜLDÜ (v0.32):** üstte aksiyon alabilen kullanıcı yoksa — **(a)** üst form
+  bulunamadı **(b)** üst form **otomatik adımda** **(d)** üst form **Süreç Bitişi'nde** — üçünde de alt kayıt **herkese read-only**
+  (profil: code-eşleşmesi, yoksa `isDefault`; bulunamadıysa doğrudan `isDefault`); **(c)** birden fazla üst normalde oluşmaz, olursa
+  **ilk tespit edilen**; **(e)** atananlar **kopyalanmaz**, üstten **canlı** okunur. _(→ process-step §3.22)_
 - [ ] **Form List ayarları gözden geçir** — `reOrder` · `parameterTransfer` · `propertyTransferParameters` ·
   `editOnlyOwnPosition` nasıl yönetilecek (profil-bazlı mı)? _(properties §4 / §3.13)_ · _(`addNewEnabled`→`activeStartActions`,
   `addFromExistingRecordsIsActive`→`addFromExistingStatusIds` (profil), `selectedEnable`→`selectableVisible` (profil): **çözüldü**.)_

@@ -306,10 +306,11 @@ Aksiyon-onayına giden human-task adım; **atananları ve görüntüleme profili
 | `parentServiceId` | int | **Üst formun servisi** — ilişkiyi kuran alanın bulunduğu servis. |
 | `associatedPropertyId` | int | Üst formdaki **ilişki alanı** — yalnız `AssociatedInstance` bağlantısı kuran alanlar (**Form List** veya `isAssociatedCombobox` **Combobox**). **Bu servisi hedefleyen** alanlarla sınırlıdır (Form List `childServiceId` = bu servis / Combobox `associatedServiceId` = bu servis). |
 
-> **Bu adımda `processViewProfileId` ve aksiyon-bekleyen (atama) alanı YOKTUR** — ikisi de üst formdan çözülür:
-> görüntüleme profili **`code` eşleşmesiyle** (aynı kodlu profil yoksa alt-servisin `isDefault` profili), atananlar ise
-> üst formun **güncel `InstanceAwaitingUser`** kümesinden (öneri: **okuma-zamanı** çözümü — kopyalama-vs-anlık kararı →
-> `../../todo.md`). Kenar durumlar (üst form bulunamaz / otomatik adımda / çok eşleşme / Süreç Bitişi) → `../../todo.md`.
+> **Bu adımda `processViewProfileId` ve aksiyon-bekleyen (atama) alanı YOKTUR** — ikisi de üst formdan çözülür (KARAR v0.32):
+> görüntüleme profili **`code` eşleşmesiyle** (aynı kodlu profil yoksa alt-servisin `isDefault` profili), atananlar ise üst
+> formun **güncel `InstanceAwaitingUser`** kümesinden **okuma-zamanında** (kopyalanmaz). **Kenar durumlar:** üstte aksiyon
+> alabilen yoksa (üst form bulunamaz / otomatik adımda / Süreç Bitişi) → alt kayıt **herkese read-only** (profil: code-eşleşmesi,
+> yoksa `isDefault`); **birden fazla** üst → **ilk tespit edilen**. Davranış → [`../../service-settings/process-step.md`](../../service-settings/process-step.md) §3.22.
 
 ## İlişkiler
 - **N – 1** → `Organization` (`organizationId`), `Service` (`serviceId`).

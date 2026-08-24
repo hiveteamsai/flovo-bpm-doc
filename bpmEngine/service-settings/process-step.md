@@ -245,13 +245,21 @@ Süreci başlatan · **Sabit kullanıcı** (`fixedUserId`) · **Kullanıcının 
 
 **Diğer ayarlar:** `processViewProfileId` (görüntüleme profili → `view-profile.md`) · adıma gelince **bildirim** · **timeout** (→ §3.7, `../flovo-bpm-engine.md` §6.2).
 
+> **Atama çözülemezse → hata/fallback (KARAR):** `userType` (ör. **kullanıcının yöneticisi** / **departman yöneticisi** /
+> **değişken kullanıcı** [property'den]) **boş** dönerse (yönetici tanımsız, property boş vb.) atanan **belirlenemez**; adım
+> **sessizce atanansız beklemez** → **hata** üretir ve **`onFail`/fallback** akışına düşer (→ `../flovo-bpm-engine.md` §7).
+> Aynı kural **Kullanıcı Grubu**'nun dinamik atama yöntemlerinde de geçerlidir.
+
 ### 3.16 — Kullanıcı Grubu
 **Özet:** **Birden fazla kullanıcıya** form, aksiyon alınabilir durumda iletilir; bunlardan **biri** manuel aksiyon alarak ilerletir.
 
 **Grup belirleme yöntemi (`userGroupType`):** **Sabit kullanıcı grubu** (`userGroupId`) · **Dinamik kullanıcı
 listesi** (form property'sinden) · **Dinamik kullanıcı grubu**.
 **Diğer ayarlar:** görüntüleme profili · bildirim · timeout.
-> _(İlk fazda **grup "hepsi onaylar" eşiği yok**: gruba iletilen formda **bir** üye aksiyon alınca süreç ilerler.)_
+> **Grup-onay eşiği YOK (KARAR):** Gruba iletilen formda **bir** üye aksiyon alınca süreç ilerler; quorum / "hepsi onaylar" /
+> çoğunluk **yoktur** (tek üye yeterli — kalıcı). **Üyelik dinamiktir:** aksiyon alabilenler `InstanceAwaitingUser.userGroupId`'den
+> **okuma-zamanında** çözülür → gruba sonradan eklenen/çıkan üye onaylarında otomatik yansır
+> (→ [`../models/processInstances/instance-awaiting-user.md`](../models/processInstances/instance-awaiting-user.md)).
 
 ### 3.17 — Süreç Bitişi
 **Özet:** Sürecin **son adımıdır**; kimsenin onayında beklemez, sürecin **bittiği** anlamına gelir.
@@ -371,6 +379,11 @@ aksiyon alabilmesi istenir. Alt-servisin sürecini ana forma **paralel ilerletme
 hem **sync** hem **performans** açısından pahalıdır. Bu adım, alt-servis kaydını üst formun **o anki** görünümüne/atananlarına
 **bağlar** — kopyalamaz, **anlık çözer**.
 
+> **Asıl amaç (tekrarın/hataların önlenmesi):** Ana formda yapılan süreç adımları alt formda **yeniden yapılmak zorunda
+> kalmasın**; üst formdaki değişiklik/ilerleme alt formda **elle tekrarlanmadığından** "unutulan adım"dan doğan **hata**
+> oluşmaz. Ayrıca ana form ilerlerken alt formların akışını ilerletmek için ayrı **aksiyon tetikleme ihtiyacı** kalmaz —
+> senkron yükü ortadan kalkar, **performans** iyileşir.
+
 **Ayarlar:**
 | Ayar | Açıklama |
 |---|---|
@@ -392,16 +405,21 @@ hem **sync** hem **performans** açısından pahalıdır. Bu adım, alt-servis k
 3. **Görüntüleme profili (code ile eşleşme):** Üst formun **o anki aktif adımının** görüntüleme profilinin `code`'u alınır;
    **bu alt-servis içinde aynı `code`'a sahip** `ProcessViewProfile` kullanılır. Aynı kodlu profil **yoksa** alt-servisin
    **`isDefault = true`** profili kullanılır (→ `view-profile.md`).
-4. **Aksiyon bekleyenler (anlık devralma):** Üst formun **güncel `InstanceAwaitingUser`** kümesi bu alt-servis kaydının
-   aksiyon-alabilenleri olur. _(Öneri: bu küme **kopyalanmaz**, **okuma-zamanında** üst form üzerinden çözülür — senkronizasyon
-   yükünü önlemek bu adımın asıl amacıdır; kopyalama-vs-anlık kararı → `../todo.md`.)_
+4. **Aksiyon bekleyenler (anlık devralma) — KARAR (v0.32):** Üst formun **güncel `InstanceAwaitingUser`** kümesi bu alt-servis
+   kaydının aksiyon-alabilenleri olur. Bu küme **kopyalanmaz** — her seferinde **okuma-zamanında** üst formun
+   `InstanceAwaitingUser`'ından çözülür (senkronizasyon yükünü önlemek bu adımın asıl amacıdır). Üstte aksiyon alabilen **yoksa**
+   alt kayıt **read-only** olur (aşağıdaki kenar-durum kuralı).
 5. Devralınan kullanıcı(lar) alt-servis kaydını **code-eşleşen profil** ile görür/düzenler ve **alt-servisin kendi
    aksiyonlarını** alır; aksiyon alındığında alt-servis **kendi sürecinde** ilerler (yalnız görünüm + atananlar devralınır;
    veri/aksiyon/ilerleme alt-servisin kendisinindir).
 
-> **Not (kenar durumlar → `../todo.md`):** üst formda **eşleşen kayıt bulunamazsa** (henüz bağlanmamış / bağ kaldırılmış),
-> üst form **otomatik bir adımda** olup aksiyon bekleyeni yokken, **birden fazla üst form** eşleştiğinde ve üst form
-> **Süreç Bitişi**'ne ulaştığında bu adımın davranışı **açık** (→ Tier 2 "Üst Form Kullanıcı — kenar durumlar").
+> **Kenar durumlar — ÇÖZÜLDÜ (v0.32):**
+> - **Üstte aksiyon alabilen kullanıcı yoksa** — üst form **bulunamadı** (bağ yok/kaldırılmış) · üst form **otomatik adımda**
+>   (kimse beklemiyor) · üst form **Süreç Bitişi'nde** — üçünde de alt kayıt **herkese read-only** görünür (aksiyon alabilen yok).
+> - **Görüntüleme profili:** **code-eşleşmesi** (üstün aktif adım profili) → yoksa **`isDefault`**. Üst form **bulunamadığında**
+>   profil doğrudan **`isDefault`** + read-only.
+> - **Birden fazla üst form:** normalde **oluşmaz**; yine de oluşursa **ilk tespit edilen** üst form esas alınır.
+> - **Atananlar kopyalanmaz:** her okumada üst formun `InstanceAwaitingUser`'ından **canlı** çözülür (yukarıda §4).
 
 ---
 
@@ -425,6 +443,15 @@ hem **sync** hem **performans** açısından pahalıdır. Bu adım, alt-servis k
   **ayrı, yeni bir `ProcessInstance`** oluşur (yeni **Instance/form kaydı** oluşmaz); **`ProcessInstance.parentProcessInstanceId`**'ye alt sürecin koştuğu
   **hedef/host instance'ın ana `ProcessInstance` id'si** yazılır (**tetikleyen** süreç değil; ana süreçlerde null). Instance'a bağ `parentProcessInstanceId`
   zinciriyle **dolaylı**dır (`ProcessInstance`'a ayrı `instance` alanı eklenmez). _(../models/processInstances/process-instance.md · process-step-instance.md · index.md)_
+- [x] **İnsan-görev ailesi ortak modeli — ÇÖZÜLDÜ (v0.32):** Kullanıcı (§3.15) · Kullanıcı Grubu (§3.16) · Üst Form Kullanıcı
+  (§3.22) · Processing (§3.18) ortak bir insan-görev iskeleti paylaşır (atama `InstanceAwaitingUser` → **bekle** → aksiyon-alınabilir
+  → bildirim + timeout + görüntüleme profili); fark yalnız **atananın nasıl çözüldüğü** + **formda aksiyon alınabilirliği**dir.
+  Adım tipleri **ayrı kalır** (yapı planlandığı gibi); ortak davranış tek yerde tanımlanır. Politikalar: **grup-onay eşiği yok**
+  (tek üye yeterli) · **grup üyeliği dinamik** (`InstanceAwaitingUser.userGroupId` okuma-anı) · **atama çözülemezse hata/fallback** ·
+  **eskalasyon = timeout aksiyonu hedefi** (no-code; ayrı mekanizma yok) · **görev-devri yok → vekalet** (ileride → `../todo.md`).
+- [x] **Üst Form Kullanıcı (§3.22) kenar durumları — ÇÖZÜLDÜ (v0.32):** üstte aksiyon alabilen yoksa (bulunamadı / otomatik adım /
+  Süreç Bitişi) → alt kayıt **read-only** (profil: code-eşleşmesi, yoksa `isDefault`); **birden fazla** üst → **ilk tespit edilen**;
+  atananlar **kopyalanmaz**, üstten **canlı** okunur (→ §3.22).
 
 ---
 

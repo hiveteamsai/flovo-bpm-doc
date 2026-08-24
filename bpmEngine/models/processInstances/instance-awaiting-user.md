@@ -43,7 +43,13 @@ alabilecek kullanıcılar bu tabloda **güncellenir** (yeni aksiyon alabilecekle
 
 ## Notlar / açık noktalar
 - **`userId` veya `userGroupId`'den biri dolu olmak zorunda** (ikisi birden değil).
-- **Kullanıcı Grubu ataması:** `userGroupId` dolu olduğunda **gruptaki üyelerden herhangi biri** aksiyon alabilir; ilk aksiyon
-  süreci ilerletir _(ilk fazda "hepsi onaylar" grup-onayı yoktur)_.
+- **Kullanıcı Grubu ataması — grup-onay eşiği YOK (KARAR, v0.32):** `userGroupId` dolu olduğunda **gruptaki üyelerden herhangi
+  biri** aksiyon alabilir; **ilk aksiyon** süreci ilerletir. Quorum / "hepsi onaylar" / çoğunluk **yoktur** — tek üye onayı
+  yeterlidir (kalıcı karar, ilk-faz sınırlaması değil).
+- **Grup üyeliği DİNAMİKTİR (KARAR, v0.32):** Grup, `userId` listesine **açılıp kopyalanmaz**; `userGroupId` tutulur ve aksiyon
+  alabilenler **okuma-zamanında** grubun **güncel** üyelerinden çözülür. Böylece gruba sonradan **eklenen/çıkarılan** üye,
+  bekleyen onaylarında **otomatik** görünür/kaybolur (ayrı senkronizasyon gerekmez).
+- **Vekalet (proxy) — ileride (→ [`../../todo.md`](../../todo.md)):** Aksiyon alabilenler kümesi ileride **vekalet** ile de
+  genişleyecek — atanan kişinin **aktif vekilleri** de o kişi adına aksiyon alabilir. Model/ayrıntı sonra tanımlanacak.
 
 *Oluşturma: 2026-07-06.*

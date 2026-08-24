@@ -210,6 +210,14 @@ hâle gelir:
 > İnsan-tetiklemeli adımlar = motorun **bekle/devam-et** noktalarıdır (→ §6); süreç state'i kalıcılaştırılıp
 > günlerce bekleyebilmelidir.
 
+> **Ortak insan-görev davranışı + politikalar (KARAR, v0.32):** **Kullanıcı · Kullanıcı Grubu · Üst Form Kullanıcı ·
+> Processing** aynı iskeleti paylaşır (atama → `InstanceAwaitingUser` → **bekle** → bildirim + timeout + görüntüleme profili);
+> tek fark **atananın nasıl çözüldüğü** + **formda aksiyon alınabilirliği**dir. Adım tipleri ayrı kalır; ortak davranış tek
+> yerde tanımlanır. Politikalar: **grup → tek üye onayı yeterli** (quorum/"hepsi" yok) · **grup üyeliği dinamik**
+> (`userGroupId` okuma-anı) · **atama çözülemezse → hata/`onFail`** (§7) · **eskalasyon = timeout aksiyonu hedefi** (§6.2) ·
+> **görev-devri yok → vekalet** (ileride). Ayrıntı → `service-settings/process-step.md` §3.15/§3.16/§3.22 ·
+> `models/processInstances/instance-awaiting-user.md`.
+
 > **Adım atlama (skip):** Kullanıcı / Kullanıcı Grubu adımlarında **`skipIfPreApproved`** (önceden onaylanmışsa) veya
 > **`skipIfUserProcessStarter`** (başlatan kullanıcıysa) aktifken, adımda **aksiyon alacak kişi = bu adımdan önce son onayı
 > veren** (veya süreci **başlatan**) ise, form kullanıcıya **sunulmaz**; süreç **döngüye girmesin** diye
@@ -313,6 +321,9 @@ Kullanıcı/grup adımlarında **timeout** tanımlanabilir; süre dolunca:
 
 Hesaplama tipleri: **çalışma takvimine göre** (iş günü/saat) · **normal takvime göre** (erteleme opsiyonlu) ·
 **sabit zaman**.
+> **Eskalasyon = timeout aksiyonu hedefi (KARAR, v0.32):** Ayrı bir "eskalasyon" mekanizması **yoktur**. Görev, süre dolunca
+> bir **üst yetkiliye/yöneticiye** gitsin isteniyorsa, **timeout aksiyonunun hedef adımı** (`targetProcessStepId`) bir **yönetici
+> (Kullanıcı) süreç adımı** olarak ayarlanır — tamamen **no-code** yapılandırılır (→ `service-settings/process-step.md` §3.15).
 > _(Açık: mesaj/olay bekleme (receive), uyuyan sürecin uyandırılması, retry/bekleme → §7 / §12.)_
 
 ### 6.3 — Aksiyon tetikleme isteğine response (form bilgileri)

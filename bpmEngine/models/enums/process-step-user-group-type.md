@@ -13,7 +13,8 @@
 
 ## Notlar
 - Bu enum yalnız **grubun belirlenme yöntemini** seçer; grup formu beklerken **üyelerden biri** aksiyon alınca süreç ilerler
-  _(ilk fazda "hepsi onaylar" grup-onayı eşiği yoktur)_.
+  _(grup-onay eşiği **yoktur** — tek üye yeterli; quorum/"hepsi onaylar" yok — kalıcı karar v0.32)_. Üyelik **dinamiktir**
+  (`InstanceAwaitingUser.userGroupId` okuma-anı çözülür).
 - **Kaynak:** current Flovo `ProcessSettingUserGroupType` →
   [`../../research/current-flovo-bpm-engine/step-type-settings-and-enums.md`](../../research/current-flovo-bpm-engine/step-type-settings-and-enums.md) §3.
 
