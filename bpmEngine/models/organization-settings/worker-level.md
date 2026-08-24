@@ -2,6 +2,7 @@
 
 > **Durum:** 🟡 TASLAK
 > **Amaç:** Personel **kademe/seviye** tanımları (örn. Uzman, Kıdemli Uzman). Kullanıcılara atanır.
+> **⚠️ v-next align (2026-08-24, product-as-reference):** mevcut-çalışan-ürün `synchronizationStatus` taşıyor; analiz-doc'a eklendi (BO-directive: working-product = org-settings referansı). `[YENİ]` işaretli.
 
 ## Alanlar
 | Alan | Tip | Anahtar | Açıklama |
@@ -13,6 +14,7 @@
 | `translationCode` | string? | çeviri anahtarı | **Çeviri eşleşme anahtarı** (→ [`translation.md`](./translation.md) `code`). `null` = çeviri **es geçilir**, doğrudan `definition` kullanılır. |
 | `active` | bool | — | Aktif/pasif — **null olamaz**, varsayılan `true`. `false` = frontend'de **görünür/düzenlenebilir** ama BPM işlemede kullanılmaz. |
 | `deleted` | bool | — | Soft-delete — **null olamaz**, varsayılan `false`. `true` = frontend'de **gizli/aktarılmaz/salt** + BPM işlemede kullanılmaz. |
+| `synchronizationStatus` | bool | — | **[YENİ]** Harici ERP/muhasebe ile senkron durumu. |
 
 ### Alt model — WorkerLevelQualificationValue
 | Alan | Tip | Anahtar | Açıklama |
@@ -35,4 +37,7 @@
 - **1 – N** ← `User` (`workerLevelId`).
 - **Ek nitelikler:** `AdditionalQualification` (`RelationalType=workerLevels`).
 
-*Oluşturma: 2026-07-03.*
+## v-next gerekçesi (review: Osmancan Güven + BO)
+Mevcut-çalışan-ürün WorkerLevel'da `synchronizationStatus` alanını taşıyor (canonical entity-pattern); analiz-doc buna hizalandı. **Review-notu:** syncStatus bir çok canonical-entity'de var (companies dahil); WorkerLevel'da FE-carries → product-as-reference ile eklendi. Genuine-requirement mı yoksa FE-boilerplate mı — Osmancan/BO teyit eder (düşük-risk, additive-optional).
+
+*Oluşturma: 2026-07-03. v-next align: 2026-08-24.*
