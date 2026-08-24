@@ -18,7 +18,7 @@
 | `translationCode` | string? | çeviri anahtarı | **Çeviri eşleşme anahtarı** (→ [`translation.md`](./translation.md) `code`). `null` = çeviri **es geçilir**, doğrudan `definition` kullanılır. |
 | `active` | bool | — | **[YENİ]** Aktif/pasif — **null olamaz**, varsayılan `true`. `false` = frontend'de **görünür/düzenlenebilir** ama BPM işlemede kullanılmaz. |
 | `deleted` | bool | — | **[YENİ]** Soft-delete — **null olamaz**, varsayılan `false`. `true` = frontend'de **gizli/aktarılmaz/salt** + BPM işlemede kullanılmaz. |
-| `synchronizationStatus` | bool | — | **[YENİ]** Harici ERP/muhasebe ile senkron durumu. |
+| `synchronizationStatus` | SyncStatus (enum) | — | **[YENİ, tip: James-SA-catch]** Harici ERP/muhasebe senkron durumu — **3-state string-enum** (`synced` / `pending` / `error`), bool DEĞİL (FE-gerçeği, Emma cross-cutting-inventory). |
 
 ## Benzersizlik
 > **[YENİ]** `(organizationId, code)` **benzersiz** — aynı organizasyonda aynı `code`'lu iki kayıt olamaz. **`deleted=true` kayıtlar kontrole dahil değildir.**

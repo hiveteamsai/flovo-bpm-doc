@@ -14,7 +14,7 @@
 | `translationCode` | string? | çeviri anahtarı | **Çeviri eşleşme anahtarı** (→ [`translation.md`](./translation.md) `code`). `null` = çeviri **es geçilir**, doğrudan `definition` kullanılır. |
 | `active` | bool | — | Aktif/pasif — **null olamaz**, varsayılan `true`. `false` = frontend'de **görünür/düzenlenebilir** ama BPM işlemede kullanılmaz. |
 | `deleted` | bool | — | Soft-delete — **null olamaz**, varsayılan `false`. `true` = frontend'de **gizli/aktarılmaz/salt** + BPM işlemede kullanılmaz. |
-| `synchronizationStatus` | bool | — | **[YENİ]** Harici ERP/muhasebe ile senkron durumu. |
+| `synchronizationStatus` | SyncStatus (enum) | — | **[YENİ, tip: James-SA-catch]** Harici ERP/muhasebe senkron durumu — **3-state string-enum** (`synced` / `pending` / `error`), bool DEĞİL (FE-gerçeği, Emma cross-cutting-inventory). |
 
 ### Alt model — WorkerLevelQualificationValue
 | Alan | Tip | Anahtar | Açıklama |
@@ -38,6 +38,6 @@
 - **Ek nitelikler:** `AdditionalQualification` (`RelationalType=workerLevels`).
 
 ## v-next gerekçesi (review: Osmancan Güven + BO)
-Mevcut-çalışan-ürün WorkerLevel'da `synchronizationStatus` alanını taşıyor (canonical entity-pattern); analiz-doc buna hizalandı. **Review-notu:** syncStatus bir çok canonical-entity'de var (companies dahil); WorkerLevel'da FE-carries → product-as-reference ile eklendi. Genuine-requirement mı yoksa FE-boilerplate mı — Osmancan/BO teyit eder (düşük-risk, additive-optional).
+Mevcut-çalışan-ürün WorkerLevel'da `synchronizationStatus` alanını taşıyor (canonical entity-pattern); analiz-doc buna hizalandı. **Tip-netleşme (James-SA-catch):** boilerplate değil — **3-state string-enum** `SyncStatus` (`synced`/`pending`/`error`), bool değil (Emma cross-cutting-inventory). Osmancan-review'da exact-enum-değerleri teyit edilir. (Not: `company.md` analizinde de `synchronizationStatus` şu-an `bool` yazıyor = aynı-imprecision, ayrı-follow-up'ta enum'a-align edilebilir — bu-PR-scope-dışı.)
 
 *Oluşturma: 2026-07-03. v-next align: 2026-08-24.*
