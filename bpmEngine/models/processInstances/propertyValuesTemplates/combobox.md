@@ -1,6 +1,6 @@
 # Değer Şablonu — `combobox` (Combobox)
 
-> **Durum:** 🟡 TASLAK — ilk çıkarım; düzenlenecek.
+> **Durum:** 🟢 OLGUN (v0.31)
 > **Kapsam:** `combobox` değerinin **`InstanceValue.data` içindeki şekli** + **`projectToAttr=true`** iken fihriste yansıması. **İki bağımsız boyut (2×2):** seçim adedi (**tekli** / **çoklu**=`isMultiSelect`) × kaynak (**düz liste** / **ilişkili**=`isAssociatedCombobox`) — dört kombinasyon da geçerlidir.
 > **Alan davranışı:** → [`../../../service-settings/properties.md`](../../../service-settings/properties.md) §3.3 · **model:** [`../../service-settings/property.md`](../../service-settings/property.md) · **şekil:** [`labeled-value.md`](./labeled-value.md) · **değer modelleri:** [`../instance-attr.md`](../instance-attr.md) · [`../instance-list-item.md`](../instance-list-item.md) · [`../associated-instance.md`](../associated-instance.md).
 

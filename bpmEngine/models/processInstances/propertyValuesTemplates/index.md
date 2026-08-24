@@ -1,6 +1,6 @@
 # Değer Şablonları (Property tipine göre) — İndeks
 
-> **Durum:** 🟡 TASLAK — ilk çıkarım; her tip ayrı ayrı düzenlenecek.
+> **Durum:** 🟢 OLGUN — Q1–Q13 + boş-değer/`live`-anahtar kuralları tamamlandı; 18 tipin tamamı olgunlaştı (v0.31'de tamamlandı).
 > **Amaç:** Her `propertyType` için, o alanın değerinin **`InstanceValue.data` (JSONB) içinde hangi şekille (model) tutulacağı**
 > ve **`projectToAttr=true`** iken **hangi fihrist tablosuna** (`InstanceAttr` / `InstanceListItem`) **nasıl** yansıyacağı
 > tek tek tanımlanır. Bu klasör, değer-saklama modellerinin (`../instance-value.md` · `../instance-attr.md` ·
@@ -58,7 +58,7 @@
 - **Şekil ↔ projeksiyon eşlemesi** araştırma kaynağındaki değer-şekilleri tablosuna dayanır → [`../../../research/property-value-storage/form-deger-saklama-v2.html`](../../../research/property-value-storage/form-deger-saklama-v2.html) §7.
 - **`projectToAttr=false`** ise (hangi tip olursa olsun) değer yalnız `InstanceValue.data`'da kalır; eşitlik sorgusu için `data` üzerindeki **GIN** yeterlidir (fihrist üretilmez).
 - **Etiketli değerlerde** `display`/`translationCode` çözümü → [`labeled-value.md`](./labeled-value.md) "Okuma kuralı".
-- **Kullanıcı-referans konvansiyonu (Q11/Q13):** Değer içinde bir kullanıcıya atıf, **`{ userId: int, nameSurname: string }`** objesiyle yapılır (id + ad-soyad **birlikte**). Fihriste: `numValue`=userId · `textValue`=nameSurname. Kullananlar: `file.fileInfo.user`, `formList.rejectedBy`.
+- **Kullanıcı-referans konvansiyonu (Q11/Q13):** Değer içinde bir kullanıcıya atıf, **`{ userId: int, nameSurname: string }`** objesiyle yapılır (id + ad-soyad **birlikte**). Fihriste: `numValue`=userId · `textValue`=nameSurname. Kullananlar: `file.fileInfo.user`, `formList.rejectedBy`, `flowInfo` (oluşturan kullanıcı), `userInfo` (yönetici).
 - **`InstanceListItem.attrCode` konvansiyonu (Q12):** Liste kalemi bir **nesne** ise `attrCode` = **alt-alan adı** (`expenseType`/`key`/`url`/`instanceId`/`status`…). Kalem **tek atomik değer** ise (adlı alt-alanı / kendi `value` kodu **yok**; ör. multi-select combobox'ın LabeledValue'su) `attrCode` = sabit **`"value"`**.
 
 *Oluşturma: 2026-08-06.*

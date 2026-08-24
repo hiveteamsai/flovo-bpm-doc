@@ -1,22 +1,24 @@
 # Değer Şablonu — `parentProperty` (Parent Property)
 
-> **Durum:** 🟡 TASLAK — ilk çıkarım; düzenlenecek.
+> **Durum:** 🟢 OLGUN (v0.31)
 > **Kapsam:** `parentProperty` (üst/referans alandan türetilen salt-okunur yansıma) değerinin **`InstanceValue.data` içindeki şekli** + fihrist yansıması. Davranış **`reflectionMode`'a bağlıdır**.
 > **Alan davranışı:** → [`../../../service-settings/properties.md`](../../../service-settings/properties.md) §3.15 · **model:** [`../../service-settings/property.md`](../../service-settings/property.md) · **yansıma modu:** [`../../enums/reflection-mode.md`](../../enums/reflection-mode.md) (snapshot/live/materialized) · **yayılım zamanı:** [`../../enums/reflection-propagation.md`](../../enums/reflection-propagation.md) (async/sync) · **yayılım mekanizması:** [`../reflection-propagation.md`](../reflection-propagation.md).
 
 ## 1. JSONB değer şekli — `data["<code>"]`
 Şekil, **referans alınan üst alanın tipiyle aynıdır** (skaler / `LabeledValue` / liste). Depolanıp depolanmaması **`reflectionMode`**'a bağlıdır:
 
-| `reflectionMode` | `data`'da tutulur mu? | Nasıl |
+| `reflectionMode` | `data`'da anahtar/değer | Nasıl |
 |---|---|---|
-| `snapshot` (A, **vars.**) | **Evet** | Yazımda üst alandan **kopyalanır + dondurulur** (referans alanın şekliyle). |
-| `live` (B) | **Hayır** | `data`'ya **yazılmaz**; okurken üst instance'tan **join/referans** ile getirilir. |
-| `materialized` (A′) | **Evet** | `data`'ya kopyalanır **ve** üst değiştikçe [`AssociatedInstance` üzerinden yayılımla](../reflection-propagation.md) **tazelenir** (varsayılan **async**; `reflectionPropagation=sync` opsiyonu). |
+| `snapshot` (A, **vars.**) | **Anahtar var + değer taşır** | Yazımda üst alandan **kopyalanır + dondurulur** (referans alanın şekliyle). |
+| `live` (B) | **Anahtar `data`'da HİÇ bulunmaz** | `data`'ya **yazılmaz** (anahtar dahi konmaz); okurken üst instance'tan **join/referans** ile getirilir. "Anahtar-her-zaman-bulunur" kuralının `text`'teki gibi **istisnasıdır** (değer okuma-anı gelir, saklanmaz). |
+| `materialized` (A′) | **Anahtar var + değer taşır** | `data`'ya kopyalanır **ve** üst değiştikçe [`AssociatedInstance` üzerinden yayılımla](../reflection-propagation.md) **tazelenir** (varsayılan **async**; `reflectionPropagation=sync` opsiyonu). |
 
 ```json
 { "parentBudgetCode": { "value": "P-9", "display": "Proje 9", "translationCode": null } }
 ```
 _(örnek: üst alan etiketli seçimse `LabeledValue`; sayısalsa `number`…)_
+
+- **Boş/seçilmemiş değer** (üst alan boşsa): `snapshot`/`materialized`'da anahtar **`null`** taşır (skaler boş-değer konvansiyonu); `live`'da anahtar zaten `data`'da bulunmaz.
 
 ## 2. Projeksiyon — `projectToAttr=true`
 | `reflectionMode` | Projeksiyon |

@@ -1,6 +1,6 @@
 # Değer Şablonu — `timePicker` (Time Picker)
 
-> **Durum:** 🟡 TASLAK — ilk çıkarım; düzenlenecek.
+> **Durum:** 🟢 OLGUN (v0.31)
 > **Kapsam:** `timePicker` değerinin **`InstanceValue.data` içindeki şekli** + **`projectToAttr=true`** iken fihriste yansıması.
 > **Alan davranışı:** → [`../../../service-settings/properties.md`](../../../service-settings/properties.md) §3.5 · **model:** [`../../service-settings/property.md`](../../service-settings/property.md) · **değer modeli:** [`../instance-value.md`](../instance-value.md) · [`../instance-attr.md`](../instance-attr.md).
 

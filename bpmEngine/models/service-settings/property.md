@@ -40,6 +40,7 @@
 | `state` | — | Alan durumu. |
 | `environmentRestriction` | string | Ortam kısıtı. |
 | `organizationRestriction` | string | Organizasyon kapsam kısıtı. |
+| `settings` | JSONB | **Tipe-özel ayarlar** (`propertyType`'a göre — §2). Ayrı alt-tablo/kolon **açılmaz** → gömülü JSONB; ayrımlayıcı `propertyType`; tip-başına **JSON Schema** ile doğrulanır. `ProcessStep.settings` deseniyle **birebir aynı** (v0.31 kararı). Yalnız **projektör/sorgu katmanının ilişkisel okuduğu metadata** çekirdek kolonda kalır (§2 karar notu). |
 
 > **Not:** `visible` / `enabled` / `required` bu modelde **değil**, `ProcessViewProfileProperty`'de tutulur.
 
@@ -67,6 +68,22 @@
 
 ## 2. Tipe-özel alanlar (`propertyType`'a göre — özet)
 > Tam açıklama → `../../service-settings/properties.md` §3.
+>
+> **Depolama — KARAR (v0.31): tipe-özel alanlar JSONB `settings`'te gömülü.** Aşağıdaki tablodaki tipe-özel ayarlar
+> `Property`'de **ayrı kolon açılmadan** `settings` (JSONB) içinde tutulur; ayrımlayıcı `propertyType`; her tip için ayrı
+> **JSON Schema** ile doğrulanır (referans bütünlüğü uygulama katmanında). Bu, `ProcessStep.settings` (v0.12) deseninin
+> **aynısıdır** ve "şişman model" (her tip için çoğu-boş kolon) sorununu kaldırır; yeni alan tipi = **yeni JSON Schema**
+> (kolon değişikliği yok, kapalı-set genişletmesi çekirdek geliştirmesiyle).
+>
+> **Çekirdekte kalan (kolon) ↔ `settings`'e giden ayrım (sınır kuralı):** Bir tipe-özel alan **yalnız render/istemci
+> davranışı** için tüketiliyorsa → `settings`. Buna karşılık **projektör/sorgu/motor katmanının ilişkisel okuduğu
+> metadata gerçek kolonda kalır** (çoğu tipte boş olsa bile): kimlik/bağlama (`code`, `propertyType`), değer-saklama/
+> projeksiyon (`savePropertyToDb`, `projectToAttr`, `saveChangeLog`, `hasTranslation`), yansıma metadata'sı
+> (`reflectionMode`, `reflectionPropagation`, `isReflectionSource`, `refPropertyId`, `parentPropertyId`, `relatedPropertyIds`),
+> ve ilişki FK'leri (`childServiceId`, `associatedServiceId`, `serviceItemControlId`). Aşağıdaki §2 tablosundaki **saf
+> render/davranış** ayarları (ör. `minLine`/`maxLine`, `barcodeFormat`, `headerText`, `isCropActive`, `setAsToday`,
+> `enableGroupSeperator`, `keyDescription`…) `settings`'e girer. _(Statik seçenek listesi `propertyItems` bir alt-koleksiyon
+> olarak `PropertyItem` tablosunda kalır; `settings`'e gömülmez.)_
 > **Enum'lar:** kontrol tipi → [`../enums/property-type.md`](../enums/property-type.md) · `keyboardType` (Textbox/Phone) → [`../enums/keyboard-type.md`](../enums/keyboard-type.md) · `barcodeFormat` (Barcode) → [`../enums/barcode-format.md`](../enums/barcode-format.md) · `reflectionMode` (parentProperty/userInfo/flowInfo) → [`../enums/reflection-mode.md`](../enums/reflection-mode.md) · `reflectionPropagation` (parentProperty A′) → [`../enums/reflection-propagation.md`](../enums/reflection-propagation.md).
 
 | Kontrol tipi | Alanlar |
@@ -109,7 +126,13 @@
   (kaynağa yaz) · `saveChangeLog` (geçmiş) · `hasTranslation`/`reflectionMode`. Generic projektör bu metadata'ya bakarak
   `InstanceValue.data`'dan `InstanceAttr`/`InstanceListItem` üretir (alan adı koda gömülü değildir). Değer modelleri →
   [`../processInstances/instance-value.md`](../processInstances/instance-value.md) · [`instance-attr.md`](../processInstances/instance-attr.md) · [`instance-list-item.md`](../processInstances/instance-list-item.md) · [`labeled-value.md`](../processInstances/propertyValuesTemplates/labeled-value.md).
-- Çekirdek ↔ tipe-özel ayrımının nihai listesi; Form List ayarları → `../../todo.md`.
+- **Çekirdek ↔ tipe-özel ayrım — ÇÖZÜLDÜ (v0.31):** tipe-özel ayarlar JSONB `settings`'te (tip-başına JSON Schema);
+  projektör/sorgu/motor katmanının okuduğu metadata çekirdek kolonda kalır (→ §2 karar notu). Alanların hangi tarafa
+  düştüğü **sınır kuralıyla** belirlenir (render/davranış → `settings`; ilişkisel-okunan metadata → kolon). _(Form List'in
+  `reOrder`/`editOnlyOwnPosition` **profil-bazlılığı** hâlâ ayrı açık madde → `../../todo.md`.)_
+- **İndeks stratejisi — KARAR (v0.31):** `InstanceValue.data` (JSONB) üzerinde **GIN** (eşittir / `@>` / anahtar-var — `projectToAttr=false`
+  alanlar) · `projectToAttr=true` alanlar için **`InstanceAttr` tipli değer kolonuna B-tree** (aralık / sıra / isim-arama / filtre);
+  gerekirse kısmi/ifade indeksi. Böylece alanların çoğu yalnız JSONB'de (ucuz), yalnız rapor-kritik ~%10–20 fihristte indekslenir.
 - **`dataSource` çift anlamı — ÇÖZÜLDÜ:** `Image Area Selector` (`imageAreaSelector`) alan tipi **kaldırıldı**; `dataSource*`
   artık yalnız Combobox/Radiobutton **dinamik seçenek kaynağı**. Seçenek verisi için ayrı tablo yok — statik `propertyItems`
   (`PropertyItem`) **devam** (davranış → `../../service-settings/properties.md` §2.4).

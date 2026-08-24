@@ -1,6 +1,6 @@
 # Değer Şablonu — `formList` (Form List)
 
-> **Durum:** 🟡 TASLAK — ilk çıkarım; düzenlenecek.
+> **Durum:** 🟢 OLGUN (v0.31)
 > **Kapsam:** `formList` değerinin **`InstanceValue.data` içindeki şekli** + fihrist yansıması. **Diğer tiplerden farklı:** değer skaler değildir — alt-servis **kayıtları ayrı `Instance`**'lardır.
 > **Alan davranışı:** → [`../../../service-settings/properties.md`](../../../service-settings/properties.md) §3.13 · **model:** [`../../service-settings/property.md`](../../service-settings/property.md) · **ilişki:** [`../associated-instance.md`](../associated-instance.md) · **child değer:** [`../instance-value.md`](../instance-value.md).
 

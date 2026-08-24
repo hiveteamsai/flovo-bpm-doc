@@ -1,6 +1,6 @@
 # Değer Şablonu — `groupByTaxReceipt` (Group By Tax Receipt)
 
-> **Durum:** 🟡 TASLAK — ilk çıkarım; düzenlenecek.
+> **Durum:** 🟢 OLGUN (v0.31)
 > **Kapsam:** `groupByTaxReceipt` değerinin **`InstanceValue.data` içindeki şekli** (liste-of-model) + **`projectToAttr=true`** iken fihriste yansıması.
 > **Alan davranışı:** → [`../../../service-settings/properties.md`](../../../service-settings/properties.md) §3.17 · **model:** [`../../service-settings/property.md`](../../service-settings/property.md) · **değer modeli:** [`../instance-list-item.md`](../instance-list-item.md) · **şekil:** [`labeled-value.md`](./labeled-value.md).
 

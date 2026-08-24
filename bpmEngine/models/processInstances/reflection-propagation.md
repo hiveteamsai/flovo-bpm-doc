@@ -60,7 +60,7 @@ Parent commit anı ile child tazeleme arası: **eventual consistency** (A′'in 
 ```
 **Zorunlu guardrail'ler** (yoksa sync bir performans/bug tuzağıdır):
 - **Yalnız 1-hop sync** — daha derin kaskad yine async'e devreder (child'ın outbox'ı taşır); tek TX belirsiz derinlikte ağaç kilitleyemez.
-- **Fan-out eşiği** — child sayısı eşiği aşarsa otomatik **async'e düş** (geniş Form List'te yazmayı kilitleme).
+- **Fan-out eşiği (KARAR v0.31: 20 child)** — sync yazılacak child sayısı **20'yi aşarsa** otomatik **async'e düş** (geniş Form List'te yazmayı kilitleme).
 - Cross-partition/cross-service child yazımı aynı DB'de TX'e girer ama kilit maliyeti yüksek → eşik bunu da korur.
 
 ## 6. Doğruluk (correctness) garantileri
@@ -70,7 +70,7 @@ Parent commit anı ile child tazeleme arası: **eventual consistency** (A′'in 
 | Tekrar işleme (at-least-once) | **version idempotency** (`version ≤ last_projected_version → skip`). |
 | Sıra dışı güncelleme eski değeri yazar | **per-instance ordering** (JetStream subject = instance) **veya** child kopyada `sourceVersion` kontrolü. |
 | Döngü A→B→A | **hopCount + döngü tespiti** (motor **O3**). |
-| Sonsuz kaskad | **derinlik limiti** (`hopCount > limit → düş`). |
+| Sonsuz kaskad | **derinlik limiti** (KARAR v0.31: **3 hop**; `hopCount > 3 → düş`, kaskad durur). |
 | Bir child hata verir, hepsi durur | **child-bazlı retry + dead-letter** (fan-out izole). |
 | Form List'ten çıkarılan child tazelenir | **doğal** — `AssociatedInstance`'ta yok → **bulunmaz**, güncellenmez (ayrı temizlik gerekmez). |
 
@@ -106,7 +106,7 @@ bir ara-formu paylaşır); ata ancak zincir yürünerek bulunur. Bu yüzden ata 
 
 > **Reddedilen seçenek:** non-adjacent kenarlar için ayrı **edge-cache** tablosu — kaldırılan `ReflectionLink`'i geri getirir
 > (redundant + staleness). Recursive reverse-join (path expression) ise fan-out patlaması + ordering/döngü karmaşası getirir; tek
-> generic yolu bozar. İkisi de **kullanılmaz**. _(Kalan açık: yalnız **sayısal** eşikler — O3 derinlik/döngü limiti + `sync` fan-out
-> eşiği → `../../todo.md`.)_
+> generic yolu bozar. İkisi de **kullanılmaz**. _(Sayısal eşikler — **ÇÖZÜLDÜ v0.31:** A′ derinlik/döngü limiti = **3 hop**
+> (O3; `hopCount > 3 → düş`) · `sync` fan-out eşiği = **20 child** (üstü otomatik async'e düşer).)_
 
 *Oluşturma: 2026-08-04. Güncelleme: 2026-08-10 (ReflectionLink tablosu kaldırıldı → AssociatedInstance + Property metadata mekanizması) · 2026-08-17 (ata referansı = röle zinciri / `live`; ters arama yön nüansı).*

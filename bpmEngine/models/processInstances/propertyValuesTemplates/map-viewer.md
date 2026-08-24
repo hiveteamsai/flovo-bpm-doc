@@ -1,6 +1,6 @@
 # Değer Şablonu — `mapViewer` (Map Viewer)
 
-> **Durum:** 🟡 TASLAK — ilk çıkarım; düzenlenecek.
+> **Durum:** 🟢 OLGUN (v0.31)
 > **Kapsam:** `mapViewer` değerinin **`InstanceValue.data` içindeki şekli** (yapısal JSON) + **`projectToAttr=true`** iken fihriste yansıması.
 > **Alan davranışı:** → [`../../../service-settings/properties.md`](../../../service-settings/properties.md) §3.12 · **model:** [`../../service-settings/property.md`](../../service-settings/property.md) · **değer modeli:** [`../instance-value.md`](../instance-value.md) · [`../instance-attr.md`](../instance-attr.md).
 

@@ -1,6 +1,6 @@
 # Değer Şablonu — `flowInfo` (Flow Info)
 
-> **Durum:** 🟡 TASLAK — ilk çıkarım; düzenlenecek.
+> **Durum:** 🟢 OLGUN (v0.31)
 > **Kapsam:** `flowInfo` (salt-okunur akış metadata) değerinin **`InstanceValue.data` içindeki şekli** + fihrist yansıması.
 > **Alan davranışı:** → [`../../../service-settings/properties.md`](../../../service-settings/properties.md) §3.14 · **model:** [`../../service-settings/property.md`](../../service-settings/property.md) · **kaynak:** [`../instance.md`](../instance.md) · **yansıma:** [`../../enums/reflection-mode.md`](../../enums/reflection-mode.md).
 
@@ -8,10 +8,10 @@
 Değer, `flowInfoValue` ile seçilen akış bilgisidir. **Oluşturma-anı mı (dondurulmuş) yoksa güncel mi** gösterileceği
 **`reflectionMode`** ile seçilir (→ [`../../enums/reflection-mode.md`](../../enums/reflection-mode.md)):
 
-| `reflectionMode` | `data`'da tutulur mu? | Nasıl |
+| `reflectionMode` | `data`'da anahtar/değer | Nasıl |
 |---|---|---|
-| `live` (**vars.**) | **Hayır** | `data`'ya **yazılmaz**; **`Instance` kolonlarından / join'den** **güncel** okunur (kopya tutulmaz). |
-| `snapshot` | **Evet** | **Oluşturma anındaki** değer `data`'ya **kopyalanır + dondurulur** (ör. "başlangıç durumu"). |
+| `live` (**vars.**) | **Anahtar `data`'da HİÇ bulunmaz** | `data`'ya **yazılmaz** (anahtar dahi konmaz); **`Instance` kolonlarından / join'den** **güncel** okunur (kopya tutulmaz). "Anahtar-her-zaman-bulunur" kuralının `text`'teki gibi **istisnasıdır** (değer okuma-anı gelir, saklanmaz). |
+| `snapshot` | **Anahtar var + değer taşır** | **Oluşturma anındaki** değer `data`'ya **kopyalanır + dondurulur** (ör. "başlangıç durumu"). |
 
 **Kaynak/şekil** (`live`'da okuma kaynağı; `snapshot`'ta `data`'daki şekil):
 
@@ -22,6 +22,7 @@ Değer, `flowInfoValue` ile seçilen akış bilgisidir. **Oluşturma-anı mı (d
 | oluşturan kullanıcı | `Instance.creatorUserId` (→ `User`) | `{ userId, nameSurname }` (kullanıcı-referans konvansiyonu) |
 
 - Girdi değildir. `live`'da **sürekli değişebilir** (özellikle status); `snapshot`'ta sabittir.
+- **Boş değer** (bilgi bulunamıyorsa — ör. henüz atanmamış durum/oluşturan): `snapshot`'ta anahtar **`null`** taşır (skaler boş-değer konvansiyonu); `live`'da anahtar zaten `data`'da bulunmaz.
 
 ## 2. Projeksiyon — `projectToAttr`
 | `reflectionMode` | Projeksiyon |

@@ -1,6 +1,6 @@
 # Değer Şablonu — `radiobuttonList` (Radiobutton List)
 
-> **Durum:** 🟡 TASLAK — ilk çıkarım; düzenlenecek.
+> **Durum:** 🟢 OLGUN (v0.31)
 > **Kapsam:** `radiobuttonList` değerinin **`InstanceValue.data` içindeki şekli** + **`projectToAttr=true`** iken fihriste yansıması.
 > **Alan davranışı:** → [`../../../service-settings/properties.md`](../../../service-settings/properties.md) §3.7 · **model:** [`../../service-settings/property.md`](../../service-settings/property.md) · **şekil:** [`labeled-value.md`](./labeled-value.md) · **değer modeli:** [`../instance-attr.md`](../instance-attr.md).
 

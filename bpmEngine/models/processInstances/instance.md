@@ -16,6 +16,7 @@
 | `createdDate` | datetime | — | **Instance Creator** adımının formu **oluşturduğu** tarih. |
 | `deleted` | bool | — | **Soft-delete** işareti. `true` = kayıt silinmiş sayılır (fiziksel silme yok). |
 | `statusId` | int | FK → Status.id | Formun **mevcut durumu** (organizasyon havuzu Status). |
+| `validated` | bool | — | Formun **doğrulanmış** olup olmadığı. `true` = form validasyonları (alan zorunluluk/format + iş kuralı `applyValidation`) **geçti**; akış boyunca **tekrar tekrar validasyon çalıştırmamak** için tutulur. Değer/iş-kuralı değişiminde `false`'a döner; ilgili doğrulama adımı/aksiyonu yeniden `true` yapar. |
 
 ## İlişkiler
 - **N – 1** → `Service` (`serviceId`), `ProcessInstance` (`processInstanceId`), `User` (`creatorUserId`), `Status` (`statusId`).
@@ -39,8 +40,10 @@
 - **`statusId` neden `InstanceValue.data`'da değil:** Form durumu **sık değişir** (her onayda). JSONB'de olsa her status
   değişiminde tüm `data` yeniden yazılır (MVCC) + rapor bayatlardı; bu yüzden `statusId` **kolonda** tutulur (hem canlı hem indeksli).
 - **`deleted` = soft-delete** işaretidir (fiziksel silme yapılmaz); `deleted` alanı içeren tüm modellerde aynı kural geçerlidir (organizasyon-ayar modelleriyle **tek/kanonik isim** — `delete` kullanılmaz).
-- **Validasyon durumu (açık soru):** validasyonları iş akışından **sürekli tekrar yapmamak** ve iş kuralı (`applyValidation`)
-  validasyonlarıyla **tutarsızlığı önlemek** için `Instance`'a **`validated` (bool)** alanı mı eklenmeli, yoksa ayrı bir
-  **`FormValidation`** tablosu mu oluşturulmalı? → `../../todo.md`.
+- **Validasyon durumu — ÇÖZÜLDÜ (v0.31): `Instance.validated` (bool).** Validasyonları iş akışından **sürekli tekrar
+  yapmamak** ve iş kuralı (`applyValidation`) validasyonlarıyla **tutarsızlığı önlemek** için form-düzeyi **tek bir
+  `validated` (bool)** alanı tutulur — ayrı bir `FormValidation` tablosu **açılmaz** (form doğrulaması bütünsel bir
+  "geçti/geçmedi" bayrağıyla temsil edilir; alan-bazlı validasyon detayı iş kuralı katmanında üretilir, kalıcı ayrı tabloya
+  gerek yok). `true` = tüm form validasyonları geçti; değer/iş-kuralı değişiminde `false`'a döner, doğrulama tekrar `true` yapar.
 
 *Oluşturma: 2026-07-06.*

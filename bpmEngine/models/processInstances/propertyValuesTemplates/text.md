@@ -1,6 +1,6 @@
 # Değer Şablonu — `text` (Text — statik)
 
-> **Durum:** 🟡 TASLAK — ilk çıkarım; düzenlenecek.
+> **Durum:** 🟢 OLGUN (v0.31)
 > **Kapsam:** `text` (statik label) değerinin **`InstanceValue.data` içindeki şekli** + fihrist yansıması.
 > **Alan davranışı:** → [`../../../service-settings/properties.md`](../../../service-settings/properties.md) §3.9 · **model:** [`../../service-settings/property.md`](../../service-settings/property.md).
 

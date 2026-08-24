@@ -1,6 +1,6 @@
 # Model — LabeledValue (etiketli değer şekli — tablo değil)
 
-> **Durum:** 🟡 TASLAK — değer-saklama mimarisinden türetildi (→ `../../../research/property-value-storage/form-deger-saklama-v2.html`); alanlar gözden geçirilecek.
+> **Durum:** 🟢 OLGUN (v0.31) — değer-saklama mimarisinden türetildi (→ `../../../research/property-value-storage/form-deger-saklama-v2.html`).
 > **Yeni model.** ⚠️ **Ayrı tablo DEĞİLDİR** — `InstanceValue.data` JSONB'ye **gömülü** yazılan ve `InstanceAttr`/
 > `InstanceListItem`'a (`display`/`translationCode` kolonlarına) **açılan** bir **değer şeklidir** (value object).
 > **Amaç:** Kodu ile görünen adı **farklı** olan her seçim değeri (combobox, radio, key-value value, liste alt-seçimi,

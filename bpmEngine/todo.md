@@ -35,7 +35,7 @@
   (new/running/waiting/done); saklama/pruning. _(flovo-bpm-engine §8)_
   - 🧱 **Tech-stack:** kalıcılık **substratı** = PostgreSQL + **Partial Event Sourcing** (`workflow_events` append-only); *ne
     saklanır / yaşam döngüsü / pruning* tasarımı açık. → [`tech-stack/postgresql.md`](./tech-stack/postgresql.md)
-- [ ] **Property value (form alan değerleri) depolaması — MODEL KATMANI İŞLENDİ (2026-08-04); operasyonel kararlar açık.**
+- [x] **Property value (form alan değerleri) depolaması — MODEL + OPERASYONEL KATMAN İŞLENDİ (operasyonel kararlar v0.31'de kapandı; rollup post-MVP'ye ertelendi).**
   Değerler `Instance`'ta değil, **`InstanceValue.data` (JSONB, code-keyed)** kaynak-hakikatinde; fihristler `InstanceAttr`/
   `InstanceListItem` projeksiyonu (CQRS + Outbox + NATS). Model dosyaları `models/processInstances/` altında oluşturuldu
   (InstanceValue · InstanceAttr · InstanceListItem · InstanceValueOutbox · InstanceValueChange · LabeledValue);
@@ -45,10 +45,12 @@
     `reflectionMode` (snapshot/live/materialized=A′) + `reflectionPropagation` (async/sync); yayılım `AssociatedInstance` + `Property` metadata ile (ayrı tablo yok); **(3)** çeviri — `LabeledValue` + `Attr.display`/
     `translationCode`; **(4)** list-of-model → `InstanceListItem`, Form List → `AssociatedInstance`; **(5)** binary → MinIO URL
     (JSONB'de değil); **(6)** value geçmişi → `InstanceValueChange` (append-only); **(7)** durum → `Instance.statusId` kolonu.
-  - **Açık kalan operasyonel kararlar:** **rollup/denormalize dashboard projeksiyonu** (ağır cross-form toplam) · **yansıma
-    yayılım (A′) sınırları** (derinlik/döngü — motor **O3** ile ortak) · **retention/pruning + KVKK** (outbox işlenmiş olay ·
-    `InstanceValueChange` saklama) · **davranış-dokümanı entegrasyonu** (`service-settings/properties.md` · `flovo-bpm-engine.md`
-    yazma/okuma yolu · JSON Schema kapı doğrulama) · GIN/tipli index stratejisi (araştırma dokümanında, kesinleşecek).
+  - **Operasyonel kararlar — ÇÖZÜLDÜ (v0.31):** **rollup/denormalize dashboard** → **post-MVP'ye ertelendi** (ilk faz gereği
+    yok; performans sorunu olursa ek geliştirme) · **yansıma yayılım (A′) sınırları** → derinlik/döngü **3 hop** (O3), `sync`
+    fan-out eşiği **20 child** · **retention/pruning + KVKK** → **müşteri talebiyle manuel temizlik** (otomatik pruning yok) ·
+    **davranış-dokümanı entegrasyonu** → yazma/okuma yolu + **JSON Schema kapısı** işlendi (`flovo-bpm-engine.md` §3.1 ·
+    `service-settings/properties.md` §2.3) · **GIN/tipli index** → JSONB `data`'ya **GIN** (eşittir/`@>`), `projectToAttr`
+    fihristine **tipli B-tree** (aralık/sıra/isim-arama) — `property.md` §1.3'te kodlu.
   - ✅ **`ReflectionLink` yapısı gözden geçirildi → tablo KALDIRILDI (v0.27):** instance-seviyesi bağ tablosu `AssociatedInstance`'ı
     kopyalıyordu (redundant + staleness). Yeni tasarım: **eşleme `Property.refPropertyId`/`code`** (mevcut) + **instance çözümü
     `AssociatedInstance` ters araması**; ayarlanabilir **`reflectionPropagation` (async vars. / sync guardrail'li)**; outbox +=
@@ -57,13 +59,13 @@
       mekanizma **değil** — ya **röle zinciri** (ara form ata alanını kendi `parentProperty`'si olarak yeniden yayınlar → §4
       kaskadı hop-hop indirir; materialized, sorgulanabilir) ya da **`live`** okuma-anı zincir join (yalnız gösterim). Edge-cache
       ve recursive reverse-join **reddedildi**. → [`reflection-propagation.md` §9](./models/processInstances/reflection-propagation.md).
-    - 🔶 **Açık kalan (yalnız sayısal eşikler):** **A′ derinlik/döngü limiti** (motor **O3**) + **`sync` fan-out eşiği** değeri kesinleşecek.
+    - ✅ **Sayısal eşikler — ÇÖZÜLDÜ (v0.31):** A′ derinlik/döngü limiti = **3 hop** (O3; `hopCount > 3 → düş`) · `sync` fan-out eşiği = **20 child** (üstü otomatik async'e düşer). → [`reflection-propagation.md`](./models/processInstances/reflection-propagation.md) §5/§6/§9.
   - 📐 **Tip-bazlı değer şablonları → [`models/processInstances/propertyValuesTemplates/`](./models/processInstances/propertyValuesTemplates/index.md)** (18 tip + core
     `labeled-value.md`). Her `propertyType` için `data` JSONB şekli + `projectToAttr` projeksiyon eşlemesi. **Q1–Q11, Q13 kullanıcı
     kararlarıyla çözüldü** (combobox `value`/id-iki-kolon · groupByTax şema+türetilmiş toplam · formList `AssociatedInstance`-senkron +
     durum→ListItem + `rejectedBy` user-obj · mapViewer `address`→Attr · timePicker `textValue` · phone maskeli · file her-zaman-dizi +
     `fileInfo`{user-obj,date,location-str} · **kullanıcı-referans konvansiyonu** `{userId,nameSurname}`). **Q12 çözüldü:** `InstanceListItem.attrCode`
-    = nesne kaleminde **alt-alan adı**, tek atomik değerde sabit **`"value"`**. **Q1–Q13 kapandı**; şablonlar 🟡 TASLAK (ince ayar kullanıcı iterasyonuyla).
+    = nesne kaleminde **alt-alan adı**, tek atomik değerde sabit **`"value"`**. **Q1–Q13 kapandı**; boş-değer (`null`) + `live`-anahtar (yok) kuralları da işlendi → şablonlar **🟢 OLGUN** (v0.31).
   - 📎 **Kaynak/mimari referans:** [`research/property-value-storage/`](./research/property-value-storage/index.md) —
     [`form-deger-saklama-v2.html`](./research/property-value-storage/form-deger-saklama-v2.html) (A'dan Z'ye). _(İsim uyumlaması models/ tarafında yapıldı: `controlTypeId`→`propertyType` · `RelatedInstance`→`AssociatedInstance` · `Instance.delete`→`deleted`.)_
   - 🧱 **Tech-stack:** depolama **substratı** karara bağlandı — PostgreSQL/JSONB · **NATS JetStream** (outbox omurgası) · MinIO
@@ -166,8 +168,11 @@
   _(permissions §5 · organization §5 · new-vs-current §14)_
 - [ ] **Aksiyon parametrelerinde ifade/kod desteği** — parametreler ne kadar "ifade" (expression/kod) destekleyecek
   (no-code ↔ pro-code dengesi); ifade motoru + veri eşleme (sürükle-bırak) + koşullu çalışma kapsamı. _(process-step-action §5 / §7)_
-- [ ] **Çekirdek ↔ tipe-özel alan ayrımı nihai mi** — hangi alanlar `Property` çekirdeğinde, hangileri tipe-özel ayar;
-  şişman modelin sadeleştirme sınırı. _(properties §4 · new-vs-current §14)_
+- [x] **Çekirdek ↔ tipe-özel alan ayrımı — ÇÖZÜLDÜ (v0.31):** tipe-özel ayarlar `Property`'de **JSONB `settings`**'te (tip-başına
+  **JSON Schema**), `ProcessStep.settings` deseniyle; **şişman model** kalkar. Yalnız projektör/sorgu/motor katmanının ilişkisel
+  okuduğu metadata (kimlik · `savePropertyToDb`/`projectToAttr`/`saveChangeLog`/`hasTranslation` · `reflection*` · ilişki FK'leri)
+  çekirdek kolonda kalır — sınır **render/davranış → `settings`** vs **ilişkisel-okunan → kolon** kuralıyla belirlenir. _(→ properties
+  §3 · models/service-settings/property.md §2)_
 - [ ] **Kapsam-dışı varlıklar + Org ↔ BPM entegrasyonu** — ExpenseType / Currency / Tax modellensin mi;
   organizasyon ayarlarının BPM ile entegrasyon derinliği. _(Position/Staff modellendi → `position.md`.)_ _(index.md §4 · new-vs-current §14)_
 - [ ] **ActionTransfer'e `user` alanı** — `ActionTransfer` (parameters/changeList/action → process-step-action §2) modeline
@@ -220,10 +225,10 @@
   olmadığından işlemi kimin yaptığını kaydetmek için `apiKeyId` alanları var (`ProcessInstance.createdByApiKeyId`,
   `ProcessStepInstance.atApiKeyId`). **Ad geçici**; içine gelecek veri Customer API **erişim mekanizması** kesinleşince
   doğrulanacak. _(flovo-customer-api §3 · models/processInstances/process-instance.md · process-step-instance.md)_
-- [ ] **Form validasyon durumu — `Instance.validated` (bool) mü, `FormValidation` tablosu mu?** İş akışından validasyonları **sürekli
-  tekrar yapmamak** ve **iş kuralı** (BusinessRule `applyValidation`) ile oluşturulan validasyonlarla **tutarsızlık yaşamamak** için:
-  `Instance` modeline **`validated` (bool)** alanı mı eklenmeli, yoksa ayrı bir **`FormValidation`** tablosu mu oluşturulmalı? Karar
-  sonraya. _(models/processInstances/instance.md · business-rule.md `applyValidation` · flovo-bpm-engine.md)_
+- [x] **Form validasyon durumu — ÇÖZÜLDÜ (v0.31): `Instance.validated` (bool).** İş akışından validasyonları **sürekli
+  tekrar yapmamak** ve **iş kuralı** (BusinessRule `applyValidation`) validasyonlarıyla **tutarsızlık yaşamamak** için `Instance`'a
+  form-düzeyi **tek bir `validated` (bool)** alanı eklendi; ayrı `FormValidation` tablosu **açılmadı** (alan-bazlı detay iş kuralı
+  katmanında üretilir). Değer/iş-kuralı değişiminde `false`'a döner. _(→ models/processInstances/instance.md)_
 
 ### 🔎 Tutarlılık denetiminden (2026-07-02)
 - [ ] **`ProcessStep`/`BusinessRule` denormalize `organizationId`** — asıl kapsayıcı `serviceId`; kiracı için ayrıca

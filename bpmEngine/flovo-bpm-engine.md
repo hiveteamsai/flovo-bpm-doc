@@ -1,6 +1,6 @@
 # Flovo BPM Motoru — Çalışma Prensibi (Tasarım Dokümanı)
 
-> **Durum:** 🟢 DETAYLANIYOR — temel kavramlar / çalışma prensibi / yürütme algoritması dolduruldu; **§3 veri modeli = koleksiyon-tabanlı (v0.30)**; bazı bölümler (§2.2, §7, §8, §10, §11) founder/teknik girdi bekliyor.
+> **Durum:** 🟢 DETAYLANIYOR — temel kavramlar / çalışma prensibi / yürütme algoritması dolduruldu; **§3 veri modeli = koleksiyon-tabanlı (v0.30) + §3.1 değer yazma/okuma yolu & JSON Schema kapısı (v0.31)**; bazı bölümler (§2.2, §7, §8, §10, §11) founder/teknik girdi bekliyor.
 > **Amaç:** Yeni Flovo'nun **BPM motorunun** nasıl çalışacağını (mimari + yürütme prensibi) tanımlamak.
 > Bu doküman "hangi adımlar var" değil (→ `service-settings/process-step.md`), "adımlar ne yapar" değil (→ `service-settings/process-step-action.md`);
 > **"motor bu adımları nasıl çalıştırır"** sorusunu cevaplar.
@@ -123,6 +123,31 @@ Bir servis **yedi yapı taşından** oluşur ve bunlar **iki katmana** ayrılır
   loop / join hâlâ **ayrı açık başlıktır** (→ §4.5 · paralel dallanma, `todo.md`).
 - **Soy ağacı (lineage):** parametre kaynağı, `mergeParameter` zinciri + `ProcessStepInstance` geçmişiyle izlenir
   (n8n `pairedItem` muadili ayrıntı sonra netleşecek).
+
+### 3.1 — Değer yazma/okuma yolu (write/read path) + doğrulama kapısı
+> Ortak değer dili (yukarısı) bir değerin **hangi şekilde** taşındığını tanımlar; bu bölüm o değerin **forma nasıl yazıldığını
+> ve nereden okunduğunu** tanımlar. Model referansı → `models/processInstances/instance-value.md` · `instance-attr.md` ·
+> `instance-value-outbox.md` · `instance-value-change.md`; alan metadata'sı → `service-settings/properties.md` §2.3.
+
+**Yazma yolu (write path).** Bir değer forma **üç kaynaktan** girer — kullanıcı formu (frontend) · aksiyon **`changeList`** (§4.2) ·
+Customer API / iş kuralı. Kaynağı ne olursa olsun her yazım **tek bir ortak kapıdan** geçer:
+
+1. **Şekil doğrulaması (JSON Schema kapısı):** yazılan değer, hedef `Property`'nin `propertyType`'ına ait **değer şablonu**
+   (`models/processInstances/propertyValuesTemplates/`) **JSON Schema**'sına göre doğrulanır — skaler mi, `LabeledValue` mi,
+   list-of-model mi; zorunlu alt-alanlar (`{userId,nameSurname}`, `{countryCode,number}`, `fileInfo`…) var mı. Uymayan yazım
+   **reddedilir** (kayıpsızlık + tutarlılık; ara stringify yok). _(Bu, `Property.settings`'in tip-başına JSON Schema ile
+   doğrulanmasının değer-katmanı karşılığıdır.)_
+2. **Yazılabilirlik kapısı:** yalnız **yazılabilir** alanlara işlenir; `text` (statik) · `live` yansıma (`userInfo`/`flowInfo`/
+   `parentProperty`) · `savePropertyToDb=false` alanları **atlanır** (§4.2 istisnaları).
+3. **Kaynağa yazım (aynı TX):** değer `InstanceValue.data`'ya (code-keyed JSONB) **merge** edilir; boş değer **`null`** yazılır.
+   `saveChangeLog=true` ise **aynı TX**'te `InstanceValueChange` satırı + `InstanceValueOutbox` olayı düşer (transactional outbox).
+4. **Projeksiyon (async):** generic projektör outbox'tan `projectToAttr=true` alanlarını `InstanceAttr`/`InstanceListItem`'a
+   yansıtır (CQRS + NATS); alan `isReflectionSource` ise A′ yansıma yayılımı tetiklenir (→ `models/processInstances/reflection-propagation.md`).
+
+**Okuma yolu (read path).** İki kaynaktan okunur: **kaynak-hakikat** `InstanceValue.data` (tam değer — **form render** ve API
+tekil-kayıt) · **fihrist** `InstanceAttr`/`InstanceListItem` (**rapor/filtre/sıra/aralık/isim-arama**). `live` yansıma alanları
+`data`'da bulunmaz → **okuma anında** join/referansla çözülür. Böylece yazım tek kapıdan geçerken okuma, ihtiyaca göre (tam değer
+↔ indeksli sorgu) doğru katmandan servis edilir.
 
 ---
 

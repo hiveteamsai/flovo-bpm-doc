@@ -73,6 +73,13 @@ Tipe-özel ayarlar → §3.
 > değerlerin **JSONB kaynak-hakikat + türetilebilir fihrist** (CQRS + Outbox) mimarisini besler. Model + mimari →
 > [`../models/processInstances/instance-value.md`](../models/processInstances/instance-value.md) · `instance-attr.md` · `../research/property-value-storage/form-deger-saklama-v2.html`.
 
+> **Değer yazma/okuma yolu (write/read path):** Bir değer forma girerken (kullanıcı formu · aksiyon `changeList` · Customer
+> API/iş kuralı) **tek bir doğrulama kapısından** geçer — değer, alanın `propertyType` **değer şablonuna**
+> ([`../models/processInstances/propertyValuesTemplates/`](../models/processInstances/propertyValuesTemplates/index.md)) ait
+> **JSON Schema** ile doğrulanır; yazılabilir alanlara `InstanceValue.data`'ya merge edilir (boş → `null`); `projectToAttr`
+> alanları fihriste (`InstanceAttr`/`InstanceListItem`) yansır. Okuma **tam değer** için `data`'dan, **rapor/filtre/sıra/isim-arama**
+> için fihristten yapılır; `live` yansıma alanları okuma anında join'le çözülür. Tam akış → [`../flovo-bpm-engine.md`](../flovo-bpm-engine.md) §3.1.
+
 > **Görünürlük/zorunluluk ayrımı:** **Zorunluluk (`required`) / görünürlük (`visible`) / düzenlenebilirlik (`enabled`)**
 > property'de **değil**, **görüntüleme profilinde** tutulur (→ `view-profile.md` §2): *alan = ne olduğu*, *profil = nerede nasıl göründüğü*.
 
@@ -128,6 +135,12 @@ Listedeki her eleman bir **PropertyItem**'dir:
 > **Alan tipi seti = sabit / kapalı (KARAR).** `propertyType` değerleri **önceden tanımlı, kapalı bir settir**; plugin/SDK
 > ile yeni bir alan tipi **eklenemez**. Her tipin ayarları, değer saklama şekli (`models/processInstances/propertyValuesTemplates/`)
 > ve motordaki davranışı **Flovo tarafından** geliştirilir/bakılır (→ `process-step.md` §1 karar notu).
+
+> **Tipe-özel ayarların saklanması = JSONB `settings` (KARAR).** Aşağıdaki alan tiplerinin tipe-özel ayarları `Property`'de
+> **ayrı kolon açılmadan** `settings` (JSONB) içinde tutulur; ayrımlayıcı `propertyType`; her tip için ayrı **JSON Schema** ile
+> doğrulanır. `ProcessStep.settings` deseniyle aynıdır ("şişman model" sorunu kalkar). Yalnız projektör/sorgu/motor katmanının
+> **ilişkisel okuduğu metadata** (kimlik + `savePropertyToDb`/`projectToAttr`/`saveChangeLog`/`hasTranslation`/`reflection*` +
+> ilişki FK'leri) çekirdek kolonda kalır. Sınır kuralı + tam liste → [`../models/service-settings/property.md`](../models/service-settings/property.md) §2.
 
 ### 3.1 — `textbox` (Textbox)
 Yazı yazılabilen alan. `minLine`/`maxLine` ile **tek satır** ya da **çok satırlı** metin girişi yapılır (ayrı bir
@@ -269,6 +282,12 @@ dolu** (key boş değil, value seçili) olması zorunludur.
 > atfıyla bulunur; verilen kararlar bu dokümanın **gövdesinde** anlatılır.
 
 > **Çözülenler (yerel karar log'u):**
+- [x] **Tipe-özel ayar depolaması — ÇÖZÜLDÜ (v0.31): JSONB `settings`.** §3 tipe-özel ayarlar `Property`'de ayrı kolon
+  açılmadan `settings` (JSONB) içinde, tip-başına JSON Schema ile tutulur (`ProcessStep.settings` deseni); projektör/sorgu
+  metadata'sı çekirdek kolonda kalır (→ §3 karar notu · `../models/service-settings/property.md` §2).
+- [x] **Değer yazma/okuma yolu — ÇÖZÜLDÜ (v0.31):** yazımlar (form · `changeList` · API/iş kuralı) tek **JSON Schema
+  doğrulama kapısından** geçer → `InstanceValue.data`'ya merge → `projectToAttr` fihriste yansır; okuma tam değer/fihrist
+  ayrımıyla (→ §2.3 not · `../flovo-bpm-engine.md` §3.1).
 - [x] **Genişletilebilirlik (alan seti) — ÇÖZÜLDÜ (v0.30):** `propertyType` **sabit / kapalı settir**; plugin/SDK ile yeni
   alan tipi **eklenemez**; ayarları, değer şeması ve davranışı **Flovo** geliştirir/bakar (→ §3 karar notu · `process-step.md` §1).
 - [x] **Form List ayarlarının profil bazında değişmesi** — **KARAR (B2):** profil-bazlı override `ProcessViewProfilePropertySetting {key,value}`
