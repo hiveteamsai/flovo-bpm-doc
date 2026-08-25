@@ -39,7 +39,7 @@ Yetkiler **organizasyon bazında** (admin + grup-bazlı) yönetilir. Her yetki i
 - `organizationId = null` olan Translation/Style kayıtları **ortak/sistem** kabul edilir (organizasyon değil, Flovo sahibi).
 
 ## Notlar / açık noktalar
-- `idleTimeoutMinute` **alt/üst sınırı** → `../../todo.md`. _(Kilit davranışı **çözüldü** (v0.18): süre dolunca oturum kilitlenir, **yeniden giriş/login** gerekir.)_
-- Sonraki alanlar: plan/abonelik, timezone, para birimi, bölge, güvenlik → `../../todo.md`.
+- **Çözüldü (v0.33):** `idleTimeoutMinute` için **alt/üst sınır yok** — `0`=disable, `>0`= organizasyonca belirlenen dakika → süre dolunca **logout / yeniden giriş** (kilit davranışı v0.18). Sistemce dayatılan min/max **yoktur**.
+- **Çözüldü (v0.33):** **timezone** ayrı açık konu değildir — Organization'a **timezone alanı planlanmıyor**. Diğer alanlar (plan/abonelik, para birimi, bölge, güvenlik) **ihtiyaç anında** eklenir (açık karar değil).
 
 *Oluşturma: 2026-07-02.*

@@ -159,6 +159,7 @@ taşır. İki alanın ayrılması, aynı ad-uzayında **kasıtlı paylaşımı**
 - [x] **Eşleşme anahtarı = ayrı `translationCode`** — çeviri, modellerin **iş kodu (`code`)** üzerinden yapılmaz; her çevrilebilir modelde **ayrı, nullable `translationCode`** alanı vardır (§3.1). Böylece **model-içi benzersiz** iş kodlarının (Departman "01" ↔ Şirket "01") **organizasyon-geneli** çeviri ad-uzayında çakışması engellenir.
 - [x] **`translationCode = null` davranışı** — çeviri **es geçilir**, doğrudan `definition` kullanılır (§3 Adım 0). Çeviri **opt-in**'dir; anahtarı olmayan kayıt hiç sorgulanmaz.
 - [x] **`translationCode` ad-uzayı kuralı (v0.18)** — anahtar **otomatik üretilmez** (`<varlık>.<code>` gibi bir şema yok); alan **opsiyoneldir**. Girilmezse Translation tablosuna gidilmez, `definition` kullanılır. Serbest metin; namespace kullanımı kullanıcının tercihidir (zorunlu değil).
+- [x] **Ortak (null) kaydın sonradan güncellenmesi (v0.33)** — **rutin bir akış değil** (olmayacak varsayımı). Override zaten **ayrı satır** olduğundan (`(organizationId, code, languageCode)`), ortak satırın `definition`'ı güncellense de organizasyon override kayıtları **etkilenmez** (çözümleme §3 Adım 2.1'de önce org satırını bulur). Nadiren gerçek ihtiyaç doğarsa **aksiyon vaka-bazlı kararlaştırılıp manuel data güncellemesiyle** çözülür; otomatik kaskad/koruma mekanizması **kurulmaz**.
 
 ---
 

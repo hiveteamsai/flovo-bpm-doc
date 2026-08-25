@@ -35,42 +35,6 @@
   (new/running/waiting/done); saklama/pruning. _(flovo-bpm-engine §8)_
   - 🧱 **Tech-stack:** kalıcılık **substratı** = PostgreSQL + **Partial Event Sourcing** (`workflow_events` append-only); *ne
     saklanır / yaşam döngüsü / pruning* tasarımı açık. → [`tech-stack/postgresql.md`](./tech-stack/postgresql.md)
-- [x] **Property value (form alan değerleri) depolaması — MODEL + OPERASYONEL KATMAN İŞLENDİ (operasyonel kararlar v0.31'de kapandı; rollup post-MVP'ye ertelendi).**
-  Değerler `Instance`'ta değil, **`InstanceValue.data` (JSONB, code-keyed)** kaynak-hakikatinde; fihristler `InstanceAttr`/
-  `InstanceListItem` projeksiyonu (CQRS + Outbox + NATS). Model dosyaları `models/processInstances/` altında oluşturuldu
-  (InstanceValue · InstanceAttr · InstanceListItem · InstanceValueOutbox · InstanceValueChange · LabeledValue);
-  `Property` += `projectToAttr`/`hasTranslation`/`reflectionMode`/`reflectionPropagation`/`isReflectionSource` + `code` immutable; **ReflectionMode** + **ReflectionPropagation** enum'ları eklendi.
-  _(→ v0.26 · models/processInstances/index.md · research/property-value-storage/index.md 🟢)_
-  - **7 alt-sorunun (form-value-scenarios §12) karşılığı:** **(1)** hibrit — JSONB kaynak + tipli projeksiyon; **(2)** yansıma
-    `reflectionMode` (snapshot/live/materialized=A′) + `reflectionPropagation` (async/sync); yayılım `AssociatedInstance` + `Property` metadata ile (ayrı tablo yok); **(3)** çeviri — `LabeledValue` + `Attr.display`/
-    `translationCode`; **(4)** list-of-model → `InstanceListItem`, Form List → `AssociatedInstance`; **(5)** binary → MinIO URL
-    (JSONB'de değil); **(6)** value geçmişi → `InstanceValueChange` (append-only); **(7)** durum → `Instance.statusId` kolonu.
-  - **Operasyonel kararlar — ÇÖZÜLDÜ (v0.31):** **rollup/denormalize dashboard** → **post-MVP'ye ertelendi** (ilk faz gereği
-    yok; performans sorunu olursa ek geliştirme) · **yansıma yayılım (A′) sınırları** → derinlik/döngü **3 hop** (O3), `sync`
-    fan-out eşiği **20 child** · **retention/pruning + KVKK** → **müşteri talebiyle manuel temizlik** (otomatik pruning yok) ·
-    **davranış-dokümanı entegrasyonu** → yazma/okuma yolu + **JSON Schema kapısı** işlendi (`flovo-bpm-engine.md` §3.1 ·
-    `service-settings/properties.md` §2.3) · **GIN/tipli index** → JSONB `data`'ya **GIN** (eşittir/`@>`), `projectToAttr`
-    fihristine **tipli B-tree** (aralık/sıra/isim-arama) — `property.md` §1.3'te kodlu.
-  - ✅ **`ReflectionLink` yapısı gözden geçirildi → tablo KALDIRILDI (v0.27):** instance-seviyesi bağ tablosu `AssociatedInstance`'ı
-    kopyalıyordu (redundant + staleness). Yeni tasarım: **eşleme `Property.refPropertyId`/`code`** (mevcut) + **instance çözümü
-    `AssociatedInstance` ters araması**; ayarlanabilir **`reflectionPropagation` (async vars. / sync guardrail'li)**; outbox +=
-    `changedPropertyCodes`/`hopCount`; kaynak alanda `isReflectionSource` hızlı-çıkış bayrağı. → [`models/processInstances/reflection-propagation.md`](./models/processInstances/reflection-propagation.md).
-    - ✅ **Referans kapsamı çözüldü (v0.28):** kenarlar **daima doğrudan üst** (tek-hop); **ata** referansı ayrı/non-adjacent
-      mekanizma **değil** — ya **röle zinciri** (ara form ata alanını kendi `parentProperty`'si olarak yeniden yayınlar → §4
-      kaskadı hop-hop indirir; materialized, sorgulanabilir) ya da **`live`** okuma-anı zincir join (yalnız gösterim). Edge-cache
-      ve recursive reverse-join **reddedildi**. → [`reflection-propagation.md` §9](./models/processInstances/reflection-propagation.md).
-    - ✅ **Sayısal eşikler — ÇÖZÜLDÜ (v0.31):** A′ derinlik/döngü limiti = **3 hop** (O3; `hopCount > 3 → düş`) · `sync` fan-out eşiği = **20 child** (üstü otomatik async'e düşer). → [`reflection-propagation.md`](./models/processInstances/reflection-propagation.md) §5/§6/§9.
-  - 📐 **Tip-bazlı değer şablonları → [`models/processInstances/propertyValuesTemplates/`](./models/processInstances/propertyValuesTemplates/index.md)** (18 tip + core
-    `labeled-value.md`). Her `propertyType` için `data` JSONB şekli + `projectToAttr` projeksiyon eşlemesi. **Q1–Q11, Q13 kullanıcı
-    kararlarıyla çözüldü** (combobox `value`/id-iki-kolon · groupByTax şema+türetilmiş toplam · formList `AssociatedInstance`-senkron +
-    durum→ListItem + `rejectedBy` user-obj · mapViewer `address`→Attr · timePicker `textValue` · phone maskeli · file her-zaman-dizi +
-    `fileInfo`{user-obj,date,location-str} · **kullanıcı-referans konvansiyonu** `{userId,nameSurname}`). **Q12 çözüldü:** `InstanceListItem.attrCode`
-    = nesne kaleminde **alt-alan adı**, tek atomik değerde sabit **`"value"`**. **Q1–Q13 kapandı**; boş-değer (`null`) + `live`-anahtar (yok) kuralları da işlendi → şablonlar **🟢 OLGUN** (v0.31).
-  - 📎 **Kaynak/mimari referans:** [`research/property-value-storage/`](./research/property-value-storage/index.md) —
-    [`form-deger-saklama-v2.html`](./research/property-value-storage/form-deger-saklama-v2.html) (A'dan Z'ye). _(İsim uyumlaması models/ tarafında yapıldı: `controlTypeId`→`propertyType` · `RelatedInstance`→`AssociatedInstance` · `Instance.delete`→`deleted`.)_
-  - 🧱 **Tech-stack:** depolama **substratı** karara bağlandı — PostgreSQL/JSONB · **NATS JetStream** (outbox omurgası) · MinIO
-    (binary) · Go (projektör); bu, `form_attr` değerlendirmesindeki **S2/D9 "NATS stack açık" notunu kapatır**. Depolama **MODELİ**
-    hâlâ karara bağlanacak. → [`tech-stack/index.md`](./tech-stack/index.md)
 - [ ] **Denetim izi (audit) / loglama + dosya/binary depolama performansı** — **loglar nasıl ve nerede tutulacak**
   (workflow/form logları · **ayar değişiklik** logları · sistem logları); organizasyonlar **kendi loglarına** nasıl erişecek
   (izolasyon/yetki); saklama/pruning; mevcut "yavaş belge yükleme" şikâyetiyle doğrudan bağlı; KVKK. _(flovo-bpm-engine §8 / §12)_
@@ -108,22 +72,10 @@
   - 🧱 **Tech-stack:** AI **substratı** = **Python AI Service** (🟡 post-MVP) + **pgvector**; entegrasyon **MODELİ** açık. → [`tech-stack/python-ai-service.md`](./tech-stack/python-ai-service.md)
 - [ ] **Hata yönetimi** — her adımda `onFail` var mı/zorunlu mu; **retry** (deneme + bekleme); süreç-seviye global
   hata yakalayıcı; telafi/compensation; `action` zinciri **sonsuz döngü** koruması. _(flovo-bpm-engine §7 · process-step-action §7)_
-- [x] **İnsan-görev ailesi ortak modeli — ÇÖZÜLDÜ (v0.32):** Kullanıcı / Kullanıcı Grubu / Üst Form Kullanıcı / Processing ortak
-  insan-görev iskeletini paylaşır (atama `InstanceAwaitingUser` → bekle → bildirim + timeout + profil); adım tipleri **ayrı kalır**.
-  Politikalar: **grup-onay eşiği yok** (tek üye yeterli) · **grup üyeliği dinamik** (`userGroupId` okuma-anı) · **atama çözülemezse
-  hata/fallback** · **eskalasyon = timeout aksiyonu hedefi** (no-code; ayrı mekanizma yok) · **görev-devri yok → vekalet** (aşağıda).
-  _(→ process-step §3.15/§3.16/§3.22 + §4 log · flovo-bpm-engine §4.3/§6.2 · instance-awaiting-user.md)_
 - [ ] **Vekalet (proxy / yetki verme) sistemi** — **görev-devri yerine** kalıcı vekalet: kullanıcılar başka kişilere vekalet verir;
   **vekil, vekaleti veren kişinin yerine geçerek onun adına işlem yapar** (aksiyon alabilenler kümesi atananın **aktif vekilleriyle**
   genişler). **Ayrıntı sonra** verilecek — model (`UserProxy`: grantor/grantee/süre/kapsam) + kapsam (tüm servis ↔ servis-bazlı) +
   iz/log ("X adına Y") + grup görevlerini kapsama + zincir/tek-kademe kararları açık. _(process-step §3.15/§3.16 · instance-awaiting-user.md)_
-- [x] **Üst Form Kullanıcı (§3.22) — kenar durumlar — ÇÖZÜLDÜ (v0.32):** üstte aksiyon alabilen kullanıcı yoksa — **(a)** üst form
-  bulunamadı **(b)** üst form **otomatik adımda** **(d)** üst form **Süreç Bitişi'nde** — üçünde de alt kayıt **herkese read-only**
-  (profil: code-eşleşmesi, yoksa `isDefault`; bulunamadıysa doğrudan `isDefault`); **(c)** birden fazla üst normalde oluşmaz, olursa
-  **ilk tespit edilen**; **(e)** atananlar **kopyalanmaz**, üstten **canlı** okunur. _(→ process-step §3.22)_
-- [ ] **Form List ayarları gözden geçir** — `reOrder` · `parameterTransfer` · `propertyTransferParameters` ·
-  `editOnlyOwnPosition` nasıl yönetilecek (profil-bazlı mı)? _(properties §4 / §3.13)_ · _(`addNewEnabled`→`activeStartActions`,
-  `addFromExistingRecordsIsActive`→`addFromExistingStatusIds` (profil), `selectedEnable`→`selectableVisible` (profil): **çözüldü**.)_
 - [ ] **Timer üçlüsü** (Timer / Timer Start / Timer End) yaşam döngüsü ve bağlanması; global timer kayıtları?
   _(process-step §4)_
   - **Netleşen (v0.12):** `TimerCalculationType` + `ProcessStepTimerSettings` (çalışma/normal/sabit takvim blokları + timeout
@@ -151,8 +103,8 @@
   - **Çözülen (v0.25):** **hedef servis ↔ hedef alan invariant'ı** (`targetServiceId == targetPropertyId'nin childServiceId/associatedServiceId`'si;
     kaydetme-anı doğrulaması) · **`async` bekleme yeri** (bekleme, ilişki değişikliğini/`AssociatedInstance` yazımını yapan **tetikleme noktasında**
     yapılır) · **`subProcessStart` tetikleme kataloğuna ServiceTrigger (associate) eklendi** (process-step §3.20/§3.16).
-  - **Açık kalan:** **(1) `timer` saat dilimi/DST** — cron'un değerlendirileceği saat dilimi (Organization timezone alanı henüz
-    açık) + DST geçişleri; **(2) döngü koruması** — A→B→A tetikleme recursion'ı (derinlik/çevrim sınırı) _(tasarım-zamanı önleme
+  - **Açık kalan:** **(1) `timer` DST kenar durumları** — cron değerlendirmesinde DST geçişleri (saat dilimi **ayrı açık konu değil** —
+    v0.33: Organization'a org-bazlı timezone alanı **planlanmıyor**; cron sabit/varsayılan konvansiyona göre değerlendirilir); **(2) döngü koruması** — A→B→A tetikleme recursion'ı (derinlik/çevrim sınırı) _(tasarım-zamanı önleme
     örneği: `isAssociatedCombobox=false` geri-referans — `sampleProcess/expenseAndCreditCard/creditCardStatementLine.md`; motor-düzeyi
     güvenlik ağı açık)_; **(3) `async` kaskad kompozisyonu** — üst üste `async=false` senkron derinlik yaratır; seviyeler boyunca
     async + işlem/derinlik sınırı (Senaryo 5 kaskadı); **(4) `triggerProcessStep` → ilişkili instance (associatedInstance) tetikleme** —
@@ -174,15 +126,11 @@
   _(permissions §5 · organization §5 · new-vs-current §14)_
 - [ ] **Aksiyon parametrelerinde ifade/kod desteği** — parametreler ne kadar "ifade" (expression/kod) destekleyecek
   (no-code ↔ pro-code dengesi); ifade motoru + veri eşleme (sürükle-bırak) + koşullu çalışma kapsamı. _(process-step-action §5 / §7)_
-- [x] **Çekirdek ↔ tipe-özel alan ayrımı — ÇÖZÜLDÜ (v0.31):** tipe-özel ayarlar `Property`'de **JSONB `settings`**'te (tip-başına
-  **JSON Schema**), `ProcessStep.settings` deseniyle; **şişman model** kalkar. Yalnız projektör/sorgu/motor katmanının ilişkisel
-  okuduğu metadata (kimlik · `savePropertyToDb`/`projectToAttr`/`saveChangeLog`/`hasTranslation` · `reflection*` · ilişki FK'leri)
-  çekirdek kolonda kalır — sınır **render/davranış → `settings`** vs **ilişkisel-okunan → kolon** kuralıyla belirlenir. _(→ properties
-  §3 · models/service-settings/property.md §2)_
 - [ ] **Kapsam-dışı varlıklar + Org ↔ BPM entegrasyonu** — ExpenseType / Currency / Tax modellensin mi;
   organizasyon ayarlarının BPM ile entegrasyon derinliği. _(Position/Staff modellendi → `position.md`.)_ _(index.md §4 · new-vs-current §14)_
-- [ ] **ActionTransfer'e `user` alanı** — `ActionTransfer` (parameters/changeList/action → process-step-action §2) modeline
-  bir **user** property'si eklenmeli mi (aksiyon/parametre verisinden `Instance.creatorUserId`'yi **isteğe bağlı** set etmek için)?
+- [ ] **ActionTransfer'e `user` alanı** — `ActionTransfer` (DTO → `models/service-settings/dto/action-transfer.md`;
+  parameters/changeList/action → process-step-action §2) modeline bir **user** property'si eklenmeli mi (aksiyon/parametre
+  verisinden `Instance.creatorUserId`'yi **isteğe bağlı** set etmek için)?
   _(process-step-action §2 · process-step §3.12 · `apiKeyId` açık sorusuyla bağlantılı)_
   - **Netleşen (v0.17):** "`form` tipinde `creatorUserId` **zorunlu dolu**" kuralı **kaldırıldı** — süreç **API/webhook ile**
     (tek oluşturan kullanıcı olmadan, ör. gruba yönlendirilerek → `sampleProcess/referred`) başlatılabildiğinden
@@ -205,36 +153,17 @@
 ## 🧩 Tier 3 — Detay / sonraya
 
 - [ ] **`actionDisplayType`** gözden geçir (`invisible`/`everywhere`/`onlyFormDetail`/`onlyFastApprove`). _(action §3)_
-- [ ] **`action` nesnesinin şekli** (HTTP Request response'undan gelen tetikleme-kodu paketi). _(process-step-action §7)_
-  - ✅ **`changeList` öğe yapısı — ÇÖZÜLDÜ (v0.30):** **obje-map** `{ Property.code: value }`; değer `propertyValuesTemplates`
-    şeklinde (InstanceValue ile ortak, code-keyed); forma **doğrudan JSONB merge**. Yalnız yazılabilir alanlar. → process-step-action §2.2.
 - [ ] **İş kuralı performansı** — `always` kuralları yalnız ilgili property değişince (alan-bağımlı) tetiklensin mi?
   _(business-rule §6)_
-- [ ] **Status: kategori/grup** — raporlama/filtreleme için `code`/`definition` yeterli mi, ayrı kategori boyutu gerekli mi?
-  _(status §4)_ · _(icon/definition rengi = `styleId`.`fontColor` — **çözüldü**.)_
-- [ ] **Çeviri** — ortak (`null`) kayıt sonradan güncellenince, onu **ezmiş** organizasyon kayıtları etkilenmemeli (teyit).
-  _(translation §5)_
-- [ ] **`idleTimeoutMinute` alt/üst sınır** + Organization sonraki alanlar (plan/abonelik, timezone, para birimi, bölge,
-  güvenlik). _(Kilit davranışı **çözüldü** (v0.18): kilitlenince yeniden giriş/login gerekir → log.)_ _(organization §4)_
-- [ ] **Örnekler arası aksiyon kodu adlandırma tutarlılığı** — sampleProcess örneklerinde kod adları (`default` vb.) tutarlı
-  tutulmalı (doc-hygiene). _(sampleProcess)_
-- [ ] **Aksiyonlarda swipe item** — process-step-action'lar için görünüm (`styleId`/`actionDisplayType`) yerine ya da ek olarak
-  **swipe item** (kaydırmalı aksiyon) eklenmeli mi? _(process-step-action §4 · action §3 `actionDisplayType`)_
 
 ---
 
 ## 🆕 Bu oturumda eklenen açık sorular
 
-- [x] **Customer API dış referans anahtarı (O6) — Tier 2'ye konsolide edildi:** aynı soru Tier 2 "Customer API" alt-maddesinde
-  (**O6**, `organizationId` int ↔ `organizationCode` string) izleniyor; mükerrer kayıt kaldırıldı.
 - [ ] **`apiKeyId` içeriği/adı (Customer API kimliği)** — Customer API ile oluşturulan kayıtlarda oluşturan **User**
   olmadığından işlemi kimin yaptığını kaydetmek için `apiKeyId` alanları var (`ProcessInstance.createdByApiKeyId`,
   `ProcessStepInstance.atApiKeyId`). **Ad geçici**; içine gelecek veri Customer API **erişim mekanizması** kesinleşince
   doğrulanacak. _(flovo-customer-api §3 · models/processInstances/process-instance.md · process-step-instance.md)_
-- [x] **Form validasyon durumu — ÇÖZÜLDÜ (v0.31): `Instance.validated` (bool).** İş akışından validasyonları **sürekli
-  tekrar yapmamak** ve **iş kuralı** (BusinessRule `applyValidation`) validasyonlarıyla **tutarsızlık yaşamamak** için `Instance`'a
-  form-düzeyi **tek bir `validated` (bool)** alanı eklendi; ayrı `FormValidation` tablosu **açılmadı** (alan-bazlı detay iş kuralı
-  katmanında üretilir). Değer/iş-kuralı değişiminde `false`'a döner. _(→ models/processInstances/instance.md)_
 
 ### 🔎 Tutarlılık denetiminden (2026-07-02)
 - [ ] **`ProcessStep`/`BusinessRule` denormalize `organizationId`** — asıl kapsayıcı `serviceId`; kiracı için ayrıca
@@ -282,7 +211,7 @@
   profile taşındı: `addNewEnabled`→`activeStartActions` (ProcessStepAction id listesi), `addFromExistingRecordsIsActive`→
   `addFromExistingStatusIds` (Status id listesi). Ayrıca `selectedEnable`→`selectableVisible` olarak **profil-bazına** (Form List,
   `ProcessViewProfilePropertySetting`) taşındı; eski alan-düzeyi `selectableModeActive` **kaldırıldı**, öneri `selectedEditable`
-  (profil). _(Açık kalan `reOrder`/`editOnlyOwnPosition` profil-bazlılığı → Tier 2 "Form List ayarları gözden geçir".)_
+  (profil). _(`reOrder` + mapViewer `editOnlyOwnPosition` profil-bazlılığı **ÇÖZÜLDÜ v0.33**; `parameterTransfer`/`propertyTransferParameters` **kaldırıldı** → `parentProperty`.)_
 - **Dokümanlar senkronlandı + tutarlılık denetimi:** `research/compare/new-vs-current.md` bu oturumun tüm kararlarıyla
   güncellendi; `CLAUDE.md`/`index.md` indekslerine `models/` + `todo.md` eklendi. Bağımsız denetim düzeltmeleri:
   README (style alanları), Processing taksonomisi (otomatik), `process-step-action`/`flovo-bpm-engine` `style`→`styleId`,
@@ -341,3 +270,33 @@
   `models/service-settings/solution.md` + `service.md` oluşturuldu (alan ayrıntıları — ikon/versiyon/yetki — sonra).
 - **Bildirim dil kapsamı (ÇÖZÜLDÜ — dinamik dil listesi):** bildirim başlık/mesajı sabit TR/EN yerine **dinamik
   `{ languageCode, text }` listesi**; sabit dil setine bağlı kalmadan kayıt-başına-dil genişler. _(process-step §3.6)_
+- **Property value (form alan değerleri) depolaması (ÇÖZÜLDÜ — v0.26 model + v0.31 operasyonel):** değerler `InstanceValue.data`
+  (JSONB, code-keyed) kaynak-hakikati; fihrist `InstanceAttr`/`InstanceListItem` projeksiyonu (CQRS+Outbox+NATS); yansıma A′ =
+  **3 hop / 20 fan-out**; tip şablonları 🟢; **rollup post-MVP**, **retention manuel**; GIN(data)+tipli B-tree(Attr) index. Detay →
+  `commitNotes/v0-26`·`v0-31` · `models/processInstances/index.md` · `reflection-propagation.md`.
+- **İnsan-görev ailesi ortak modeli (ÇÖZÜLDÜ — v0.32):** Kullanıcı / Kullanıcı Grubu / Üst Form Kullanıcı / Processing **ortak iskelet**
+  (adım tipleri ayrı); grup-onay yok · dinamik üyelik · atama-hata fallback · eskalasyon=timeout-hedefi · görev-devri yok→**vekalet** (açık).
+  Detay → `commitNotes/v0-32` · `flovo-bpm-engine §4.3/§6.2`.
+- **Üst Form Kullanıcı (§3.22) kenar durumlar (ÇÖZÜLDÜ — v0.32):** üstte aksiyon alan yoksa alt kayıt **read-only** · birden fazla üst →
+  **ilk tespit** · atananlar kopyalanmaz, **canlı** okunur. Detay → `commitNotes/v0-32` · `process-step §3.22`.
+- **Çekirdek ↔ tipe-özel alan ayrımı (ÇÖZÜLDÜ — v0.31):** tipe-özel ayarlar `Property.settings` **JSONB** (tip-başına JSON Schema);
+  ilişkisel-okunan metadata **kolonda** kalır. Detay → `commitNotes/v0-31` · `models/service-settings/property.md §2`.
+- **Status: kategori/grup (ÇÖZÜLDÜ — v0.33): gerek yok** — `code`/`definition` yeterli; ayrı kategori/grup boyutu eklenmez. _(status §4)_
+- **Çeviri: ortak (null) kaydın sonradan güncellenmesi (ÇÖZÜLDÜ — v0.33):** rutin akış değil; override ayrı satır → **etkilenmez**;
+  nadir ihtiyaçta vaka-bazlı **manuel** güncelleme (otomatik kaskad/koruma yok). _(translation §5)_
+- **`idleTimeoutMinute` alt/üst sınır (ÇÖZÜLDÜ — v0.33): sınır yok** — `0`=disable, `>0`= organizasyonca belirlenen dakika → **logout**.
+  **timezone** ayrı açık konu değil (org timezone alanı planlanmıyor); diğer Organization alanları ihtiyaç anında eklenir. _(organization §4)_
+- **Örnekler arası aksiyon kodu adlandırma tutarlılığı (İZLENMEZ — v0.33):** örnek-düzeyi doc-hygiene todo'da tutulmaz; örnekler
+  dökümanlar tamamlanınca **baştan eksiksiz** yeniden oluşturulur. _(sampleProcess/index.md)_
+- **Aksiyonlarda swipe item (ÇÖZÜLDÜ — v0.33):** ayrı görünüm ayarı değil; `ActionType`'a **`delete`** eklendi (aksiyon → form UI'dan
+  kalkar; card'da **swipe item**); `actionDisplayType` değişmedi. _(process-step-action §3.8 · action-type.md)_
+- **Customer API dış referans anahtarı (O6) (KONSOLİDE):** Tier 2 "Customer API" alt-maddesinde izleniyor (`organizationId` int ↔
+  `organizationCode` string); Customer API detaylanınca tek statüye bağlanacak. _(flovo-customer-api §3)_
+- **Form validasyon durumu (ÇÖZÜLDÜ — v0.31): `Instance.validated` (bool)** — ayrı `FormValidation` tablosu yok; değer/iş-kuralı
+  değişiminde `false`'a döner. _(models/processInstances/instance.md)_
+- **Form List ayarları gözden geçir (ÇÖZÜLDÜ — v0.33):** `reOrder` → **profil-bazlı** (view-profile-property); `editOnlyOwnPosition`
+  (mapViewer alanı) → **profil-bazlı**; `parameterTransfer`/`propertyTransferParameters` → **tamamen kaldırıldı** (ana↔alt akış artık
+  `parentProperty`). _(properties §3.12/§3.13 · view-profile-property.md · form-list.md)_
+- **`ActionTransfer` DTO + `action`/`changeList` şekli (ÇÖZÜLDÜ):** `ActionTransfer` **DTO** olarak `models/service-settings/dto/`
+  altına alındı; `action` = **`string?`** (aksiyon kodu; doluysa aynı `code`'lu aksiyon, boş/null → **`default`**) — v0.33;
+  `changeList` = **obje-map** `{ Property.code: value }` — v0.30. **Açık kalan:** `ActionTransfer.user` alanı (ayrı madde). _(dto/action-transfer.md · process-step-action §2/§2.2)_

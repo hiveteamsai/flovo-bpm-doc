@@ -36,13 +36,19 @@ bazında** olması gerektiği için buraya taşındı.)_
 | `addFromExistingStatusIds` | list\<int\> (Status id) | **Var olandan ekle**: hangi **durumdaki** formlar bu listeye eklenebilir. **Boş liste = "var olandan ekle" pasif.** _(`addFromExistingRecordsIsActive` bool'unun yerini alır.)_ |
 | `selectableVisible` | bool | Satır **seçim/tik kutusunun** bu profilde **görünür** olup olmadığı. **Boş/false = seçim modu kapalı.** _(Eski **alan-düzeyi** `Property.selectableModeActive`'in yerini alır — artık **profil bazında**.)_ |
 | `selectedEditable` _(öneri)_ | bool | `selectableVisible` açıksa, tikler bu profilde **değiştirilebilir** mi (örn. yönetici ✓, süreç başlatan ✗). |
+| `reOrder` | bool | Form List **satır sıralaması** bu profilde değiştirilebilir mi (**profil-bazlı**, KARAR v0.33; eski alan-düzeyi `Property.reOrder`'in yerini alır). |
 
 > **Not:** Satır **seçim/tik** görünürlüğü (`selectableVisible`) ve **düzenlenebilirliği** (`selectedEditable`) artık
 > **profil bazında** (görüntüleme profili) yönetilir; eski **alan-düzeyi** `selectableModeActive` **kaldırıldı**.
 
-> Diğer Form List ayarları (`reOrder`, `editOnlyOwnPosition`) da profil-bazlı yönetilecekse aynı katalogla eklenir
-> (şimdilik `Property`'de → `../../todo.md`). Diğer alan tipleri (`combobox`, `file`, `keyValueList`…) için override key'leri
-> **ihtiyaç doğdukça** buraya eklenir.
+> **KARAR (v0.33):** `reOrder` (Form List, yukarıda) ve `editOnlyOwnPosition` (mapViewer, aşağıda) artık **profil-bazlı**.
+> `parameterTransfer`/`propertyTransferParameters` **kaldırıldı** (ana↔alt akış `parentProperty` ile çözülür). Diğer alan tipleri
+> (`combobox`, `file`, `keyValueList`…) için override key'leri **ihtiyaç doğdukça** buraya eklenir.
+
+### `mapViewer` (Map Viewer)
+| key | value tipi | Ne yapar |
+|---|---|---|
+| `editOnlyOwnPosition` | bool | Kullanıcı haritada yalnız **kendi konumunu** düzenleyebilir mi (**profil-bazlı**, KARAR v0.33). |
 
 ## Notlar / açık noktalar
 - **Karar (B2):** tipe-özel, profil-bazlı ayarlar `ProcessViewProfilePropertySetting {key, value}` ile **override**

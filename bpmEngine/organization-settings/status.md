@@ -57,6 +57,7 @@ tetiklendiğinde kaydın durumu değişebilir.
 > **Çözülenler (yerel karar log'u):**
 - [x] **`icon` ↔ `styleId`** — `icon` **ve** `definition` frontend'de `styleId`'nin **`fontColor`**'ını kullanır (`bgColor` = etiket arka planı). Ayrı renk alanı yok.
 - [x] Durumlar **organizasyon-bazlı** (havuz) tanımlanır; organizasyonun tüm servislerinde kullanılır.
+- [x] **Kategori/grup boyutu — gerek yok (v0.33):** raporlama/filtreleme için `code`/`definition` **yeterli**; Status'a ayrı **kategori/grup boyutu eklenmez**.
 
 ---
 

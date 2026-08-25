@@ -40,6 +40,6 @@ Form List satırları **ayrı child `Instance`'lardır** (gömülü kalem değil
 
 ## 3. Notlar
 - `InstanceListItem` (liste-of-model, ör. `groupByTax`) ile **karıştırma**: o aynı JSON içindeki kalem; Form List ayrı Instance.
-- Ana↔alt parametre aktarımı (`parameterTransfer`/`propertyTransferParameters`) child `InstanceValue`'ya **normal yazma** yapar (→ properties §3.13).
+- **Ana↔alt değer akışı** artık **`parentProperty`** (properties §3.15 · salt-okunur yansıma) ile sağlanır; eski `parameterTransfer`/`propertyTransferParameters` mekanizması **kaldırıldı** (v0.33).
 
 *Oluşturma: 2026-08-06.*

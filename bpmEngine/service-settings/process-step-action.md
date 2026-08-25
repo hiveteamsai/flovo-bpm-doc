@@ -64,13 +64,13 @@ Bir aksiyon tetiklendiğinde taşıdığı veri modeli **3 alandan** oluşur. **
 |---|---|---|
 | **`parameters`** | Bir süreç adımından **diğer süreç adımına aktarılacak (geçici) veriyi** taşır (forma yazılmaz). Değer şekli `InstanceValue` ile **ortak**; **anahtar serbest**. | Adımlar arası veri geçişi gerekiyorsa. |
 | **`changeList`** | **Formdaki alan değişikliklerini** taşır — **obje-map** `{ Property.code: value }`; aksiyon tetiklendiğinde bu alanların **yeni değerleri forma yazılır (kalıcı).** | Form alanlarında değişiklik olduğunda. |
-| **`action`** | **HTTP Request** adımının **response**'undan gelebilen alan. Response'ta bir `action` (kod) varsa, adımdaki **aynı kodlu aksiyon** tetiklenir. | HTTP Request adımı çalışıp response döndüğünde. |
+| **`action`** | **`string?`** — **HTTP Request** adımının **response**'undan gelen **aksiyon kodu**. **Doluysa** adımdaki **aynı `code`'lu aksiyon** tetiklenir; **boş/null** ise **`default`** kodlu aksiyon tetiklenir. | HTTP Request adımı çalışıp response döndüğünde. |
 
 ```jsonc
 {
   "parameters": { /* adımdan adıma taşınacak GEÇİCİ veri — obje-map, serbest anahtar        — opsiyonel */ },
   "changeList": { /* forma yazılacak KALICI değerler   — obje-map { "Property.code": value } — opsiyonel */ },
-  "action":     { /* HTTP response'undan gelen, tetiklenecek aksiyon                          — opsiyonel */ }
+  "action":     "approve"  /* string? — response'tan gelen tetiklenecek aksiyon KODU; boş/null → `default`  — opsiyonel */
 }
 ```
 
@@ -170,6 +170,14 @@ ilerletir — async HTTP Request'in (→ `process-step.md` §3.2) **geri-dönü�
 > bir `autoAction`** varsa manuel aksiyon beklenmeden onunla ilerler; **yoksa** adım **bekler** (webhook/başka aksiyon gelene dek
 > → `process-step.md` §3.18). _(Diğer otomatik adımlar — Flovo AI, HTTP Request vb. — zaten `default`/`onFail` ile ilerler.)_
 > _(Detaylandırılacak: genel tetikleme koşulu ifadesi.)_
+
+### 3.8 — `delete` (Sil / kaydırmalı)
+Aksiyon alınınca ilgili **form UI'dan kaldırılır** (görünümden düşer). **Card (kart) görünümünde**, bir instance için bu tipte
+bir aksiyon varsa aksiyon **swipe item** (kaydırmalı aksiyon) olarak render edilir — kullanıcı kartı **kaydırarak** aksiyonu tetikler.
+- **Sunum:** Swipe, ayrı bir `actionDisplayType` **değildir**; kaydırmalı gösterim doğrudan **`delete` türüne** bağlıdır
+  (`actionDisplayType` yalnız görünürlük bağlamını — `invisible`/`everywhere`/`onlyFormDetail`/`onlyFastApprove` — yönetmeye devam eder).
+- **Etki:** Aksiyon sonrası form **UI'dan silinir** (liste/kart görünümünden düşer).
+> _(Detaylandırılacak: kalıcı instance silme ile ilişki — **Instance Deleter** adımı `process-step.md` §3.9 — ve onay/geri-alma davranışı.)_
 
 ---
 

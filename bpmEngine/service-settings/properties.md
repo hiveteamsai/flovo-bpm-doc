@@ -85,7 +85,7 @@ Tipe-özel ayarlar → §3.
 
 ### 2.4 — Veri kaynağı alanları (seçim alanları için)
 `dataSource` · `dataSourceId` · `dataSourceValue` (dinamik) · `propertyItems` (statik liste — öğe modeli → §2.6) ·
-`propertyTransferParameters` · `lazyLoading` · `manuelEntry` · `isMultiSelect` · `hasTranslation`. _(Kullanımı → §3.3 / §3.7)_
+`lazyLoading` · `manuelEntry` · `isMultiSelect` · `hasTranslation`. _(Kullanımı → §3.3 / §3.7)_
 
 > **`hasTranslation` + etiketli değer (`LabeledValue`):** Kodu ile görünen adı farklı olan seçim değerleri (combobox/radio/
 > key-value…) depoya `{value, display, translationCode}` şekliyle yazılır (rapor isim-araması `InstanceAttr.display`). Statik
@@ -214,13 +214,12 @@ Telefon numarası girilen alan.
 ### 3.12 — `mapViewer` (Map Viewer)
 Harita üzerinde **seçim ve görüntüleme** alanı.
 **Ayarlar:** konum **seçimi** + **görüntüleme**; koordinat/adres değeri.
+**Profil bazında** (→ `../models/service-settings/view-profile-property.md`): `editOnlyOwnPosition` (bool) — kullanıcı yalnız **kendi konumunu** düzenleyebilir mi (**profil-bazlı**, KARAR v0.33).
 
 ### 3.13 — `formList` (Form List)
 Farklı bir **servis (süreç)** formlarının bu alan altında forma **eklenerek veya yenisi oluşturularak**
 ilişkilendirilip görüntülendiği **alt-servis** alanı.
-**Ayarlar (alan-düzeyi, `Property`'de — ilişki → §2.5):** `childServiceId` (alt servis) · `serviceItemControlId` ·
-`reOrder` (sıralama) · `parameterTransfer`/`propertyTransferParameters` (ana↔alt parametre aktarımı) ·
-`editOnlyOwnPosition` · `lazyLoading`.
+**Ayarlar (alan-düzeyi, `Property`'de — ilişki → §2.5):** `childServiceId` (alt servis) · `serviceItemControlId` · `lazyLoading`.
 
 **Profil bazında (görüntüleme profiline göre) ayarlar** → `../models/service-settings/view-profile-property.md` (key kataloğu) / `view-profile.md`
 (override; `ProcessViewProfilePropertySetting`):
@@ -231,10 +230,13 @@ ilişkilendirilip görüntülendiği **alt-servis** alanı.
 - `selectableVisible` (bool) — satır **seçim/tik kutusu** bu profilde **görünür** mü (seçim modu profil bazında açılır/kapanır;
   **boş/false = kapalı**). **Eski alan-düzeyi `selectableModeActive`'in yerini alır.**
 - _(öneri)_ `selectedEditable` (bool) — `selectableVisible` açıksa, **tikler bu profilde düzenlenebilir** mi (örn. yönetici ✓ / başlatan ✗).
+- `reOrder` (bool) — Form List **satır sıralaması** bu profilde değiştirilebilir mi (**profil-bazlı**, KARAR v0.33; eski alan-düzeyi `Property.reOrder`'in yerini alır).
 > Form List, **liste seçimi** yapan Combobox'tan farklıdır; **alt-servis kayıtları** bağlar/görüntüler.
 > Alt-servisin **görüntülenecek alanları / seçilebilirliği** view-profile ile ayarlanır
 > (→ `../models/service-settings/view-profile-property.md`). Süreç Adımı Tetikleme / Değer Atama bu alt-servisle çalışır.
-> **Kalan açık ayarlar** (`reOrder`/`editOnlyOwnPosition` profil-bazlılığı) → [`../todo.md`](../todo.md).
+> **KARAR (v0.33):** `parameterTransfer`/`propertyTransferParameters` **tamamen kaldırıldı** — ana↔alt değer akışı artık
+> **`parentProperty`** (§3.15) ile sağlanır. `reOrder` **profil-bazlı** (yukarıda); `editOnlyOwnPosition` **mapViewer**'a ait ve
+> **profil-bazlı** (§3.12).
 
 ### 3.14 — `flowInfo` (Flow Info)
 **Akış (süreç) ile ilgili bilgileri** forma getirmek için kullanılır — oluşturulma tarihi (createdDate), oluşturan

@@ -14,9 +14,11 @@
 | `scanBarcode` | Barcode Tara — aksiyon barkod/QR tarayıcıyı açar. | Aksiyonu tarama sonucuyla tetiklemek. |
 | `webhook` | Webhook — aksiyon dış bir uç noktaya HTTP çağrısı yapar. | Entegrasyon/dış sistem tetikleme. |
 | `autoAction` | Autoaction — kullanıcı etkileşimi olmadan koşul sağlanınca otomatik çalışır. | Otomatik ilerleme/sistem aksiyonu. |
+| `delete` | Sil (kaydırmalı) — aksiyon alınınca form **UI'dan kaldırılır**; **card görünümünde** bu tipteki aksiyon **swipe item** olarak render edilir. | Kart listesinde kaydırarak (swipe) formu görünümden silme. |
 
 ## Notlar
 - **İsim ayrımı:** Bu enum **`Action.actionType`**'tır; iş kuralı etkisi olan [`business-rule-action-type.md`](./business-rule-action-type.md) ise **`BusinessRule.businessRuleActionType`** (v0.7'de karışmayı önlemek için yeniden adlandırıldı). Ayrı enum'lardır.
 - Kodlar **camelCase** olarak normalize edildi (v0.7); görünen Türkçe ad "Anlam" sütunundadır.
+- **`delete` (v0.33):** aksiyon alınınca ilgili **form UI'dan kaldırılır**; **card (kart) görünümünde** bu tipteki aksiyon **swipe item** (kaydırmalı aksiyon) olarak gösterilir. Swipe **ayrı bir `actionDisplayType` değildir** — doğrudan **`delete` türüne** bağlı bir sunum davranışıdır (`actionDisplayType` görünürlük bağlamını ayrıca yönetmeye devam eder). Davranış → [`../../service-settings/process-step-action.md`](../../service-settings/process-step-action.md) §3.8.
 
 *Oluşturma: 2026-07-10.*

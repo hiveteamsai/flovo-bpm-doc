@@ -30,7 +30,7 @@ yetki...) ise **binding**'de tutulur → `../service-settings/process-step-actio
 | `translationCode` | string? | **Çeviri eşleşme anahtarı** (→ `translation.md` `code`). `null` = çeviri **es geçilir**, doğrudan `definition` kullanılır. |
 | `icon` | string | İkon |
 | `styleId` | int | Renk/görünüm (bg + font) — **Style** varlığına FK referans (→ `style.md`) |
-| `actionType` | ActionType | Aksiyonun **türü** (`manual` / `eventForm` / `takePhoto` / `selectFile` / `scanBarcode` / `webhook` / `autoAction`); tür kataloğu → `../service-settings/process-step-action.md` §3 |
+| `actionType` | ActionType | Aksiyonun **türü** (`manual` / `eventForm` / `takePhoto` / `selectFile` / `scanBarcode` / `webhook` / `autoAction` / `delete`); tür kataloğu → `../service-settings/process-step-action.md` §3 |
 | `validation` | bool | Form validasyonu gerekli mi |
 | `stayOnPage` | bool | Aksiyon sonrası sayfada kal |
 | `showInHistory` | bool | Geçmiş görüntülemede bu aksiyon görünür mü |

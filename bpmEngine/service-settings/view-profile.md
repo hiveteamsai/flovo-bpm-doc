@@ -77,10 +77,10 @@ yönetim ekranı olacak).
       **`ProcessViewProfilePropertySetting {viewProfilePropertyId, key, value}`** ile tutulur (`propertyType`'a göre
       **dictionary**); `Property` varsayılanını profil düzeyinde ezer. Genel `visible/enabled/required/order` birinci
       sınıf kalır. Key kataloğu → `../models/service-settings/view-profile-property.md` (Form List: `activeStartActions`,
-      `addFromExistingStatusIds`, `selectableVisible`; öneri `selectedEditable`). Satır **seçim/tik** görünürlüğü
+      `addFromExistingStatusIds`, `selectableVisible`, `reOrder`; öneri `selectedEditable` · mapViewer: `editOnlyOwnPosition`). Satır **seçim/tik** görünürlüğü
       (`selectableVisible`) artık **profil bazında**dır; eski alan-düzeyi `selectableModeActive` **kaldırıldı**. _Örn._ *süreç başlatan* yeni form ekler
-      ama *yönetici* ekleyemez; *yönetici* tik değiştirir, *başlatan* değiştiremez. **Kalan:** `reOrder`/`editOnlyOwnPosition`
-      da profil-bazlı mı? (→ `../todo.md`)
+      ama *yönetici* ekleyemez; *yönetici* tik değiştirir, *başlatan* değiştiremez. **KARAR (v0.33):** `reOrder` (Form List)
+      + `editOnlyOwnPosition` (mapViewer) **profil-bazlı**; `parameterTransfer`/`propertyTransferParameters` **kaldırıldı** (ana↔alt akış `parentProperty` ile).
 - [x] Profiller **servis-bazlı** tanımlanır (bir servise ait — `serviceId`).
 
 ---

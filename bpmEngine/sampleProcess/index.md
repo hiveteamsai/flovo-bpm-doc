@@ -7,6 +7,10 @@
 >
 > **Tasarım dokümanları:** adımlar → `../service-settings/process-step.md` · aksiyonlar → `../service-settings/process-step-action.md` / `../organization-settings/action.md` ·
 > alanlar → `../service-settings/properties.md` · motor → `../flovo-bpm-engine.md`.
+>
+> **Durum notu (v0.33):** Bu örnekler **geçici/örnekleyici**dir. **Tasarım dokümanları tamamlanınca** örnekler **baştan, eksiksiz**
+> yeniden oluşturulacaktır; bu nedenle örnek-düzeyi tutarsızlıklar (ör. aksiyon **kod adı** tutarlılığı) ayrı bir **açık soru olarak
+> `../todo.md`'de izlenmez**.
 
 ---
 

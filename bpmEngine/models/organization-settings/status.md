@@ -25,6 +25,6 @@
 
 ## Notlar / açık noktalar
 - **Çözüldü:** `icon` ve `definition` frontend'de `styleId`.`fontColor`'ı kullanır (ayrı renk alanı yok).
-- Raporlama için **kategori/grup** boyutu gerekli mi? → `../../todo.md`.
+- **Çözüldü (v0.33):** raporlama/filtreleme için **kategori/grup** boyutuna **gerek yok**; `code`/`definition` yeterli — ayrı boyut eklenmez.
 
 *Oluşturma: 2026-07-02.*

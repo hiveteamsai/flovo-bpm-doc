@@ -19,4 +19,9 @@
 | [`business-rule.md`](./business-rule.md) | Form üzerinde **koşul → aksiyon** tabanlı dinamik davranış (frontend realtime). 🟡 en son şekillenecek. |
 | [`business-rule-condition.md`](./business-rule-condition.md) | İki değerin bir **operatörle** karşılaştırılması; iç içe (recursive) gruplanabilir (`and`/`or`). |
 
+## Alt klasör
+| Klasör | İçerik | İndeks |
+|---|---|---|
+| **dto/** | **DB tablosu olmayan DTO'lar** (genel kural: DB-modeli olmayanlar burada) — ör. **ActionTransfer** (aksiyon veri aktarım paketi, `parameters`/`changeList`/`action`). | [`dto/index.md`](./dto/index.md) |
+
 *Oluşturma: 2026-07-13.*

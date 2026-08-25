@@ -49,7 +49,6 @@
 |---|---|---|
 | `dataSource` / `dataSourceId` / `dataSourceValue` | — | **Dinamik** veri kaynağı. |
 | `propertyItems` | List\<PropertyItem\> | **Statik** seçenekler (→ `property-item.md`). |
-| `propertyTransferParameters` | — | Kaynağa aktarılan parametreler. |
 | `lazyLoading` | bool | Tembel yükleme. |
 | `manuelEntry` | bool | Serbest giriş. |
 | `isMultiSelect` | bool | Çoklu seçim. |
@@ -99,8 +98,8 @@
 | `text` (statik) | `defaultValue` · `fontSize` · `iconSize` · `isBold` · `textAlignment` · `stiky` |
 | `barcode` | `barcodeFormat` · `scannerActive` (`value` = string) |
 | `phone` | `format`/maske · `keyboardType` |
-| `mapViewer` | konum seçimi/görüntüleme; koordinat/adres |
-| `formList` | `childServiceId` · `serviceItemControlId` · `reOrder` · `parameterTransfer`/`propertyTransferParameters` · `editOnlyOwnPosition` · `lazyLoading` · **profil-bazlı ayarlar → `view-profile-property.md`:** `activeStartActions`, `addFromExistingStatusIds`, `selectableVisible`, `selectedEditable` |
+| `mapViewer` | konum seçimi/görüntüleme; koordinat/adres · **profil-bazlı → `view-profile-property.md`:** `editOnlyOwnPosition` |
+| `formList` | `childServiceId` · `serviceItemControlId` · `lazyLoading` · **profil-bazlı ayarlar → `view-profile-property.md`:** `reOrder`, `activeStartActions`, `addFromExistingStatusIds`, `selectableVisible`, `selectedEditable` |
 | `flowInfo` | `flowInfoValue` · `reflectionMode` (`snapshot`/`live` — vars. `live`; salt-okunur akış metadata) |
 | `parentProperty` | `parentPropertyId` · `refPropertyId` · `relatedPropertyIds` · `reflectionMode` (`snapshot`/`live`/`materialized`) · `reflectionPropagation` (`async`/`sync` — yalnız `materialized`) (salt-okunur) |
 | `userInfo` | `userInfoValue` · `reflectionMode` (`snapshot`/`live` — vars. `snapshot`; salt-okunur kullanıcı metadata) |
@@ -128,8 +127,9 @@
   [`../processInstances/instance-value.md`](../processInstances/instance-value.md) · [`instance-attr.md`](../processInstances/instance-attr.md) · [`instance-list-item.md`](../processInstances/instance-list-item.md) · [`labeled-value.md`](../processInstances/propertyValuesTemplates/labeled-value.md).
 - **Çekirdek ↔ tipe-özel ayrım — ÇÖZÜLDÜ (v0.31):** tipe-özel ayarlar JSONB `settings`'te (tip-başına JSON Schema);
   projektör/sorgu/motor katmanının okuduğu metadata çekirdek kolonda kalır (→ §2 karar notu). Alanların hangi tarafa
-  düştüğü **sınır kuralıyla** belirlenir (render/davranış → `settings`; ilişkisel-okunan metadata → kolon). _(Form List'in
-  `reOrder`/`editOnlyOwnPosition` **profil-bazlılığı** hâlâ ayrı açık madde → `../../todo.md`.)_
+  düştüğü **sınır kuralıyla** belirlenir (render/davranış → `settings`; ilişkisel-okunan metadata → kolon). _(Form List `reOrder`
+  (profil-bazlı) + mapViewer `editOnlyOwnPosition` (profil-bazlı) → **ÇÖZÜLDÜ v0.33**; `parameterTransfer`/`propertyTransferParameters`
+  **kaldırıldı** — ana↔alt akış `parentProperty` ile.)_
 - **İndeks stratejisi — KARAR (v0.31):** `InstanceValue.data` (JSONB) üzerinde **GIN** (eşittir / `@>` / anahtar-var — `projectToAttr=false`
   alanlar) · `projectToAttr=true` alanlar için **`InstanceAttr` tipli değer kolonuna B-tree** (aralık / sıra / isim-arama / filtre);
   gerekirse kısmi/ifade indeksi. Böylece alanların çoğu yalnız JSONB'de (ucuz), yalnız rapor-kritik ~%10–20 fihristte indekslenir.

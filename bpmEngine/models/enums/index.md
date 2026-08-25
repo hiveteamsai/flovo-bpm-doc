@@ -17,7 +17,7 @@
 
 | Enum (tip) | Kullanan model (`alan`) | Değerler (özet) | Dosya |
 |---|---|---|---|
-| **ActionType** (aksiyon türü) | `action.md` (`actionType`) · `process-step-action.md` | `manual` · `eventForm` · `takePhoto` · `selectFile` · `scanBarcode` · `webhook` · `autoAction` | [`action-type.md`](./action-type.md) |
+| **ActionType** (aksiyon türü) | `action.md` (`actionType`) · `process-step-action.md` | `manual` · `eventForm` · `takePhoto` · `selectFile` · `scanBarcode` · `webhook` · `autoAction` · `delete` | [`action-type.md`](./action-type.md) |
 | **ActionDisplayType** | `action.md` (`actionDisplayType`) | `invisible` · `everywhere` · `onlyFormDetail` · `onlyFastApprove` | [`action-display-type.md`](./action-display-type.md) |
 | **BusinessRuleActionType** (iş kuralı aksiyonu) | `business-rule.md` (`businessRuleActionType`) | `setViewForProperties` · `applyValidation` · `showMessage` · `assignValueToProperty` · `fillDataSource` · `assignValueToPropertyAttribute` · `setStyle` | [`business-rule-action-type.md`](./business-rule-action-type.md) |
 | **BusinessRuleRuntimeType** | `business-rule.md` (`businessRuleRuntimeType`) | `always` · `firstOpening` · `whenChanging` | [`business-rule-runtime-type.md`](./business-rule-runtime-type.md) |

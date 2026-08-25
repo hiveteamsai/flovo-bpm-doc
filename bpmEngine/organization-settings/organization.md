@@ -40,7 +40,8 @@ servisler (formlar/süreçler), durumlar, çeviriler vb. bir organizasyona aitti
 - **`logoUrl`** — Uygulama başlığı, raporlar ve bildirimlerde organizasyon markası için kullanılır.
 - **`idleTimeoutMinute`** — Güvenlik için hareketsizlik süresi. **null olamaz; varsayılan `0`.** `0` iken zaman aşımı
   **uygulanmaz** (disable). `> 0` iken kullanıcı o kadar dakika işlem yapmazsa oturum kilitlenir; kilit açılırken **tam
-  yeniden giriş (login)** yapılması gerekir (yalnız parola girişi değil).
+  yeniden giriş (login)** yapılması gerekir (yalnız parola girişi değil). **Sistemce dayatılan alt/üst sınır yoktur** —
+  dakika değeri organizasyonca **serbest** belirlenir (`0`=disable, `>0`=logout süresi) _(v0.33)_.
 
 ---
 
@@ -67,6 +68,10 @@ Yetkiler **organizasyon bazında** (admin + grup-bazlı) **dinamik** yönetilir.
 > **Açık sorular tek yerde:** Bu dokümanın açık kararları/soruları, tutarsızlığı önlemek için **yalnız** merkezi
 > [`todo.md`](../todo.md) dosyasında toplanır (önceliklendirilmiş tüm-doküman listesi). İlgili maddeler orada `(organization §..)`
 > atfıyla bulunur; verilen kararlar bu dokümanın **gövdesinde** anlatılır.
+
+> **Çözülenler (yerel karar log'u):**
+- [x] **`idleTimeoutMinute` alt/üst sınır (v0.33)** — sistemce **sınır dayatılmaz**; `0`=disable, `>0`= organizasyonca belirlenen dakika → süre dolunca **logout / tam yeniden giriş** (kilit davranışı v0.18).
+- [x] **timezone (v0.33)** — Organization'a **timezone alanı planlanmıyor**; ayrı açık konu değildir. Diğer alanlar (plan/abonelik, para birimi, bölge, güvenlik) **ihtiyaç anında** eklenir.
 
 ---
 

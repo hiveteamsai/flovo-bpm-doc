@@ -35,7 +35,9 @@ modellerin `code`'u ise yalnız **model-içi** benzersizdir. İş kodu doğrudan
 vererek çeviriyi **bilinçli paylaşabilir**.
 
 ## Notlar / açık noktalar
-- Ortak (`null`) kayıt güncellenince, onu **ezmiş** organizasyon kayıtları etkilenmemeli (teyit) → `../../todo.md`.
+- **Çözüldü (v0.33):** ortak (`null`) kaydın sonradan güncellenmesi **rutin bir akış değil**; override **ayrı satır** olduğundan
+  (`(organizationId, code, languageCode)`) ortak satırın güncellenmesi organizasyon kayıtlarını **etkilemez**. Nadir gerçek ihtiyaçta
+  **vaka-bazlı karar + manuel data güncellemesi** (otomatik kaskad/koruma yok).
 - **`translationCode` ad-uzayı kuralı (KARAR, v0.18):** anahtar **otomatik üretilmez** (`<varlık>.<code>` gibi bir şema yok);
   alan **opsiyoneldir**. Girilmezse çeviri Translation tablosundan **çekilmez**, doğrudan `definition` kullanılır. Serbest
   metin; namespace kullanımı kullanıcının tercihidir (zorunlu değil).
