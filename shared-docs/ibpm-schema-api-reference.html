@@ -1,0 +1,318 @@
+<title>iBPM v2 — Şema &amp; API Referansı</title>
+<style>
+  :root{
+    --ink:#17201E; --paper:#F5F7F6; --card:#FFFFFF; --zebra:#EEF3F1;
+    --teal-deep:#0E5049; --teal:#1C7C71; --clay:#B4622E; --slate:#586A6F;
+    --line:#DCE4E1; --muted:#6B7B7F;
+    --sans:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);
+    font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  a{color:var(--teal);text-decoration:none}
+  a:hover{text-decoration:underline}
+  a:focus-visible{outline:2px solid var(--teal);outline-offset:2px;border-radius:3px}
+  code,.mono{font-family:var(--mono);font-size:.9em}
+
+  .wrap{max-width:1220px;margin:0 auto;padding:0 24px}
+
+  /* Header */
+  header.hero{background:var(--teal-deep);color:#EAF3F1;padding:34px 0 30px}
+  header.hero h1{margin:0 0 6px;font-size:29px;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+  header.hero .sub{color:#B9D6D0;font-size:14.5px;max-width:70ch}
+  header.hero .stack{margin-top:12px;font-size:12.5px;color:#9FC7C0;font-family:var(--mono)}
+  .counts{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+  .count{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);
+    border-radius:8px;padding:9px 15px;display:flex;align-items:baseline;gap:8px}
+  .count b{font-size:21px;font-weight:700;font-variant-numeric:tabular-nums}
+  .count span{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:#A9CDC7}
+
+  /* Layout */
+  .layout{display:grid;grid-template-columns:232px 1fr;gap:34px;align-items:start;padding:30px 0 70px}
+  nav.toc{position:sticky;top:16px;font-size:13.5px;max-height:calc(100vh - 32px);overflow:auto}
+  nav.toc .grp{margin-bottom:16px}
+  nav.toc .grp>.lbl{font-size:11px;text-transform:uppercase;letter-spacing:.09em;
+    color:var(--muted);font-weight:700;margin-bottom:6px}
+  nav.toc a{display:block;padding:3px 10px;color:var(--slate);border-left:2px solid var(--line);
+    line-height:1.35}
+  nav.toc a:hover{color:var(--teal-deep);border-left-color:var(--teal);text-decoration:none;background:#fff}
+  main{min-width:0}
+
+  h2.sec{font-size:13px;text-transform:uppercase;letter-spacing:.11em;color:var(--clay);
+    font-weight:700;margin:8px 0 4px;padding-bottom:8px;border-bottom:2px solid var(--line)}
+  .sec-desc{color:var(--slate);font-size:14px;margin:0 0 22px;max-width:78ch}
+
+  .domain{margin:30px 0 8px}
+  .domain h3{font-size:20px;font-weight:700;letter-spacing:-.01em;margin:0 0 3px;scroll-margin-top:16px}
+  .domain .dnote{color:var(--muted);font-size:13px;margin:0 0 14px;max-width:80ch}
+
+  .tbl{background:var(--card);border:1px solid var(--line);border-radius:10px;
+    margin-bottom:16px;overflow:hidden}
+  .tbl>.head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+    padding:12px 16px;border-bottom:1px solid var(--line);background:#FAFCFB}
+  .tbl>.head .tname{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--teal-deep)}
+  .tbl>.head .tnote{font-size:12.5px;color:var(--muted);text-align:right;max-width:60ch}
+  .scroll{overflow-x:auto}
+  table{border-collapse:collapse;width:100%;font-size:13.5px}
+  th,td{text-align:left;padding:7px 16px;vertical-align:top;border-top:1px solid var(--line)}
+  thead th{border-top:none;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;
+    color:var(--muted);font-weight:700;background:#fff;position:sticky;top:0}
+  tbody tr:nth-child(even){background:var(--zebra)}
+  td.col{font-family:var(--mono);color:var(--ink);white-space:nowrap;font-weight:600}
+  td.type{font-family:var(--mono);color:var(--slate);white-space:nowrap;font-size:12.5px}
+  td.keys{white-space:normal}
+
+  .chip{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.03em;
+    padding:1.5px 7px;border-radius:20px;margin:1px 3px 1px 0;white-space:nowrap;
+    font-family:var(--sans)}
+  .chip.pk{background:var(--teal-deep);color:#fff}
+  .chip.fk{background:#EAF1EF;color:var(--teal-deep);border:1px solid #BBD3CD}
+  .chip.uq{background:#FBEEE4;color:var(--clay);border:1px solid #E7C4A9}
+  .chip.nn{background:#EEF1F2;color:var(--slate);border:1px solid #D3DBDD}
+  .chip.def{background:#F1F4F3;color:var(--muted);border:1px dashed #C9D4D1}
+  .nullable{color:#96A3A6;font-style:italic;font-size:12px}
+
+  /* API */
+  .svc{background:var(--card);border:1px solid var(--line);border-radius:10px;margin-bottom:14px;overflow:hidden}
+  .svc>.head{padding:11px 16px;border-bottom:1px solid var(--line);background:#FAFCFB;
+    display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .svc>.head .sname{font-weight:700;font-size:15px}
+  .svc>.head .sbase{font-family:var(--mono);font-size:12.5px;color:var(--teal)}
+  .svc>.head .snote{font-size:12px;color:var(--muted);flex-basis:100%}
+  .ep{display:flex;gap:12px;align-items:baseline;padding:7px 16px;border-top:1px solid var(--line);font-size:13px}
+  .ep:first-child{border-top:none}
+  .verb{font-family:var(--mono);font-size:11px;font-weight:700;padding:2px 8px;border-radius:5px;
+    min-width:58px;text-align:center;flex:none}
+  .verb.GET{background:#E7F0EE;color:var(--teal-deep)}
+  .verb.POST{background:#E5EEF6;color:#2A5C86}
+  .verb.PATCH{background:#FBF1E4;color:var(--clay)}
+  .verb.PUT{background:#F3ECF7;color:#6B4A86}
+  .verb.DELETE{background:#F7E9E7;color:#9A3B34}
+  .ep .path{font-family:var(--mono);font-size:12.5px;color:var(--ink)}
+  .ep .epnote{color:var(--muted);font-size:12px}
+
+  .callout{background:#FBF6EF;border:1px solid #E9D8C2;border-left:4px solid var(--clay);
+    border-radius:8px;padding:14px 18px;margin:14px 0}
+  .callout h4{margin:0 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--clay)}
+  .callout ol{margin:0;padding-left:20px}
+  .callout li{margin:5px 0;font-size:13.5px;color:#54473A}
+  .callout code{background:#F1E7D8;padding:1px 5px;border-radius:4px}
+
+  footer{border-top:1px solid var(--line);padding:22px 0 40px;color:var(--muted);font-size:12.5px}
+
+  @media(max-width:860px){
+    .layout{grid-template-columns:1fr;gap:8px}
+    nav.toc{position:static;max-height:none;columns:2;font-size:12.5px}
+    header.hero h1{font-size:24px}
+  }
+</style>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>iBPM v2 — Veritabanı Şeması &amp; API Referansı</h1>
+    <div class="sub">Organizasyon ayarları ve BPM motorunun mevcut veri modeli ile servis uç-noktalarının tek sayfada birleşik referansı. Salt-analiz — kod değişikliği yapılmamıştır.</div>
+    <div class="stack">Stack: plain PostgreSQL + Keycloak · gRPC (:9090) + gRPC-gateway REST (/v1) · Pattern-B v2 RLS (tenant-izolasyonu)</div>
+    <div class="counts" id="counts"></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="layout">
+    <nav class="toc" id="toc" aria-label="İçindekiler"></nav>
+    <main id="main"></main>
+  </div>
+</div>
+
+<footer><div class="wrap" id="foot"></div></footer>
+
+<script>
+/* ---- DATA (kaynak: hiveteamsai/flovo-ibpm-v2 · supabase/migrations/*.sql [migration-tanımlı, pilot-applied] · proto/flovo/**/*.proto) ---- */
+const CANON = "Kanonik entity deseni: <code>id uuid PK</code>, <code>organization_id uuid NN FK→tenants</code>, <code>code text NN</code>, <code>definition text NN</code> (görünen ad), <code>translation_code text?</code> (i18n, translation.code'a bağlanır), <code>created_at/updated_at</code>. + Yaşam-döngüsü: <code>active</code>, <code>deleted</code>, <code>sync_status</code> ve partial-unique <code>(organization_id, code) WHERE deleted=false</code>.";
+
+const SCHEMA = [
+ {id:"auth", name:"A · Kimlik / Tenant / Yetki çekirdeği", note:"Platform kimliği, tenant izolasyonu ve rol/davet yönetimi. Yardımcı fonksiyonlar (tablo değil): active_tenant_id(), user_in_tenant(), has_role() — Keycloak-set app.user_id GUC okur, auth.uid() yok.", tables:[
+   {name:"tenants", cols:[["id","uuid","pk"],["slug","text","uq nn"],["name","text","nn"],["created_at","timestamptz",""]]},
+   {name:"users", note:"Platform-auth kullanıcı (org_users'tan farklı)", cols:[["id","uuid","pk"],["email","text","uq nn"],["created_at","timestamptz",""]]},
+   {name:"tenant_users", note:"tenants_users'tan yeniden adlandırıldı", cols:[["tenant_id","uuid","pk fk→tenants"],["user_id","uuid","pk fk→users"],["role","text","def 'member' · CHECK admin|member|viewer"],["created_at","timestamptz",""]]},
+   {name:"roles", cols:[["id","uuid","pk"],["tenant_id","uuid","fk→tenants"],["name","text","CHECK tenant_admin|process_owner|form_designer|member"],["description","text","null"],["—","","uq (tenant_id,name)"]]},
+   {name:"user_roles", cols:[["tenant_id","uuid","pk fk"],["user_id","uuid","pk fk"],["role_id","uuid","pk fk→roles"],["granted_by","uuid","fk→users"],["granted_at","timestamptz",""]]},
+   {name:"user_invitations", cols:[["id","uuid","pk"],["tenant_id","uuid","fk"],["email","text","nn"],["initial_role","text","CHECK 4 rol"],["token_hash","text","uq nn"],["status","text","def 'pending' · CHECK pending|accepted|expired|revoked"],["expires_at","timestamptz","def now()+7g"],["—","","uq (tenant_id,email,status)"]]},
+ ]},
+ {id:"org", name:"B · Organizasyon Ayarları", note:"Birincil iş domaini. Aşağıdaki her tablo kanonik seti taşır — burada yalnız EK / farklı alanlar listelenir.", canon:true, tables:[
+   {name:"org_companies", note:"name jsonb+lang DROP edildi (i18n → definition+translation_code). deleted_at timestamptz soft-delete (boolean lifecycle öncesi).", cols:[["(kanonik)","","pk"],["deleted_at","timestamptz","null · soft-delete"],["—","","uq (organization_id,code) WHERE deleted_at NULL"]]},
+   {name:"organization_settings", note:"Tenant başına tek satır (singleton config)", cols:[["organization_id","uuid","pk fk→tenants"],["name","text","nn"],["default_lang","text","def 'tr' · CHECK tr|en|de"],["logo_url","text","null"],["idle_timeout_minute","int","def 0"],["updated_at","timestamptz",""]]},
+   {name:"translation", note:"organization_id NULL = ortak/Flovo çevirisi (tenant'a salt-okunur). Çözümleme: org-override > ortak > skip.", cols:[["id","uuid","pk"],["organization_id","uuid","null · NULL=ortak"],["code","text","nn"],["language_code","text","CHECK tr|en|de"],["definition","text","nn"],["—","","uq (org,code,lang) & (code,lang) WHERE org NULL"]]},
+   {name:"cost_center", cols:[["(kanonik)","","pk"],["company_id","uuid","fk→org_companies · SET NULL"]]},
+   {name:"profession", note:"Join: profession_company (PK profession+company)", cols:[["(kanonik)","","pk"]]},
+   {name:"worker_level", cols:[["(kanonik)","","pk"]]},
+   {name:"department", note:"Join: department_company", cols:[["(kanonik)","","pk"],["parent_id","uuid","fk→department · SET NULL · CHECK no-self-parent (hiyerarşi)"]]},
+   {name:"credit_card", note:"card_number kolonu DROP edildi (PCI)", cols:[["(kanonik)","","pk"],["company_id","uuid","fk→org_companies · CASCADE · nn"],["user_id","uuid","fk→org_users · SET NULL"],["bin","text","null · ilk 6"],["brand","text","CHECK visa|mastercard|amex|troy"],["is_common_card","boolean",""]]},
+   {name:"working_schedule", note:"Child: working_schedule_day (day 1..7, period1/2 start/end HH:MM, *_half)", cols:[["(kanonik)","","pk"],["is_default_schedule","boolean","partial-uq: org başına tek default"]]},
+   {name:"user_group", note:"Joins: user_group_company · user_group_member (user_id, company_id)", cols:[["(kanonik)","","pk"]]},
+   {name:"vacation_day", cols:[["(kanonik)","","pk"],["starting_date","date","nn"],["ending_date","date","nn · CHECK ≥ starting_date"],["start_half / end_half","boolean",""]]},
+   {name:"org_positions", cols:[["(kanonik)","","pk"],["company_id","uuid","fk→org_companies · RESTRICT · nn"]]},
+   {name:"org_staff", note:"Position'a bağlı kadro", cols:[["id","uuid","pk"],["position_id","uuid","fk→org_positions · CASCADE"],["user_id","uuid","fk→org_users · SET NULL"],["(kanonik alanlar)","","code · definition · translation_code · lifecycle"]]},
+   {name:"org_users", note:"Org-directory çalışan kaydı ( /v1/users kaynağı )", cols:[["(kanonik)","","pk"],["first_name / last_name","text","last_name nn"],["email / phone","text","CHECK en az biri dolu"],["cost_center_id","uuid","fk→cost_center · SET NULL"],["manager_user_id","uuid","fk→org_users · SET NULL · CHECK no-self"],["department_id / profession_id / worker_level_id / working_schedule_id","uuid","stub (FK ileride)"],["employment_start_date","timestamptz","null"]]},
+   {name:"styles", note:"organization_id NULL = sistem stili (salt-okunur). translation_code YOK (çevrilemez).", cols:[["id","uuid","pk"],["organization_id","uuid","null · NULL=sistem"],["code","text","nn"],["definition","text","nn (ad)"],["background_color / font_color","text",""]]},
+   {name:"statuses", cols:[["(kanonik)","","pk · org_id nn"],["icon","text","null"],["style_id","uuid","fk→styles · RESTRICT · null"]]},
+   {name:"actions", cols:[["(kanonik)","","pk"],["icon","text",""],["style_id","uuid","fk→styles · RESTRICT"],["action_type","text","CHECK manual|eventForm|takePhoto|selectFile|scanBarcode|webhook|autoAction"],["action_display_type","text","CHECK invisible|everywhere|onlyFormDetail|onlyFastApprove"],["validation / stay_on_page / show_in_history / show_history","boolean",""]]},
+ ]},
+ {id:"aq", name:"B+ · Ek-Nitelik (AdditionalQualification) motoru", note:"Dinamik EAV-benzeri alt-sistem: nitelik tanımı + entity-başına değer tabloları (attach_qualification_value() ile dinamik üretilir).", tables:[
+   {name:"additional_qualification", cols:[["(kanonik)","","pk"],["value_type","text","CHECK string|double|dateTime|combobox"]]},
+   {name:"additional_qualification_relation", cols:[["id","uuid","pk"],["qualification_id","uuid","fk"],["relational_type","text","CHECK users|departments|professions|costCenters|workerLevels"],["required","boolean",""],["—","","uq (qual,relational_type)"]]},
+   {name:"qualification_item", note:"combobox seçenekleri", cols:[["id","uuid","pk"],["qualification_id","uuid","fk"],["value / definition / translation_code","text",""],["—","","uq (qual,value)"]]},
+   {name:"{entity}_qualification_value", note:"user_ / department_ / profession_ / worker_level_ — dinamik üretilir", cols:[["id","uuid","pk"],["qualification_id","uuid","fk"],["{entity}_id","uuid",""],["string_value / datetime_value","text/timestamptz",""],["combobox_item_id","uuid","fk→qualification_item · RESTRICT"],["—","","uq (qualification,{entity})"]]},
+   {name:"organization_admin", note:"Trigger: org başına ≥1 admin zorunlu", cols:[["organization_id","uuid","pk"],["user_id","uuid","pk"]]},
+   {name:"organization_permission_group", cols:[["organization_id","uuid","pk"],["permission_type","text","pk · CHECK impersonation|organization_settings|service_settings|view_all_reports"],["user_group_id","uuid","pk fk→user_group"]]},
+ ]},
+ {id:"bpm", name:"C · BPM Motoru çekirdeği (event-sourced)", note:"Event-store + projeksiyon (CQRS) iş-akışı motoru.", tables:[
+   {name:"processes", cols:[["id","uuid","pk"],["tenant_id","uuid","fk→tenants · RESTRICT"],["project_id / flow_id","text",""],["initiator_id","uuid","fk→users"],["status","text","def 'draft'"]]},
+   {name:"process_requests", cols:[["id","uuid","pk"],["tenant_id","uuid","fk · RESTRICT"],["process_id","uuid","fk→processes · CASCADE"],["step_index","int",""],["assignee_id","uuid","fk→users"],["status","text","def 'pending'"],["due_at","timestamptz",""]]},
+   {name:"workflow_events", note:"Append-only (trigger UPDATE/DELETE bloklar) · optimistic concurrency", cols:[["id","uuid","pk"],["aggregate_id","uuid",""],["type","text",""],["payload","jsonb",""],["occurred_at","bigint","unix ns"],["version","bigint","CHECK >0"],["—","","uq (aggregate_id,version)"]]},
+   {name:"workflow_projection", note:"Güncel-durum read-model", cols:[["process_id","uuid","pk"],["definition_id / state / outcome","text",""],["vars","jsonb","def {} · CHECK object"],["version","bigint",""],["started_at / completed_at","timestamptz",""]]},
+   {name:"workflow_tasks_projection", cols:[["task_id","uuid","pk"],["process_id","uuid","fk→workflow_projection · CASCADE"],["state / assignee / outcome","text",""],["due_at","timestamptz",""]]},
+ ]},
+ {id:"inst", name:"D · Instance verisi & lineage", note:"Form/instance değer depolama, denetim-izi ve projeksiyonlar. (service_id uuid→text hizalandı.)", tables:[
+   {name:"instance_values", note:"code-anahtarlı SoT", cols:[["instance_id","uuid","pk"],["service_id","text",""],["data","jsonb","def {} · CHECK object"],["version","bigint","CHECK >0"]]},
+   {name:"instance_value_changes", note:"denetim lineage", cols:[["id","uuid","pk"],["instance_id / service_id","uuid/text",""],["property_code","text",""],["old_value / new_value","jsonb",""],["changed_by_user_id / _api_key_id","uuid",""],["occurred_at","bigint",""]]},
+   {name:"associated_instances", cols:[["id","uuid","pk"],["instance_id / associated_instance_id / associated_property_id","uuid",""],["—","","uq (üçlü)"]]},
+   {name:"instance_attr", note:"skaler projeksiyon", cols:[["id","uuid","pk"],["instance_id / property_code","text",""],["value_text / value_num / value_date / value_bool","çeşitli",""],["—","","uq (tenant,instance,property)"]]},
+   {name:"instance_list_item", note:"liste projeksiyonu", cols:[["id","uuid","pk"],["instance_id / property_code","text",""],["item_index","int","CHECK ≥0"],["item_data","jsonb",""],["—","","uq (tenant,instance,property,index)"]]},
+   {name:"projection_metadata", cols:[["id","uuid","pk"],["organization_id","uuid","null · NULL=sistem"],["service_id / property_code","text",""],["projects","boolean",""],["prop_type","text","CHECK text|num|date|bool|list"]]},
+   {name:"reflection_metadata", cols:[["id","uuid","pk"],["organization_id","uuid","null"],["reflect_from_code","text",""],["mode","text","def 'materialized' · CHECK materialized|snapshot|live · CHECK no-self"]]},
+ ]},
+ {id:"async", name:"E · Async altyapı (timer / outbox)", note:"Zamanlayıcı ve idempotent dağıtım omurgası.", tables:[
+   {name:"wakeup_timers", cols:[["id","uuid","pk"],["process_id","uuid",""],["fire_at","timestamptz",""],["dedup_key","text",""],["status","text","def 'pending' · CHECK pending|fired|cancelled"],["—","","uq (tenant,dedup_key)"]]},
+   {name:"outbox", note:"Genel dağıtım omurgası (reflection/timer/event_trigger)", cols:[["id","uuid","pk"],["kind","text",""],["payload","jsonb",""],["idempotency_key","text",""],["hop_count / attempts","int",""],["status","text","def 'pending' · CHECK pending|in_progress|done|capped|dead"],["—","","uq (tenant,idempotency_key)"]]},
+ ]},
+];
+
+const API = [
+ {id:"org-crud", group:"Org-Settings CRUD servisleri", note:"Standart 5-fiil: GET /v1/&lt;res&gt; (List — page_token, include_deleted, language_code i18n) · GET /{id} · POST (Create) · PATCH /{id} (Update) · DELETE /{id} (soft-delete, silinen satırı döner).", services:[
+   {name:"CompanyService", base:"/v1/companies", note:"resolved_definition (server-resolved, language_code'a göre) + available_languages[] salt-okunur. lang/name deprecated."},
+   {name:"DepartmentService", base:"/v1/departments", note:"parent_id hiyerarşi"},
+   {name:"CostCenterService", base:"/v1/cost-centers", note:"company_id opsiyonel"},
+   {name:"ProfessionService", base:"/v1/professions"},
+   {name:"WorkerLevelService", base:"/v1/worker-levels"},
+   {name:"WorkingScheduleService", base:"/v1/working-schedules", note:"nested days payload"},
+   {name:"UserGroupService", base:"/v1/user-groups", note:"member/company bağları"},
+   {name:"VacationDayService", base:"/v1/vacation-days", note:"tarih aralığı"},
+   {name:"CreditCardService", base:"/v1/credit-cards", note:"bin/brand/masked (tam kart no yok)"},
+   {name:"StatusService", base:"/v1/statuses", note:"icon, style_id"},
+   {name:"StyleService", base:"/v1/styles", note:"sistem + org stilleri"},
+   {name:"ActionService", base:"/v1/actions", note:"action_type, display_type, flags"},
+   {name:"UserService", base:"/v1/users", note:"first_name/last_name/email/phone/code · company_ids[]/solutions[]/qualification_values[] (Get'te dolu, List'te boş)"},
+   {name:"PositionService", base:"/v1/positions", note:"9 rpc: standart 5 + nested Staff CRUD", eps:[
+     ["GET","/v1/positions/{position_id}/staff","kadro listesi"],["POST","/v1/positions/{position_id}/staff","kadro oluştur"],
+     ["PATCH","/v1/positions/{position_id}/staff/{id}",""],["DELETE","/v1/positions/{position_id}/staff/{id}",""]]},
+ ]},
+ {id:"org-singleton", group:"Singleton / non-CRUD org servisleri", services:[
+   {name:"OrganizationSettingsService", base:"/v1/organization-settings", eps:[["GET","/v1/organization-settings","tenant başına singleton"],["PATCH","/v1/organization-settings",""]]},
+   {name:"PermissionsService", base:"/v1/permissions", eps:[["GET","/v1/permissions",""],["PATCH","/v1/permissions",""]]},
+   {name:"TranslationService", base:"/v1/translations", note:"Çeviri yönetimi", eps:[
+     ["GET","/v1/translations","code'a göre — tüm diller"],["GET","/v1/translations/all","sayfalı (limit/offset, total_codes)"],
+     ["PUT","/v1/translations","Upsert: code+language_code+definition"],["DELETE","/v1/translations","code+language_code'a göre"]]},
+ ]},
+ {id:"bpm-svc", group:"BPM-core servisleri", services:[
+   {name:"ProcessService", base:"workflow/v1", eps:[
+     ["POST","/v1/processes:start","StartProcess: process_key, idempotency_key → ProcessRequest"],
+     ["POST","/v1/processes/{process_request_id}:advance","Advance: action, comment"],
+     ["GET","/v1/processes/{process_request_id}",""],["GET","/v1/processes","filtre: status, process_key"]]},
+   {name:"FormService", base:"form/v1", eps:[
+     ["POST","/v1/forms:publish","Publish: schema (FormDefinition), apply_migration (false=dry-run → migration SQL)"],
+     ["GET","/v1/forms/{form_id}","optional version"],["GET","/v1/forms",""]]},
+   {name:"AuthService", base:"auth/v1", eps:[["POST","/v1/auth:exchange","ExchangeToken"],["GET","/v1/auth/whoami",""]]},
+   {name:"NotifyService", base:"notify/v1", eps:[["POST","/v1/notifications:send",""],["GET","/v1/notifications",""]]},
+ ]},
+ {id:"aux", group:"Yardımcı (non-gateway) REST — chi router", note:"/v1 gateway'den ayrı, elle yazılmış yüzey (forms/notifications/auth için /v1 ile örtüşür; /v1 kanoniktir).", services:[
+   {name:"Aux handlers", base:"/api", eps:[
+     ["GET","/api/health",""],["POST","/api/forms/publish",""],["POST","/api/forms/attachments","multipart → MinIO"],
+     ["GET","/api/notifications",""],["POST","/api/auth/exchange",""]]},
+ ]},
+];
+
+const CAVEATS = [
+ "İki <code>users</code>-benzeri tablo: platform <code>public.users</code> (auth kimliği) vs <code>public.org_users</code> (org-directory çalışan, /v1/users kaynağı) — aynı tablo DEĞİL.",
+ "<code>org_companies</code> eski <code>deleted_at timestamptz</code> soft-delete kullanır; daha yeni kanonik entity'ler <code>deleted boolean</code> lifecycle — şema kasıtlı olarak burada tek-tip değil.",
+ "<code>service_id</code> dört instance_* tablosunda uuid→text migrate edildi.",
+ "Bazı <code>org_users</code> FK kolonları (department_id/profession_id/worker_level_id/working_schedule_id) FK-kısıtı olmayan stub'lardır (ileride wiring); cost_center_id + manager_user_id gerçek FK.",
+ "Şema kaynağı: <code>supabase/migrations/*.sql</code> (50 dosya, kümülatif, 2026-08-24'e kadar — dizin-adı legacy; stack plain-PostgreSQL). <code>apps/api/migrations/</code> bayat 10-dosyalık alt-küme.",
+ "Bu şema <b>migration-tanımlı (pilot-applied)</b>: pilot canlı-DB bu migration setinden bootstrap edildi + org-settings tabloları canlı-test edildi (create→gerçek Azure-PG persist). Birebir canlı-introspection istenirse ayrıca sağlanır.",
+];
+
+/* ---- RENDER ---- */
+function chips(str){
+  if(!str) return "";
+  return str.split(/\s+(?=pk|fk|uq|nn|def|null|—|CHECK|partial|stub|SET|CASCADE|RESTRICT)/).join(" ")
+    .replace(/\bpk\b/g,'<span class="chip pk">PK</span>')
+    .replace(/\bfk(→[^\s·]+)?/g,(m,t)=>`<span class="chip fk">FK${t?" "+t.slice(1):""}</span>`)
+    .replace(/\buq\b/g,'<span class="chip uq">UNIQUE</span>')
+    .replace(/\bnn\b/g,'<span class="chip nn">NOT NULL</span>')
+    .replace(/\bnull\b/g,'<span class="nullable">nullable</span>');
+}
+function esc(s){return String(s).replace(/&(?!#?\w+;)/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+// counts
+const totalTables = SCHEMA.reduce((n,d)=>n+d.tables.length,0);
+const totalSvc = API.reduce((n,g)=>n+g.services.length,0);
+document.getElementById("counts").innerHTML =
+  [["~45","tablo"],["5","domain"],["21","gRPC servisi"],["+1","aux-REST"]]
+  .map(([b,s])=>`<div class="count"><b>${b}</b><span>${s}</span></div>`).join("");
+
+// TOC
+let toc = `<div class="grp"><div class="lbl">Şema — Domainler</div>`+
+  SCHEMA.map(d=>`<a href="#${d.id}">${esc(d.name)}</a>`).join("")+`</div>`+
+  `<div class="grp"><div class="lbl">API — Gruplar</div>`+
+  API.map(g=>`<a href="#api-${g.id}">${esc(g.group)}</a>`).join("")+
+  `<a href="#caveats">Notlar / belirsizlikler</a></div>`;
+document.getElementById("toc").innerHTML = toc;
+
+// Schema section
+let html = `<h2 class="sec">Bölüm 1 — Veritabanı Şeması</h2>`+
+  `<p class="sec-desc">${CANON}</p>`;
+for(const d of SCHEMA){
+  html += `<section class="domain"><h3 id="${d.id}">${esc(d.name)}</h3>`+
+    `<p class="dnote">${d.note||""}</p>`;
+  for(const t of d.tables){
+    html += `<div class="tbl"><div class="head"><span class="tname">${esc(t.name)}</span>`+
+      (t.note?`<span class="tnote">${esc(t.note)}</span>`:``)+`</div><div class="scroll"><table>`+
+      `<thead><tr><th>Kolon</th><th>Tip</th><th>Anahtar / kısıt</th></tr></thead><tbody>`;
+    for(const c of t.cols){
+      html += `<tr><td class="col">${esc(c[0])}</td><td class="type">${esc(c[1])}</td><td class="keys">${chips(c[2])}</td></tr>`;
+    }
+    html += `</tbody></table></div></div>`;
+  }
+  html += `</section>`;
+}
+
+// API section
+html += `<h2 class="sec" style="margin-top:44px">Bölüm 2 — API Uç-noktaları</h2>`+
+  `<p class="sec-desc">gRPC servisleri (proto/flovo/**/*.proto), gRPC-gateway ile /v1 altında REST olarak sunulur.</p>`;
+for(const g of API){
+  html += `<section class="domain"><h3 id="api-${g.id}">${esc(g.group)}</h3>`+
+    (g.note?`<p class="dnote">${g.note}</p>`:``);
+  for(const s of g.services){
+    html += `<div class="svc"><div class="head"><span class="sname">${esc(s.name)}</span>`+
+      `<span class="sbase">${esc(s.base)}</span>`+
+      (s.note?`<span class="snote">${esc(s.note)}</span>`:``)+`</div>`;
+    if(s.eps){
+      for(const e of s.eps){
+        html += `<div class="ep"><span class="verb ${e[0]}">${e[0]}</span>`+
+          `<span class="path">${esc(e[1])}</span>`+(e[2]?`<span class="epnote">${esc(e[2])}</span>`:``)+`</div>`;
+      }
+    }
+    html += `</div>`;
+  }
+  html += `</section>`;
+}
+
+// Caveats
+html += `<div class="callout" id="caveats"><h4>Notlar / belirsizlikler (accuracy)</h4><ol>`+
+  CAVEATS.map(c=>`<li>${c}</li>`).join("")+`</ol></div>`;
+
+document.getElementById("main").innerHTML = html;
+document.getElementById("foot").innerHTML =
+  `Kaynak: <span class="mono">hiveteamsai/flovo-ibpm-v2</span> — şema: <span class="mono">supabase/migrations/*.sql</span> · API: <span class="mono">proto/flovo/**/*.proto</span> + gateway wiring. `+
+  `Salt-analiz, kod değişikliği yapılmadı · Hazırlayan: John (PM), teknik-verify: James (SA) · 2026-08-25.`;
+</script>
