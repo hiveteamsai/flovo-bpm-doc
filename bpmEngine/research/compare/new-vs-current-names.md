@@ -126,6 +126,8 @@
 - `Function` (değer kaynağı) > **`httpRequest`**
 - `-- FromEba` (değer kaynağı — Eba kaldırıldı)
 - `-- changeViewProfile` (iş-kuralı aksiyonu — **v0.18'de kaldırıldı**)
+- **Form List satır-bazlı alanlar (v0.34):** `withModal` > **`withFormList`** · `modalProperty`(`modalPropertyId`) > **`formListPropertyId`** · `withModalCondition` > **`formListRowCondition`** (ModalList→formList §6 ile hizalı; `applyValidation` + `setStyle`).
+- **Çok-dilli ifade (v0.34):** sabit `fromCalculationValue`/`fromCalculationValueEn` (TR/EN) > **`fromCalculation.expression` (default) + `localizedExpressions [{languageCode, expression}]`** (N dil; eksik dilde default). _(sabit metin `fixedValueEn`>`translationCode` ile karışmaz — o statik, bu dinamik.)_
 - **↔ Korunan:** `applyValidation` · `showMessage` · `fillDataSource` · `setStyle`
 
 ---

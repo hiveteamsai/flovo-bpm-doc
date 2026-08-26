@@ -15,6 +15,9 @@
   iş kuralı = anlık form UX (frontend), adım = kalıcı/akış kararı (motor). Netleşince #Tier1 veri/motor ve
   tutarlılık kalemleri de oturur. _(flovo-bpm-engine §1.4/§12 · business-rule §6 · process-step §3.4/§3.13)_
   - **Not:** İş kuralı (`business-rule.md`) motordan bağımsız frontend'de çalıştığı için **en son** şekillenecek.
+  - **v0.34 — model iskeleti kuruldu:** iş kuralı **çalışma yeri = tam frontend**; aksiyon konfigi = **yapısal JSONB**
+    (`BusinessRule.configuration` → `models/service-settings/dto/business-rule/`); `priority` + genişletilmiş **tetikleme kapsamı**
+    eklendi. Kalan iş-kuralı detayları → Tier 2 "İş kuralı — açık detaylar".
 
 ---
 
@@ -23,7 +26,7 @@
 - [ ] **Çalışma-zamanı mimarisi** — tek-süreç mi, kuyruk-tabanlı dağıtık worker mı? Orkestrasyon ↔ yürütme ayrımı;
   durum DB'de, kuyruk yalnız iş ID'leri, worker'lar durumsuz. _(flovo-bpm-engine §2.2 / §12)_
   - 🧱 **Tech-stack (kısmen kapandı):** dağıtım/ölçekleme kararı verildi — MVP **Core BPM monolith** → Hexagonal + **NATS kuyruk** +
-    **durumsuz worker** + durum **Postgres/NATS**'ta (SOA-ready); motor-içi **orkestrasyon↔yürütme** ayrımı hâlâ açık. → [`tech-stack/`](./tech-stack/index.md) · [`research/tech-stack/tech_rating.md`](./research/tech-stack/tech_rating.md)
+    **durumsuz worker** + durum **Postgres/NATS**'ta (SOA-ready); motor-içi **orkestrasyon↔yürütme** ayrımı hâlâ açık. → [`tech-stack/`](./tech-stack/index.md) · [`./research/tech-stack/tech_rating.md`](./research/tech-stack/tech_rating.md)
 - [ ] **Veri modeli** — **temsil/akış ÇÖZÜLDÜ (v0.30): koleksiyon-tabanlı.** Adımlar arası veri, `InstanceValue` ile **ortak
   değer-modeli** (`propertyValuesTemplates` + `LabeledValue`) taşıyan bir **değer koleksiyonu** olarak aksiyonla **açıkça** akar:
   `changeList` = obje-map `{ Property.code: value }` → forma **doğrudan JSONB merge**; `parameters` = aynı değer şekli + **serbest
@@ -34,15 +37,15 @@
 - [ ] **Kalıcılık & durum** — ne saklanır (süreç tanımı · instance/state · veri · dosya/binary); durum yaşam döngüsü
   (new/running/waiting/done); saklama/pruning. _(flovo-bpm-engine §8)_
   - 🧱 **Tech-stack:** kalıcılık **substratı** = PostgreSQL + **Partial Event Sourcing** (`workflow_events` append-only); *ne
-    saklanır / yaşam döngüsü / pruning* tasarımı açık. → [`tech-stack/postgresql.md`](./tech-stack/postgresql.md)
+    saklanır / yaşam döngüsü / pruning* tasarımı açık. → [`./tech-stack/postgresql.md`](./tech-stack/postgresql.md)
 - [ ] **Denetim izi (audit) / loglama + dosya/binary depolama performansı** — **loglar nasıl ve nerede tutulacak**
   (workflow/form logları · **ayar değişiklik** logları · sistem logları); organizasyonlar **kendi loglarına** nasıl erişecek
   (izolasyon/yetki); saklama/pruning; mevcut "yavaş belge yükleme" şikâyetiyle doğrudan bağlı; KVKK. _(flovo-bpm-engine §8 / §12)_
   - 🧱 **Tech-stack (kısmen):** **dosya/binary depolama → MinIO** (URL-in-JSONB; "yavaş belge yükleme" çözülür) karara bağlandı;
-    **loglama modeli** (nerede/erişim/pruning) hâlâ açık. → [`tech-stack/minio.md`](./tech-stack/minio.md)
+    **loglama modeli** (nerede/erişim/pruning) hâlâ açık. → [`./tech-stack/minio.md`](./tech-stack/minio.md)
   - 📋 **Ayar değişiklik logu — tasarım planı hazır (v0.14), karar bekliyor:** sayfa bazlı denetim izi; tek generic tablo +
     JSONB delta + uygulama katmanı + append-only (`SettingsLog` · `SettingsLogBatch` · `SettingsLogBatchPage`); erişim/yetki
-    mevcut `organizationSettings`/`serviceSettings` ikiliği + RLS ile çözülüyor. → [`research/settings-log/index.md`](./research/settings-log/index.md)
+    mevcut `organizationSettings`/`serviceSettings` ikiliği + RLS ile çözülüyor. → [`./research/settings-log/index.md`](./research/settings-log/index.md)
     - **Ön koşul:** Customer API'de **ayar yazma / toplu senkron ucu yok** (bugün yalnız `GET /users/{userId}` · `GET /me`) —
       toplu güncelleme loglanmadan önce bu uç tasarlanmalı. _(flovo-customer-api §1)_
     - **Açık:** **saklama süresi / KVKK** (log kişisel veri + ham istek gövdesi içerir; "denetim kaydı silinmez" ↔ silme hakkı — **hukuki karar**) ·
@@ -53,7 +56,7 @@
   bir ortamda yapıp **canlı ortamda oluşturulmuş formları görüntüleme** senaryosu nasıl çözülecek? _(environmentRestriction
   alanları: process-step §2 / action · flovo-bpm-engine §8)_
   - **`environmentRestriction` alan formatı** (enum mu, string mi, kapsam) bu modelle birlikte netleşecek — şimdilik **ertelendi**.
-    _([`research/current-flovo-bpm-engine/step-type-settings-and-enums.md`](./research/current-flovo-bpm-engine/step-type-settings-and-enums.md) §8)_
+    _([`./research/current-flovo-bpm-engine/step-type-settings-and-enums.md`](./research/current-flovo-bpm-engine/step-type-settings-and-enums.md) §8)_
 - [ ] **Güvenlik** — expression/kod değerlendirme **sandbox**'ı (sert sınır), credential şifreleme/paylaşım,
   riskli adımlar. _(flovo-bpm-engine §10 · process-step-action §5)_
 - [ ] **Paralel dallanma / eşzamanlı kollar & join** var mı? Bir adım aynı anda birden çok sonraki adımı tetikler mi?
@@ -61,7 +64,7 @@
 - [ ] **Olay/mesaj-tabanlı tetikleme** ve uyuyan sürecin uyandırılması; çok-örneklilikte "en-fazla-bir-kez"/lider
   seçimi. _(flovo-bpm-engine §5 / §6 / §12)_
   - 🧱 **Tech-stack:** mesaj/olay **omurgası** = **NATS JetStream** (durable consumer + `Nats-Msg-Id` idempotency → "en-fazla-bir-kez");
-    BPM-düzeyi *uyandırma / lider-seçimi* tasarımı açık. → [`tech-stack/nats-jetstream.md`](./tech-stack/nats-jetstream.md)
+    BPM-düzeyi *uyandırma / lider-seçimi* tasarımı açık. → [`./tech-stack/nats-jetstream.md`](./tech-stack/nats-jetstream.md)
 
 ---
 
@@ -69,7 +72,7 @@
 
 - [ ] **AI entegrasyon modeli** — deterministik "AI adımı" vs otonom "ajan"; takılabilir strateji (model/memory/araç);
   "herhangi bir adım = araç" + MCP? _(flovo-bpm-engine §11)_
-  - 🧱 **Tech-stack:** AI **substratı** = **Python AI Service** (🟡 post-MVP) + **pgvector**; entegrasyon **MODELİ** açık. → [`tech-stack/python-ai-service.md`](./tech-stack/python-ai-service.md)
+  - 🧱 **Tech-stack:** AI **substratı** = **Python AI Service** (🟡 post-MVP) + **pgvector**; entegrasyon **MODELİ** açık. → [`./tech-stack/python-ai-service.md`](./tech-stack/python-ai-service.md)
 - [ ] **Hata yönetimi** — her adımda `onFail` var mı/zorunlu mu; **retry** (deneme + bekleme); süreç-seviye global
   hata yakalayıcı; telafi/compensation; `action` zinciri **sonsuz döngü** koruması. _(flovo-bpm-engine §7 · process-step-action §7)_
 - [ ] **Vekalet (proxy / yetki verme) sistemi** — **görev-devri yerine** kalıcı vekalet: kullanıcılar başka kişilere vekalet verir;
@@ -118,7 +121,7 @@
     sayıyor; `organization.md`/`models/index.md` ise **`organizationCode` (string) kararlaştırıldı** diyor. **Customer API detaylanınca
     tek statüye** bağlanacak (o zamana dek atlandı).
   - 🧱 **Tech-stack (kısmen):** kimlik = **Keycloak** (token) · sözleşme/şema = **OpenAPI** (api-contract) · idempotency deseni =
-    **NATS**; API'nin kendi tasarımı (search sorgu dili, rate limit, webhook imza) açık. → [`tech-stack/keycloak.md`](./tech-stack/keycloak.md) · [`tech-stack/api-contract.md`](./tech-stack/api-contract.md)
+    **NATS**; API'nin kendi tasarımı (search sorgu dili, rate limit, webhook imza) açık. → [`./tech-stack/keycloak.md`](./tech-stack/keycloak.md) · [`./tech-stack/api-contract.md`](./tech-stack/api-contract.md)
 - [ ] **Yetkilendirme (permissions) — açık kalanlar:** **(a)** `ProcessStepAction.authorizationLevel` (aksiyon-düzeyi sayısal
   yetki) yeni **org-bazlı** yetki modeliyle nasıl uyumlanır; **(b)** **impersonation** kapsamı/denetimi (kimin yerine
   geçilebilir; log/audit); **(c)** yetki setinin **genişletilebilirliği** (yeni yetki = Organization'a yeni `*UserGroupId`
@@ -147,6 +150,29 @@
 - [ ] **Servis template & JSON ile servis oluşturma** — servisler **template** olarak nasıl oluşturulacak; template ile servis
   üretimi nasıl olacak; **n8n gibi JSON template** export/import ile mi; **ilişkili servisler toplu** mı oluşturulacak?
   _(models/service-settings/service.md · solution.md · research/n8n)_
+- [ ] **İş kuralı — açık detaylar** (v0.34'te model iskeleti kuruldu: `BusinessRule.configuration` JSONB + `dto/business-rule/`
+  aksiyon konfig ailesi). Kalan açık noktalar:
+  - **İfade dilinin somut seçimi** — sandbox'lı standart dil (**JSONLogic ↔ CEL**) + fonksiyon **katalog kapsamı**; **tam-frontend**
+    kararı gereği dil **çok-client portlanabilir** olmalı (Dart+JS portu). _(business-rule §5 · Tier 0 Güvenlik sandbox)_
+    - **Çok-dilli ifade — ÇÖZÜLDÜ (v0.34):** `fromCalculation` = `expression` (default) + `localizedExpressions [{languageCode, expression}]`;
+      eksik dilde default. Sabit TR/EN kısıtı kalktı (→ `dto/business-rule/shared/assign-value.md`). İfade dilinin **kendi** seçimi (JSONLogic/CEL) açık kalır.
+  - **`fillDataSource` `organizationData` MODELLENDİ (v0.34, gerçek koddan):** `OrganizationDataSourceType` (10) + `OrganizationParameter` +
+    `SubTextType` + `FillDataSourceOrganization`/`FillDataSourceParameter` oluşturuldu. **Açık:** masraf varlıkları (ExpenseType/ExpenseCategory)
+    + `ValueTypeOfList` masraf değerleri (expenseType*/categoryCode) **kapsam-dışı** (masraf çekirdek modeli yok) → "Kapsam-dışı varlıklar".
+  - **Lazy dataset runtime API sözleşmesi** — `serviceInstances` çalışma-anı fetch request/response (eski `GetWorkRuleDataSet*`/`DataSetDto`)
+    = runtime/Customer API tasarımı; iş-kuralı-tanımı değil, ayrı ele alınacak. _(dto/business-rule/assign-value-from-dataset.md)_
+  - **`search` değer kaynağı** davranışı (arama bağlamı). _(dto/business-rule/assign-value.md)_
+  - **`setStyle` `style` objesi** şeması (tekil görünüm nitelikleri: fontSize/titleColor…). _(dto/business-rule/set-style.md)_
+  - **`showMessage` "bir kez göster"** mekanizması. _(dto/business-rule/show-message.md)_
+  - **Döngü/derinlik limiti + hata görünürlüğü** — v0.34 düzeltme kapsamına **alınmadı** (eski dolaylı-durma + sessiz-yut korunur);
+    sonra değerlendirilecek. _(business-rule §5 · Tier 2 "Hata yönetimi")_
+  - **`ValueTypeOfList` / `IsActiveKkegAttachment`** (masraf/KKEG-niş) — şimdilik **dışta**; ihtiyaç doğarsa değerlendirilir.
+  - **[eski-kod doğrulama, v0.34 — kritik değil, sonra bakılacak]** eski `WorkRule` model+motor taramasından (`Pratico.Apps`) çıkan açık noktalar:
+    - **`any`/`every` karşılaştırma EKSİK** — eski `CriteritionType` idx 12-13 (çoklu-değer: virgüllü parçalardan **herhangi biri**/**hepsi** sol değerde geçiyorsa). `criterion-type.md`'ye `containsAny`/`containsAll` eklenebilir. _(criterion-type.md)_
+    - **`httpRequest` iş-kuralı şeması** — eski `AssignValueFromFunctionDto` (`metod`/`url`/`responseParameter` + query/header/body/template grupları) → yeni'de process-step'e delege; grup ayrımı `DynamicParameter`'da netleşmeli (`DynamicParameter.value` maddesiyle bağlı). _(shared/assign-value.md)_
+    - **`shouldNotWorkInReadonlyMode`** — eski motorda **ölü alan** (hiç okunmuyor); yeni motorda anlamlı kılınmalı mı yoksa çıkarılmalı mı? _(business-rule.md)_
+    - **compare-value `fromCalculation` tutarlılık** — koşul tarafı sade `{expression}`; `AssignValue` ile tutarlı `localizedExpressions` eklensin mi? _(shared/business-rule-condition-compare-value.md)_
+    - **İş kuralı davranış spesifikasyonu (motor)** — koşul tip-semantiği (string/num/date **sol-operanddan** · boş-tarih=`year==1` · TR-sayı formatı · ModalList/RadioButton/FileControl/DataGrid özel); `formListRowCondition` hep **OR**; **global kill-switch** (org/network hatası tüm kuralları durdurur) + cascade **döngü/derinlik limiti** → Tier 2 "Hata yönetimi". _(business-rule.md davranış)_
 
 ---
 
@@ -253,7 +279,7 @@
   BusinessRule. _(action §3 · status §4 · business-rule §6 · view-profile §5)_
 - **Bulut + on-prem hibrit dağıtım (ÇÖZÜLDÜ — tech-stack):** **on-prem + Private Cloud ready** (K8s OpenShift + BYO + tek Helm
   umbrella); merkezi-kimlik çelişkisi **Keycloak AD/LDAP federasyonu** ile giderildi. Kalan minör: saf-on-prem'de sosyal-login
-  kapsamı. → [`tech-stack/kubernetes-helm.md`](./tech-stack/kubernetes-helm.md) · [`tech-stack/keycloak.md`](./tech-stack/keycloak.md)
+  kapsamı. → [`./tech-stack/kubernetes-helm.md`](./tech-stack/kubernetes-helm.md) · [`./tech-stack/keycloak.md`](./tech-stack/keycloak.md)
 - **`eventForm` formu (ÇÖZÜLDÜ):** `formType = eventForm` servisinin **görüntüleme profilidir**; aksiyon alınırken seçili
   profildeki alanlar **pop-up** olur, sonuç **`parameters`** ile taşınır (`Instance`/akış yok). _(process-step-action §3.2 ·
   models/service-settings/service.md)_

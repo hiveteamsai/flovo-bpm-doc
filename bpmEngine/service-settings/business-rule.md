@@ -41,11 +41,13 @@ veri kaynağı doldurma, stil vb.
 | `icon` | string | İkon |
 | `environmentRestriction` | string | Ortam kısıtlaması |
 | `businessRuleActionType` | BusinessRuleActionType | Kural aksiyon tipi (§3) |
+| `configuration` | jsonb | **Aksiyon konfigürasyonu** — `businessRuleActionType`'a göre şekillenen **yapısal JSONB** (alt-şemalar → [`../models/service-settings/dto/business-rule/index.md`](../models/service-settings/dto/business-rule/index.md)) |
 | `businessRuleRuntimeType` | BusinessRuleRuntimeType | Çalışma zamanı: `always` / `firstOpening` / `whenChanging` |
 | `businessRuleConditionType` | BusinessRuleConditionType | Koşul birleştirme (`and`/`or`) |
 | `businessRuleConditions` | List | Koşul listesi (recursive) (§4) |
 | `activeViewProfiles` | List\<int\> | Sadece bu görüntüleme profillerinde çalış (→ `view-profile.md`) |
 | `shouldNotWorkInReadonlyMode` | bool | Salt-okunur modda çalışmasın |
+| `priority` | int | Kural **çalışma sırası/önceliği** (küçük = önce; aynı alana yazan kurallarda belirleyici) |
 
 ---
 
@@ -65,6 +67,10 @@ veri kaynağı doldurma, stil vb.
 ### 3.1 — `assignValueToProperty` değer kaynakları (`ValueAssignType`)
 `fixedValue` (sabit) · `propertyValue` (başka bir property'nin değeri) · `fromCalculation` (expression) ·
 `fromDataSet` (veri setinden) · `search` (arama) · `httpRequest` (HTTP Request çağrısı ile → `process-step.md` §3.2).
+
+> **Aksiyon konfig şemaları:** Her aksiyon tipinin `configuration` (JSONB) şekli **parçalanmış** olarak
+> [`../models/service-settings/dto/business-rule/`](../models/service-settings/dto/business-rule/index.md) altındadır — ör. `setViewForProperties` → `set-view-for-properties.md`,
+> `assignValueToProperty` → `assign-value-to-property.md`. Ortak değer modeli: **`AssignValue`** (`assign-value.md`).
 
 ---
 

@@ -22,6 +22,6 @@
 ## Alt klasör
 | Klasör | İçerik | İndeks |
 |---|---|---|
-| **dto/** | **DB tablosu olmayan DTO'lar** (genel kural: DB-modeli olmayanlar burada) — ör. **ActionTransfer** (aksiyon veri aktarım paketi, `parameters`/`changeList`/`action`). | [`dto/index.md`](./dto/index.md) |
+| **dto/** | **DB tablosu olmayan DTO'lar** (genel kural: DB-modeli olmayanlar burada) — **ActionTransfer** (aksiyon veri aktarım paketi) + **`business-rule/`** alt klasörü (iş kuralı aksiyon konfig ailesi: `AssignValue`, aksiyon konfigleri, veri-kaynağı DTO'ları). | [`./dto/index.md`](./dto/index.md) |
 
 *Oluşturma: 2026-07-13.*

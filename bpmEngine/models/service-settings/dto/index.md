@@ -12,4 +12,9 @@
 |---|---|
 | [`action-transfer.md`](./action-transfer.md) | Aksiyon tetiklendiğinde sonraki adıma taşınan **veri aktarım paketi** (`parameters` / `changeList` / `action`); `ProcessStepInstance.processStepActionParameter`'da JSON olarak saklanır. |
 
+## Alt klasörler
+| Klasör | İçerik | İndeks |
+|---|---|---|
+| **business-rule/** | İş kuralı **aksiyon konfig ailesi** — 3 alt grup: **`actions/`** (7 aksiyon şeması) · **`shared/`** (AssignValue · PropertyAppearance · koşul-değeri) · **`data-source/`** (dataset + fillDataSource kaynakları); `BusinessRule.configuration` JSONB alt-şemaları. | [`./business-rule/index.md`](./business-rule/index.md) |
+
 *Oluşturma: 2026-08-25.*

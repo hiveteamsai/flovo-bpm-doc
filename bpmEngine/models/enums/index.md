@@ -25,6 +25,14 @@
 | **ValueAssignType** (değer kaynağı) | `business-rule.md` (`assignValueToProperty` — 6 değer) · `process-step.md` (Değer Atama `valueAssignType` — 3-değer alt-küme) | `fixedValue` · `propertyValue` · `fromCalculation` · `fromDataSet` · `search` · `httpRequest` | [`value-assign-type.md`](./value-assign-type.md) |
 | **CriterionType** (operatör) | `business-rule-condition.md` (`criterionType`) · `process-step.md` (Karşılaştırma) | `equals` · `notEquals` · `isEmpty` · `isNotEmpty` · `greaterThan` · `greaterThanOrEqual` · `lessThan` · `lessThanOrEqual` · `startsWith` · `endsWith` · `contains` · `notContains` | [`criterion-type.md`](./criterion-type.md) |
 | **BusinessRuleConditionCompareType** | `business-rule-condition.md` (`referenceValue`/`valueToCompare` tipi) | `propertyValue` · `viewProfile` · `fixedValue` · `fromCalculation` | [`business-rule-condition-compare-type.md`](./business-rule-condition-compare-type.md) |
+| **FillDataSourceType** | `dto/business-rule/fill-data-source.md` (`fillDataSourceType`) | `organizationData` · `userData` · `serviceInstances` · `httpRequest` | [`fill-data-source-type.md`](./fill-data-source-type.md) |
+| **UserDataSourceType** | `dto/business-rule/fill-data-source-user.md` (`userDataSourceType`) | `creditCards` · `companies` · `costCenters` | [`user-data-source-type.md`](./user-data-source-type.md) |
+| **SortDirection** | `dto/business-rule/assign-value-from-dataset.md` (`sortType`) | `none` · `asc` · `desc` | [`sort-direction.md`](./sort-direction.md) |
+| **PropertyAttributeType** | `dto/business-rule/assign-value-to-property-attribute.md` (`propertyAttributeType`) | `minDate` · `maxDate` · `helperText` · `sideText` · `addNewEnabled` | [`property-attribute-type.md`](./property-attribute-type.md) |
+| **OrganizationDataSourceType** | `dto/business-rule/fill-data-source-organization.md` (`organizationDataSourceType`) | `professions` · `departments` · `companies` · `costCenters` · `users` · `creditCards` · `workerLevels` · `userGroups` · `positions` · `workingSchedules` | [`organization-data-source-type.md`](./organization-data-source-type.md) |
+| **OrganizationParameter** | `dto/business-rule/fill-data-source-parameter.md` (`parameter`) | `company` · `name` · `code` · `userCode` · `additionalQualification` · `professionCode` | [`organization-parameter.md`](./organization-parameter.md) |
+| **SubTextType** | `dto/business-rule/fill-data-source-organization.md` · `…-user.md` (`subTextType`) | `code` · `username` · `department` · `profession` · `ref1` · `ref2` | [`sub-text-type.md`](./sub-text-type.md) |
+| **ValueTypeOfList** | `dto/business-rule/business-rule-condition-compare-value.md` (`valueTypeOfList`) | `defaultValue` · `value` · `display` | [`value-type-of-list.md`](./value-type-of-list.md) |
 | **RelationalType** | `additional-qualification.md` (`relationalType`) | `users` · `departments` · `professions` · `costCenters` · `workerLevels` | [`relational-type.md`](./relational-type.md) |
 | **QualificationValueType** | `additional-qualification.md` (`valueType`) | `string` · `double` · `dateTime` · `combobox` | [`qualification-value-type.md`](./qualification-value-type.md) |
 | **FormType** | `service.md` (`formType`) | `form` · `parameter` · `eventForm` | [`form-type.md`](./form-type.md) |
@@ -64,5 +72,10 @@
   Kaynak: [`../../research/current-flovo-bpm-engine/step-type-settings-and-enums.md`](../../research/current-flovo-bpm-engine/step-type-settings-and-enums.md).
 - **`NotificationRecipientType` ≠ `ProcessStepType`:** ilki bildirim **alıcı türü** (`user`/`userGroup`), ikincisi sürecin
   **adım tipi**dir; adları benzemez, karıştırılmamalı (eski `ProcessSettingStepType`).
+- **İş kuralı DTO ailesi enum'ları (v0.34):** `FillDataSourceType` · `UserDataSourceType` · `SortDirection` ·
+  `PropertyAttributeType` · **`OrganizationDataSourceType`** · **`OrganizationParameter`** · **`SubTextType`** · **`ValueTypeOfList`**
+  (BusinessRule aksiyon konfig ailesi → [`../service-settings/dto/business-rule/index.md`](../service-settings/dto/business-rule/index.md)).
+  **`PropertyAttributeType` ≠ `PropertyType`:** ilki alan **özniteliği** (minDate/helperText…), ikincisi **kontrol tipi**dir.
+  `OrganizationDataSourceType`/`ValueTypeOfList` içinde eski **masraf-spesifik** değerler (ExpenseType/ExpenseCategory · expenseType*/categoryCode) **kapsam-dışı** (→ [`../../todo.md`](../../todo.md)).
 
 *Oluşturma: 2026-07-10.*
