@@ -20,7 +20,7 @@ Değerin **nereden** geleceğini `valueAssignType` **ayrımlayıcısı** ile se�
 | `propertyValue` | `{ propertyId: int, useDisplay?: bool }` | oneOf | Başka bir alanın değeri; `useDisplay` = value yerine görünen metin. |
 | `fromCalculation` | `{ expression: string, localizedExpressions?: [{ languageCode, expression }] }` | oneOf | İfade sonucu. `expression` = **default** (eksik dillerde kullanılır); `localizedExpressions` = **dile-özel** ifadeler (kayıt-başına-dil → [`../../../../../service-settings/business-rule.md`](../../../../../service-settings/business-rule.md) §5). |
 | `fromDataSet` | AssignValueFromDataSet | oneOf | Başka servisin instance'larından (→ [`assign-value-from-dataset.md`](../data-source/assign-value-from-dataset.md)). |
-| `httpRequest` | HTTP Request konfigi | oneOf | Dış çağrı — `process-step.md` HTTP Request altyapısı (`endpoint`/`HttpMethod`/`DynamicParameter[]`/`responseParameter` → [`../../../../../service-settings/process-step.md`](../../../../../service-settings/process-step.md) §3.2). |
+| `httpRequest` | HTTP Request konfigi | oneOf | Dış çağrı. **Konfig** (`endpoint`/`HttpMethod`/`DynamicParameter[]`) `process-step` HTTP Request'i paylaşır; **yanıt→değer çıkarımı** (`responseParameter` + liste için `valueField`/`displayField`) iş-kuralına özeldir → [`../../../../../service-settings/business-rule-engine.md`](../../../../../service-settings/business-rule-engine.md) §7. |
 | `search` | *(açık → todo)* | oneOf | Arama sonucu seçilen değer. |
 
 > **oneOf kısıtı:** Yalnız `valueAssignType`'a **karşılık gelen** payload alanı dolu olmalıdır; diğerleri **bulunmaz**.

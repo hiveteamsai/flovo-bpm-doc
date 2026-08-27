@@ -27,6 +27,7 @@ Yapısı `FillDataSourceOrganization` ile aynıdır; yalnız kaynak **kullanıc�
 
 ## Nasıl çalışır
 - `creditCards`: yalnız **`active`** kartlar; **tek kart** varsa veya bir kart **seçili** işaretliyse otomatik seçili gelir.
+- **Öğe eşlemesi:** `organizationData` ile aynı — `DataSourceItem { value: kod, display: ad/tanım, subText: subTextType }` (→ [`fill-data-source-organization.md`](./fill-data-source-organization.md)).
 - `parameters` verilirse kayıtlar `FillDataSourceParameter` ile süzülür (kaynak kullanıcının verisi olsa da aynı filtre modeli).
 
 ## İlişkili

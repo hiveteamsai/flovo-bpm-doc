@@ -31,7 +31,8 @@ Hangi veri (`organizationDataSourceType`), öğe alt-metni (`subTextType`) ve sa
 > `#SIRKET`'e (property 12) bağlı masraf merkezleri; öğe alt-metni = kod.
 
 ## Nasıl çalışır
-- Kaynak listesi çekilir, `parameters` ile süzülür (tüm parametreler sağlanmalı), öğeler `{value, display, subText}` olarak üretilir.
+- Kaynak listesi çekilir, `parameters` ile süzülür (tüm parametreler sağlanmalı), öğeler `DataSourceItem` olarak üretilir.
+- **Öğe eşlemesi:** her kayıttan `{ value: kayıt **kodu** (`code`), display: kayıt **adı/tanımı** (`definition`), subText: `subTextType`'a göre alan }`. Kodu boş kayıtlar atlanır.
 - Kabul edilen filtreler `organizationDataSourceType`'a göre kısıtlıdır (→ enum "Seçilebilir filtreler").
 
 ## İlişkili

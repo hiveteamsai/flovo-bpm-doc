@@ -173,6 +173,13 @@
     - **`shouldNotWorkInReadonlyMode`** — eski motorda **ölü alan** (hiç okunmuyor); yeni motorda anlamlı kılınmalı mı yoksa çıkarılmalı mı? _(business-rule.md)_
     - **compare-value `fromCalculation` tutarlılık** — koşul tarafı sade `{expression}`; `AssignValue` ile tutarlı `localizedExpressions` eklensin mi? _(shared/business-rule-condition-compare-value.md)_
     - **İş kuralı davranış spesifikasyonu (motor)** — koşul tip-semantiği (string/num/date **sol-operanddan** · boş-tarih=`year==1` · TR-sayı formatı · ModalList/RadioButton/FileControl/DataGrid özel); `formListRowCondition` hep **OR**; **global kill-switch** (org/network hatası tüm kuralları durdurur) + cascade **döngü/derinlik limiti** → Tier 2 "Hata yönetimi". _(business-rule.md davranış)_
+  - **[kodlanabilirlik gap → KARARLAR v0.35]** **ÇÖZÜLDÜ:** **ifade dili = JSONLogic** (+ custom operator katalog · veri-only sandbox ·
+    async sarmalayıcı) · **`compareValues`** = **`propertyType`-güdümlü** + `containsAny`/`containsAll` (çoklu-değer) · **koşul depolama =
+    gömülü JSONB** (ayrı tablo değil) · **`httpRequest` çıkarım** = **nokta-yolu** (`data.items.0.code`) · **`prepareEngine` = hibrit**
+    ön-yükleme (cache-sync + lazy) · **`shouldNotWorkInReadonlyMode`** = motor uygular. _(business-rule-engine §3/§6/§7/§9 · business-rule-condition.md)_
+    - **Kalan açık:** ifade **katalog kesin kapsamı + operatör imzaları** · **`environmentRestriction`** (geçerli değerler → ortam modeli) ·
+      hata görünürlüğü + veri-hatası davranışı · cascade **döngü/derinlik limiti** · `search` değer kaynağı · `setStyle` `style` şeması ·
+      `httpRequest` alan-yolu **JSONPath'e genişletme**. _(business-rule-engine §11)_
 
 ---
 

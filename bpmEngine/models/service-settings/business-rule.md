@@ -20,7 +20,7 @@
 | `configuration` | jsonb | — | **Aksiyon konfigürasyonu** — `businessRuleActionType`'a göre şekillenen **yapısal JSONB** (ayrımlayıcı = aksiyon tipi). Alt-şemalar → [`dto/business-rule/`](./dto/business-rule/index.md). _(Eski motorun `value` string-içinde-JSON alanının yerini alır; v0.34.)_ |
 | `businessRuleRuntimeType` | BusinessRuleRuntimeType | — | Çalışma zamanı — [`../enums/business-rule-runtime-type.md`](../enums/business-rule-runtime-type.md): `always` / `firstOpening` / `whenChanging`. |
 | `businessRuleConditionType` | BusinessRuleConditionType | — | Koşul birleştirme — [`../enums/business-rule-condition-type.md`](../enums/business-rule-condition-type.md): `and` (VE) / `or` (VEYA). |
-| `businessRuleConditions` | List\<BusinessRuleCondition\> | — | Koşul listesi (recursive → `business-rule-condition.md`). |
+| `businessRuleConditions` | jsonb (List\<BusinessRuleCondition\>) | — | Koşul ağacı — **gömülü JSONB** (recursive; ayrı tablo değil → `business-rule-condition.md`). |
 | `activeViewProfiles` | List\<int\> | FK → ProcessViewProfile.id | Yalnız bu görüntüleme profillerinde çalış. |
 | `shouldNotWorkInReadonlyMode` | bool | — | Salt-okunur modda çalışmasın. |
 | `priority` | int | — | Kural **çalışma sırası/önceliği** (küçük = önce çalışır). Aynı alana yazan kurallarda belirleyicidir. _(Eski motorda öncelik yoktu → "son yazan kazanır"; v0.34'te eklendi.)_ |
@@ -52,7 +52,7 @@ Ortak alt-modeller: **[`AssignValue`](./dto/business-rule/shared/assign-value.md
 ## İlişkiler
 - **N – 1** → `Organization` (`organizationId`), `Service` (`serviceId`).
 - **N – N** → `ProcessViewProfile` (`activeViewProfiles`).
-- **1 – N** ← `BusinessRuleCondition` (`businessRuleId`).
+- **Gömülü** — `BusinessRuleCondition` ağacı `businessRuleConditions` JSONB'sinde taşınır (ayrı tablo/FK yok; KARAR v0.35).
 
 ## Notlar / açık noktalar
 - **Çalışma yeri (KARAR v0.34):** iş kuralları **tam frontend** çalışır — kurallar servise gömülü gelir, her client kendi motorunu yürütür (realtime UX).

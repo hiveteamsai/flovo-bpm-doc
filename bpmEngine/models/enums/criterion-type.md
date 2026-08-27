@@ -18,8 +18,11 @@
 | `endsWith` | ile biter. | Metin sonunu denetlemek. |
 | `contains` | içerir. | Alt dize varlığını denetlemek. |
 | `notContains` | içermez. | Alt dize yokluğunu denetlemek. |
+| `containsAny` | virgülle ayrılmış parçalardan **herhangi biri** değerde geçer. | **Çoklu-değer** (multi-select combobox / liste) koşulu. |
+| `containsAll` | parçaların **hepsi** değerde geçer. | Çoklu-değer koşulu. |
 
 ## Notlar
 - Kodlar **camelCase** olarak normalize edildi (v0.7); operatör sembolü/Türkçe karşılığı "Anlam" sütunundadır.
+- **`containsAny`/`containsAll` (v0.35):** çoklu-değer (virgüllü) karşılaştırma; sağ değer parçalara bölünür, sol değerde **herhangi biri/hepsi** aranır.
 
 *Oluşturma: 2026-07-10.*
