@@ -73,6 +73,10 @@
 - [ ] **AI entegrasyon modeli** — deterministik "AI adımı" vs otonom "ajan"; takılabilir strateji (model/memory/araç);
   "herhangi bir adım = araç" + MCP? _(flovo-bpm-engine §11)_
   - 🧱 **Tech-stack:** AI **substratı** = **Python AI Service** (🟡 post-MVP) + **pgvector**; entegrasyon **MODELİ** açık. → [`./tech-stack/python-ai-service.md`](./tech-stack/python-ai-service.md)
+- [ ] **Settings API (tasarım-zamanı ayar CRUD) — açık noktalar** — yüzey tasarlandı ([`settings-api.md`](./settings-api.md)); kalan:
+  **ortak hata sözleşmesi** · **draft/publish + servis versiyonlama** (ortam modeliyle bağlı) · **toplu senkron** ucu (org referans
+  verisi upsert; Customer API ön-koşulu) · ayar-değişiklik **loglama** (SettingsLog) · `settings`/`configuration` **referans bütünlüğü +
+  silme koruması** kesin kuralları · **yetki granülaritesi** (hangi rol hangi kaynağı yazar). _(settings-api §5–§9)_
 - [ ] **Hata yönetimi** — her adımda `onFail` var mı/zorunlu mu; **retry** (deneme + bekleme); süreç-seviye global
   hata yakalayıcı; telafi/compensation; `action` zinciri **sonsuz döngü** koruması. _(flovo-bpm-engine §7 · process-step-action §7)_
 - [ ] **Vekalet (proxy / yetki verme) sistemi** — **görev-devri yerine** kalıcı vekalet: kullanıcılar başka kişilere vekalet verir;
