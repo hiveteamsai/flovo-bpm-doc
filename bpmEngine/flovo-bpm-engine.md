@@ -89,12 +89,14 @@ Bir servis **yedi yapı taşından** oluşur ve bunlar **iki katmana** ayrılır
 
 > **[Hedef]** Bu sırayı **şablon + görsel akış editörü** ile **teknik-olmayan kullanıcıya** açmak; elle bağlama yükünü azaltmak (→ §1.4).
 
-### 2.2 — Orkestrasyon vs Yürütme (çalışma zamanı mimarisi)
-> _(Founder/teknik karar bekliyor. n8n dersi 1–2: orkestrasyonu yürütmeden ayır; durum DB'de, kuyruk yalnız iş
-> ID'leri, worker'lar durumsuz.)_
-- Süreçler/bileşenler: **(açık)**
-- Tek-süreç mi, kuyruk-tabanlı dağıtık worker mı?: **teknoloji kararı verildi** (MVP Core BPM monolith → Hexagonal + **NATS kuyruk** + **durumsuz worker** → [`tech-stack/`](tech-stack/index.md)); **motor-içi orkestrasyon↔yürütme detayı açık → §12.**
-- **Bulut + on-prem hibrit** dağıtım: **teknoloji kararı verildi** (on-prem + Private Cloud ready — K8s/Helm + Keycloak federasyon → [`tech-stack/`](tech-stack/index.md)); **operasyon detayı → §12.**
+### 2.2 — Orkestrasyon vs Yürütme (çalışma zamanı mimarisi) — ÇÖZÜLDÜ (v0.40)
+> **Tam spesifikasyon → [`engine-runtime.md`](engine-runtime.md)** (senkron §4.4 döngüsünün event-driven state machine'e çevrimi).
+- **Mimari:** *durum DB'de, kuyruk yalnız iş/olay taşır, worker'lar durumsuz* (n8n dersi 1–2). Süreç bir process değil,
+  **Postgres'te duran durum + NATS'ta akan olaylar**dır → engine-runtime §0/§1.
+- **Bileşenler:** durumsuz **Go worker** (step-ready işi çeker, **tek adım** koşar, sonrakini enqueue eder) + mantıksal
+  **orkestratör** (aksiyon→adım çevirimi · uyandırma · at-most-once) + **NATS JetStream** (job/olay) + **PostgreSQL**
+  (`workflow_events` append-only + durum) + lider-seçimli **scheduler** (timer) → engine-runtime §2/§3.
+- **Bulut + on-prem hibrit:** K8s/Helm + Keycloak federasyon → [`tech-stack/`](tech-stack/index.md).
 
 ---
 
@@ -266,13 +268,12 @@ while adım bir BİTİŞ düğümü değilse:                   # Süreç Bitiş
 # Ayrıca terminal bir otomatik adım (giden aksiyonu olmayan) yukarıdaki `break` ile de kolu sonlandırabilir.
 ```
 
-### 4.5 — Henüz netleşmeyenler (→ §12)
-- **Paralel dallanma / eşzamanlı kollar** var mı? (Şimdiye kadar anlatım **tek aktif adım / doğrusal-dallı**
-  ilerleme; n8n'in çok-girdili "join/senkronizasyon"unun Flovo karşılığı tanımlı değil.)
-- Bir adım **aynı anda birden çok sonraki adımı** tetikleyebilir mi, yoksa her zaman tek `action` → tek hedef mi?
-- **Alt servisler (Form List)** ana süreçle eşzamanlı mı yürür? _(Kısmen netleşti: **ServiceTrigger** ilişki değişiminde
-  alt-servisin alt sürecini tetikler — §5.3; **Üst Form Kullanıcı** ile alt-servis üst formun atananlarını devralır. Eşzamanlı
-  **join/senkronizasyon** hâlâ açık.)_
+### 4.5 — Paralel dallanma / join — KARAR (v0.40)
+- 🟩 **MVP = tek aktif kol:** bir `ProcessInstance`'ta aynı anda **tek aktif adım** ilerler (her aksiyon → tek hedef). Eşzamanlılık
+  **ayrı `ProcessInstance`'larla** sağlanır: **Form List** alt-servisleri ServiceTrigger/`subProcessStart` ile **bağımsız süreçler**
+  olarak koşar (§5.3). Tam gerekçe → [`engine-runtime.md`](engine-runtime.md) §8.
+- 🟦 **ERTELENDİ:** bir adımın aynı anda **birden çok** sonraki adımı tetiklemesi (fork) + **join/senkronizasyon** (n8n çok-girdili
+  birleştirme muadili) — MVP'de **yok** (→ `todo.md`). Bu karar state machine'i **tek-konum** tutar.
 
 ---
 
@@ -354,8 +355,9 @@ bir aksiyon kodu** olarak modellenir (`default` ↔ `onFail`).
 ## 8. Kalıcılık, Durum ve Denetim
 - **Süreç geçmişi:** adımlar/aksiyonlar geçmişte tutulur — `showInHistory` (öğe **geçmişte görünür** mü); aksiyon tamamlanınca kullanıcıya tarihçeyi **otomatik gösterme** = `showHistory` (ayrı alan).
 - **Çoklu dil:** metin alanları çeviri destekli; bildirimler TR/EN ayrı.
-> _(Doldurulacak: ne saklanır — süreç tanımı · çalıştırma kaydı (instance/state) · veri · dosya/binary. Durum yaşam
-> döngüsü (new / running / waiting / done). Saklama/pruning. **Denetim izi** (kurumsal/KVKK). **Dosya/binary depolama performansı**.)_
+> **Kalıcılık / durum / yaşam-döngüsü tam spesifikasyonu → [`engine-runtime.md`](engine-runtime.md) §9** (ne saklanır tablosu +
+> `new/running/waiting/failed/done` yaşam döngüsü + `workflow_events` Partial Event Sourcing + kaynak↔projeksiyon). **Açık:**
+> tamamlanan süreçlerin **saklama/pruning + KVKK** → todo. **Dosya/binary** → [`tech-stack/minio.md`](./tech-stack/minio.md).
 
 ---
 

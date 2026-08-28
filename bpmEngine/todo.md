@@ -25,8 +25,13 @@
 
 - [ ] **Çalışma-zamanı mimarisi** — tek-süreç mi, kuyruk-tabanlı dağıtık worker mı? Orkestrasyon ↔ yürütme ayrımı;
   durum DB'de, kuyruk yalnız iş ID'leri, worker'lar durumsuz. _(flovo-bpm-engine §2.2 / §12)_
-  - 🧱 **Tech-stack (kısmen kapandı):** dağıtım/ölçekleme kararı verildi — MVP **Core BPM monolith** → Hexagonal + **NATS kuyruk** +
-    **durumsuz worker** + durum **Postgres/NATS**'ta (SOA-ready); motor-içi **orkestrasyon↔yürütme** ayrımı hâlâ açık. → [`tech-stack/`](./tech-stack/index.md) · [`./research/tech-stack/tech_rating.md`](./research/tech-stack/tech_rating.md)
+  - 🧱 **Tech-stack:** MVP **Core BPM monolith** → Hexagonal + **NATS kuyruk** + **durumsuz worker** + durum **Postgres/NATS**'ta
+    (SOA-ready). → [`tech-stack/`](./tech-stack/index.md) · [`./research/tech-stack/tech_rating.md`](./research/tech-stack/tech_rating.md)
+  - **Motor-içi orkestrasyon↔yürütme — ÇÖZÜLDÜ (v0.40):** senkron §4.4 döngüsü → **event-driven state machine**
+    (worker/orkestratör/scheduler · `workflow_events` Partial Event Sourcing · suspend/resume · `executionState`) →
+    [`engine-runtime.md`](./engine-runtime.md). **Kalan:** `workflow_events`/`workflow_projection` **model dosyaları** · scheduler
+    **lider-seçim** mekanizması (NATS KV ↔ Postgres advisory lock) · retry politika değerleri + **global hata yakalayıcı** +
+    compensation · **fork/join** (ertelendi) · `workflow_events` **pruning/KVKK** · optimistic-concurrency çakışma UX'i. _(engine-runtime §11)_
 - [ ] **Veri modeli** — **temsil/akış ÇÖZÜLDÜ (v0.30): koleksiyon-tabanlı.** Adımlar arası veri, `InstanceValue` ile **ortak
   değer-modeli** (`propertyValuesTemplates` + `LabeledValue`) taşıyan bir **değer koleksiyonu** olarak aksiyonla **açıkça** akar:
   `changeList` = obje-map `{ Property.code: value }` → forma **doğrudan JSONB merge**; `parameters` = aynı değer şekli + **serbest

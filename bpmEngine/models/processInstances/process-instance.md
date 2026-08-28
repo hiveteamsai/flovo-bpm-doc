@@ -15,6 +15,7 @@
 | `serviceId` | int | FK → Service.id | Hangi servisin süreci çalıştırılıyor. |
 | `organizationId` | int | (denormalize) | Kiracı — **RLS/tenant izolasyonu** (RLS Pattern B v2: her tenant-tabloda `organizationId`; DB-seviyesi izolasyon). |
 | `parentProcessInstanceId` | int? | FK → ProcessInstance.id (self) | **Alt süreç** ise **alt sürecin koştuğu (hedef/host) instance'ın ana `ProcessInstance`** id'si (**tetikleyen** süreç değil). **Null = ana süreç** (üst akış yok). |
+| `executionState` | ProcessExecutionState | — | **Motor yürütme durumu** — `new`/`running`/`waiting`/`failed`/`done` (→ [`../enums/process-execution-state.md`](../enums/process-execution-state.md)). Kullanıcının gördüğü **iş durumu** (`Instance.statusId`) ile **ayrı**; `workflow_events`'ten türetilen projeksiyon. Runtime → [`../../engine-runtime.md`](../../engine-runtime.md) §1. |
 
 ## İlişkiler
 - **N – 1** → `Service` (`serviceId`), `User` (`createdByUserId`), `ApiKey` (`createdByApiKeyId`),

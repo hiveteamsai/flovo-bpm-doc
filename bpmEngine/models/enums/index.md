@@ -38,6 +38,7 @@
 | **SyncStatus** (harici senkron durumu) | org-ayarı text-entity'leri (`synchronizationStatus`) — `company`·`department`·`cost-center`·`credit-card`·`position`·`profession`·`user`·`worker-level`·`vacation-day` | `synced` · `pending` · `error` | [`sync-status.md`](./sync-status.md) |
 | **FormType** | `service.md` (`formType`) | `form` · `parameter` · `eventForm` | [`form-type.md`](./form-type.md) |
 | **ServiceTriggerType** (tetikleyici olay) | `service-trigger.md` (`serviceTriggerType`) | `timer` · `whenAddedAssociate` · `whenRemoveAssociate` | [`service-trigger-type.md`](./service-trigger-type.md) |
+| **ProcessExecutionState** (motor yürütme durumu) | `process-instance.md` (`executionState`) | `new` · `running` · `waiting` · `failed` · `done` | [`process-execution-state.md`](./process-execution-state.md) |
 | **PropertyType** (kontrol tipi) | `property.md` (`propertyType`) | 18 kontrol tipi (`textbox` · `combobox` · `file` · `formList` …) | [`property-type.md`](./property-type.md) |
 | **KeyboardType** | `property.md` (`keyboardType` — Textbox/Phone) | `default`·`plain`·`text`·`numeric`·`email`·`url`·`telephone` | [`keyboard-type.md`](./keyboard-type.md) |
 | **BarcodeFormat** | `property.md` (`barcodeFormat` — Barcode) | `aztec`·`code39`·`ean13`·`code128`·`dataMatrix`·`qr`·`pdf417`… (10) | [`barcode-format.md`](./barcode-format.md) |

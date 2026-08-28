@@ -11,6 +11,7 @@
 | Döküman | Özet |
 |---|---|
 | [`flovo-bpm-engine.md`](./flovo-bpm-engine.md) | **Motor çalışma prensibi** — BPM motorunun nasıl çalışacağı (mimari + yürütme algoritması); adımları nasıl çalıştırır. |
+| [`engine-runtime.md`](./engine-runtime.md) | **Motor runtime mimarisi** — senkron yürütme döngüsünün event-driven (Go worker + NATS + Postgres event-sourcing) **state machine**'e çevrimi: orkestrasyon↔yürütme · durum · kalıcılık · uyandırma. (flovo-bpm-engine §2.2/§8/§4.5 doldurma.) |
 | [`flovo-customer-api.md`](./flovo-customer-api.md) | **Flovo Customer API** — müşterilerin **custom code** geliştirmesi için sağlanacak API servisi (runtime veri: instance oku/yaz, webhook). |
 | [`settings-api.md`](./settings-api.md) | **Flovo Settings API** — **tasarım-zamanı ayar CRUD'u** (service/property/step/view-profile/business-rule + org ayarları); `settings` doğrulama = tipe-özel JSON Schema. |
 | [`todo.md`](./todo.md) | **Açık sorular / TODO** — tüm dokümanlardaki açık kararlar, önceliklendirilmiş tek liste (Tier 0–3). |
