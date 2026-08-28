@@ -1,6 +1,6 @@
 # Model — Organization
 
-> **Durum:** 🟡 TASLAK (ilk çıkarım — gözden geçirilecek)
+> **Durum:** 🟢 Gözden geçirildi (v0.36)
 > **Amaç:** Flovo'yu kullanan **kurumu (tenant)** temsil eder. Verinin en üst kapsayıcısıdır; kullanıcı/servis/çeviri/
 > durum vb. bir organizasyona bağlıdır. Organizasyonlar birbirinden **izoledir**.
 > **Davranış/kullanım:** → `../../organization-settings/organization.md`

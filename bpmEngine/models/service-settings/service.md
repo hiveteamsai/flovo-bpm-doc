@@ -1,6 +1,6 @@
 # Model — Service (servis / form)
 
-> **Durum:** 🟡 TASLAK (alanlar başlangıç — detaylandırılacak)
+> **Durum:** 🟢 Gözden geçirildi (v0.36)
 > **Amaç:** Bir **iş sürecinin/formun** tamamı (örn. İzin Talebi, Masraf). Motorun temel birimi. Bir **solution
 > altında** oluşturulur; **kendi ayarlarını** (property, görüntüleme profili, süreç adımı, iş kuralı) barındırır.
 > **Hiyerarşi:** `Organization → Solution → Service → {Property · ProcessViewProfile · ProcessStep · BusinessRule}`.

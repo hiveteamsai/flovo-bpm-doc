@@ -188,6 +188,9 @@
 - [ ] **`actionDisplayType`** gözden geçir (`invisible`/`everywhere`/`onlyFormDetail`/`onlyFastApprove`). _(action §3)_
 - [ ] **İş kuralı performansı** — `always` kuralları yalnız ilgili property değişince (alan-bağımlı) tetiklensin mi?
   _(business-rule §6)_
+- [ ] **`SchedulerJob` altyapı modeli (erteleme)** — `...At` (`lastRunAt`/`createdAt`) ↔ `...Time` (`startTime`/`endTime`)
+  **adlandırma birliği** + `category`/`status`/`triggeredBy` serbest-string alanlarının enum'a çekilip çekilmeyeceği +
+  alan detayları. Altyapı-zamanlayıcı modeli olduğundan **sonraya** bırakıldı. _(models/organization-settings/scheduler-job.md)_
 
 ---
 

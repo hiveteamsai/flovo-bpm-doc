@@ -1,6 +1,6 @@
 # Model — ProcessStepAction (adım-aksiyon binding)
 
-> **Durum:** 🟡 TASLAK (ilk çıkarım — gözden geçirilecek)
+> **Durum:** 🟢 Gözden geçirildi (v0.36)
 > **Amaç:** Bir **aksiyonun bir adıma bağlanması**. Şablon (`Action`/ActionDto) alanları buraya **kopyalanır**;
 > ayrıca adım-özel yönlendirme/yetki alanları tutulur.
 > **Davranış/kullanım + veri aktarımı:** → `../../service-settings/process-step-action.md`
@@ -13,7 +13,7 @@
 | `targetProcessStepId` | int | FK → ProcessStep.id | Aksiyon çalışınca **ilerlenecek hedef adım**. |
 | `changeStatusId` | int | FK → Status.id | Aksiyon sonrası atanacak **durum**. |
 | `mergeParameter` | bool | — | **Parametre birleştirme.** `true` ise aksiyon, hedefe taşıdığı `parameters`'a **bu adıma gelen parametreleri** de ekler (önce gelen `in`, sonra aksiyonun ürettiği `out`; **aynı anahtarda `out` ezer**). `false` (vars.) → yalnız aksiyonun kendi ürettiği parametreler taşınır. Davranış → `../../service-settings/process-step-action.md` §2.1. |
-| `authorizationLevel` | — | — | **Yetki seviyesi** (aksiyonu kim yürütebilir). |
+| `authorizationLevel` | → `../../todo.md` (Yetkilendirme) | — | **Yetki seviyesi** (aksiyonu kim yürütebilir). |
 | `actionDisplayAuthorizedUserGroupId` | int | FK → UserGroup | Aksiyonu **görebilecek** kullanıcı grubu. |
 | `environmentRestriction` | string | — | Ortam kısıtı. |
 
@@ -30,7 +30,7 @@ Adıma aksiyon eklenirken şablonun (`Action`) **`organizationId` dışındaki t
 | `translationCode` | string? | **Çeviri eşleşme anahtarı** (→ [`../organization-settings/translation.md`](../organization-settings/translation.md) `code`). `null` = doğrudan `definition`. |
 | `icon` | string | İkon. |
 | `styleId` | int (FK → Style) | Renk/görünüm (bg + font). |
-| `actionType` | ActionType | Aksiyonun **türü** (`manual`/`eventForm`/`takePhoto`/`selectFile`/`scanBarcode`/`webhook`/`autoAction`) → [`../enums/action-type.md`](../enums/action-type.md). |
+| `actionType` | ActionType | Aksiyonun **türü** (`manual`/`eventForm`/`takePhoto`/`selectFile`/`scanBarcode`/`webhook`/`autoAction`/`delete`) → [`../enums/action-type.md`](../enums/action-type.md). |
 | `validation` | bool | Aksiyon öncesi **form validasyonu** gerekli mi. |
 | `stayOnPage` | bool | Aksiyon sonrası **sayfada kal**. |
 | `showInHistory` | bool | Aksiyon, kullanıcının geçmiş görüntülemesinde **görünsün** mü. |

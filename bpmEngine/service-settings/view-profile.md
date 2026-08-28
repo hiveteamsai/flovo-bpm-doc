@@ -26,6 +26,7 @@ onaylayan için salt-okunur).
 | `serviceId` | int | Bağlı servis ID'si (servis-bazlı tanımlı) |
 | `code` | string | Profil kodu (benzersiz) |
 | `definition` | string | Profil adı |
+| `translationCode` | string? | Çeviri eşleşme anahtarı (→ `translation.md` `code`); `null` = çeviri es geçilir, doğrudan `definition` kullanılır |
 | `isDefault` | bool | Varsayılan profil mi |
 | `processViewProfileProperty` | List\<`ProcessViewProfilePropertyDto`\> | Profildeki **alan (property) yapılandırmaları** (§2) |
 

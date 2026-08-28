@@ -1,6 +1,6 @@
 # Model — ProcessViewProfileProperty (profil alan yapılandırması)
 
-> **Durum:** 🟡 TASLAK (ilk çıkarım — gözden geçirilecek)
+> **Durum:** 🟢 Gözden geçirildi (v0.36)
 > **Amaç:** Bir görüntüleme profilinde **tek bir alanın** nasıl görüneceği: görünür/düzenlenebilir/zorunlu + sıra.
 > **Davranış/kullanım:** → `../../service-settings/view-profile.md` §2
 

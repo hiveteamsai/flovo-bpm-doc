@@ -1,6 +1,6 @@
 # Model — Style
 
-> **Durum:** 🟡 TASLAK (ilk çıkarım — gözden geçirilecek)
+> **Durum:** 🟢 Gözden geçirildi (v0.36)
 > **Amaç:** Bir öğenin **renk/görünümünü** tanımlayan yeniden-kullanılabilir varlık. En temel hâliyle **bg color +
 > font color**. **Yalnız Action ve Status** tarafından kullanılır (form alanları bu varlığı kullanmaz).
 > **Davranış/kullanım:** → `../../organization-settings/style.md`

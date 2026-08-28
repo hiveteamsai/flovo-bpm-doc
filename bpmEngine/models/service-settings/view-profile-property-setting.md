@@ -1,6 +1,6 @@
 # Model — ProcessViewProfilePropertySetting (profil-bazlı alan override'ı)
 
-> **Durum:** 🟡 TASLAK (ilk çıkarım — gözden geçirilecek)
+> **Durum:** 🟢 Gözden geçirildi (v0.36)
 > **Amaç:** Bir alanın **tipe-özel** görünüm/davranış ayarını **görüntüleme profili bazında** tutar. `Property`'deki
 > varsayılanı **profil düzeyinde ezer** (override). `viewProfilePropertyId` altındaki `key`/`value` kayıtları bir
 > **dictionary** oluşturur; `Property`'nin **`propertyType`**'sine göre geçerli key'ler yorumlanır.

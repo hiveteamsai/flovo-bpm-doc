@@ -1,6 +1,6 @@
 # Model — AdditionalQualification (Ek Nitelik — organizasyon ayarı)
 
-> **Durum:** 🟡 TASLAK
+> **Durum:** 🟢 Gözden geçirildi (v0.36)
 > **Amaç:** Standart alanların dışında, organizasyon varlıklarına eklenen **dinamik/özel alanlar** (örn. "SGK No", "Sicil No").
 
 ## Alanlar

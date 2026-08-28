@@ -1,6 +1,6 @@
 # Model — Action (ActionDto — şablon)
 
-> **Durum:** 🟡 TASLAK (ilk çıkarım — gözden geçirilecek)
+> **Durum:** 🟢 Gözden geçirildi (v0.36)
 > **Amaç:** Yeniden kullanılabilir **aksiyon şablonu**. Bir süreç adımına aksiyon eklenirken bu şablondan seçilir ve
 > alanları binding'e (`ProcessStepAction`) **kopyalanır**.
 > **Davranış/kullanım:** → `../../organization-settings/action.md` · binding → `../../service-settings/process-step-action.md`
@@ -29,6 +29,7 @@ Enum tanımı → [`../enums/action-type.md`](../enums/action-type.md). Bu model
 - `takePhoto` (Fotoğraf Çek) / `selectFile` (Dosya Seç) / `scanBarcode` (Barcode Tara) — aksiyon cihaz eylemini (kamera/dosya/tarayıcı) tetikler.
 - `webhook` (Webhook) — aksiyon dış uç noktaya HTTP çağrısı yapar.
 - `autoAction` (Autoaction) — koşul sağlanınca kullanıcı etkileşimi olmadan otomatik çalışır.
+- `delete` (Sil) — kaydırmalı (swipe) aksiyon; aksiyon alınınca form UI'dan kaldırılır.
 
 _(davranış kataloğu → `../../service-settings/process-step-action.md` §3.)_
 

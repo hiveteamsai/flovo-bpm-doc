@@ -1,6 +1,6 @@
 # Model — User (Kullanıcı — organizasyon ayarı)
 
-> **Durum:** 🟡 TASLAK
+> **Durum:** 🟢 Gözden geçirildi (v0.36)
 > **Amaç:** Organizasyondaki **kişiler**. BPM onay mercilerinin (kullanıcı / kullanıcının yöneticisi / departman yöneticisi) temeli.
 
 ## Alanlar — temel
@@ -16,7 +16,7 @@
 | `active` | bool | — | Aktif/pasif — **null olamaz**, varsayılan `true`. `false` = frontend'de **görünür/düzenlenebilir** ama BPM işlemede kullanılmaz. |
 | `deleted` | bool | — | Soft-delete — **null olamaz**, varsayılan `false`. `true` = frontend'de **gizli/aktarılmaz/salt** + BPM işlemede kullanılmaz. |
 | `employmentStartDate` | datetime? | — | İşe başlama tarihi. |
-| `synchronizationStatus` | bool | — | Senkron durumu. |
+| `synchronizationStatus` | [SyncStatus](../enums/sync-status.md) | — | Harici sistemle (ERP/muhasebe) **senkron durumu** — `synced` / `pending` / `error`. |
 
 > **Kimlik alanları (`email` / `phone`):** ikisi de **nullable**, fakat **en az biri dolu olmak zorundadır** —
 > `email IS NOT NULL OR phone IS NOT NULL` (CHECK kısıtı). Kullanıcı **e-posta ile, telefon ile veya ikisiyle** tanımlanabilir;

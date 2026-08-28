@@ -1,6 +1,6 @@
 # Model — Property (form alanı)
 
-> **Durum:** 🟡 TASLAK (ilk çıkarım — gözden geçirilecek)
+> **Durum:** 🟢 Gözden geçirildi (v0.36)
 > **Amaç:** Metadata-driven formdaki tek bir **giriş/görüntüleme elemanı**. Bir **kontrol tipi** (`propertyType`) ile
 > render edilir, `code` ile veriye bağlanır.
 > **Davranış/kullanım + tam alan kataloğu:** → `../../service-settings/properties.md`
@@ -32,12 +32,12 @@
 | `defaultValue` | (tipe göre) | Varsayılan değer. |
 | `format` | string | Format (tarih/sayı/maske). |
 | `saveAndRefreshOnAfterChange` | bool | Değer değişince **kaydet isteği atıp formu yeniler** (refresh). |
-| `backingField` | — | Gizli/arka-plan alan. |
+| `backingField` | bool | Gizli/arka-plan alan (formda görünmez, yalnız değer taşır). |
 | `savePropertyToDb` | bool | Değerin `InstanceValue.data`'ya (kaynak JSONB'ye) yazılıp yazılmayacağı. |
 | `saveChangeLog` | bool | Değişiklik geçmişi tut → değer değişince `InstanceValue.data` update TX'inde [`../processInstances/instance-value-change.md`](../processInstances/instance-value-change.md) satırı düşer. |
 | `projectToAttr` | bool | **Fihriste (projeksiyona) yazılsın mı?** `true` = değer `InstanceValue.data`'dan [`../processInstances/instance-attr.md`](../processInstances/instance-attr.md) / [`../processInstances/instance-list-item.md`](../processInstances/instance-list-item.md)'a yansıtılır (rapor/filtre/sıra/aralık/isim-arama). `false` = yalnız JSONB'de kalır (**eşittir** sorgusu için GIN yeter). Tipik alanların **%10–20'si** `true`. `savePropertyToDb`'den **farklı**: o kaynağa yazımı, bu fihriste yansımayı belirler. |
 | `isReflectionSource` | bool | **Türetilmiş (servis yayınında hesaplanır):** bu alan, başka bir servisin `parentProperty` (`materialized`) alanı tarafından **yansıtılan kaynak** mı? `true` ise değeri değişince yansıma yayılımı tetiklenir; `false` (çoğu alan) → yayılım consumer'ı **hızlı çıkış** yapar (ek maliyet yok). Mekanizma → [`../processInstances/reflection-propagation.md`](../processInstances/reflection-propagation.md). |
-| `state` | — | Alan durumu. |
+| `state` | string? | Alan durumu (tasarım-zamanı serbest durum etiketi). |
 | `environmentRestriction` | string | Ortam kısıtı. |
 | `organizationRestriction` | string | Organizasyon kapsam kısıtı. |
 | `settings` | JSONB | **Tipe-özel ayarlar** (`propertyType`'a göre — §2). Ayrı alt-tablo/kolon **açılmaz** → gömülü JSONB; ayrımlayıcı `propertyType`; tip-başına **JSON Schema** ile doğrulanır. `ProcessStep.settings` deseniyle **birebir aynı** (v0.31 kararı). Yalnız **projektör/sorgu katmanının ilişkisel okuduğu metadata** çekirdek kolonda kalır (§2 karar notu). |
@@ -47,7 +47,7 @@
 ### 1.4 Veri kaynağı alanları (seçim alanları için)
 | Alan | Tip | Açıklama / amaç |
 |---|---|---|
-| `dataSource` / `dataSourceId` / `dataSourceValue` | — | **Dinamik** veri kaynağı. |
+| `dataSource` (string) / `dataSourceId` (int?) / `dataSourceValue` (string?) | — | **Dinamik** veri kaynağı (Combobox/Radiobutton seçenek kaynağı) — kaynak tanımı / kaynak id / kaynak değer alanı. |
 | `propertyItems` | List\<PropertyItem\> | **Statik** seçenekler (→ `property-item.md`). |
 | `lazyLoading` | bool | Tembel yükleme. |
 | `manuelEntry` | bool | Serbest giriş. |
@@ -59,6 +59,7 @@
 |---|---|---|
 | `childServiceId` | int | Alt servis (Form List). |
 | `serviceItemControlId` | int | Alt-servis öğe kontrolü. |
+| `associatedServiceId` | int? (FK → Service) | **İlişkili combobox** hedef servisi — `combobox` alanında `isAssociatedCombobox=true` iken **zorunlu**; combobox o servisin instance'larından seçtirir, seçilen her instance için `AssociatedInstance` kaydı düşer (§2). |
 | `refPropertyId` | int | Referans alınan alan (Parent Property). |
 | `parentPropertyId` | int | Üst alan. |
 | `relatedPropertyIds` | List\<int\> | İlişkili alanlar. |

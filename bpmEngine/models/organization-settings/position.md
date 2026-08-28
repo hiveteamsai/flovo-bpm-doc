@@ -1,6 +1,6 @@
 # Model — Position (Pozisyon — organizasyon ayarı)
 
-> **Durum:** 🟡 TASLAK
+> **Durum:** 🟢 Gözden geçirildi (v0.36)
 > **Amaç:** Organizasyon şemasındaki **fiili görev yeri** tanımı (örn. "Satış Müdürlüğü"). Bir **şirkete** bağlıdır ve altında
 > somut personel slotları (**Staff / kadro**) tutar.
 
@@ -15,7 +15,7 @@
 | `companyId` | int | FK → `company.md` | Bağlı şirket (tekil, N–1). **Oluşturmada zorunlu** (0 olamaz); boş bırakılırsa varsayılan şirket (`isDefaultCompany`) kullanılır. |
 | `active` | bool | — | Aktif/pasif — **null olamaz**, varsayılan `true`. `false` = frontend'de **görünür/düzenlenebilir** ama BPM işlemede kullanılmaz. |
 | `deleted` | bool | — | Soft-delete — **null olamaz**, varsayılan `false`. `true` = frontend'de **gizli/aktarılmaz/salt** + BPM işlemede kullanılmaz. |
-| `synchronizationStatus` | bool | — | Harici sistemle senkron durumu. |
+| `synchronizationStatus` | [SyncStatus](../enums/sync-status.md) | — | Harici sistemle (ERP/muhasebe) **senkron durumu** — `synced` / `pending` / `error`. |
 
 ## Alt model — Staff (Kadro)
 Bir pozisyonun altındaki **somut personel slotu**. **1 kadro ↔ 1 kullanıcı**. Kadroların ayrı yönetim yüzeyi/endpoint'i
@@ -30,7 +30,7 @@ yoktur; **pozisyon kaydıyla birlikte** oluşturulur/güncellenir/silinir (pozis
 | `translationCode` | string? | çeviri anahtarı | **Çeviri eşleşme anahtarı** (→ [`translation.md`](./translation.md) `code`). `null` = çeviri **es geçilir**, doğrudan `definition` kullanılır. |
 | `userId` | int? | FK → `user.md` | Atanan kullanıcı (**1 kadro 1 kullanıcı**). Oluşturmada zorunlu; **tekil atama kuralı** gereği geçici boşalabilir (aşağıda). |
 | `active` | bool | — | Aktif/pasif — Position ile aynı kural (**null olamaz**, varsayılan `true`). |
-| `synchronizationStatus` | bool | — | Senkron durumu. |
+| `synchronizationStatus` | [SyncStatus](../enums/sync-status.md) | — | Harici sistemle (ERP/muhasebe) **senkron durumu** — `synced` / `pending` / `error`. |
 
 > **Tekil atama kuralı:** Bir kullanıcı **aynı anda yalnız bir kadroya** bağlı olabilir. Kullanıcı yeni bir kadroya atanırsa,
 > **önceki kadronun `userId`'si otomatik temizlenir** (null olur). Kadro kullanıcı seçiminde, o pozisyondaki başka kadrolara

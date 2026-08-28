@@ -1,6 +1,6 @@
 # Model — SchedulerJob (Zamanlanmış Görev — organizasyon ayarı)
 
-> **Durum:** 🟡 TASLAK
+> **Durum:** 🟢 Gözden geçirildi (v0.36)
 > **Amaç:** Cron tabanlı **arka plan görevleri**. BPM'in zaman tabanlı otomasyonlarını (hatırlatma, zaman aşımı işleme, toplu işlem) besler.
 
 ## Alanlar
@@ -13,8 +13,8 @@
 | `description` | string | — | Açıklama. |
 | `category` | string | — | Görev kategorisi. |
 | `isEnabled` | bool | — | Aktif/pasif. |
-| `lastRunAt` | datetime | — | Son çalışma zamanı. |
-| `lastRunStatus` | string | — | Son çalışma durumu. |
+| `lastRunAt` | datetime? | — | Son çalışma zamanı. **Hiç çalışmamış görevde `null`.** |
+| `lastRunStatus` | string? | — | Son çalışma durumu. **Hiç çalışmamış görevde `null`.** |
 | `createdAt` / `updatedAt` | datetime | — | Oluşturma/güncelleme. |
 | `supportsManualInvoke` | bool | — | Manuel tetikleme desteği. |
 
@@ -32,5 +32,8 @@
 
 ## İlişkiler
 - **N – 1** → `Organization` · **1 – N** ← `SchedulerJobLog`.
+
+## Notlar
+- **Altyapı modeli (erteleme):** `...At`/`...Time` alan adlandırma birliği + alan detayları sonra netleşecek → `../../todo.md`.
 
 *Oluşturma: 2026-07-03.*

@@ -1,6 +1,6 @@
 # Model — Solution (çözüm)
 
-> **Durum:** 🟡 TASLAK (alanlar başlangıç — detaylandırılacak)
+> **Durum:** 🟢 Gözden geçirildi (v0.36)
 > **Amaç:** Bir organizasyona ait, **servisleri gruplamak** için kullanılan tanım. Bir organizasyonda **birden çok
 > solution** olabilir; servisler bir solution **altında** oluşturulur.
 > **Hiyerarşi:** `Organization → Solution → Service`.

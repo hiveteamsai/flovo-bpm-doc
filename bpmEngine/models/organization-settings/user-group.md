@@ -1,6 +1,6 @@
 # Model — UserGroup (Kullanıcı Grubu — organizasyon ayarı)
 
-> **Durum:** 🟡 TASLAK
+> **Durum:** 🟢 Gözden geçirildi (v0.36)
 > **Amaç:** Birden fazla kullanıcıyı toplayan grup. BPM'de **bildirim hedefi**, **aksiyon görünürlük yetkisi**, "Kullanıcı Grubu" adımı hedefi.
 
 ## Alanlar

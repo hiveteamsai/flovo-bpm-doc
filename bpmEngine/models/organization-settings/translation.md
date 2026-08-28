@@ -1,6 +1,6 @@
 # Model — Translation
 
-> **Durum:** 🟡 TASLAK (ilk çıkarım — gözden geçirilecek)
+> **Durum:** 🟢 Gözden geçirildi (v0.36)
 > **Amaç:** Bir **`code`**'a bağlı metnin dillere göre karşılıklarını tutar. Hem **ortak (Flovo)** hem
 > **organizasyon** çevirileri tek modelde.
 > **Davranış/kullanım (çözümleme motoru):** → `../../organization-settings/translation.md`

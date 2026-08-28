@@ -1,6 +1,6 @@
 # Model — ServiceTrigger (servis tetikleyicisi)
 
-> **Durum:** 🟡 TASLAK (ilk inşa — alanlar/kenar durumlar detaylandırılacak)
+> **Durum:** 🟢 Gözden geçirildi (v0.36)
 > **Amaç:** Bir servise bağlı, **olay/zaman-güdümlü otomatik** tetikleyici. Servisin instance'larında **belirli bir
 > değişiklik** olduğunda (ilişki eklenir/kaldırılır) **veya bir süre dolduğunda**, başka bir servisteki bir **süreç/alt-süreç
 > başlangıcını** otomatik çalıştırır. Böylece bir formdaki değişiklik ya da bir zamanlama, bir süreci **akıştan bağımsız**
@@ -26,7 +26,7 @@
 | `serviceTriggerType` | ServiceTriggerType | — | **Hangi olayda** tetikleneceği — `timer` / `whenAddedAssociate` / `whenRemoveAssociate` (→ [`../enums/service-trigger-type.md`](../enums/service-trigger-type.md)). |
 | `cronExpression` | string? | — | **(yalnız `timer`)** Zamanlamayı belirleyen **cron ifadesi** (ör. `0 9 * * 1` = her Pazartesi 09:00). `timer` dışındaki tiplerde boş. |
 | `targetPropertyId` | int? | FK → Property.id | **(yalnız `whenAddedAssociate`/`whenRemoveAssociate`)** İzlenen **ilişki alanı** (Form List / `isAssociatedCombobox` Combobox). Bir `AssociatedInstance` satırının `associatedPropertyId`'si buna eşit olduğunda trigger ateşlenir. **Değişmez:** `Property(targetPropertyId).serviceId == serviceId` (trigger'ın **kendi** servisinin ilişki alanı). Associate dışı tiplerde boş. |
-| `targetServiceId` | int | FK → Service.id | Tetiklendiğinde **hangi servisin** alt süreç başlangıcı çalıştırılacak (hedef servis). **Değişmez (associate):** `targetServiceId == (targetPropertyId Form List ise `childServiceId`, Combobox ise `associatedServiceId`)` — hedef, izlenen ilişki alanının **işaret ettiği** servistir (kaydetme-anı doğrulaması). `timer`'da bu kısıt yoktur (`targetPropertyId` boş). |
+| `targetServiceId` | int | FK → Service.id | Tetiklendiğinde **hangi servisin** alt süreç başlangıcı çalıştırılacak (hedef servis). **Değişmez (associate):** `targetServiceId` = (targetPropertyId Form List ise `childServiceId`, Combobox ise `associatedServiceId`) — hedef, izlenen ilişki alanının **işaret ettiği** servistir (kaydetme-anı doğrulaması). `timer`'da bu kısıt yoktur (`targetPropertyId` boş). |
 | `targetStarterProcessStepId` | int | FK → ProcessStep.id | `targetServiceId` içindeki **hangi başlangıç adımının** tetikleneceği. **Adım tipi `serviceTriggerType`'a göre:** `timer` → **`processStart`** (ana süreç başlangıcı); `whenAddedAssociate`/`whenRemoveAssociate` → **`subProcessStart`** (alt süreç). **Değişmez:** `ProcessStep(targetStarterProcessStepId).serviceId == targetServiceId` **ve** `stepType == (timer ? processStart : subProcessStart)`. |
 | `async` | bool | — | Tetikleme sonrası **beklenip beklenmeyeceği**: `true` → tetiklenen alt süreç **beklenmez** (fire-and-forget; tetikleyen işlem hemen devam eder); `false` → tetikleyen işlem, tetiklenen alt süreç **Süreç Bitişi'ne** (alt süreçte `subProcessEnd`) **ilerleyene kadar bekler** (o ana dek bloke olur). **Bekleme, tetiklendiği yerde** yapılır — ilişki değişikliğini (`AssociatedInstance` yazımını) gerçekleştiren işlem, alt süreç bitene kadar o noktada bloke olur. |
 | `parameters` | DynamicParameter[] | — | Tetiklenen alt sürece **kaynak servis instance'ından** aktarılacak veri (ad → değer kaynağı). Alt-model **`DynamicParameter`** → [`process-step.md`](./process-step.md) §3.1 (`name` + `value`: `fixedValue`/`propertyValue`/`fromCalculation`). |
@@ -67,6 +67,7 @@ Ateşlenince:
 - **N – 1** → `ProcessStep` (`targetStarterProcessStepId`; **`timer` → `processStart`**, **associate → `subProcessStart`** tipli adım).
 - **N – 1** → `Property` (`targetPropertyId`; izlenen ilişki alanı — Form List / `isAssociatedCombobox`; `serviceId` ile aynı serviste).
 - **İçerir:** `parameters` (DynamicParameter[] — ayrı tablo değil, ayarın parçası).
+- **Tenant:** `organizationId` ayrı taşınmaz; `serviceId → Service.organizationId` üzerinden türetilir (kayıt izolasyonu servis üzerinden → [`../../flovo-bpm-engine.md`](../../flovo-bpm-engine.md) §9).
 
 ## Çözülen kararlar (v0.23)
 - **Associate tespiti = çekirdek, AssociatedInstance yazımında** (yukarı "Çalışma zamanı"). Ayrı yerlerde tekrarlanmaz.
@@ -78,7 +79,7 @@ Ateşlenince:
 - **Kimlik/yaşam-döngüsü alanları eklendi:** `code` · `definition` · `order` · `active` · `deleted`.
 - **`triggerProcessStep` ile sınır (netleşti):** `triggerProcessStep` = **akış üzeri** adım — akış girince ayarına göre **alt süreç veya aksiyon** tetikler; **ServiceTrigger** = **akış dışı otomatik** — olay (associate) / cron ile kendiliğinden çalışır. Tamamlayıcı; çakışma yok.
 - **Alt süreç runtime temsili (netleşti, v0.25):** associate tetiklemesinde `subProcessStart`, hedef instance (`instanceId`) için **yeni bir alt-`ProcessInstance`** olarak koşar; **`parentProcessInstanceId` = hedef instance'ın ana `ProcessInstance`'ı** (tetikleyen `associatedInstanceId`'nin süreci **değil**). Yeni **Instance (form kaydı)** oluşmaz; instance'a bağ `parentProcessInstanceId` zinciriyle **dolaylı**dır. `ProcessInstance`'a ayrı `instance` alanı **eklenmez** — mevcut FK'ler (`ProcessInstance.parentProcessInstanceId` + `Instance.processInstanceId`) yeterli.
-- **Hedef servis ↔ hedef alan invariant'ı (netleşti, v0.25):** `targetServiceId == (targetPropertyId Form List ise `childServiceId`, Combobox ise `associatedServiceId`)`; admin alakasız servis seçemez (**kaydetme-anı doğrulaması**). Böylece `Instance(instanceId).serviceId == targetServiceId` çalışma-zamanında garanti edilir.
+- **Hedef servis ↔ hedef alan invariant'ı (netleşti, v0.25):** `targetServiceId` = (targetPropertyId Form List ise `childServiceId`, Combobox ise `associatedServiceId`); admin alakasız servis seçemez (**kaydetme-anı doğrulaması**). Böylece `Instance(instanceId).serviceId == targetServiceId` çalışma-zamanında garanti edilir.
 
 ## Açık noktalar (→ `../../todo.md`)
 - **`timer` saat dilimi/DST (ince nokta):** cron'un hangi **saat dilimi**nde değerlendirileceği (Organization timezone alanı henüz açık) + DST geçişleri netleştirilecek. _(Kapsam çözüldü: timer servis-global, her tetikte yeni ana süreç.)_

@@ -1,6 +1,6 @@
 # Model — WorkingSchedule (Çalışma Takvimi — organizasyon ayarı)
 
-> **Durum:** 🟡 TASLAK
+> **Durum:** 🟢 Gözden geçirildi (v0.36)
 > **Amaç:** Haftalık çalışma saatleri (7 gün, 2 periyot). BPM **Timer / zaman aşımı** "çalışma takvimine göre" hesaplamalarının temeli.
 
 ## Alanlar

@@ -1,6 +1,6 @@
 # Model — Company (organizasyon ayarı)
 
-> **Durum:** 🟡 TASLAK
+> **Durum:** 🟢 Gözden geçirildi (v0.36)
 > **Amaç:** Organizasyonun **tüzel kişiliklerini** (şirketler) temsil eder. Çok-şirketli organizasyonlar tek kiracı altında yönetilir.
 
 ## Alanlar
@@ -14,7 +14,7 @@
 | `active` | bool | — | Aktif/pasif — **null olamaz**, varsayılan `true`. `false` = frontend'de **görünür/düzenlenebilir** ama BPM işlemede kullanılmaz. |
 | `deleted` | bool | — | Soft-delete — **null olamaz**, varsayılan `false`. `true` = frontend'de **gizli/aktarılmaz/salt** + BPM işlemede kullanılmaz. |
 | `isDefaultCompany` | bool | — | Varsayılan şirket mi (seçim yapılmazsa kullanılır). |
-| `synchronizationStatus` | bool | — | Harici ERP/muhasebe ile senkron durumu. |
+| `synchronizationStatus` | [SyncStatus](../enums/sync-status.md) | — | Harici sistemle (ERP/muhasebe) **senkron durumu** — `synced` / `pending` / `error`. |
 
 ## Benzersizlik
 > `(organizationId, code)` **benzersiz** — aynı organizasyonda aynı `code`'lu iki kayıt olamaz. **`deleted=true` kayıtlar kontrole dahil değildir** (soft-delete edilenler bu kontrolde sayılmaz).

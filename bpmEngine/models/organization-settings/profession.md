@@ -1,6 +1,6 @@
 # Model — Profession (organizasyon ayarı)
 
-> **Durum:** 🟡 TASLAK
+> **Durum:** 🟢 Gözden geçirildi (v0.36)
 > **Amaç:** Çalışan **görev/meslek** (ünvan) tanımları; kullanıcıya `professionId` ile atanır. BPM'de **ek nitelik** (`AdditionalQualification`, `RelationalType=professions`) üzerinden tüketilir.
 
 ## Alanlar
@@ -13,7 +13,7 @@
 | `translationCode` | string? | çeviri anahtarı | **Çeviri eşleşme anahtarı** (→ [`translation.md`](./translation.md) `code`). `null` = çeviri **es geçilir**, doğrudan `definition` kullanılır. |
 | `active` | bool | — | Aktif/pasif — **null olamaz**, varsayılan `true`. `false` = frontend'de **görünür/düzenlenebilir** ama BPM işlemede kullanılmaz. |
 | `deleted` | bool | — | Soft-delete — **null olamaz**, varsayılan `false`. `true` = frontend'de **gizli/aktarılmaz/salt** + BPM işlemede kullanılmaz. |
-| `synchronizationStatus` | bool | — | Senkron durumu. |
+| `synchronizationStatus` | [SyncStatus](../enums/sync-status.md) | — | Harici sistemle (ERP/muhasebe) **senkron durumu** — `synced` / `pending` / `error`. |
 | `companyIds` | List\<int\> | FK → `company.md` (N–N) | İlişkili şirketler. |
 
 ### Alt model — ProfessionQualificationValue (ek nitelik değeri)

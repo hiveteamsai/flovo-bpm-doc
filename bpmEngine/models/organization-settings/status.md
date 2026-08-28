@@ -1,6 +1,6 @@
 # Model — Status
 
-> **Durum:** 🟡 TASLAK (ilk çıkarım — gözden geçirilecek)
+> **Durum:** 🟢 Gözden geçirildi (v0.36)
 > **Amaç:** BPM sürecindeki bir kaydın **mevcut aşamasını** temsil eden etiket (örn. *Beklemede*, *Onaylandı*).
 > Görsel gösterim, filtreleme ve raporlama için.
 > **Davranış/kullanım:** → `../../organization-settings/status.md`

@@ -35,6 +35,7 @@
 | **ValueTypeOfList** | `dto/business-rule/business-rule-condition-compare-value.md` (`valueTypeOfList`) | `defaultValue` · `value` · `display` | [`value-type-of-list.md`](./value-type-of-list.md) |
 | **RelationalType** | `additional-qualification.md` (`relationalType`) | `users` · `departments` · `professions` · `costCenters` · `workerLevels` | [`relational-type.md`](./relational-type.md) |
 | **QualificationValueType** | `additional-qualification.md` (`valueType`) | `string` · `double` · `dateTime` · `combobox` | [`qualification-value-type.md`](./qualification-value-type.md) |
+| **SyncStatus** (harici senkron durumu) | org-ayarı text-entity'leri (`synchronizationStatus`) — `company`·`department`·`cost-center`·`credit-card`·`position`·`profession`·`user`·`worker-level`·`vacation-day` | `synced` · `pending` · `error` | [`sync-status.md`](./sync-status.md) |
 | **FormType** | `service.md` (`formType`) | `form` · `parameter` · `eventForm` | [`form-type.md`](./form-type.md) |
 | **ServiceTriggerType** (tetikleyici olay) | `service-trigger.md` (`serviceTriggerType`) | `timer` · `whenAddedAssociate` · `whenRemoveAssociate` | [`service-trigger-type.md`](./service-trigger-type.md) |
 | **PropertyType** (kontrol tipi) | `property.md` (`propertyType`) | 18 kontrol tipi (`textbox` · `combobox` · `file` · `formList` …) | [`property-type.md`](./property-type.md) |
@@ -77,5 +78,8 @@
   (BusinessRule aksiyon konfig ailesi → [`../service-settings/dto/business-rule/index.md`](../service-settings/dto/business-rule/index.md)).
   **`PropertyAttributeType` ≠ `PropertyType`:** ilki alan **özniteliği** (minDate/helperText…), ikincisi **kontrol tipi**dir.
   `OrganizationDataSourceType`/`ValueTypeOfList` içinde eski **masraf-spesifik** değerler (ExpenseType/ExpenseCategory · expenseType*/categoryCode) **kapsam-dışı** (→ [`../../todo.md`](../../todo.md)).
+- **`SyncStatus` — bool→enum tekleştirme (v0.36):** org-ayarı text-entity'lerinin `synchronizationStatus` alanı önceden bazı
+  modellerde `bool`, bazılarında tanımsız "SyncStatus" idi; **tek tip = `SyncStatus` enum** (`synced`/`pending`/`error`) olarak
+  hizalandı ve enum dosyası eklendi. Tüm ilgili modeller `[sync-status.md](./sync-status.md)`'e link verir.
 
 *Oluşturma: 2026-07-10.*

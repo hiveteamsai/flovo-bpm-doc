@@ -1,6 +1,6 @@
 # Model — CostCenter (Masraf Merkezi — organizasyon ayarı)
 
-> **Durum:** 🟡 TASLAK
+> **Durum:** 🟢 Gözden geçirildi (v0.36)
 > **Amaç:** Maliyet takibi yapılan muhasebesel birim (Cost Center). Masraf/harcama süreçlerinde maliyet yansıtma birimi.
 
 ## Alanlar
@@ -14,7 +14,7 @@
 | `translationCode` | string? | çeviri anahtarı | **Çeviri eşleşme anahtarı** (→ [`translation.md`](./translation.md) `code`). `null` = çeviri **es geçilir**, doğrudan `definition` kullanılır. |
 | `active` | bool | — | Aktif/pasif — **null olamaz**, varsayılan `true`. `false` = frontend'de **görünür/düzenlenebilir** ama BPM işlemede kullanılmaz. |
 | `deleted` | bool | — | Soft-delete — **null olamaz**, varsayılan `false`. `true` = frontend'de **gizli/aktarılmaz/salt** + BPM işlemede kullanılmaz. |
-| `synchronizationStatus` | bool | — | Senkron durumu. |
+| `synchronizationStatus` | [SyncStatus](../enums/sync-status.md) | — | Harici sistemle (ERP/muhasebe) **senkron durumu** — `synced` / `pending` / `error`. |
 
 ### Alt model — CostCenterQualificationValue
 | Alan | Tip | Anahtar | Açıklama |

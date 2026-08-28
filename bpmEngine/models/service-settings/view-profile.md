@@ -1,6 +1,6 @@
 # Model — ProcessViewProfile (görüntüleme profili)
 
-> **Durum:** 🟡 TASLAK (ilk çıkarım — gözden geçirilecek)
+> **Durum:** 🟢 Gözden geçirildi (v0.36)
 > **Amaç:** Aynı formun **farklı süreç adımlarında/kullanıcılara** nasıl görüneceğini belirler (alan görünürlüğü/
 > düzenlenebilirliği/zorunluluğu/sırası).
 > **Davranış/kullanım:** → `../../service-settings/view-profile.md`
@@ -22,6 +22,6 @@
 - **Referans:** `ProcessStep`'lerde `processViewProfileId` ile atanır; `BusinessRule.activeViewProfiles` ile kısıtlanır.
 
 ## Notlar / açık noktalar
-- Form List alt-servis görüntüleme/seçim; profillerin servis-bazlı mı paylaşımlı mı olduğu → `../../todo.md`.
+- Form List alt-servis görüntüleme/seçim → `../../todo.md`. Profiller **servis-bazlı** tanımlanır (bir servise ait — `serviceId`; ÇÖZÜLDÜ).
 
 *Oluşturma: 2026-07-02.*

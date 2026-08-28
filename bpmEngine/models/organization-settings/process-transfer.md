@@ -1,6 +1,6 @@
 # Model — ProcessTransfer (Süreç Transferi — organizasyon ayarı)
 
-> **Durum:** 🟡 TASLAK
+> **Durum:** 🟢 Gözden geçirildi (v0.36)
 > **Amaç:** Bir kullanıcının **bekleyen süreç görevlerini** başka kullanıcıya **servis bazında** devretme işlemi
 > (örn. izne çıkan/ayrılan personel).
 
@@ -18,6 +18,8 @@
 
 ## Notlar
 - Bu bir **operasyon/komut**tur (kalıcı yapılandırma varlığı değil): `fromUser`'ın seçili servisteki bekleyen görevleri `toUser`'a aktarılır.
-  Denetim için **kayıt** tutulacaksa `id` + zaman damgası eklenir (→ `../../todo.md`).
+- **Uzlaştırma (kapsam ayrımı):** Bu model, **yöneticinin bekleyen görevleri toplu yeniden-atamasını** (görev toplu devri) tarifler.
+  Kalıcı **vekalet (proxy)** sisteminden — bir kullanıcının başkası **adına** işlem yapması — **AYRIDIR** → `../../todo.md` (Vekalet).
+- **Denetim kaydı:** Kayıt tutulacaksa `id` + zaman damgası eklenir; genel denetim izi/loglama yaklaşımına atıf → `../../todo.md` (loglama modeli).
 
 *Oluşturma: 2026-07-03.*

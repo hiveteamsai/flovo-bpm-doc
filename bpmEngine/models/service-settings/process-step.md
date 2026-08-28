@@ -1,6 +1,6 @@
 # Model — ProcessStep (süreç adımı)
 
-> **Durum:** 🟡 TASLAK (gözden geçirilecek)
+> **Durum:** 🟢 Gözden geçirildi (v0.36)
 > **Amaç:** İş akışındaki bir **düğüm/kutu**. Adımlar aksiyonlarla bağlanarak süreci oluşturur.
 > **Davranış/kullanım + adım kataloğu (22 tip):** → `../../service-settings/process-step.md`
 > **Tipe-özel ayar modellerinin (§3) ham kaynağı + taşıma kararları:** → [`../../research/current-flovo-bpm-engine/step-type-settings-and-enums.md`](../../research/current-flovo-bpm-engine/step-type-settings-and-enums.md)
@@ -293,7 +293,7 @@ Formu (ve seçime göre ilişkili formları) siler (davranış → `../../servic
 | `stepType` | Durum |
 |---|---|
 | `triggerProcessStep` | Tetiklenecek alt-servis/adım seçimi; detay **sonra** → `../../todo.md`. |
-| `formRedirect` | Karşılaştırma + açılacak var-olan form; detay **sonra**. |
+| `formRedirect` | Karşılaştırma + açılacak var-olan form; detay **sonra** → `../../todo.md`. |
 | `subProcessStart` | **Ayara ihtiyaç yok** — ayrı özelliği yok; tetikleme kaynağı webhook / iç tetikleme / **ServiceTrigger (associate)** (davranış → `../../service-settings/process-step.md §3.20`). |
 | `subProcessEnd` | **Ayara ihtiyaç yok** — alt sürecin çıkış düğümü; kol burada sonlanır (davranış → `../../service-settings/process-step.md §3.21`; Süreç Bitişi'nin aksine bitiş-sonrası erişim ayarı yoktur). |
 

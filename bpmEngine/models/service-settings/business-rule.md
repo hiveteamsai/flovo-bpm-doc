@@ -1,7 +1,6 @@
 # Model — BusinessRule (iş kuralı)
 
-> **Durum:** 🟡 TASLAK — iş kuralları **frontend'de realtime** çalışır ve BPM motorundan bağımsızdır; bu model
-> **en son** kesinleşecek (→ `../../todo.md`).
+> **Durum:** 🟢 Gözden geçirildi (v0.36) — iş kuralları **frontend'de realtime** çalışır ve BPM motorundan bağımsızdır.
 > **Amaç:** Form üzerinde **koşul → aksiyon** tabanlı dinamik davranış (göster/gizle, validasyon, değer, veri kaynağı, stil).
 > **Davranış/kullanım:** → `../../service-settings/business-rule.md`
 
@@ -17,13 +16,13 @@
 | `icon` | string | — | İkon. |
 | `environmentRestriction` | string | — | Ortam kısıtı. |
 | `businessRuleActionType` | BusinessRuleActionType | — | Kural aksiyonu (aşağıda) — [`../enums/business-rule-action-type.md`](../enums/business-rule-action-type.md). |
-| `configuration` | jsonb | — | **Aksiyon konfigürasyonu** — `businessRuleActionType`'a göre şekillenen **yapısal JSONB** (ayrımlayıcı = aksiyon tipi). Alt-şemalar → [`dto/business-rule/`](./dto/business-rule/index.md). _(Eski motorun `value` string-içinde-JSON alanının yerini alır; v0.34.)_ |
+| `configuration` | jsonb | — | **Aksiyon konfigürasyonu** — `businessRuleActionType`'a göre şekillenen **yapısal JSONB** (ayrımlayıcı = aksiyon tipi). Alt-şemalar → [`dto/business-rule/`](./dto/business-rule/index.md). |
 | `businessRuleRuntimeType` | BusinessRuleRuntimeType | — | Çalışma zamanı — [`../enums/business-rule-runtime-type.md`](../enums/business-rule-runtime-type.md): `always` / `firstOpening` / `whenChanging`. |
 | `businessRuleConditionType` | BusinessRuleConditionType | — | Koşul birleştirme — [`../enums/business-rule-condition-type.md`](../enums/business-rule-condition-type.md): `and` (VE) / `or` (VEYA). |
 | `businessRuleConditions` | jsonb (List\<BusinessRuleCondition\>) | — | Koşul ağacı — **gömülü JSONB** (recursive; ayrı tablo değil → `business-rule-condition.md`). |
 | `activeViewProfiles` | List\<int\> | FK → ProcessViewProfile.id | Yalnız bu görüntüleme profillerinde çalış. |
 | `shouldNotWorkInReadonlyMode` | bool | — | Salt-okunur modda çalışmasın. |
-| `priority` | int | — | Kural **çalışma sırası/önceliği** (küçük = önce çalışır). Aynı alana yazan kurallarda belirleyicidir. _(Eski motorda öncelik yoktu → "son yazan kazanır"; v0.34'te eklendi.)_ |
+| `priority` | int | — | Kural **çalışma sırası/önceliği** (küçük = önce çalışır). Aynı alana yazan kurallarda belirleyicidir. |
 
 ### `businessRuleActionType` değerleri (bu modeldeki rol — frontend etkisi)
 Enum tanımı → [`../enums/business-rule-action-type.md`](../enums/business-rule-action-type.md). Bu modelde koşul sağlanınca formda uygulanacak etkiyi belirler:
@@ -57,8 +56,8 @@ Ortak alt-modeller: **[`AssignValue`](./dto/business-rule/shared/assign-value.md
 ## Notlar / açık noktalar
 - **Çalışma yeri (KARAR v0.34):** iş kuralları **tam frontend** çalışır — kurallar servise gömülü gelir, her client kendi motorunu yürütür (realtime UX).
 - **Aksiyon konfigi (KARAR v0.34):** `configuration` = **yapısal JSONB** (aksiyon-tipine göre şema; string-içinde-JSON değil).
-- **Tetikleme kapsamı (KARAR v0.34):** değişim tetiklemesi yalnız **koşul** alanlarına değil, aksiyon/ifade alanlarına da bakar (eski motorda yalnız koşul alanları tetiklerdi).
-- **`priority` (KARAR v0.34):** açık kural sırası eklendi (eski "son yazan kazanır" belirsizliği giderildi).
+- **Tetikleme kapsamı (KARAR v0.34):** değişim tetiklemesi yalnız **koşul** alanlarına değil, aksiyon/ifade alanlarına da bakar.
+- **`priority` (KARAR v0.34):** açık kural sırası eklendi.
 - **Açık:** iki-katman sınırı (adım ↔ iş kuralı) · ifade dilinin somut seçimi + katalog · `fillDataSource` `organizationData` kaynak kapsamı · `search` değer kaynağı · döngü/derinlik limiti + hata görünürlüğü → [`../../todo.md`](../../todo.md).
 
 *Oluşturma: 2026-07-02.*

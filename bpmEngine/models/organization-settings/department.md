@@ -1,6 +1,6 @@
 # Model — Department (Departman — organizasyon ayarı)
 
-> **Durum:** 🟡 TASLAK
+> **Durum:** 🟢 Gözden geçirildi (v0.36)
 > **Amaç:** Organizasyonun **hiyerarşik birim** yapısı. BPM'de **"departman yöneticisi"** atamalarında kullanılır.
 
 ## Alanlar
@@ -16,7 +16,7 @@
 | `costCenterId` | int | FK → `cost-center.md` | Bağlı masraf merkezi. |
 | `active` | bool | — | Aktif/pasif — **null olamaz**, varsayılan `true`. `false` = frontend'de **görünür/düzenlenebilir** ama BPM işlemede kullanılmaz. |
 | `deleted` | bool | — | Soft-delete — **null olamaz**, varsayılan `false`. `true` = frontend'de **gizli/aktarılmaz/salt** + BPM işlemede kullanılmaz. |
-| `synchronizationStatus` | bool | — | Senkron durumu. |
+| `synchronizationStatus` | [SyncStatus](../enums/sync-status.md) | — | Harici sistemle (ERP/muhasebe) **senkron durumu** — `synced` / `pending` / `error`. |
 | `companyIds` | List\<int\> | FK → `company.md` (N–N) | İlişkili şirketler. |
 
 ### Alt model — DepartmentQualificationValue
