@@ -1,6 +1,6 @@
 # Enum — ValueTypeOfList
 
-> **Kullanan model:** [`../service-settings/dto/business-rule/shared/business-rule-condition-compare-value.md`](../service-settings/dto/business-rule/shared/business-rule-condition-compare-value.md) — alan `valueTypeOfList`
+> **Kullanan model:** [`../service-settings/jsonTemplateModels/business-rule/shared/business-rule-condition-compare-value.md`](../service-settings/jsonTemplateModels/business-rule/shared/business-rule-condition-compare-value.md) — alan `valueTypeOfList`
 > **Amaç:** Bir koşul karşılaştırmasında, **liste / çoklu-değer** üreten bir kontrolden **hangi alanın** okunacağını belirler.
 
 ## Nedir?

@@ -3,7 +3,7 @@
 > **Durum:** 🟢 İşleyiş spesifikasyonu (v0.35). **Amaç:** İş kuralı motorunun **çalışma prensibini fonksiyon düzeyinde**
 > tanımlamak — hangi fonksiyonlar var, görevleri, ne zaman tetiklenir, ne üretir, birbirini nasıl çağırır (çağrı grafiği).
 >
-> **Üst doküman:** davranış özeti → [`business-rule.md`](./business-rule.md) · model ailesi → [`../models/service-settings/dto/business-rule/index.md`](../models/service-settings/dto/business-rule/index.md) · **backend uçları** → [`business-rule-endpoints.md`](./business-rule-endpoints.md).
+> **Üst doküman:** davranış özeti → [`business-rule.md`](./business-rule.md) · model ailesi → [`../models/service-settings/jsonTemplateModels/business-rule/index.md`](../models/service-settings/jsonTemplateModels/business-rule/index.md) · **backend uçları** → [`business-rule-endpoints.md`](./business-rule-endpoints.md).
 > **Konum/dil:** Motor **tam frontend** çalışır (kurallar servise gömülü gelir, her client kendi motorunu yürütür). Aşağıdaki
 > imzalar **dil-agnostik sözde-imzadır**; fonksiyon adları yeni-motor önerisidir.
 

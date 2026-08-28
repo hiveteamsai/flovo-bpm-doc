@@ -1,6 +1,6 @@
 # Enum — PropertyAttributeType
 
-> **Kullanan model:** [`../service-settings/dto/business-rule/actions/assign-value-to-property-attribute.md`](../service-settings/dto/business-rule/actions/assign-value-to-property-attribute.md) — alan `propertyAttributeType`
+> **Kullanan model:** [`../service-settings/jsonTemplateModels/business-rule/actions/assign-value-to-property-attribute.md`](../service-settings/jsonTemplateModels/business-rule/actions/assign-value-to-property-attribute.md) — alan `propertyAttributeType`
 > **Amaç:** İş kuralı **`assignValueToPropertyAttribute`** aksiyonunun, bir alanın **hangi meta-özniteliğine** değer yazacağını belirler.
 > **Davranış/kullanım:** → [`../../service-settings/business-rule.md`](../../service-settings/business-rule.md) §3
 

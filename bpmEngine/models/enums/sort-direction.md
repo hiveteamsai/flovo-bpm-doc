@@ -1,6 +1,6 @@
 # Enum — SortDirection
 
-> **Kullanan model:** [`../service-settings/dto/business-rule/data-source/assign-value-from-dataset.md`](../service-settings/dto/business-rule/data-source/assign-value-from-dataset.md) — alan `sortType`
+> **Kullanan model:** [`../service-settings/jsonTemplateModels/business-rule/data-source/assign-value-from-dataset.md`](../service-settings/jsonTemplateModels/business-rule/data-source/assign-value-from-dataset.md) — alan `sortType`
 > **Amaç:** Bir veri seti / liste sonucunun **sıralama yönünü** belirler.
 
 ## Değerler

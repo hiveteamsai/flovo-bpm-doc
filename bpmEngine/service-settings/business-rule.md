@@ -5,7 +5,7 @@
 > (alan göster/gizle, validasyon, değer atama, veri kaynağı doldurma, stil).
 >
 > **İlişki:** Alanlar → `properties.md` · Görüntüleme profilleri → `view-profile.md` · Stil → `../organization-settings/style.md` ·
-> Süreç adımları/aksiyonlar → `process-step.md` / `process-step-action.md` · Model ailesi → [`../models/service-settings/dto/business-rule/index.md`](../models/service-settings/dto/business-rule/index.md).
+> Süreç adımları/aksiyonlar → `process-step.md` / `process-step-action.md` · Model ailesi → [`../models/service-settings/jsonTemplateModels/business-rule/index.md`](../models/service-settings/jsonTemplateModels/business-rule/index.md).
 
 ---
 
@@ -42,7 +42,7 @@ veri kaynağı doldurma, stil vb.
 | `icon` | string | İkon |
 | `environmentRestriction` | string | Ortam kısıtlaması |
 | `businessRuleActionType` | BusinessRuleActionType | Kural aksiyon tipi (§3) |
-| `configuration` | jsonb | **Aksiyon konfigürasyonu** — `businessRuleActionType`'a göre şekillenen **yapısal JSONB** (alt-şemalar → [`../models/service-settings/dto/business-rule/index.md`](../models/service-settings/dto/business-rule/index.md)) |
+| `configuration` | jsonb | **Aksiyon konfigürasyonu** — `businessRuleActionType`'a göre şekillenen **yapısal JSONB** (alt-şemalar → [`../models/service-settings/jsonTemplateModels/business-rule/index.md`](../models/service-settings/jsonTemplateModels/business-rule/index.md)) |
 | `businessRuleRuntimeType` | BusinessRuleRuntimeType | Çalışma zamanı: `always` / `firstOpening` / `whenChanging` |
 | `businessRuleConditionType` | BusinessRuleConditionType | Koşul birleştirme (`and`/`or`) |
 | `businessRuleConditions` | jsonb | Koşul ağacı — **gömülü JSONB** (recursive; ayrı tablo değil) (§4) |
@@ -70,7 +70,7 @@ veri kaynağı doldurma, stil vb.
 `fromDataSet` (veri setinden) · `search` (arama) · `httpRequest` (HTTP Request çağrısı ile → `process-step.md` §3.2).
 
 > **Aksiyon konfig şemaları:** Her aksiyon tipinin `configuration` (JSONB) şekli **parçalanmış** olarak
-> [`../models/service-settings/dto/business-rule/`](../models/service-settings/dto/business-rule/index.md) altındadır — ör. `setViewForProperties` → `actions/set-view-for-properties.md`,
+> [`../models/service-settings/jsonTemplateModels/business-rule/`](../models/service-settings/jsonTemplateModels/business-rule/index.md) altındadır — ör. `setViewForProperties` → `actions/set-view-for-properties.md`,
 > `assignValueToProperty` → `actions/assign-value-to-property.md`. Ortak değer modeli: **`AssignValue`** (`shared/assign-value.md`).
 
 ---

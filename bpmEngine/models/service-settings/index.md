@@ -22,6 +22,6 @@
 ## Alt klasör
 | Klasör | İçerik | İndeks |
 |---|---|---|
-| **dto/** | **DB tablosu olmayan DTO'lar** (genel kural: DB-modeli olmayanlar burada) — **ActionTransfer** (aksiyon veri aktarım paketi) + **`business-rule/`** alt klasörü (iş kuralı aksiyon konfig ailesi: `AssignValue`, aksiyon konfigleri, veri-kaynağı DTO'ları). | [`./dto/index.md`](./dto/index.md) |
+| **jsonTemplateModels/** | **DB tablosu olmayan, yalnız JSON olarak taşınan/saklanan** model/şemalar — **ActionTransfer** (aksiyon veri aktarım paketi) + **`business-rule/`** (iş kuralı aksiyon konfig ailesi: `AssignValue`, aksiyon konfigleri, veri-kaynağı DTO'ları) + **`property-settings/`** (tip-başına `Property.settings` JSON ayar şeması). | [`./jsonTemplateModels/index.md`](./jsonTemplateModels/index.md) |
 
 *Oluşturma: 2026-07-13.*

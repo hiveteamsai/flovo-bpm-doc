@@ -25,14 +25,14 @@
 | **ValueAssignType** (değer kaynağı) | `business-rule.md` (`assignValueToProperty` — 6 değer) · `process-step.md` (Değer Atama `valueAssignType` — 3-değer alt-küme) | `fixedValue` · `propertyValue` · `fromCalculation` · `fromDataSet` · `search` · `httpRequest` | [`value-assign-type.md`](./value-assign-type.md) |
 | **CriterionType** (operatör) | `business-rule-condition.md` (`criterionType`) · `process-step.md` (Karşılaştırma) | `equals` · `notEquals` · `isEmpty` · `isNotEmpty` · `greaterThan` · `greaterThanOrEqual` · `lessThan` · `lessThanOrEqual` · `startsWith` · `endsWith` · `contains` · `notContains` · `containsAny` · `containsAll` | [`criterion-type.md`](./criterion-type.md) |
 | **BusinessRuleConditionCompareType** | `business-rule-condition.md` (`referenceValue`/`valueToCompare` tipi) | `propertyValue` · `viewProfile` · `fixedValue` · `fromCalculation` | [`business-rule-condition-compare-type.md`](./business-rule-condition-compare-type.md) |
-| **FillDataSourceType** | `dto/business-rule/fill-data-source.md` (`fillDataSourceType`) | `organizationData` · `userData` · `serviceInstances` · `httpRequest` | [`fill-data-source-type.md`](./fill-data-source-type.md) |
-| **UserDataSourceType** | `dto/business-rule/fill-data-source-user.md` (`userDataSourceType`) | `creditCards` · `companies` · `costCenters` | [`user-data-source-type.md`](./user-data-source-type.md) |
-| **SortDirection** | `dto/business-rule/assign-value-from-dataset.md` (`sortType`) | `none` · `asc` · `desc` | [`sort-direction.md`](./sort-direction.md) |
-| **PropertyAttributeType** | `dto/business-rule/assign-value-to-property-attribute.md` (`propertyAttributeType`) | `minDate` · `maxDate` · `helperText` · `sideText` · `addNewEnabled` | [`property-attribute-type.md`](./property-attribute-type.md) |
-| **OrganizationDataSourceType** | `dto/business-rule/fill-data-source-organization.md` (`organizationDataSourceType`) | `professions` · `departments` · `companies` · `costCenters` · `users` · `creditCards` · `workerLevels` · `userGroups` · `positions` · `workingSchedules` | [`organization-data-source-type.md`](./organization-data-source-type.md) |
-| **OrganizationParameter** | `dto/business-rule/fill-data-source-parameter.md` (`parameter`) | `company` · `name` · `code` · `userCode` · `additionalQualification` · `professionCode` | [`organization-parameter.md`](./organization-parameter.md) |
-| **SubTextType** | `dto/business-rule/fill-data-source-organization.md` · `…-user.md` (`subTextType`) | `code` · `username` · `department` · `profession` · `ref1` · `ref2` | [`sub-text-type.md`](./sub-text-type.md) |
-| **ValueTypeOfList** | `dto/business-rule/business-rule-condition-compare-value.md` (`valueTypeOfList`) | `defaultValue` · `value` · `display` | [`value-type-of-list.md`](./value-type-of-list.md) |
+| **FillDataSourceType** | `jsonTemplateModels/business-rule/fill-data-source.md` (`fillDataSourceType`) | `organizationData` · `userData` · `serviceInstances` · `httpRequest` | [`fill-data-source-type.md`](./fill-data-source-type.md) |
+| **UserDataSourceType** | `jsonTemplateModels/business-rule/fill-data-source-user.md` (`userDataSourceType`) | `creditCards` · `companies` · `costCenters` | [`user-data-source-type.md`](./user-data-source-type.md) |
+| **SortDirection** | `jsonTemplateModels/business-rule/assign-value-from-dataset.md` (`sortType`) | `none` · `asc` · `desc` | [`sort-direction.md`](./sort-direction.md) |
+| **PropertyAttributeType** | `jsonTemplateModels/business-rule/assign-value-to-property-attribute.md` (`propertyAttributeType`) | `minDate` · `maxDate` · `helperText` · `sideText` · `addNewEnabled` | [`property-attribute-type.md`](./property-attribute-type.md) |
+| **OrganizationDataSourceType** | `jsonTemplateModels/business-rule/fill-data-source-organization.md` (`organizationDataSourceType`) | `professions` · `departments` · `companies` · `costCenters` · `users` · `creditCards` · `workerLevels` · `userGroups` · `positions` · `workingSchedules` | [`organization-data-source-type.md`](./organization-data-source-type.md) |
+| **OrganizationParameter** | `jsonTemplateModels/business-rule/fill-data-source-parameter.md` (`parameter`) | `company` · `name` · `code` · `userCode` · `additionalQualification` · `professionCode` | [`organization-parameter.md`](./organization-parameter.md) |
+| **SubTextType** | `jsonTemplateModels/business-rule/fill-data-source-organization.md` · `…-user.md` (`subTextType`) | `code` · `username` · `department` · `profession` · `ref1` · `ref2` | [`sub-text-type.md`](./sub-text-type.md) |
+| **ValueTypeOfList** | `jsonTemplateModels/business-rule/business-rule-condition-compare-value.md` (`valueTypeOfList`) | `defaultValue` · `value` · `display` | [`value-type-of-list.md`](./value-type-of-list.md) |
 | **RelationalType** | `additional-qualification.md` (`relationalType`) | `users` · `departments` · `professions` · `costCenters` · `workerLevels` | [`relational-type.md`](./relational-type.md) |
 | **QualificationValueType** | `additional-qualification.md` (`valueType`) | `string` · `double` · `dateTime` · `combobox` | [`qualification-value-type.md`](./qualification-value-type.md) |
 | **SyncStatus** (harici senkron durumu) | org-ayarı text-entity'leri (`synchronizationStatus`) — `company`·`department`·`cost-center`·`credit-card`·`position`·`profession`·`user`·`worker-level`·`vacation-day` | `synced` · `pending` · `error` | [`sync-status.md`](./sync-status.md) |
@@ -41,6 +41,7 @@
 | **PropertyType** (kontrol tipi) | `property.md` (`propertyType`) | 18 kontrol tipi (`textbox` · `combobox` · `file` · `formList` …) | [`property-type.md`](./property-type.md) |
 | **KeyboardType** | `property.md` (`keyboardType` — Textbox/Phone) | `default`·`plain`·`text`·`numeric`·`email`·`url`·`telephone` | [`keyboard-type.md`](./keyboard-type.md) |
 | **BarcodeFormat** | `property.md` (`barcodeFormat` — Barcode) | `aztec`·`code39`·`ean13`·`code128`·`dataMatrix`·`qr`·`pdf417`… (10) | [`barcode-format.md`](./barcode-format.md) |
+| **TextAlignment** | `property-settings/text.md` (`text` statik alan `settings.textAlignment`) | `left`·`center`·`right` | [`text-alignment.md`](./text-alignment.md) |
 | **ReflectionMode** | `property.md` (`reflectionMode` — parentProperty/userInfo/flowInfo) | `snapshot` · `live` · `materialized` (materialized yalnız parentProperty) | [`reflection-mode.md`](./reflection-mode.md) |
 | **ReflectionPropagation** | `property.md` (`reflectionPropagation` — parentProperty + `materialized`) | `async` · `sync` | [`reflection-propagation.md`](./reflection-propagation.md) |
 | **ProcessStepType** (adım tipi) | `process-step.md` (`stepType`) | 22 adım: `processStart`·`httpRequest`·`user`·`userGroup`·`parentInstanceUser`·`notification`·`timer`… `subProcessStart`·`subProcessEnd` | [`process-step-type.md`](./process-step-type.md) |
@@ -75,7 +76,7 @@
   **adım tipi**dir; adları benzemez, karıştırılmamalı (eski `ProcessSettingStepType`).
 - **İş kuralı DTO ailesi enum'ları (v0.34):** `FillDataSourceType` · `UserDataSourceType` · `SortDirection` ·
   `PropertyAttributeType` · **`OrganizationDataSourceType`** · **`OrganizationParameter`** · **`SubTextType`** · **`ValueTypeOfList`**
-  (BusinessRule aksiyon konfig ailesi → [`../service-settings/dto/business-rule/index.md`](../service-settings/dto/business-rule/index.md)).
+  (BusinessRule aksiyon konfig ailesi → [`../service-settings/jsonTemplateModels/business-rule/index.md`](../service-settings/jsonTemplateModels/business-rule/index.md)).
   **`PropertyAttributeType` ≠ `PropertyType`:** ilki alan **özniteliği** (minDate/helperText…), ikincisi **kontrol tipi**dir.
   `OrganizationDataSourceType`/`ValueTypeOfList` içinde eski **masraf-spesifik** değerler (ExpenseType/ExpenseCategory · expenseType*/categoryCode) **kapsam-dışı** (→ [`../../todo.md`](../../todo.md)).
 - **`SyncStatus` — bool→enum tekleştirme (v0.36):** org-ayarı text-entity'lerinin `synchronizationStatus` alanı önceden bazı

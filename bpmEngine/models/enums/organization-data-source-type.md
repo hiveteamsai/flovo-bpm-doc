@@ -1,6 +1,6 @@
 # Enum — OrganizationDataSourceType
 
-> **Kullanan model:** [`../service-settings/dto/business-rule/data-source/fill-data-source-organization.md`](../service-settings/dto/business-rule/data-source/fill-data-source-organization.md) — alan `organizationDataSourceType`
+> **Kullanan model:** [`../service-settings/jsonTemplateModels/business-rule/data-source/fill-data-source-organization.md`](../service-settings/jsonTemplateModels/business-rule/data-source/fill-data-source-organization.md) — alan `organizationDataSourceType`
 > **Amaç:** `fillDataSource` `organizationData` kaynağında, **hangi kurum master-verisinden** seçim listesi üretileceğini belirler.
 
 ## Nedir?

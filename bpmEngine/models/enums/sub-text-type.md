@@ -1,6 +1,6 @@
 # Enum — SubTextType
 
-> **Kullanan model:** [`../service-settings/dto/business-rule/data-source/fill-data-source-organization.md`](../service-settings/dto/business-rule/data-source/fill-data-source-organization.md) · [`../service-settings/dto/business-rule/data-source/fill-data-source-user.md`](../service-settings/dto/business-rule/data-source/fill-data-source-user.md) — alan `subTextType`
+> **Kullanan model:** [`../service-settings/jsonTemplateModels/business-rule/data-source/fill-data-source-organization.md`](../service-settings/jsonTemplateModels/business-rule/data-source/fill-data-source-organization.md) · [`../service-settings/jsonTemplateModels/business-rule/data-source/fill-data-source-user.md`](../service-settings/jsonTemplateModels/business-rule/data-source/fill-data-source-user.md) — alan `subTextType`
 > **Amaç:** `fillDataSource` ile doldurulan liste öğelerinin **alt metnini** (ikincil satır) hangi alandan alacağını belirler.
 
 ## Nedir?

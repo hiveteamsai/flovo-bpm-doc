@@ -1,6 +1,6 @@
 # Enum — UserDataSourceType
 
-> **Kullanan model:** [`../service-settings/dto/business-rule/data-source/fill-data-source-user.md`](../service-settings/dto/business-rule/data-source/fill-data-source-user.md) — alan `userDataSourceType`
+> **Kullanan model:** [`../service-settings/jsonTemplateModels/business-rule/data-source/fill-data-source-user.md`](../service-settings/jsonTemplateModels/business-rule/data-source/fill-data-source-user.md) — alan `userDataSourceType`
 > **Amaç:** İş kuralı `fillDataSource` **`userData`** kaynağında, **oturum kullanıcısının** hangi verisinin listeleneceğini belirler.
 > **Davranış/kullanım:** → [`../../service-settings/business-rule.md`](../../service-settings/business-rule.md) §3
 

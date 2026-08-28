@@ -45,7 +45,7 @@ Adım **bir aksiyon tetiklenerek** ilerlediğinde şu alanlar birlikte dolar:
   olmama sorunu çözüldü). Alt süreç **yeni bir `ProcessInstance`** olarak çalışır (`processInstanceId` = o yeni akış;
   `ProcessInstance.parentProcessInstanceId` = alt sürecin koştuğu **hedef/host instance'ın ana süreci** — **tetikleyen** değil → `process-instance.md`).
 - **`ActionTransfer`** = aksiyonla sonraki adıma taşınan **veri aktarım paketi** (`parameters`/`changeList`/`action`);
-  `processStepActionParameter` bu paketin JSON kaydıdır. DTO modeli → [`../service-settings/dto/action-transfer.md`](../service-settings/dto/action-transfer.md) · davranış → `../../service-settings/process-step-action.md` §2.
+  `processStepActionParameter` bu paketin JSON kaydıdır. DTO modeli → [`../service-settings/jsonTemplateModels/action-transfer.md`](../service-settings/jsonTemplateModels/action-transfer.md) · davranış → `../../service-settings/process-step-action.md` §2.
 - `atDelegateUserId` ↔ yetkilendirme **impersonation/vekalet** ilişkisi → `../../organization-settings/permissions.md`.
 
 *Oluşturma: 2026-07-06.*

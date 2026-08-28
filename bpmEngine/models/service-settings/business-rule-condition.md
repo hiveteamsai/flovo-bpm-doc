@@ -11,7 +11,7 @@
 
 | Alan | Tip | Açıklama / amaç |
 |---|---|---|
-| `referenceValue` | BusinessRuleConditionCompareValue | Referans değer (sol taraf) — **değer kaynağı DTO'su**: `compareType` + kaynağa göre alanlar (→ [`./dto/business-rule/shared/business-rule-condition-compare-value.md`](./dto/business-rule/shared/business-rule-condition-compare-value.md)). |
+| `referenceValue` | BusinessRuleConditionCompareValue | Referans değer (sol taraf) — **değer kaynağı DTO'su**: `compareType` + kaynağa göre alanlar (→ [`./jsonTemplateModels/business-rule/shared/business-rule-condition-compare-value.md`](./jsonTemplateModels/business-rule/shared/business-rule-condition-compare-value.md)). |
 | `valueToCompare` | BusinessRuleConditionCompareValue | Karşılaştırılacak değer (sağ taraf) — aynı DTO. |
 | `criterionType` | CriterionType | Operatör (aşağıda) — [`../enums/criterion-type.md`](../enums/criterion-type.md). |
 | `isConditionList` | bool | İç içe koşul grubu mu. |
@@ -25,7 +25,7 @@ Enum tanımı → [`../enums/criterion-type.md`](../enums/criterion-type.md). Bu
 `contains` (içerir) · `notContains` (içermez) · `containsAny` (parçalardan biri) · `containsAll` (parçaların hepsi).
 
 ### Karşılaştırma değeri (`referenceValue` / `valueToCompare`)
-Her iki taraf da bir **`BusinessRuleConditionCompareValue`** DTO'sudur (→ [`./dto/business-rule/shared/business-rule-condition-compare-value.md`](./dto/business-rule/shared/business-rule-condition-compare-value.md)):
+Her iki taraf da bir **`BusinessRuleConditionCompareValue`** DTO'sudur (→ [`./jsonTemplateModels/business-rule/shared/business-rule-condition-compare-value.md`](./jsonTemplateModels/business-rule/shared/business-rule-condition-compare-value.md)):
 **ayrımlayıcı `compareType`** (`propertyValue` · `viewProfile` (aktif profil) · `fixedValue` · `fromCalculation` →
 [`../enums/business-rule-condition-compare-type.md`](../enums/business-rule-condition-compare-type.md)) + kaynağa göre **payload** (`propertyValue`/`fixedValue`/`fromCalculation` alt-objeleri; **discriminated union / oneOf** — yalnız biri dolu).
 

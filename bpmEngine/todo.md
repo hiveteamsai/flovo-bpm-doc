@@ -16,7 +16,7 @@
   tutarlılık kalemleri de oturur. _(flovo-bpm-engine §1.4/§12 · business-rule §6 · process-step §3.4/§3.13)_
   - **Not:** İş kuralı (`business-rule.md`) motordan bağımsız frontend'de çalıştığı için **en son** şekillenecek.
   - **v0.34 — model iskeleti kuruldu:** iş kuralı **çalışma yeri = tam frontend**; aksiyon konfigi = **yapısal JSONB**
-    (`BusinessRule.configuration` → `models/service-settings/dto/business-rule/`); `priority` + genişletilmiş **tetikleme kapsamı**
+    (`BusinessRule.configuration` → `models/service-settings/jsonTemplateModels/business-rule/`); `priority` + genişletilmiş **tetikleme kapsamı**
     eklendi. Kalan iş-kuralı detayları → Tier 2 "İş kuralı — açık detaylar".
 
 ---
@@ -131,7 +131,7 @@
   (no-code ↔ pro-code dengesi); ifade motoru + veri eşleme (sürükle-bırak) + koşullu çalışma kapsamı. _(process-step-action §5 / §7)_
 - [ ] **Kapsam-dışı varlıklar + Org ↔ BPM entegrasyonu** — ExpenseType / Currency / Tax modellensin mi;
   organizasyon ayarlarının BPM ile entegrasyon derinliği. _(Position/Staff modellendi → `position.md`.)_ _(index.md §4 · new-vs-current §14)_
-- [ ] **ActionTransfer'e `user` alanı** — `ActionTransfer` (DTO → `models/service-settings/dto/action-transfer.md`;
+- [ ] **ActionTransfer'e `user` alanı** — `ActionTransfer` (DTO → `models/service-settings/jsonTemplateModels/action-transfer.md`;
   parameters/changeList/action → process-step-action §2) modeline bir **user** property'si eklenmeli mi (aksiyon/parametre
   verisinden `Instance.creatorUserId`'yi **isteğe bağlı** set etmek için)?
   _(process-step-action §2 · process-step §3.12 · `apiKeyId` açık sorusuyla bağlantılı)_
@@ -150,20 +150,20 @@
 - [ ] **Servis template & JSON ile servis oluşturma** — servisler **template** olarak nasıl oluşturulacak; template ile servis
   üretimi nasıl olacak; **n8n gibi JSON template** export/import ile mi; **ilişkili servisler toplu** mı oluşturulacak?
   _(models/service-settings/service.md · solution.md · research/n8n)_
-- [ ] **İş kuralı — açık detaylar** (v0.34'te model iskeleti kuruldu: `BusinessRule.configuration` JSONB + `dto/business-rule/`
+- [ ] **İş kuralı — açık detaylar** (v0.34'te model iskeleti kuruldu: `BusinessRule.configuration` JSONB + `jsonTemplateModels/business-rule/`
   aksiyon konfig ailesi). Kalan açık noktalar:
   - **İfade dilinin somut seçimi** — sandbox'lı standart dil (**JSONLogic ↔ CEL**) + fonksiyon **katalog kapsamı**; **tam-frontend**
     kararı gereği dil **çok-client portlanabilir** olmalı (Dart+JS portu). _(business-rule §5 · Tier 0 Güvenlik sandbox)_
     - **Çok-dilli ifade — ÇÖZÜLDÜ (v0.34):** `fromCalculation` = `expression` (default) + `localizedExpressions [{languageCode, expression}]`;
-      eksik dilde default. Sabit TR/EN kısıtı kalktı (→ `dto/business-rule/shared/assign-value.md`). İfade dilinin **kendi** seçimi (JSONLogic/CEL) açık kalır.
+      eksik dilde default. Sabit TR/EN kısıtı kalktı (→ `jsonTemplateModels/business-rule/shared/assign-value.md`). İfade dilinin **kendi** seçimi (JSONLogic/CEL) açık kalır.
   - **`fillDataSource` `organizationData` MODELLENDİ (v0.34, gerçek koddan):** `OrganizationDataSourceType` (10) + `OrganizationParameter` +
     `SubTextType` + `FillDataSourceOrganization`/`FillDataSourceParameter` oluşturuldu. **Açık:** masraf varlıkları (ExpenseType/ExpenseCategory)
     + `ValueTypeOfList` masraf değerleri (expenseType*/categoryCode) **kapsam-dışı** (masraf çekirdek modeli yok) → "Kapsam-dışı varlıklar".
   - **Lazy dataset runtime API sözleşmesi** — `serviceInstances` çalışma-anı fetch request/response (eski `GetWorkRuleDataSet*`/`DataSetDto`)
-    = runtime/Customer API tasarımı; iş-kuralı-tanımı değil, ayrı ele alınacak. _(dto/business-rule/assign-value-from-dataset.md)_
-  - **`search` değer kaynağı** davranışı (arama bağlamı). _(dto/business-rule/assign-value.md)_
-  - **`setStyle` `style` objesi** şeması (tekil görünüm nitelikleri: fontSize/titleColor…). _(dto/business-rule/set-style.md)_
-  - **`showMessage` "bir kez göster"** mekanizması. _(dto/business-rule/show-message.md)_
+    = runtime/Customer API tasarımı; iş-kuralı-tanımı değil, ayrı ele alınacak. _(jsonTemplateModels/business-rule/assign-value-from-dataset.md)_
+  - **`search` değer kaynağı** davranışı (arama bağlamı). _(jsonTemplateModels/business-rule/assign-value.md)_
+  - **`setStyle` `style` objesi** şeması (tekil görünüm nitelikleri: fontSize/titleColor…). _(jsonTemplateModels/business-rule/set-style.md)_
+  - **`showMessage` "bir kez göster"** mekanizması. _(jsonTemplateModels/business-rule/show-message.md)_
   - **Döngü/derinlik limiti + hata görünürlüğü** — v0.34 düzeltme kapsamına **alınmadı** (eski dolaylı-durma + sessiz-yut korunur);
     sonra değerlendirilecek. _(business-rule §5 · Tier 2 "Hata yönetimi")_
   - **`ValueTypeOfList` / `IsActiveKkegAttachment`** (masraf/KKEG-niş) — şimdilik **dışta**; ihtiyaç doğarsa değerlendirilir.
@@ -191,6 +191,15 @@
 - [ ] **`SchedulerJob` altyapı modeli (erteleme)** — `...At` (`lastRunAt`/`createdAt`) ↔ `...Time` (`startTime`/`endTime`)
   **adlandırma birliği** + `category`/`status`/`triggeredBy` serbest-string alanlarının enum'a çekilip çekilmeyeceği +
   alan detayları. Altyapı-zamanlayıcı modeli olduğundan **sonraya** bırakıldı. _(models/organization-settings/scheduler-job.md)_
+- [ ] **Property `settings` şeması — tip-başına şemalardan açık alan kararları (v0.37):**
+  - `flowInfoValue` / `userInfoValue` **değer kataloğu enum'a çekilsin mi** — şu an `settings`'te `string` seçici; eski kodda
+    `PropertyFlowInfoValueType`/`PropertyUserInfoValueType` var ama bazı değerler masraf-spesifik/kapsam-dışı olabilir.
+    _(jsonTemplateModels/property-settings/flow-info.md · user-info.md)_
+  - **Form List red-akışı bayrakları** — eski `isRejectReasonRequired` (red gerekçesi zorunlu) + `isReapprovalLockedAfterReject`
+    (reddedilen satır yeniden onaya kapalı) yeni tasarımın settings/profil-bazlı katmanına **yerleştirilmedi** — karar gerek.
+    _(jsonTemplateModels/property-settings/form-list.md)_
+  - **`groupByTaxReceipt` eski-kod ayar adayları** — `isLineAddActive`/`isLineReduceActive`/`isTaxEditable`/`isManuelTax`/
+    `kkegExpenseTypeId`/`multiKkegActive` kapsam-dışı bırakıldı; `settings` adayı mı? _(jsonTemplateModels/property-settings/group-by-tax-receipt.md)_
 
 ---
 
@@ -333,6 +342,6 @@
 - **Form List ayarları gözden geçir (ÇÖZÜLDÜ — v0.33):** `reOrder` → **profil-bazlı** (view-profile-property); `editOnlyOwnPosition`
   (mapViewer alanı) → **profil-bazlı**; `parameterTransfer`/`propertyTransferParameters` → **tamamen kaldırıldı** (ana↔alt akış artık
   `parentProperty`). _(properties §3.12/§3.13 · view-profile-property.md · form-list.md)_
-- **`ActionTransfer` DTO + `action`/`changeList` şekli (ÇÖZÜLDÜ):** `ActionTransfer` **DTO** olarak `models/service-settings/dto/`
+- **`ActionTransfer` DTO + `action`/`changeList` şekli (ÇÖZÜLDÜ):** `ActionTransfer` **DTO** olarak `models/service-settings/jsonTemplateModels/`
   altına alındı; `action` = **`string?`** (aksiyon kodu; doluysa aynı `code`'lu aksiyon, boş/null → **`default`**) — v0.33;
-  `changeList` = **obje-map** `{ Property.code: value }` — v0.30. **Açık kalan:** `ActionTransfer.user` alanı (ayrı madde). _(dto/action-transfer.md · process-step-action §2/§2.2)_
+  `changeList` = **obje-map** `{ Property.code: value }` — v0.30. **Açık kalan:** `ActionTransfer.user` alanı (ayrı madde). _(jsonTemplateModels/action-transfer.md · process-step-action §2/§2.2)_

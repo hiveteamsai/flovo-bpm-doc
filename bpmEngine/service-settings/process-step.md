@@ -334,7 +334,7 @@ PDF geldiğinde bildirim gönderen kol). **Servis başına birden fazla** olabil
 **Çalışma prensibi:**
 - Adım **tetiklendiğinde**, kullanıcı eylemi beklenmeden **otomatik** olarak **`default`** aksiyonu çalışır ve **bir sonraki
   süreç adımına** ilerler.
-- Tetikleme **girdisi bir `ActionTransfer` modelidir** (DTO → [`../models/service-settings/dto/action-transfer.md`](../models/service-settings/dto/action-transfer.md); `parameters` · `changeList` · `action` → `process-step-action.md` §2).
+- Tetikleme **girdisi bir `ActionTransfer` modelidir** (DTO → [`../models/service-settings/jsonTemplateModels/action-transfer.md`](../models/service-settings/jsonTemplateModels/action-transfer.md); `parameters` · `changeList` · `action` → `process-step-action.md` §2).
   Bu girdi, **`default`** aksiyonu ile **bir sonraki adıma taşınır** (`changeList`, evrensel giriş kuralı gereği adım işini
   yapmadan **önce** forma uygulanır → `../flovo-bpm-engine.md` §4.2).
 - **Yeni `ProcessInstance` (bağımsız çalıştırma):** Tetiklenen alt süreç **yeni bir `ProcessInstance`** olarak

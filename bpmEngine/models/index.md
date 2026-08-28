@@ -43,8 +43,8 @@
 > bağlıdır ve tüm servislerde kullanılır.
 
 > **DTO konvansiyonu (genel kural):** Bir model **DB tablosu değilse** (yalnız **JSON** olarak taşınan/saklanan veri paketi —
-> ör. bir alanın JSONB gövdesi, adımlar arası taşınan paket), tanımı ilgili kırılımın **`dto/`** alt klasörüne konur. İlk örnek:
-> [`service-settings/dto/action-transfer.md`](./service-settings/dto/index.md) (**ActionTransfer** — `ProcessStepInstance.processStepActionParameter`'da JSON). **DB tabloları** kendi kırılımlarında kalır.
+> ör. bir alanın JSONB gövdesi, adımlar arası taşınan paket), tanımı ilgili kırılımın **`jsonTemplateModels/`** alt klasörüne konur. İlk örnek:
+> [`service-settings/jsonTemplateModels/action-transfer.md`](./service-settings/jsonTemplateModels/index.md) (**ActionTransfer** — `ProcessStepInstance.processStepActionParameter`'da JSON). **DB tabloları** kendi kırılımlarında kalır.
 
 ---
 

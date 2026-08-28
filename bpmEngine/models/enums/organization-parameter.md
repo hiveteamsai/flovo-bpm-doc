@@ -1,6 +1,6 @@
 # Enum — OrganizationParameter
 
-> **Kullanan model:** [`../service-settings/dto/business-rule/data-source/fill-data-source-parameter.md`](../service-settings/dto/business-rule/data-source/fill-data-source-parameter.md) — alan `parameter`
+> **Kullanan model:** [`../service-settings/jsonTemplateModels/business-rule/data-source/fill-data-source-parameter.md`](../service-settings/jsonTemplateModels/business-rule/data-source/fill-data-source-parameter.md) — alan `parameter`
 > **Amaç:** `fillDataSource` (`organizationData`/`userData`) kaynağında, bir kurum/kullanıcı kaydından **hangi alanın okunup** filtreye sokulacağını belirler.
 
 ## Nedir?

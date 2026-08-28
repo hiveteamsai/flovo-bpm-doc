@@ -16,7 +16,7 @@
 | `icon` | string | — | İkon. |
 | `environmentRestriction` | string | — | Ortam kısıtı. |
 | `businessRuleActionType` | BusinessRuleActionType | — | Kural aksiyonu (aşağıda) — [`../enums/business-rule-action-type.md`](../enums/business-rule-action-type.md). |
-| `configuration` | jsonb | — | **Aksiyon konfigürasyonu** — `businessRuleActionType`'a göre şekillenen **yapısal JSONB** (ayrımlayıcı = aksiyon tipi). Alt-şemalar → [`dto/business-rule/`](./dto/business-rule/index.md). |
+| `configuration` | jsonb | — | **Aksiyon konfigürasyonu** — `businessRuleActionType`'a göre şekillenen **yapısal JSONB** (ayrımlayıcı = aksiyon tipi). Alt-şemalar → [`jsonTemplateModels/business-rule/`](./jsonTemplateModels/business-rule/index.md). |
 | `businessRuleRuntimeType` | BusinessRuleRuntimeType | — | Çalışma zamanı — [`../enums/business-rule-runtime-type.md`](../enums/business-rule-runtime-type.md): `always` / `firstOpening` / `whenChanging`. |
 | `businessRuleConditionType` | BusinessRuleConditionType | — | Koşul birleştirme — [`../enums/business-rule-condition-type.md`](../enums/business-rule-condition-type.md): `and` (VE) / `or` (VEYA). |
 | `businessRuleConditions` | jsonb (List\<BusinessRuleCondition\>) | — | Koşul ağacı — **gömülü JSONB** (recursive; ayrı tablo değil → `business-rule-condition.md`). |
@@ -34,19 +34,19 @@ Enum tanımı → [`../enums/business-rule-action-type.md`](../enums/business-ru
 > `fromDataSet` · `search` · `httpRequest`.
 
 ### `configuration` — aksiyon-tipine göre JSONB şeması
-`configuration` alanının şekli `businessRuleActionType`'a göre belirlenir (alt-şemalar → [`dto/business-rule/`](./dto/business-rule/index.md)):
+`configuration` alanının şekli `businessRuleActionType`'a göre belirlenir (alt-şemalar → [`jsonTemplateModels/business-rule/`](./jsonTemplateModels/business-rule/index.md)):
 
 | `businessRuleActionType` | `configuration` şeması (DTO) |
 |---|---|
-| `setViewForProperties` | [`SetViewForProperties`](./dto/business-rule/actions/set-view-for-properties.md) |
-| `applyValidation` | [`ApplyValidation`](./dto/business-rule/actions/apply-validation.md) |
-| `showMessage` | [`ShowMessage`](./dto/business-rule/actions/show-message.md) |
-| `assignValueToProperty` | [`AssignValueToProperty`](./dto/business-rule/actions/assign-value-to-property.md) |
-| `fillDataSource` | [`FillDataSource`](./dto/business-rule/actions/fill-data-source.md) |
-| `assignValueToPropertyAttribute` | [`AssignValueToPropertyAttribute`](./dto/business-rule/actions/assign-value-to-property-attribute.md) |
-| `setStyle` | [`SetStyle`](./dto/business-rule/actions/set-style.md) |
+| `setViewForProperties` | [`SetViewForProperties`](./jsonTemplateModels/business-rule/actions/set-view-for-properties.md) |
+| `applyValidation` | [`ApplyValidation`](./jsonTemplateModels/business-rule/actions/apply-validation.md) |
+| `showMessage` | [`ShowMessage`](./jsonTemplateModels/business-rule/actions/show-message.md) |
+| `assignValueToProperty` | [`AssignValueToProperty`](./jsonTemplateModels/business-rule/actions/assign-value-to-property.md) |
+| `fillDataSource` | [`FillDataSource`](./jsonTemplateModels/business-rule/actions/fill-data-source.md) |
+| `assignValueToPropertyAttribute` | [`AssignValueToPropertyAttribute`](./jsonTemplateModels/business-rule/actions/assign-value-to-property-attribute.md) |
+| `setStyle` | [`SetStyle`](./jsonTemplateModels/business-rule/actions/set-style.md) |
 
-Ortak alt-modeller: **[`AssignValue`](./dto/business-rule/shared/assign-value.md)** (merkezi değer çözümleme) · **[`PropertyAppearance`](./dto/business-rule/shared/property-appearance.md)** · **[`AssignValueFromDataSet`](./dto/business-rule/data-source/assign-value-from-dataset.md)** (+ parametre) · **[`FillDataSourceUser`](./dto/business-rule/data-source/fill-data-source-user.md)**.
+Ortak alt-modeller: **[`AssignValue`](./jsonTemplateModels/business-rule/shared/assign-value.md)** (merkezi değer çözümleme) · **[`PropertyAppearance`](./jsonTemplateModels/business-rule/shared/property-appearance.md)** · **[`AssignValueFromDataSet`](./jsonTemplateModels/business-rule/data-source/assign-value-from-dataset.md)** (+ parametre) · **[`FillDataSourceUser`](./jsonTemplateModels/business-rule/data-source/fill-data-source-user.md)**.
 
 ## İlişkiler
 - **N – 1** → `Organization` (`organizationId`), `Service` (`serviceId`).
