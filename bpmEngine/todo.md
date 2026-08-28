@@ -200,6 +200,16 @@
     _(jsonTemplateModels/property-settings/form-list.md)_
   - **`groupByTaxReceipt` eski-kod ayar adayları** — `isLineAddActive`/`isLineReduceActive`/`isTaxEditable`/`isManuelTax`/
     `kkegExpenseTypeId`/`multiKkegActive` kapsam-dışı bırakıldı; `settings` adayı mı? _(jsonTemplateModels/property-settings/group-by-tax-receipt.md)_
+- [ ] **Process step `settings` şeması — tip-başına şemalardan açık alan kararları (v0.38):**
+  - **`comparison` değer-kaynağı** — `referenceValue`/`valueToCompare` **ValueAssignType** (fixed/property/calc) mı yoksa iş kuralıyla
+    ortak **`BusinessRuleConditionCompareValue`** (`viewProfile` kaynağı dahil) mı olacak? Karşılaştırma adımı viewProfile'ı destekleyecekse
+    ikincisine geçmeli. _(jsonTemplateModels/process-step-settings/comparison.md)_
+  - **`comparison` nested grup birleştiricisi** — `ComparisonCondition.children` alt-gruplarının kendi `and`/`or` birleştiricisi yok
+    (yalnız kök `conditionType`); iş kuralı koşul ağacıyla hizalanmalı mı? _(process-step-settings/comparison.md)_
+  - **`triggerProcessStep` / `formRedirect` `settings` şeması** — hâlâ modellenmedi (aday kavramlar şema-dışı işaretli).
+    _(process-step-settings/trigger-process-step.md · form-redirect.md · process-step §3.16)_
+  - **`flovoAi`** `selectedAi` kanonik set · `fileSourceType` enum · `aiSettings` per-AI şema (mevcut §209 maddesiyle bağlı) ·
+    **`instanceCreator`** init-değer eşleme detayı (§3.9 "sonra genişletilecek"). _(process-step-settings/flovo-ai.md · instance-creator.md)_
 
 ---
 
