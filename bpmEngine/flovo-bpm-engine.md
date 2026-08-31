@@ -152,6 +152,10 @@ tekil-kayıt) · **fihrist** `InstanceAttr`/`InstanceListItem` (**rapor/filtre/s
 `data`'da bulunmaz → **okuma anında** join/referansla çözülür. Böylece yazım tek kapıdan geçerken okuma, ihtiyaca göre (tam değer
 ↔ indeksli sorgu) doğru katmandan servis edilir.
 
+> **İki-katman notu (v0.43):** İş kuralı (frontend) bir değeri hesaplayıp atadığında, bu değer **`changeList` → yazma kapısı →
+> `InstanceValue`** yoluyla **kalıcılaşır;** motor süreç adımları **sonra kaynak-hakikat DB değerini** okuyup işler (geçici frontend
+> değerine bakmaz). Katman sınırının tüm kararları → [`service-settings/business-rule.md`](service-settings/business-rule.md) §0.1.
+
 ---
 
 ## 4. Yürütme Algoritması

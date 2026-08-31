@@ -11,13 +11,18 @@
 
 ## ⭐ Tier 0 — Çapraz-kesen kararlar (önce bunlar; bir karar → çok doküman)
 
-- [ ] **İki-katman sınırı** — **değer atama & karşılaştırma** hem süreç adımı hem iş kuralı olarak var. Sınır:
-  iş kuralı = anlık form UX (frontend), adım = kalıcı/akış kararı (motor). Netleşince #Tier1 veri/motor ve
-  tutarlılık kalemleri de oturur. _(flovo-bpm-engine §1.4/§12 · business-rule §6 · process-step §3.4/§3.13)_
-  - **Not:** İş kuralı (`business-rule.md`) motordan bağımsız frontend'de çalıştığı için **en son** şekillenecek.
-  - **v0.34 — model iskeleti kuruldu:** iş kuralı **çalışma yeri = tam frontend**; aksiyon konfigi = **yapısal JSONB**
-    (`BusinessRule.configuration` → `models/service-settings/jsonTemplateModels/business-rule/`); `priority` + genişletilmiş **tetikleme kapsamı**
-    eklendi. Kalan iş-kuralı detayları → Tier 2 "İş kuralı — açık detaylar".
+- [x] **İki-katman sınırı — ÇÖZÜLDÜ (v0.43)** — **değer atama & karşılaştırma** hem süreç adımı hem iş kuralı olarak var; sınır
+  kararları (detay → `business-rule.md` §0.1 · `commitNotes/v0-43.md`):
+  - **(S1) Kısıt yok:** no-code platform; bir iş **ikisinde de** ayarlandıysa **ikisi de çalışır** (kombinasyon = tasarımcı senaryosu).
+  - **(S2) Değer akışı & bütünlük:** iş kuralı değeri **`changeList` → kaydedilir** (`InstanceValue`); motor adımları **DB'deki kayıtlı
+    güncel veriyle** işler (geçici frontend değerine bakmaz). → flovo-bpm-engine §3.1.
+  - **(S3) API/webhook başlatma:** frontend'den geçmeyen instance'da iş kuralı **koşmaz** → telafi eden motor adımlarını kurmak
+    **süreç tasarımcısının sorumluluğunda** (BPM aracı; senaryo tasarımcıya ait).
+  - **(S4) Parite:** iş kuralı ↔ süreç adımı **fonksiyon/operatör + ifade dili hizalı, aynı girdi=aynı çıktı** (backend Go ↔ frontend
+    JS+Dart); **Karşılaştırma adımı** `compareType`/operatörleri iş kuralı koşullarıyla **birebir aynı** (→ Tier 3 comparison değer-kaynağı ortak modele hizalanır).
+  - **(S5) atlandı** — öncelik/çelişme ayrı açık konu değil.
+  - **(S6) Form List:** iş kuralı Form List'ten **okuyup hesaplar**; **toplu alt-servis yazımı yalnız motor Değer Atama adımı** (§3.4).
+  _(flovo-bpm-engine §1.4/§3.1 · business-rule §0.1 · process-step §3.4/§3.13)_
 
 ---
 
@@ -196,6 +201,9 @@
     - **Kalan açık:** ifade **katalog kesin kapsamı + operatör imzaları** · **`environmentRestriction`** (geçerli değerler → ortam modeli) ·
       hata görünürlüğü + veri-hatası davranışı · cascade **döngü/derinlik limiti** · `search` değer kaynağı · `setStyle` `style` şeması ·
       `httpRequest` alan-yolu **JSONPath'e genişletme**. _(business-rule-engine §11)_
+    - **Not (v0.43, S4 paritesi):** ifade dili + operatör kataloğu **çapraz-katman ORTAK** olmalı — aynı fonksiyon/operatör motor (Go) ve
+      frontend (JS+Dart) için **aynı çıktıyı** üretir; katalog kesin kapsamı bu parite gereğiyle tanımlanacak (yalnız iş kuralı değil,
+      **Değer Atama `fromCalculation` + Karşılaştırma** adımlarını da kapsar).
 
 ---
 
@@ -220,6 +228,8 @@
   - **`comparison` değer-kaynağı** — `referenceValue`/`valueToCompare` **ValueAssignType** (fixed/property/calc) mı yoksa iş kuralıyla
     ortak **`BusinessRuleConditionCompareValue`** (`viewProfile` kaynağı dahil) mı olacak? Karşılaştırma adımı viewProfile'ı destekleyecekse
     ikincisine geçmeli. _(jsonTemplateModels/process-step-settings/comparison.md)_
+    - **→ Yön ÇÖZÜLDÜ (v0.43, S4 paritesi):** ortak **`BusinessRuleConditionCompareValue`** (`viewProfile` dâhil) — compareType iş
+      kuralıyla **birebir aynı** çalışacağından. **Kalan:** şema hizalama detayı (comparison.md güncellemesi).
   - **`comparison` nested grup birleştiricisi** — `ComparisonCondition.children` alt-gruplarının kendi `and`/`or` birleştiricisi yok
     (yalnız kök `conditionType`); iş kuralı koşul ağacıyla hizalanmalı mı? _(process-step-settings/comparison.md)_
   - **`triggerProcessStep` / `formRedirect` `settings` şeması** — hâlâ modellenmedi (aday kavramlar şema-dışı işaretli).

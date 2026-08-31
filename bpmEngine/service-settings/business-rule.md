@@ -22,6 +22,25 @@ etkilemez.** İki **ayrı katman** vardır:
 > kendi motorunu yürütür. Form açılır açılmaz kurallar ek tur beklemeden çalışabilir. İş kuralı, kullanıcı form üzerinde
 > gezinirken tetiklenir ve **o anki formu** düzenler; motorun adım-geçiş kararına karışmaz.
 
+### 0.1 İki-katman sınırı — kararlar (v0.43)
+Değer atama & karşılaştırma **her iki katmanda** da bulunur (iş kuralı: `assignValueToProperty`/koşullar · motor: **Değer Atama** §3.4 /
+**Karşılaştırma** §3.13). Sınır şu kararlarla nettir:
+
+- **Kısıt yok — ikisi de çalışır:** No-code platform olduğundan "yalnız bir katmanda yap" kısıtı **yoktur.** Bir iş hem iş kuralı hem
+  süreç adımı olarak ayarlandıysa **ikisi de çalışır;** hangi kombinasyonun kurulacağı **süreç tasarımcısının** senaryosuna kalmıştır.
+- **Değer akışı & bütünlük:** İş kuralının hesapladığı/atadığı değer **`changeList` ile iletilir → kaydedilir** (`InstanceValue`, yazma
+  kapısı → [`../flovo-bpm-engine.md`](../flovo-bpm-engine.md) §3.1). Süreç adımları **sonra DB'de kayıtlı güncel veri** üzerinden
+  hesap/işlem yapar — motor **geçici frontend değerine değil, kalıcılaşmış** değere bakar.
+- **Frontend'den geçmeyen instance'lar:** İş kuralları yalnız frontend'de koştuğundan, **API/webhook** ile (frontend olmadan)
+  başlatılan süreçlerde iş kuralı mantığı çalışmaz. Bunu telafi edecek motor-tarafı adımların kurulması **süreç tasarımcısının
+  sorumluluğundadır** (Flovo bir BPM aracıdır; senaryo tasarımcıya aittir).
+- **Fonksiyon & operatör paritesi:** İş kuralı ile süreç adımındaki **fonksiyonlar/operatörler ortaktır ve aynı çıktıyı verir.** İfade
+  dili (JSONLogic → §5) ve karşılaştırma operatörleri (`criterionType`/`compareType`) **hem backend (motor/Go) hem frontend (JS+Dart)**
+  için **hizalıdır** → aynı girdi = aynı çıktı. **Karşılaştırma adımı**, iş kuralı koşullarıyla **birebir aynı** compareType/operatör
+  semantiğini kullanır.
+- **Form List sınırı:** İş kuralları Form List'ten **veri çekip hesaplama** yapabilir (okuma); ancak Form List içindeki instance'lara
+  **toplu veri yazma** yapmaz — **toplu alt-servis yazımı yalnız motor Değer Atama adımınadır** ([`process-step.md`](./process-step.md) §3.4).
+
 ---
 
 ## 1. İş Kuralı Nedir?

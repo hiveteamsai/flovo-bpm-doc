@@ -14,6 +14,10 @@
   (header'lar: `organizationId` / `solutionId` / `serviceId`). _(**Geçici**: dış referans anahtarının int `organizationId` mi yoksa string `organizationCode` mi olacağı **açık** → §3.)_
 - **Birim:** çoğu uç **servis (form)** ve **instance id** etrafında çalışır.
 - **Yön:** custom code → Flovo (okuma/yazma) **ve** custom code → Flovo (**webhook aksiyonu tetikleme**).
+- **İş kuralları çalışmaz (İki-katman sınırı):** API/webhook ile oluşturulan/güncellenen instance'lar **frontend'den geçmediğinden**
+  iş kuralları (değer atama, validasyon, veri-kaynağı doldurma) **çalışmaz** — yazılan değerler yalnız **JSON Schema** ile doğrulanır.
+  Akış-kritik hesap/validasyon gerekiyorsa bunları **motor süreç adımı** olarak kurmak **süreç tasarımcısının sorumluluğundadır**
+  (→ `service-settings/business-rule.md` §0.1, karar S3).
 
 ---
 

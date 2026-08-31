@@ -158,6 +158,9 @@ değer atamak için kullanılır.
 **Alt-servise değer atama:** `useAssociatedService` (bool) · `associatedServiceId` (int) · `targetInstancesPropertyId`
 (hedef alt-servis kayıt(lar) property'si).
 > İki kapsam: **(a)** aynı formdaki property'ye, **(b)** alt-servis (Form List → `properties.md` §3.13) kayıtlarına.
+> **İki-katman sınırı (v0.43):** Form List (alt-servis) kayıtlarına **toplu değer yazma yalnız bu adımdadır** — iş kuralları Form
+> List'ten yalnız **okuyup hesaplar**, toplu yazmaz. Motor bu adımda **DB'de kayıtlı güncel değerle** çalışır (frontend iş kuralının
+> atadığı değer `changeList` ile kaydedildikten sonra). → [`business-rule.md`](./business-rule.md) §0.1.
 
 ### 3.5 — Süreç Adımı Tetikleme
 **Özet:** Formda yer alan **alt servislerin** süreç adımlarını tetiklemek için kullanılır.
@@ -226,6 +229,10 @@ tetikler (IF benzeri iki dallı).
 - **`conditions`** — koşul listesi (referans değer · operatör · karşılaştırılan değer; **iç içe** gruplanabilir).
 - **`conditionType`** — koşulların birleştirilmesi: **`and`** (VE, tümü) / **`or`** (VEYA, en az biri).
 - **Operatörler (`criterionType`):** `equals` · `notEquals` · `isEmpty` · `isNotEmpty` · `greaterThan` · `greaterThanOrEqual` · `lessThan` · `lessThanOrEqual` · `startsWith` · `endsWith` · `contains` · `notContains` (→ `../models/enums/criterion-type.md`).
+> **İki-katman paritesi (v0.43):** Bu adımın operatör (`criterionType`) ve değer-kaynağı (`compareType`) semantiği, **iş kuralı
+> koşullarıyla birebir aynı** çalışır — aynı girdi = aynı çıktı; backend (motor/Go) ↔ frontend (JS+Dart) hizalı. Bu nedenle karşılaştırma
+> değer-kaynağı, iş kuralının ortak modeline (`BusinessRuleConditionCompareValue`; `viewProfile` kaynağı dâhil) **hizalanır**. →
+> [`business-rule.md`](./business-rule.md) §0.1 / §7.3.
 
 ### 3.14 — Switch
 **Özet:** Bir alan seçilir; o alandaki **değere göre** aksiyon tetiklenir. **Default aksiyon zorunludur**; eşleşen değer
