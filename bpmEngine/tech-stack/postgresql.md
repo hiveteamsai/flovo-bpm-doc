@@ -32,7 +32,7 @@ PostgreSQL, [`property-value-storage`](../research/property-value-storage/index.
 | **Kaynak-hakikat** | `instance_value` (**JSONB** `data` kolonu) | Formun tüm alanları tek satırda; DDL'siz esnek şema (S1/S9) |
 | **Skaler projeksiyon** | `instance_attr` (tipli EAV: num/text/date/bool) | Arama/filtre/sıralama/rapor için türetilmiş okuma modeli (S1-S13) |
 | **Liste projeksiyonu** | `instance_list_item` | List-of-model (groupByTax vb.) kalem-bazlı sorgu (S7) |
-| **Süreç durumu** | `workflow_events` (append-only) + `workflow_projection` | **Partial Event Sourcing**; replay + audit + saga temeli |
+| **Süreç durumu** | [`workflow_events`](../models/processInstances/workflow-event.md) (append-only, **aylık RANGE partition**) + [`workflow_projection`](../models/processInstances/workflow-projection.md) (1–1 imleç) + [`workflow_timer`](../models/processInstances/workflow-timer.md) (uyandırma; `FOR UPDATE SKIP LOCKED` claim) | **Partial Event Sourcing**; replay + audit + idempotency (`messageId` UNIQUE) + optimistic concurrency (`(processInstanceId, version)` UNIQUE) + **outbox-in-event** (`dispatch`/`publishedAt`). 📝 v0.44 model dosyaları — onay bekliyor |
 | **Statü** | `Instance.statusId` **ayrı indeksli kolon** | Volatile akış durumu — JSONB'ye **konmaz** (S3/S4/S10, D3) |
 | **Organizasyon ayarları** | `models/organization-settings/*` tabloları | Kiracıya bağlı yapısal veri (Position, User, Translation…) |
 
@@ -52,6 +52,11 @@ GIN'i ile çözülür.
   Pilotta Azure-PG üzerinde doğrulandı → [`../implementation-status.md`](../implementation-status.md).
 - **Partition — `HASH(service_id)`:** `instance_value`/`instance_attr`/`instance_list_item` partition'lı; her sorgu `service_id` (mümkünse
   `organizationId`) filtresi taşır → partition pruning. Dominant tenant sıcak-nokta olursa alt-`HASH(organizationId)` (S9, P9).
+- **Partition — `RANGE(occurredAt)` aylık (📝 v0.44, öneri):** `workflow_events` **zamanla yaşlanan** append-only tablo → saklama = partition **detach/drop**
+  (satır `DELETE` yok, vacuum yükü yok); sıcak → soğuk tablo (`ATTACH`) → MinIO JSONL.gz arşiv → drop. Değer tablolarının HASH stratejisinden bilinçli farklı
+  (→ [`../engine-runtime-retention.md`](../engine-runtime-retention.md) §3 · plan Q2). Yeni partition 2 ay önceden housekeeping ile açılır.
+- **Claim deseni — `FOR UPDATE SKIP LOCKED` (📝 v0.44):** `workflow_timer` dolan satırlarını N scheduler kopyası **çakışmadan** paylaşır → **lider seçimi gerekmez**;
+  `pg_try_advisory_lock` yalnız singleton housekeeping (relay sweep · stuck detector · pruning) için (→ [`../engine-runtime-scheduler.md`](../engine-runtime-scheduler.md) §1/§7).
 - **Yazma maliyeti tuning (S9/S10):** JSONB update = MVCC ile **tüm satır** yeniden yazımı → JSONB küçük tutulur (dosyalar MinIO'da,
   yalnız URL JSONB'de); `fillfactor=85` + **agresif autovacuum** (`autovacuum_vacuum_scale_factor≈0.02`); GIN pending list için
   `gin_pending_list_limit`. Büyük değerler **TOAST** ile satır-dışı (okuma şeffaf).

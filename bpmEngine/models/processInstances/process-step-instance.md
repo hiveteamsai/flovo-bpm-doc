@@ -23,7 +23,14 @@
 ## İlişkiler
 - **N – 1** → `ProcessInstance` (`processInstanceId`), `Instance` (`instanceId`), `ProcessStep` (`processStepId`),
   `ProcessStepAction` (`processStepActionId`), `User` (`atUserId`, `atDelegateUserId`), `ApiKey` (`atApiKeyId`).
-- **1 – N** ← `InstanceAwaitingUser.processStepInstanceId`.
+- **1 – N** ← `InstanceAwaitingUser.processStepInstanceId`, [`WorkflowEvent`](./workflow-event.md)`.processStepInstanceId`, [`WorkflowTimer`](./workflow-timer.md)`.processStepInstanceId` (📝 v0.44).
+- **1 – 0..1** ← [`WorkflowProjection`](./workflow-projection.md)`.activeProcessStepInstanceId` (sürecin mevcut konumu).
+
+> **Kaynak ↔ kopya (📝 v0.44, plan R2):** Bu tablonun **motor alanları** (`executionDate` · `actionTriggerDate` · `processStepActionId` · `processStepActionParameter` · `at*`)
+> `workflow_events`'ten (**`stepStarted` / `actionTaken` / `stepCompleted`**) **aynı TX'te türetilen okuma kopyasıdır**; `processStepActionParameter` = olay payload'ındaki
+> `ActionTransfer` snapshot'ının kopyası. Replay ile yeniden kurulabilir. **İş alanları** (`instanceId`) kaynaktır. Bir adımın **deneme sayısı** burada tutulmaz
+> (`WorkflowProjection.attempt` / `workflow_events.attempt`). Timer/timeout ile **sistem tarafından kapatılan** bekleme adımında `atUserId`/`atApiKeyId` **null**, `processStepActionId`
+> **null** kalır; kapanış `timerFired.payload.preemptedProcessStepInstanceId` ile izlenir.
 
 ## Aksiyon tetiklendiğinde dolan alanlar
 Adım **bir aksiyon tetiklenerek** ilerlediğinde şu alanlar birlikte dolar:

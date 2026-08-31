@@ -54,7 +54,8 @@
 ### Aksiyon / Webhook tetikleme
 | Uç (temsilî) | Ne yapar |
 |---|---|
-| `POST /instances/{instanceId}/actions/{actionCode}` | Bir instance'ta **aksiyon tetikler** (Webhook aksiyonu) — **`parameters`** ile. Süreci ilerletir. _(createPdfAsync, integration.)_ |
+| `POST /instances/{instanceId}/actions/{actionCode}` | Bir instance'ta **aksiyon tetikler** (Webhook aksiyonu) — **`parameters`** ile. Süreci ilerletir. _(createPdfAsync, integration.)_ **📝 v0.44 çakışma/idempotency sözleşmesi (öneri):** header **`Idempotency-Key`** (zorunlu — plan Q17) → aynı anahtar **200 replay**; başkası ilerletmiş → **409 `processAlreadyAdvanced`**; eski görünüm → **409 `staleView`**; atanmamış → **403 `notAssigned`**; süreç beklemiyor → **409 `notAwaitingAction`**; aksiyon kodu yok → **422 `unknownAction`**. Tam tablo → [`engine-runtime.md`](./engine-runtime.md) §5.2. |
+| `POST /process-instances/{processInstanceId}/recover` | **📝 v0.44 (öneri, admin):** `failed` süreçte kurtarma — `{ mode: retry \| skip \| cancel, selectedActionCode?, parameters?, note? }`; her mod bir **olay** (`recovered`/`cancelled`). Yetki → plan Q12. Tam kural → [`engine-runtime-errors.md`](./engine-runtime-errors.md) §6. |
 
 ### Kullanıcı / organizasyon
 | Uç (temsilî) | Ne yapar |

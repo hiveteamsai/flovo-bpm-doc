@@ -351,9 +351,18 @@ verirse → `onFail`; HTTP Request başarısız olursa → `onFail`). Yani hata,
 bir koda** yönlendirilir. Bu, n8n'in "hata-çıkış dalı"nın (n8n dersi 9) Flovo karşılığıdır — ama burada **isimli
 bir aksiyon kodu** olarak modellenir (`default` ↔ `onFail`).
 
-> _(Doldurulacak / açık sorular: Her adımda `onFail` zorunlu/var mı, yoksa bazılarında mı? **Retry**
-> (yeniden deneme + bekleme) olacak mı? **Süreç-seviye** hata akışı (global hata yakalayıcı) olacak mı?
-> **Telafi/compensation** ve **denetim izi** nasıl ele alınacak?)_
+### 7.2 — Hata modeli (özet) — 📝 tam spesifikasyon → [`engine-runtime-errors.md`](engine-runtime-errors.md) (v0.44, onay bekliyor)
+- **Hata sınıfı adımdan çıkar:** her deneme ya başarı ya `stepFailed{errorClass}` olayıdır — `transient` (geçici: HTTP 5xx/timeout) · `permanent` (kalıcı: 4xx, ifade
+  hatası, atama çözülemedi) · `design` (tasarım bozuk) · `inDoubt` (yan etki şüpheli) · `guard` (döngü/derinlik sınırı). **Sessiz yutma yoktur.**
+- **Retry yalnız `transient`:** BPM-düzeyi backoff timer'ı (varsayılan 5 deneme · 10 s ×3 · üst 10 dk — öneri); adım-bazlı `retryPolicy` ile değiştirilebilir (öneri).
+  Retry beklerken süreç `waiting(retry)`; kullanıcı formu görür, aksiyon alamaz.
+- **`onFail` opsiyoneldir:** kalıcı hata / retry tükendi → adımın `onFail` aksiyonu (hata bilgisi **`parameters.error`** ile hedef adıma taşınır — no-code okunabilir) →
+  yoksa süreç **`failed`** (dead-letter): motor durur, süreç yöneticisine bildirim, form açık kalır (`statusId` değişmez).
+- **Kurtarma:** yetkili admin `retry` (adımı yeniden koş) · `skip` (seçtiği aksiyonla ilerlet) · `cancel` (süreci iptal → `cancelled`) — her biri denetim izinde **olay**dır.
+- **Süreç-seviye global hata adımı** ve **compensation/telafi** **post-MVP** (iskeletleri tanımlı). **Denetim izi** = `workflow_events` (→ §8).
+- **Korumalar:** aksiyon zinciri sonsuz döngüsü (ardışık 200 otomatik adım) · toplam adım · alt süreç derinliği · ServiceTrigger kaskadı → `failed(guard)`.
+
+> _(Kararlar/açık noktalar → [`engine-runtime-plan.md`](engine-runtime-plan.md) R8–R12, R17 · Q7–Q13, Q21; kesinleşince `todo.md`.)_
 
 ---
 

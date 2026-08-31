@@ -15,12 +15,14 @@
 | `serviceId` | int | FK → Service.id | Hangi servisin süreci çalıştırılıyor. |
 | `organizationId` | int | (denormalize) | Kiracı — **RLS/tenant izolasyonu** (RLS Pattern B v2: her tenant-tabloda `organizationId`; DB-seviyesi izolasyon). |
 | `parentProcessInstanceId` | int? | FK → ProcessInstance.id (self) | **Alt süreç** ise **alt sürecin koştuğu (hedef/host) instance'ın ana `ProcessInstance`** id'si (**tetikleyen** süreç değil). **Null = ana süreç** (üst akış yok). |
-| `executionState` | ProcessExecutionState | — | **Motor yürütme durumu** — `new`/`running`/`waiting`/`failed`/`done` (→ [`../enums/process-execution-state.md`](../enums/process-execution-state.md)). Kullanıcının gördüğü **iş durumu** (`Instance.statusId`) ile **ayrı**; `workflow_events`'ten türetilen projeksiyon. Runtime → [`../../engine-runtime.md`](../../engine-runtime.md) §1. |
+| `executionState` | ProcessExecutionState | — | **Motor yürütme durumu** — `new`/`running`/`waiting`/`failed`/`done`/`cancelled` (📝 v0.44: `cancelled` öneri) (→ [`../enums/process-execution-state.md`](../enums/process-execution-state.md)). Kullanıcının gördüğü **iş durumu** (`Instance.statusId`) ile **ayrı**; `workflow_events`'ten türetilen projeksiyon — **[`WorkflowProjection.executionState`](./workflow-projection.md)'in kopyası** (aynı TX'te yazılır; liste sorguları join'siz — plan Q5). Bekleme sebebi (`waitReason`), aktif adım, deneme sayacı **projeksiyonda**. Runtime → [`../../engine-runtime.md`](../../engine-runtime.md) §1. |
 
 ## İlişkiler
 - **N – 1** → `Service` (`serviceId`), `User` (`createdByUserId`), `ApiKey` (`createdByApiKeyId`),
   `ProcessInstance` (`parentProcessInstanceId`, **self** — alt sürecin üst/ana akışı).
-- **1 – N** ← `ProcessStepInstance.processInstanceId`, `Instance.processInstanceId`, `ProcessInstance.parentProcessInstanceId` (üst akışın alt süreç çalıştırmaları).
+- **1 – 1** → [`WorkflowProjection`](./workflow-projection.md) (`processInstanceId` — motor imleci; 📝 v0.44).
+- **1 – N** ← `ProcessStepInstance.processInstanceId`, `Instance.processInstanceId`, `ProcessInstance.parentProcessInstanceId` (üst akışın alt süreç çalıştırmaları),
+  [`WorkflowEvent`](./workflow-event.md)`.processInstanceId` (olay günlüğü; ayrıca `correlationId` = kök ana süreç), [`WorkflowTimer`](./workflow-timer.md)`.processInstanceId` (📝 v0.44).
 
 ## Notlar / açık noktalar
 - **`createdByApiKeyId` / `ApiKey` (açık soru):** Customer API ile oluşturulan kayıtlarda oluşturan doğrudan bir `User`

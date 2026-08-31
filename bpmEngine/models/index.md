@@ -35,7 +35,7 @@
 |---|---|---|
 | **organization-settings/** | Kiracıya bağlı **yapısal veri** + **organizasyon havuzu** (eski "Account Settings"): Organization · Company · Department · Profession · Position · User · UserGroup · Translation · Style · Status · Action · CostCenter · WorkerLevel · CreditCard · AdditionalQualification · WorkingSchedule · VacationDay · ProcessTransfer · SchedulerJob. | [`organization-settings/index.md`](./organization-settings/index.md) |
 | **service-settings/** | Bir **Solution/Service** altındaki tasarım modelleri: Solution · Service (`formType`) · ServiceTrigger · Property/PropertyItem · ProcessViewProfile ailesi · ProcessStep · ProcessStepAction · BusinessRule/BusinessRuleCondition. | [`service-settings/index.md`](./service-settings/index.md) |
-| **processInstances/** | Ayarlardan üretilen **çalışma-zamanı (runtime)** kayıtları: ProcessInstance · ProcessStepInstance · Instance · InstanceAwaitingUser · AssociatedInstance **+ değer saklama:** InstanceValue · InstanceAttr · InstanceListItem · InstanceValueOutbox · InstanceValueChange **+ `propertyValuesTemplates/`** (tip-bazlı değer şablonları + core LabeledValue) **+ A′ yansıma yayılım mekanizması** (`reflection-propagation.md` — tablo değil). 🟢 TANIMLI. | [`processInstances/index.md`](./processInstances/index.md) |
+| **processInstances/** | Ayarlardan üretilen **çalışma-zamanı (runtime)** kayıtları: ProcessInstance · ProcessStepInstance · Instance · InstanceAwaitingUser · AssociatedInstance **+ değer saklama:** InstanceValue · InstanceAttr · InstanceListItem · InstanceValueOutbox · InstanceValueChange **+ `propertyValuesTemplates/`** (tip-bazlı değer şablonları + core LabeledValue) **+ A′ yansıma yayılım mekanizması** (`reflection-propagation.md` — tablo değil) 🟢 TANIMLI **+ motor yürütme (📝 v0.44, onay bekliyor):** WorkflowEvent (`workflow_events`) · WorkflowProjection · WorkflowTimer. | [`processInstances/index.md`](./processInstances/index.md) |
 | **enums/** | Modellerde kullanılan **enum tanımları** (kanonik değer listeleri; ör. `actionType`, `propertyType`, `formType`). | [`enums/index.md`](./enums/index.md) |
 
 > **Not:** **Organization** kiracının kökü; **Solution · Service** service-settings kırılımının başladığı yerdir
@@ -87,6 +87,16 @@ ProcessInstance (id; createdByUserId → User · createdByApiKeyId → ApiKey[ge
       ├─< InstanceListItem     (instanceId, serviceId, listCode, itemIndex, attrCode; …)       ← projeksiyon
       ├─< InstanceValueChange  (instanceId; propertyCode · old/newValue · changedByUserId/ApiKeyId · processStepInstanceId)
       └─< InstanceValueOutbox  (instanceId; serviceId · version · changedPropertyCodes · hopCount · occurred/processedDate)
+
+ ── motor yürütme (event sourcing) — 📝 v0.44, onay bekliyor ──
+ProcessInstance
+ ├─1:1─ WorkflowProjection  (PK processInstanceId; lastVersion · lastEventId → WorkflowEvent · executionState · waitReason · activeProcessStepInstanceId → ProcessStepInstance ·
+ │                           activeProcessStepId → ProcessStep · attempt · autoStepRun/totalSteps · lastError)                    ← türetilmiş imleç
+ ├─< WorkflowEvent          (processInstanceId; UNIQUE(processInstanceId, version) · eventType · processStepInstanceId → ProcessStepInstance · processStepId → ProcessStep ·
+ │                           processStepActionId → ProcessStepAction · actorUserId/actorDelegateUserId → User · actorApiKeyId → ApiKey[geçici] ·
+ │                           causationId → WorkflowEvent[self] · correlationId → ProcessInstance[kök] · messageId UNIQUE · payload · dispatch/publishedAt · occurredAt)  ← kaynak-hakikat (append-only)
+ └─< WorkflowTimer          (processInstanceId? [cron'da null]; processStepInstanceId → ProcessStepInstance · processStepId → ProcessStep · serviceTriggerId → ServiceTrigger ·
+                             kind · status · dueAt · attempt · payload)                                                          ← uyandırma kaydı
 
 parentProperty A′ yansıma yayılımı = ayrı tablo YOK — child'lar AssociatedInstance ters aramasıyla, eşleme Property.refPropertyId/code ile çözülür (→ reflection-propagation.md)
 LabeledValue = değer şekli (tablo değil): {value, display, translationCode} — InstanceValue.data'ya gömülü, Attr/ListItem'a açılır
@@ -153,6 +163,20 @@ LabeledValue = değer şekli (tablo değil): {value, display, translationCode} �
 | InstanceAwaitingUser | `userGroupId` | UserGroup.id | N–1 | |
 | AssociatedInstance | `instanceId` · `associatedInstanceId` | Instance.id | N–1 | formlar arası ilişki |
 | AssociatedInstance | `associatedPropertyId` | Property.id | N–1 | `associatedInstanceId`'nin formundaki property |
+| **— Motor yürütme (event sourcing — `processInstances/`) — 📝 v0.44, onay bekliyor** | _(organizationId: her üç tabloda denormalize, RLS)_ | | | |
+| WorkflowEvent | `processInstanceId` | ProcessInstance.id | N–1 | **UNIQUE** (`processInstanceId`, `version`) — optimistic concurrency |
+| WorkflowEvent | `correlationId` | ProcessInstance.id | N–1 | **kök ana süreç** (alt süreç zincirinin tepesi; ana süreçte = processInstanceId) |
+| WorkflowEvent | `processStepInstanceId` | ProcessStepInstance.id | N–1 | null olabilir (start/ended/failed/cancelled) |
+| WorkflowEvent | `processStepId` · `processStepActionId` | ProcessStep.id · ProcessStepAction.id | N–1 | denormalize (replay PSI'ya bağımlı değil) |
+| WorkflowEvent | `actorUserId` · `actorDelegateUserId` | User.id | N–1 | null olabilir; **KVKK anonimleştirme hedefi** (tombstone) |
+| WorkflowEvent | `actorApiKeyId` | ApiKey | N–1 | null olabilir; **ApiKey geçici** |
+| WorkflowEvent | `causationId` | WorkflowEvent.id | N–1 | **self**; olayı doğuran önceki olay |
+| WorkflowProjection | `processInstanceId` | ProcessInstance.id | **1–1** | **PK = FK**; türetilmiş imleç (replay ile rebuild) |
+| WorkflowProjection | `lastEventId` | WorkflowEvent.id | N–1 | son uygulanan olay |
+| WorkflowProjection | `activeProcessStepInstanceId` · `activeProcessStepId` | ProcessStepInstance.id · ProcessStep.id | N–1 | mevcut konum |
+| WorkflowTimer | `processInstanceId` | ProcessInstance.id | N–1 | **null** `serviceTriggerCron`'da (servis-global) |
+| WorkflowTimer | `processStepInstanceId` · `processStepId` | ProcessStepInstance.id · ProcessStep.id | N–1 | kuran adım · uygulanacak adım |
+| WorkflowTimer | `serviceTriggerId` | ServiceTrigger.id | N–1 | yalnız `serviceTriggerCron`; UNIQUE (partial) `armed` başına tek |
 | **— Değer saklama (form değerleri — `processInstances/`) —** | _(organizationId: yukarıdaki konsolide runtime satırında)_ | | | |
 | InstanceValue | `instanceId` | Instance.id | 1–1 | **PK'nin parçası** (=FK); kaynak-hakikat JSONB tapu |
 | InstanceValue | `serviceId` | Service.id | N–1 | **PK'ye dâhil** — partition (HASH) + pruning (`Attr`/`ListItem` simetrisi) |
@@ -187,6 +211,11 @@ LabeledValue = değer şekli (tablo değil): {value, display, translationCode} �
 > InstanceValueChange · LabeledValue** + A′ yansıma yayılım mekanizması). 🟢 TANIMLI. Değer saklama mimarisi (CQRS + Outbox + NATS) →
 > `../research/property-value-storage/form-deger-saklama-v2.html`. _(Açık kalan operasyonel kararlar — rollup, yansıma yayılım
 > sınırları, retention/KVKK — → `../todo.md`.)_
+>
+> **Motor yürütme modelleri eklendi (📝 v0.44, onay bekliyor)** → `processInstances/` (**WorkflowEvent** `workflow_events` · **WorkflowProjection** · **WorkflowTimer**)
+> + 5 enum (`WorkflowEventType` · `WorkflowWaitReason` · `WorkflowTimerKind` · `WorkflowTimerStatus` · `WorkflowErrorClass`). Davranış → `../engine-runtime.md` ailesi;
+> kararlar/açık sorular → [`../engine-runtime-plan.md`](../engine-runtime-plan.md). **Onaya bağlı aday alanlar (henüz modele girmedi):** `ProcessStep.retryPolicy` (Q7) ·
+> `Service.onFailProcessStepId` (Q10, post-MVP) · `Organization.retentionPolicy` (Q18) · permissions `processAdminUserGroupId` (Q12) · HTTP Request `idempotencyKeyHeader` (Q21).
 
 > **Not:** **User** ve **UserGroup** artık modellendi (→ §1 "Organizasyon ayarları"). `userGroupId` /
 > `actionDisplayAuthorizedUserGroupId` gibi BPM referansları `UserGroup`'a, kullanıcı atamaları `User`'a bağlanır.

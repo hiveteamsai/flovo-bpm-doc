@@ -193,8 +193,10 @@ varlıktır (aksiyon, durum) ve **ayrı dokümanda** tanımlanır → **`../orga
 > credential → "Güvenlik" · yetki/rol → "Yetkilendirme").
 - **İfade (expression) motoru** — alanları dinamik doldurma, önceki adıma erişim
 - **Veri eşleme (sürükle-bırak)**
-- **Yeniden deneme (retry on fail)** — max deneme + bekleme
-- **Hata davranışı** — `onFail` aksiyonu (§0)
+- **Yeniden deneme (retry on fail)** — 📝 **spec yazıldı (v0.44, onay bekliyor)** → [`../engine-runtime-errors.md`](../engine-runtime-errors.md) §2:
+  yalnız `transient` hata retry edilir; varsayılan `5 deneme · 10 s ×3 · üst 600 s · jitter`; adım-bazlı override **`ProcessStep.retryPolicy`** (ortak JSONB kolon, öneri Q7).
+- **Hata davranışı** — `onFail` aksiyonu (§0) — 📝 **spec yazıldı** → [`../engine-runtime-errors.md`](../engine-runtime-errors.md) §4: **opsiyonel**; kalıcı hata / retry
+  tükendi → `onFail` (hata bilgisi `ActionTransfer.parameters.error` rezerve anahtarıyla taşınır) → yoksa süreç `failed` (admin kurtarma: retry/skip/cancel).
 - **Koşullu çalışma** — adım yalnız X koşulunda çalışsın
 - **Yetki/rol kısıtı** — aksiyonu kim yürütebilir (`authorizationLevel`, `actionDisplayAuthorizedUserGroupId`)
 - **Credential / kimlik yönetimi** (ayrı, şifreli, paylaşılabilir)

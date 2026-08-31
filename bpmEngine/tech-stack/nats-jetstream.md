@@ -51,6 +51,15 @@ Bu, [`../research/property-value-storage/`](../research/property-value-storage/i
 - **NATS erişilemezse:** Kayıtlar etkilenmez (outbox Postgres'te birikir); NATS dönünce relay boşaltır.
 - **Cache ile sınır:** Kalıcı kuyruk/olay = **NATS**; ephemeral cache (bildirim sayacı vb.) = **Redis**. İkisi karışmaz.
 
+### BPM motoru kullanımı (📝 v0.44 — onay bekliyor; tam spec → [`../engine-runtime.md`](../engine-runtime.md) §3/§5 · [`../engine-runtime-errors.md`](../engine-runtime-errors.md) §2.3)
+- **Subject'ler:** `flovo.workflow.step_ready.v1` (job: worker'a adım) · `resume.v1` (uyandırma: API/scheduler → worker) · `step_completed.v1` · `suspended.v1` · `failed.v1` (dinleyiciler/realtime).
+- **Outbox-in-event:** BPM için ayrı outbox tablosu **yok** — yayınlanacak mesaj `workflow_events.dispatch`'te durur, commit sonrası yayınlanır, kaçarsa relay sweep
+  (`publishedAt IS NULL`) yeniden yayınlar → [`../models/processInstances/workflow-event.md`](../models/processInstances/workflow-event.md) §3.5. `InstanceValueOutbox` ile aynı ilke.
+- **Idempotency:** tüketici `Nats-Msg-Id`'yi `workflow_events.messageId` (UNIQUE) ile karşılaştırır; ayrıca `version` optimistic concurrency → çift/sırasız teslim süreci **iki kez ilerletmez**.
+- **Retry ≠ redelivery:** BPM iş-retry'ı **JetStream NAK-delay ile yapılmaz**; `WorkflowTimer(kind=retry)` ile BPM-düzeyinde, görünür biçimde bekler (plan R8).
+  JetStream **`MaxDeliver`** (öneri **3**, `AckWait` 90 s > worker turu 60 s) yalnız **worker crash-loop** koruması: aşılınca mesaj terminate → süreç `failed(inDoubt)` (plan Q8).
+- **Scheduler yayınlar, tüketmez:** timer uygulaması Postgres claim ile (lider seçimi gerekmez); NATS KV lock **kullanılmadı** (alternatif olarak notlandı — plan R7/Q20).
+
 ## İlişkili tasarım
 
 - [`../research/property-value-storage/index.md`](../research/property-value-storage/index.md) — CQRS + Outbox depolama mimarisi (bu omurgayı kullanır).

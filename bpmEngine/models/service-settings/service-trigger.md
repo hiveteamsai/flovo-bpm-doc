@@ -83,7 +83,14 @@ Ateşlenince:
 
 ## Açık noktalar (→ `../../todo.md`)
 - **`timer` saat dilimi/DST (ince nokta):** cron'un hangi **saat dilimi**nde değerlendirileceği (Organization timezone alanı henüz açık) + DST geçişleri netleştirilecek. _(Kapsam çözüldü: timer servis-global, her tetikte yeni ana süreç.)_
+  **📝 Runtime önerisi (v0.44, onay bekliyor → [`../../engine-runtime-scheduler.md`](../../engine-runtime-scheduler.md) §4.5/§5):** cron **değerlendirilmez**, sonraki tetik önceden hesaplanıp
+  [`WorkflowTimer(kind=serviceTriggerCron)`](../processInstances/workflow-timer.md) satırı olarak durur; saat dilimi = dağıtım konfig `FLOVO_SCHEDULER_TZ` (vars. `Europe/Istanbul`,
+  DST yok); DST'li TZ'de standart semantik (yok olan an atlanır, çift an ilk); **kaçırılan tetik bir kez** yakalanır (yığın yok, > 24 h atlanır); en sık 1 dk. _(plan Q15)_
 - **Döngü koruması:** tetiklenen alt süreç yeni ilişki kurup **aynı trigger'ı** yeniden ateşlerse (A→B→A) sonsuz döngü riski — recursion/derinlik koruması. _(Tasarım-zamanı bir önleme: geri-referansı **association kurmayan** alanla tutmak — `isAssociatedCombobox = false`; örnek → `../../sampleProcess/expenseAndCreditCard/creditCardStatementLine.md`. Motor-düzeyi güvenlik ağı yine de açık.)_
 - **`async` kaskad kompozisyonu:** bir alt süreç yeni ilişki değişikliği yapıp **başka bir trigger'ı** ateşleyebilir (örnek Senaryo 5 kaskadı: çıkarma → değer temizleme → ikinci kaldırma trigger'ı). `async=false`'lar üst üste binince **senkron derinlik** oluşur; `async`'in **seviyeler boyunca kompozisyonu** + işlem/derinlik sınırı netleştirilecek (döngü korumasıyla bağlı). _(Örnekte 2. seviye bilinçli `async=true` seçilmiş.)_
+  **📝 Runtime önerisi (v0.44, onay bekliyor):** **(a) motor-düzeyi güvenlik ağı** = guard'lar (→ [`../../engine-runtime-errors.md`](../../engine-runtime-errors.md) §7): aynı kök süreçte
+  (`correlationId`) aynı trigger **20** tetik → ateşlenmez + admin bildirimi; alt süreç derinliği **8**; senkron (`async=false`) iç içe bekleme **3** (plan Q13). **(b) `async=false`
+  event-driven karşılığı** = worker **bloke etmez**: tetikleyen süreç `waiting(subProcess)` olur, alt sürecin `ended` olayı uyandırır; tetik FE/API isteğinden geliyorsa istek en fazla N s
+  bekler, sonra **202 pending** (plan **Q9** — "tetiklendiği yerde bekler" ilkesinin runtime yorumu).
 
 *Oluşturma: 2026-07-29.*

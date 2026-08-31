@@ -194,6 +194,10 @@ Kullanıcı grubu · Daha önce aksiyon alanlar. Her alıcı, **birincil alıcı
 
 **Zaman aşımı bildirimi:** süre dolduğunda bildirim gönderilebilir.
 > Aynı zaman-aşımı yapısı **Kullanıcı / Kullanıcı Grubu** adımlarının **timeout** ayarında da kullanılır (→ §3.15 / §3.16, `../flovo-bpm-engine.md` §6.2).
+> **Runtime karşılığı (📝 v0.44):** Timer adımına girilince / `timerStart` koşunca bir **`WorkflowTimer(kind=stepTimer)`** kurulur; süre dolunca scheduler `default`
+> aksiyonu uygular — süreç başka bir insan adımında bekliyorsa o bekleme **kapatılır** (preemption). `timerEnd` = `armed` timer'ı iptal eder. Süre hesabı (`workCalendar`
+> → organizasyonun `WorkingSchedule`/`VacationDay`) **kurulum anında** sabitlenir. → [`../engine-runtime-scheduler.md`](../engine-runtime-scheduler.md) §2–§4/§6 ·
+> [`../models/processInstances/workflow-timer.md`](../models/processInstances/workflow-timer.md).
 
 ### 3.8 — Timer Start
 **Özet:** Bir timer seçilir ve o timer'ın süresini **başlatır** (`selectedTimerProcessStepId`). İşini yapıp **`default`** ile ilerler.

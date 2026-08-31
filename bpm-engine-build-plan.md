@@ -238,5 +238,9 @@ FAZ 2  H (DTO / seçici aktarım)  ◄── önce karar, sonra uçlar
 
 - **Nasıl işaretlenir:** Bir görev bitince `[ ]`→`[x]` yap + §2.0 durum panosundaki grup `x/y`'yi güncelle. Faz DoD sağlanınca panoda faz satırını ✅'le.
 - **Devam noktası:** ➡️ **§6'daki 7 kararı ver** (ya da "önerilerin uygun") → ardından **F1.A.1 (`workflow_events` model dosyası)** ile Faz 1 yazımına başla.
+- **📝 v0.44 (2026-08-31) — Faz 1 Grup A/B/C dokümanları TASLAK olarak yazıldı, kullanıcı incelemesi bekliyor:** F1.A.1 `workflow-event.md` · F1.A.2 `workflow-projection.md` ·
+  F1.B.1–B.4 `engine-runtime-errors.md` (+ engine-runtime §5.2 çakışma sözleşmesi) · F1.C.1 `engine-runtime-scheduler.md` + `workflow-timer.md` (lider seçimi **gereksiz** — claim modeli;
+  §6.4 önerisinin yerine geçer) · retention `engine-runtime-retention.md`. §6.3 (compensation post-MVP) ve §6.5 (`onFail` opsiyonel) önerileri **doğrultusunda** yazıldı.
+  Kararlar/açık sorular ve bu konunun adım planı → **[`bpmEngine/engine-runtime-plan.md`](bpmEngine/engine-runtime-plan.md)**; inceleme bitince buradaki `[ ]`'ler ve §2.0 panosu güncellenir.
 
 *Oluşturma: 2026-08-31. Bu plan dosyası ana dizindedir; motor geliştirmesine dönünce buradan başla.*
