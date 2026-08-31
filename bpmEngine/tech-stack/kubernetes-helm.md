@@ -1,7 +1,7 @@
 # Kubernetes + Helm (+ Docker Compose) — Konteyner & Orkestrasyon (Flovo iBPM v2)
 
 > **Rol:** Uygulamayı **geliştirmede Compose**, **üretimde Kubernetes** ile paketleyip çalıştırmak; tek Helm chart ile **on-prem + Private Cloud** dağıtımı sağlamak.
-> **Karar:** Docker Compose (dev) + Kubernetes (prod, OpenShift + BYO) + Helm · ✅ canlı (F-Infra SI.1/SI.6) · tam gerekçe/karşılaştırma → [`../research/tech-stack/tech_rating.md`](../research/tech-stack/tech_rating.md)
+> **Karar (üretim hedefi):** Docker Compose (dev) + Kubernetes (prod, OpenShift + BYO) + Helm — **on-prem/Private-Cloud üretim hedefi**, 🟡 **TASARIM (henüz kurulmadı).** **Pilot gerçeği (canlı):** BE **Azure Container Apps** (`ca-flovo-ibpm-be`, RG `rg-flovo-pg-pilot`) · FE **Vercel** · DB **Azure PostgreSQL** → [`../implementation-status.md`](../implementation-status.md). Tam gerekçe → [`../research/tech-stack/tech_rating.md`](../research/tech-stack/tech_rating.md)
 
 ## Ne için kullanıyoruz?
 
@@ -29,7 +29,7 @@ Amaç, ürünü **müşterinin kendi veri merkezinde / private cloud'unda** çal
 
 ## Konfigürasyon / desen notları
 
-- **Neden serverless değil?** BPM **stateful** ve uzun-yaşayan bir yüktür; serverless (Azure Functions/Container Apps) kısa-ömürlü, durumsuz iş için tasarlıdır → BPM'e **aykırı**. Bu yüzden Container Apps + Service Bus önerileri **reddedildi** (bkz. tech_rating katman 8, 10).
+- **Neden serverless değil? (üretim runtime için)** Uzun-yaşayan **stateful Motor** runtime'ı için serverless (kısa-ömürlü, durumsuz) **aykırıdır** → üretim hedefi stateful K8s. **Pilot ayrımı:** pilot kapsamı **design-time**'dır (Motor runtime henüz yok), bu yüzden pilot **bilinçli olarak Azure Container Apps** üzerinde koşturuldu; bu, üretim-runtime kararıyla **çelişmez** (bkz. [`../implementation-status.md`](../implementation-status.md)). Service Bus kullanılmadı (mesajlaşma tasarımı NATS).
 - **On-prem birinci sınıf:** vendor-agnostic olduğundan managed servislere (Azure PostgreSQL, Blob, Service Bus) bağımlılık yok — hepsinin self-host karşılığı yığında (Postgres, MinIO, NATS, Keycloak).
 - **Yatay ölçekleme (horizontal scaling):** Uygulama servisleri **durumsuz** tutulur; **durum Postgres'te**, **kuyruk/olay NATS'ta** (bkz. [`nats-jetstream.md`](./nats-jetstream.md)). Böylece BE ve özellikle **CQRS projektör** replica'ları yatay ölçeklenir — form/property projeksiyon throughput'unu (property-value-storage **P5 projection lag**) artırmak için tüketici eklenir. Süreç durumu paylaşımlı DB/kuyrukta olduğundan replica'lar çakışmaz.
 - **Sprint 3 hardening (planlı):** SCC (OpenShift security context) · NetworkPolicy · cert-manager (TLS) · ServiceMonitor (Prometheus) · Helm subchart values profilleri → prod-grade OpenShift + BYO.

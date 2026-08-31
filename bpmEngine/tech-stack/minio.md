@@ -1,7 +1,7 @@
 # MinIO — Nesne Depolama (Object Storage) (Flovo iBPM v2)
 
 > **Rol:** Form ekleri, fatura görselleri ve tüm binary/dosya içeriğinin S3-uyumlu, self-host nesne deposu.
-> **Karar:** **MinIO** (embed, S3 API) · ✅ canlı (F-Infra SI.4) · tam gerekçe/karşılaştırma → [`../research/tech-stack/tech_rating.md`](../research/tech-stack/tech_rating.md)
+> **Karar:** **MinIO** (embed, S3 API) · 🟡 **TASARIM (pilotta henüz kurulmadı; bkz. [`../implementation-status.md`](../implementation-status.md))** · tam gerekçe/karşılaştırma → [`../research/tech-stack/tech_rating.md`](../research/tech-stack/tech_rating.md)
 
 ## Ne için kullanıyoruz?
 
