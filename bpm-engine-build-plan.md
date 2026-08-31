@@ -37,6 +37,13 @@ dökümanlar eksik ve hangi sırayla yazılmalı"** sorusunu iki faza bölerek y
 
 ## 2. Ne durumdayız? (üç ajan bulgusu — birleşik değerlendirme)
 
+> **Pilot gerçeği (v0.41-1 · [`bpmEngine/implementation-status.md`](bpmEngine/implementation-status.md)):** **Tasarım-zamanı (config authoring)
+> katmanı = INŞA EDİLDİ + dağıtıldı** (Settings-API çatısı · Service/Property/ViewProfile CRUD + Designer'lar · **Draft/Publish/Versiyonlama** ·
+> **Süreç Arşivleme** → Azure Container Apps + Vercel + Azure-PG + Keycloak). Bu katman, bu planın **her iki fazının da üstünde** (upstream)
+> kalır: **Faz 1 (motor runtime)** ve **Faz 2 (instance frontend)** hâlâ önümüzde. Yani aşağıdaki "🟢 hazır" değerlendirmesi, tasarım-zamanı
+> için artık "🟢 **inşa edildi**" olarak okunmalı. *(Numaralandırma: implementation-status'un "Bölüm-1 = design-time / Motor runtime" ekseni,
+> bu planın "Faz 1 = motor runtime / Faz 2 = frontend" ekseninden farklıdır; pilotun "Motor runtime henüz yok" tespiti ≈ bu planın **Faz 1**'idir.)*
+
 ### 2.0 Durum panosu (ilerledikçe güncelle)
 
 | Faz | Grup | Konu | Durum |

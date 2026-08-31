@@ -46,7 +46,10 @@ GIN'i ile çözülür.
 ## Konfigürasyon / desen notları
 
 - **RLS Pattern B v2:** her tenant-tabloda `organizationId` + RLS politikası; sorgu-zamanı tenant context ile satır izolasyonu
-  (application filtresine güvenilmez, DB garanti eder). Multi-tenancy'nin **kritik** bileşeni.
+  (application filtresine güvenilmez, DB garanti eder). Multi-tenancy'nin **kritik** bileşeni. **"v2" = GUC-native:** backend her
+  istekte **tenant GUC**'unu set eder, RLS politikası bunu **`active_tenant_id()`** fonksiyonuyla okur; **branch-siz** (tenant için
+  ayrı şema/bağlantı-dalı yok) → **insan kullanıcı ile AI-agent aynı tenant/RLS yolunu kullanır** ("agent parity" by-construction).
+  Pilotta Azure-PG üzerinde doğrulandı → [`../implementation-status.md`](../implementation-status.md).
 - **Partition — `HASH(service_id)`:** `instance_value`/`instance_attr`/`instance_list_item` partition'lı; her sorgu `service_id` (mümkünse
   `organizationId`) filtresi taşır → partition pruning. Dominant tenant sıcak-nokta olursa alt-`HASH(organizationId)` (S9, P9).
 - **Yazma maliyeti tuning (S9/S10):** JSONB update = MVCC ile **tüm satır** yeniden yazımı → JSONB küçük tutulur (dosyalar MinIO'da,

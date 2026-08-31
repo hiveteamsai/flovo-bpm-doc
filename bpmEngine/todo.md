@@ -62,6 +62,9 @@
   alanları: process-step §2 / action · flovo-bpm-engine §8)_
   - **`environmentRestriction` alan formatı** (enum mu, string mi, kapsam) bu modelle birlikte netleşecek — şimdilik **ertelendi**.
     _([`./research/current-flovo-bpm-engine/step-type-settings-and-enums.md`](./research/current-flovo-bpm-engine/step-type-settings-and-enums.md) §8)_
+  - **Not (v0.41-1):** servis **versiyonlama/draft-publish + arşivleme** pilotta **ortam modelinden bağımsız** inşa edildi;
+    env katmanı geldiğinde ortamlar-arası **kopya/promote** bunun üstüne oturur (versiyonlamayı env'e bağlama varsayımı gevşedi).
+    → [`implementation-status.md`](./implementation-status.md).
 - [ ] **Güvenlik** — expression/kod değerlendirme **sandbox**'ı (sert sınır), credential şifreleme/paylaşım,
   riskli adımlar. _(flovo-bpm-engine §10 · process-step-action §5)_
 - [ ] **Paralel dallanma / eşzamanlı kollar & join** var mı? Bir adım aynı anda birden çok sonraki adımı tetikler mi?
@@ -79,9 +82,13 @@
   "herhangi bir adım = araç" + MCP? _(flovo-bpm-engine §11)_
   - 🧱 **Tech-stack:** AI **substratı** = **Python AI Service** (🟡 post-MVP) + **pgvector**; entegrasyon **MODELİ** açık. → [`./tech-stack/python-ai-service.md`](./tech-stack/python-ai-service.md)
 - [ ] **Settings API (tasarım-zamanı ayar CRUD) — açık noktalar** — yüzey tasarlandı ([`settings-api.md`](./settings-api.md)); kalan:
-  **ortak hata sözleşmesi** · **draft/publish + servis versiyonlama** (ortam modeliyle bağlı) · **toplu senkron** ucu (org referans
+  **ortak hata sözleşmesi** · **ortamlar-arası (env) kopya/promote** · **toplu senkron** ucu (org referans
   verisi upsert; Customer API ön-koşulu) · ayar-değişiklik **loglama** (SettingsLog) · `settings`/`configuration` **referans bütünlüğü +
   silme koruması** kesin kuralları · **yetki granülaritesi** (hangi rol hangi kaynağı yazar). _(settings-api §5–§9)_
+  - **Pilotta inşa edildi (v0.41-1):** **draft/publish + servis versiyonlama** (`ServiceVersion` · `currentVersion` ·
+    `hasUnpublishedChanges` · `lastPublishedAt` + code-lock) ve **süreç arşivleme** (`archivedAt`/`archivedBy` + `ArchivedChecker`
+    cross-domain guard + `archiveFilter`) — **ortam modelinden bağımsız**. → [`implementation-status.md`](./implementation-status.md) ·
+    `models/service-settings/service.md`. **Kalan:** `ServiceVersion` **snapshot içeriği** + ortamlar-arası kopya.
 - [ ] **Hata yönetimi** — her adımda `onFail` var mı/zorunlu mu; **retry** (deneme + bekleme); süreç-seviye global
   hata yakalayıcı; telafi/compensation; `action` zinciri **sonsuz döngü** koruması. _(flovo-bpm-engine §7 · process-step-action §7)_
 - [ ] **Vekalet (proxy / yetki verme) sistemi** — **görev-devri yerine** kalıcı vekalet: kullanıcılar başka kişilere vekalet verir;

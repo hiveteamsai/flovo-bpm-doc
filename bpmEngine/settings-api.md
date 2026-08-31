@@ -19,7 +19,7 @@ her şey **konfigürasyondur** (instance/veri değil); düşük hacim, **id ile*
 
 ## 1. Ortak sözleşme
 - **Kimlik:** `Authorization: Bearer <token>` (Keycloak OIDC); token'daki **`organizationId`** claim'i ile **PostgreSQL RLS**
-  (Pattern B) → [`tech-stack/keycloak.md`](./tech-stack/keycloak.md). Tasarım-zamanı yazma **yetki** gerektirir (admin/designer rolü;
+  (Pattern B v2) → [`tech-stack/keycloak.md`](./tech-stack/keycloak.md). Tasarım-zamanı yazma **yetki** gerektirir (admin/designer rolü;
   yetki modeli → [`organization-settings/permissions.md`](./organization-settings/permissions.md)).
 - **Protokol:** dış REST/JSON (grpc-gateway); iç gRPC. `Content-Type: application/json` · `Accept-Language` (çok-dilli metin).
 - **Kaynak adları:** `code` **dış/iş kimliği**, `id` iç PK. **`Property.code` (ve `Service.code` …) immutable** — ilk instance
@@ -135,18 +135,27 @@ Aynı CRUD deseni (`GET/POST/PUT/DELETE`, RLS, soft-delete).
 - **Toplu senkron (org referans verisi):** harici ERP'den `company/department/user…` **toplu upsert** ucu — bugünkü Customer API'de
   **yok** (todo ön-koşulu); tasarım/senkron katmanı olarak buraya eklenir; her kaydın `synchronizationStatus`'u güncellenir.
 
-## 7. Draft / yayınlama & versiyonlama (açık)
-- 🟦 **AÇIK:** Ayar değişiklikleri **doğrudan mı canlı** olur yoksa **draft → publish** akışı mı? Servis **versiyonlama** (çalışan
-  instance'lar eski tanımı mı kullanır?) + **ortam (env)** kopyalama. → todo ("Ortam modeli" · env/servis template).
+## 7. Draft / yayınlama & versiyonlama (pilotta inşa edildi)
+> **Durum:** 🟢 Pilotta inşa edildi (v0.41-1) → [`implementation-status.md`](./implementation-status.md); model →
+> [`models/service-settings/service.md`](./models/service-settings/service.md) "Versiyonlama & yayınlama".
+
+- **Akış = `draft → publish`:** Designer değişiklikleri doğrudan canlıya gitmez → `Service.hasUnpublishedChanges = true`. **Publish**,
+  taslağı yeni bir **versiyon** olarak sabitler (`currentVersion`↑ · `lastPublishedAt` · `ServiceVersion` snapshot; `hasUnpublishedChanges=false`).
+- **Versiyonlama:** çalışan instance'lar **başlatıldıkları versiyonun** tanımını kullanır (yayın eski instance'ları etkilemez).
+- **Kod kilidi:** yayınlanan kaynağın `code`'u kilitlenir (§5).
+- **Arşivleme:** servis soft-arşivlenir (`archivedAt`/`archivedBy`); **`ArchivedChecker`** arşivli parent altındaki property/view-profile/
+  service/publish **yazma yollarını** `FailedPrecondition` ile reddeder; `archiveFilter` (active/archived/all).
+- 🟦 **Kalan açık:** **ortamlar-arası (env) kopya/promote** + `ServiceVersion` **snapshot içeriği** → todo ("Ortam modeli"). Not:
+  versiyonlama/arşivleme pilotta **ortam modelinden bağımsız** inşa edildi.
 
 ## 8. Denetim / loglama (açık)
 - 🟦 **AÇIK:** Ayar-değişiklik **denetim izi** (kim, ne, ne zaman) — plan hazır (`SettingsLog`/`SettingsLogBatch` →
   [`research/settings-log/index.md`](./research/settings-log/index.md)), karar bekliyor; KVKK/saklama → todo.
 
 ## 9. Açık noktalar (→ [`todo.md`](./todo.md))
-Ortak **hata sözleşmesi** · **draft/publish + versiyonlama** (env modeliyle) · **toplu senkron** ucu (Customer API ön-koşulu) ·
-ayar-değişiklik **loglama** (SettingsLog) · `settings` **referans bütünlüğü + silme koruması** kesin kuralları · yetki granülaritesi
-(hangi rol hangi kaynağı yazar).
+Ortak **hata sözleşmesi** · **ortamlar-arası kopya/promote** (env modeli — *draft/publish + versiyonlama + arşivleme pilotta inşa edildi
+→ §7*) · **toplu senkron** ucu (Customer API ön-koşulu) · ayar-değişiklik **loglama** (SettingsLog) · `settings` **referans bütünlüğü +
+silme koruması** kesin kuralları · yetki granülaritesi (hangi rol hangi kaynağı yazar).
 
 ---
 

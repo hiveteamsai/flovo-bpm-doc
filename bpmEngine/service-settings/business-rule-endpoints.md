@@ -23,7 +23,7 @@ Motor çoğu işi client'ta yapar; backend'e yalnız şu 6 durumda çıkar:
 
 ## 0.1 Ortak sözleşme
 - **Kimlik:** `Authorization: Bearer <token>` (Keycloak OIDC); token'daki **`organizationId`** claim'i ile tenant izolasyonu
-  (**PostgreSQL RLS** — Pattern B). Ayrı `accountId` header **yok** → [`tech-stack/keycloak.md`](../tech-stack/keycloak.md).
+  (**PostgreSQL RLS** — Pattern B v2). Ayrı `accountId` header **yok** → [`tech-stack/keycloak.md`](../tech-stack/keycloak.md).
 - **Ortak header'lar:** `Content-Type: application/json` · `Accept-Language` (çok-dilli metin/çeviri) · sürüm.
 - **İçerik:** istek/yanıt JSON; hata sözleşmesi Customer/iç API ortak standardı (→ todo).
 

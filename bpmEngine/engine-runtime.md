@@ -158,7 +158,7 @@ erişebilir/geri-taşıyabilir (`processEnd.userGroupIds`); alt süreçte geri-t
 
 ## 10. Ölçekleme & çok-kiracılık
 - **Yatay ölçek:** worker'lar durumsuz → JetStream consumer'ları **eklenerek** ölçeklenir (lag büyürse worker ekle).
-- **İzolasyon:** her tablo `organizationId` + **RLS** (Pattern B); NATS **tenant-bazlı account**; partition `HASH(service_id)`
+- **İzolasyon:** her tablo `organizationId` + **RLS** (Pattern B v2); NATS **tenant-bazlı account**; partition `HASH(service_id)`
   (postgresql.md). Bir kiracının yükü diğerini görmez.
 - **On-prem/bulut:** K8s/Helm; worker `Deployment` (replica-N), scheduler tek (leader). → [`tech-stack/kubernetes-helm.md`](./tech-stack/kubernetes-helm.md).
 

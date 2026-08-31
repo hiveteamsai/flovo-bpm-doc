@@ -22,7 +22,7 @@ Flovo bir **çok-kiracılı (multi-tenant) kurumsal** BPM platformu; müşterile
 
 - **Kimlik akışı:** FE (Next.js) → Keycloak OIDC login → access token (JWT). FE bu token'ı Flovo API'ye taşır; Go backend token'ı doğrular.
 - **Tenant kimliği token'da:** Custom Token Mapper SPI, JWT'ye **`organizationId`** ve **rol/yetki claim'leri** ekler. Böylece "kullanıcı hangi organizasyona ait" bilgisi her istekte token'dan gelir — ayrı sorgu gerekmez.
-- **DB tenant izolasyonuyla bağ (kritik):** Token'daki `organizationId`, PostgreSQL **RLS Pattern B**'yi besler — backend, oturum değişkenine (`SET app.organization_id`) token'daki değeri yazar; DB satır bazında yalnız o organizasyonun verisini döndürür. Detay → [`./postgresql.md`](./postgresql.md).
+- **DB tenant izolasyonuyla bağ (kritik):** Token'daki `organizationId`, PostgreSQL **RLS Pattern B v2**'yi besler — backend, her istekte **tenant GUC**'una token'daki değeri yazar; RLS politikası bunu **`active_tenant_id()`** ile okuyup satır bazında yalnız o organizasyonun verisini döndürür (**GUC-native, branch-siz** → insan + AI-agent aynı tenant/RLS yolunu kullanır). Detay → [`./postgresql.md`](./postgresql.md).
 - **Yetkilendirme:** Kimlik-doğrulama Keycloak'ta; ancak **iş yetkileri organizasyon bazında** Flovo tarafında yönetilir (bkz. `organization.md` — yetkiler Organization'da, admin + grup-bazlı). Keycloak rolleri kaba erişim (ör. admin/user), ince yetki Flovo modeli.
 
 ## Konfigürasyon / desen notları
@@ -34,7 +34,7 @@ Flovo bir **çok-kiracılı (multi-tenant) kurumsal** BPM platformu; müşterile
 
 ## İlişkili tasarım
 
-- [`./postgresql.md`](./postgresql.md) — JWT `organizationId` → RLS Pattern B tenant izolasyonu.
+- [`./postgresql.md`](./postgresql.md) — JWT `organizationId` → RLS Pattern B v2 tenant izolasyonu.
 - [`../models/organization-settings/user.md`](../models/organization-settings/user.md) — kullanıcı modeli; organizasyon bağlantıları.
 - [`../models/organization-settings/organization.md`](../models/organization-settings/organization.md) — yetkiler organizasyon bazında.
 - [`../research/tech-stack/tech_rating.md`](../research/tech-stack/tech_rating.md) — auth katmanı kararı (Keycloak vs GoTrue/custom/Azure AD).
