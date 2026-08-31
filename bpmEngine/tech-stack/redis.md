@@ -1,7 +1,7 @@
 # Redis — Cache & Ephemeral Katman (Flovo iBPM v2)
 
 > **Rol:** Geçici (ephemeral) hızlı erişim katmanı — cache, oturum/rate-limit, anlık bildirim tamponu; **kalıcı veri veya kuyruk değil**.
-> **Karar:** Redis · ✅ canlı (Sprint 2 S2.8 notification BE) · tam gerekçe → [`../research/tech-stack/tech_rating.md`](../research/tech-stack/tech_rating.md)
+> **Karar:** Redis · 🟡 **TASARIM (pilotta henüz kurulmadı; bkz. [`../implementation-status.md`](../implementation-status.md))** · tam gerekçe → [`../research/tech-stack/tech_rating.md`](../research/tech-stack/tech_rating.md)
 
 ## Ne için kullanıyoruz?
 
@@ -15,7 +15,7 @@ Redis, **kaybı tolere edilebilir, hızlı, geçici** veriler için kullanılır
 
 | Bileşen | Karar | Not |
 |---|---|---|
-| Redis | ✅ canlı | Notification BE'de kullanımda (S2.8) |
+| Redis | 🟡 TASARIM | Pilotta henüz kurulmadı (tasarım hedefi) |
 | Kalıcılık | Ephemeral öncelikli | Kalıcı iş kuyruğu **değil** |
 
 ## Projemizde kullanım

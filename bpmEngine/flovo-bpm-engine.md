@@ -1,6 +1,7 @@
 # Flovo BPM Motoru — Çalışma Prensibi (Tasarım Dokümanı)
 
 > **Durum:** 🟢 DETAYLANIYOR — temel kavramlar / çalışma prensibi / yürütme algoritması dolduruldu; **§3 veri modeli = koleksiyon-tabanlı (v0.30) + §3.1 değer yazma/okuma yolu & JSON Schema kapısı (v0.31)**; bazı bölümler (§2.2, §7, §8, §10, §11) founder/teknik girdi bekliyor.
+> **Uygulama durumu →** [`implementation-status.md`](./implementation-status.md) — Bölüm-1 (design-time) **inşa edildi + pilot dağıtıldı** (Azure Container Apps + Vercel + Azure-PG + Keycloak); **Motor runtime = tasarım** (henüz inşa edilmedi).
 > **Amaç:** Yeni Flovo'nun **BPM motorunun** nasıl çalışacağını (mimari + yürütme prensibi) tanımlamak.
 > Bu doküman "hangi adımlar var" değil (→ `service-settings/process-step.md`), "adımlar ne yapar" değil (→ `service-settings/process-step-action.md`);
 > **"motor bu adımları nasıl çalıştırır"** sorusunu cevaplar.
