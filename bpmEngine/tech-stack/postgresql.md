@@ -1,7 +1,7 @@
 # PostgreSQL — Birincil Veritabanı & Depolama Substratı (Flovo iBPM v2)
 
 > **Rol:** Tüm kalıcı verinin (form değerleri, süreç durumu, organizasyon ayarları, event log) tek gerçek kaynağı ve raporlama/arama substratı.
-> **Karar:** PostgreSQL **16** (self-host, yalın) + PgBouncer 1.23 · ✅ canlı (F-Infra SI.1) · tam gerekçe/karşılaştırma → [`../research/tech-stack/tech_rating.md`](../research/tech-stack/tech_rating.md) (skor 55/60, #1)
+> **Karar:** PostgreSQL **16** (yalın) — **üretim hedefi self-host** (on-prem/Private-Cloud); **pilot: Azure PostgreSQL** (yönetilen, plain PG, GUC-native RLS). ✅ canlı (pilot); **PgBouncer pilotta henüz yok.** Detay → [`../implementation-status.md`](../implementation-status.md). Tam gerekçe → [`../research/tech-stack/tech_rating.md`](../research/tech-stack/tech_rating.md) (skor 55/60, #1)
 
 ## Ne için kullanıyoruz?
 
@@ -16,8 +16,8 @@ Flovo iBPM v2'nin **tek birincil veritabanı**. BPM'in DB'den beklediği dört k
 
 | Bileşen | Sürüm/karar | Not |
 |---|---|---|
-| PostgreSQL | **16** | Self-host (on-prem + Private Cloud ready; managed vendor yok) |
-| Connection pool | **PgBouncer 1.23** | `transaction` mode → 10K+ istemci bağlantısı |
+| PostgreSQL | **16** | Üretim hedefi: self-host (on-prem/Private-Cloud). **Pilot: Azure PostgreSQL** (yönetilen) |
+| Connection pool | **PgBouncer 1.23** | `transaction` mode → 10K+ istemci bağlantısı · 🟡 **pilotta henüz yok** |
 | Extension: pgvector | 🟡 **post-MVP** | AI embedding / semantic search (aynı DB, ayrı vector DB gereksiz) |
 | Full-text | **tsvector** (yerleşik) | Basit arama; uç ölçekte read-side Elasticsearch (opsiyonel) |
 | Migration | ADR-003 apply CI | Şema değişiklikleri CI ile uygulanır |
