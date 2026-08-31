@@ -1,7 +1,7 @@
 # NATS + JetStream — Mesajlaşma & Event Omurgası (Flovo iBPM v2)
 
 > **Rol:** Servisler arası **olay taşıma**, **realtime bildirim** ve — en kritik — **CQRS projeksiyon senkronizasyonunun (Outbox → projektör) kalıcı omurgası**.
-> **Karar:** NATS **2.10** + JetStream · ✅ canlı (F-Infra SI.5) · tam gerekçe/karşılaştırma → [`../research/tech-stack/tech_rating.md`](../research/tech-stack/tech_rating.md)
+> **Karar:** NATS **2.10** + JetStream · 🟡 **TASARIM (pilotta henüz kurulmadı — Motor runtime fazıyla gelir; bkz. [`../implementation-status.md`](../implementation-status.md))** · tam gerekçe/karşılaştırma → [`../research/tech-stack/tech_rating.md`](../research/tech-stack/tech_rating.md)
 
 ## Ne için kullanıyoruz?
 
