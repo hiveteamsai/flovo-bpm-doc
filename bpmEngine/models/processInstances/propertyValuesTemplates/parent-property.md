@@ -9,16 +9,16 @@
 
 | `reflectionMode` | `data`'da anahtar/değer | Nasıl |
 |---|---|---|
-| `snapshot` (A, **vars.**) | **Anahtar var + değer taşır** | Yazımda üst alandan **kopyalanır + dondurulur** (referans alanın şekliyle). |
+| `snapshot` (A, **vars.**) | **Anahtar var + değer taşır** | **İlişki kurulduğu anda** (`AssociatedInstance` insert) üst alandan **kopyalanır + dondurulur** (referans alanın şekliyle); bağ kalkınca **`null`** yazılır. |
 | `live` (B) | **Anahtar `data`'da HİÇ bulunmaz** | `data`'ya **yazılmaz** (anahtar dahi konmaz); okurken üst instance'tan **join/referans** ile getirilir. "Anahtar-her-zaman-bulunur" kuralının `text`'teki gibi **istisnasıdır** (değer okuma-anı gelir, saklanmaz). |
-| `materialized` (A′) | **Anahtar var + değer taşır** | `data`'ya kopyalanır **ve** üst değiştikçe [`AssociatedInstance` üzerinden yayılımla](../reflection-propagation.md) **tazelenir** (varsayılan **async**; `reflectionPropagation=sync` opsiyonu). |
+| `materialized` (A′) | **Anahtar var + değer taşır** | **İlişki kurulunca** `data`'ya kopyalanır (bağ kalkınca **`null`**) **ve** üst değiştikçe [`AssociatedInstance` üzerinden yayılımla](../reflection-propagation.md) **tazelenir** (varsayılan **async**; `reflectionPropagation=sync` opsiyonu). |
 
 ```json
 { "parentBudgetCode": { "value": "P-9", "display": "Proje 9", "translationCode": null } }
 ```
 _(örnek: üst alan etiketli seçimse `LabeledValue`; sayısalsa `number`…)_
 
-- **Boş/seçilmemiş değer** (üst alan boşsa): `snapshot`/`materialized`'da anahtar **`null`** taşır (skaler boş-değer konvansiyonu); `live`'da anahtar zaten `data`'da bulunmaz.
+- **Boş/seçilmemiş değer** (üst alan boşsa **veya bağ henüz kurulmadı / kaldırıldı**): `snapshot`/`materialized`'da anahtar **`null`** taşır (skaler boş-değer konvansiyonu); `live`'da anahtar zaten `data`'da bulunmaz. Kopyalama/temizleme anı = `AssociatedInstance` insert/delete (KARAR v0.45 → [`../reflection-propagation.md`](../reflection-propagation.md) §3a).
 
 ## 2. Projeksiyon — `projectToAttr=true`
 | `reflectionMode` | Projeksiyon |
@@ -31,4 +31,4 @@ _(örnek: üst alan etiketli seçimse `LabeledValue`; sayısalsa `number`…)_
 - **Yayılım mekanizması:** ayrı bir "link" tablosu **yok** — child'lar `AssociatedInstance` ters aramasıyla, eşleme `Property.refPropertyId`/`code` ile çözülür.
 - **`async` (vars.):** üst commit'i ile child tazeleme arası **eventual consistency** (kısa gecikme). Anında tutarlılık gerekiyorsa **`sync`** (1-hop + fan-out eşiği guardrail'li).
 
-*Oluşturma: 2026-08-06.*
+*Oluşturma: 2026-08-06. Güncelleme: 2026-09-07 (kopyalama anı = ilişki anı, KARAR v0.45).*

@@ -141,7 +141,8 @@ Customer API / iş kuralı. Kaynağı ne olursa olsun her yazım **tek bir ortak
    **reddedilir** (kayıpsızlık + tutarlılık; ara stringify yok). _(Bu, `Property.settings`'in tip-başına JSON Schema ile
    doğrulanmasının değer-katmanı karşılığıdır.)_
 2. **Yazılabilirlik kapısı:** yalnız **yazılabilir** alanlara işlenir; `text` (statik) · `live` yansıma (`userInfo`/`flowInfo`/
-   `parentProperty`) · `savePropertyToDb=false` alanları **atlanır** (§4.2 istisnaları).
+   `parentProperty`) · `savePropertyToDb=false` alanları **atlanır** (§4.2 istisnaları). `snapshot`/`materialized` `parentProperty`
+   kopyalarını kullanıcı/aksiyon yazmaz; **motor** ilişki kurulunca/kalkınca aynı kapıdan yazar (→ `models/processInstances/reflection-propagation.md` §3a).
 3. **Kaynağa yazım (aynı TX):** değer `InstanceValue.data`'ya (code-keyed JSONB) **merge** edilir; boş değer **`null`** yazılır.
    `saveChangeLog=true` ise **aynı TX**'te `InstanceValueChange` satırı + `InstanceValueOutbox` olayı düşer (transactional outbox).
 4. **Projeksiyon (async):** generic projektör outbox'tan `projectToAttr=true` alanlarını `InstanceAttr`/`InstanceListItem`'a

@@ -429,7 +429,8 @@ hem **sync** hem **performans** açısından pahalıdır. Bu adım, alt-servis k
 >   (kimse beklemiyor) · üst form **Süreç Bitişi'nde** — üçünde de alt kayıt **herkese read-only** görünür (aksiyon alabilen yok).
 > - **Görüntüleme profili:** **code-eşleşmesi** (üstün aktif adım profili) → yoksa **`isDefault`**. Üst form **bulunamadığında**
 >   profil doğrudan **`isDefault`** + read-only.
-> - **Birden fazla üst form:** normalde **oluşmaz**; yine de oluşursa **ilk tespit edilen** üst form esas alınır.
+> - **Birden fazla üst form:** normalde **oluşmaz**; yine de oluşursa **ilk tespit edilen** üst form esas alınır (= **en erken bağ**, en küçük
+>   `AssociatedInstance.id` — `parentProperty` birincil-üst kuralıyla **aynı**, v0.45 → `models/processInstances/reflection-propagation.md` §3a).
 > - **Atananlar kopyalanmaz:** her okumada üst formun `InstanceAwaitingUser`'ından **canlı** çözülür (yukarıda §4).
 
 ---

@@ -60,10 +60,9 @@
 | `childServiceId` | int | Alt servis (Form List). |
 | `serviceItemControlId` | int | Alt-servis öğe kontrolü. |
 | `associatedServiceId` | int? (FK → Service) | **İlişkili combobox** hedef servisi — `combobox` alanında `isAssociatedCombobox=true` iken **zorunlu**; combobox o servisin instance'larından seçtirir, seçilen her instance için `AssociatedInstance` kaydı düşer (§2). |
-| `refPropertyId` | int | Referans alınan alan (Parent Property). |
-| `parentPropertyId` | int | Üst alan. |
-| `relatedPropertyIds` | List\<int\> | İlişkili alanlar. |
-| `reflectionMode` | ReflectionMode | **Salt-okunur/türetilen alanlarda** (`parentProperty` · `userInfo` · `flowInfo`) — değerin **oluşturma-anı mı (dondurulmuş)** yoksa **güncel mi** gösterileceği: `snapshot` (kopyala+dondur) · `live` (canlı okuma) · `materialized` (kopya + **`AssociatedInstance` üzerinden yayılımla** tazelenir — **yalnız `parentProperty`**). **Tipe-göre varsayılan:** `parentProperty`/`userInfo` → `snapshot` · `flowInfo` → `live`. → [`../enums/reflection-mode.md`](../enums/reflection-mode.md). |
+| `parentPropertyId` | int (FK → Property) | **Bağlayan alan** (`parentProperty`): ilişkiyi kuran **Form List** (üst serviste) **veya tek-seçimli ilişkili Combobox** (`isAssociatedCombobox=true`, `isMultiSelect=false`; child servisin kendisinde). **Üst servis buradan türetilir** (Form List → alanın `serviceId`'si · Combobox → `associatedServiceId`). Çok-seçimli Combobox **reddedilir** (KARAR v0.45 → [`../processInstances/reflection-propagation.md`](../processInstances/reflection-propagation.md) §3a). |
+| `refPropertyId` | int (FK → Property) | **Üst servisteki yansıtılan alan** (`parentProperty`); değer şekli bu alanın tipiyle aynı. Doğrulama: `Property(refPropertyId).serviceId` = `parentPropertyId`'den türetilen üst servis (KARAR v0.45). |
+| `reflectionMode` | ReflectionMode | **Salt-okunur/türetilen alanlarda** (`parentProperty` · `userInfo` · `flowInfo`) — değerin **kopyalama-anı mı (dondurulmuş)** yoksa **güncel mi** gösterileceği: `snapshot` (kopyala+dondur) · `live` (canlı okuma) · `materialized` (kopya + **`AssociatedInstance` üzerinden yayılımla** tazelenir — **yalnız `parentProperty`**). `parentProperty`'de kopya **ilişki kurulunca** alınır, bağ kalkınca **`null`** (KARAR v0.45 → [`../processInstances/reflection-propagation.md`](../processInstances/reflection-propagation.md) §3a). **Tipe-göre varsayılan:** `parentProperty`/`userInfo` → `snapshot` · `flowInfo` → `live`. → [`../enums/reflection-mode.md`](../enums/reflection-mode.md). |
 | `reflectionPropagation` | ReflectionPropagation | **Yalnız `parentProperty` + `reflectionMode=materialized`** — kopyanın üst değişince **ne zaman** tazeleneceği: `async` (arka planda, **vars.**) · `sync` (yazma anında, guardrail'li). → [`../enums/reflection-propagation.md`](../enums/reflection-propagation.md) · mekanizma [`../processInstances/reflection-propagation.md`](../processInstances/reflection-propagation.md). |
 
 ## 2. Tipe-özel alanlar (`propertyType`'a göre — özet)
@@ -79,7 +78,7 @@
 > davranışı** için tüketiliyorsa → `settings`. Buna karşılık **projektör/sorgu/motor katmanının ilişkisel okuduğu
 > metadata gerçek kolonda kalır** (çoğu tipte boş olsa bile): kimlik/bağlama (`code`, `propertyType`), değer-saklama/
 > projeksiyon (`savePropertyToDb`, `projectToAttr`, `saveChangeLog`, `hasTranslation`), yansıma metadata'sı
-> (`reflectionMode`, `reflectionPropagation`, `isReflectionSource`, `refPropertyId`, `parentPropertyId`, `relatedPropertyIds`),
+> (`reflectionMode`, `reflectionPropagation`, `isReflectionSource`, `refPropertyId`, `parentPropertyId`),
 > ve ilişki FK'leri (`childServiceId`, `associatedServiceId`, `serviceItemControlId`). Aşağıdaki §2 tablosundaki **saf
 > render/davranış** ayarları (ör. `minLine`/`maxLine`, `barcodeFormat`, `headerText`, `isCropActive`, `setAsToday`,
 > `enableGroupSeperator`, `keyDescription`…) `settings`'e girer. _(Statik seçenek listesi `propertyItems` bir alt-koleksiyon
@@ -102,7 +101,7 @@
 | `mapViewer` | konum seçimi/görüntüleme; koordinat/adres · **profil-bazlı → `view-profile-property.md`:** `editOnlyOwnPosition` |
 | `formList` | `childServiceId` · `serviceItemControlId` · `lazyLoading` · **profil-bazlı ayarlar → `view-profile-property.md`:** `reOrder`, `activeStartActions`, `addFromExistingStatusIds`, `selectableVisible`, `selectedEditable` |
 | `flowInfo` | `flowInfoValue` · `reflectionMode` (`snapshot`/`live` — vars. `live`; salt-okunur akış metadata) |
-| `parentProperty` | `parentPropertyId` · `refPropertyId` · `relatedPropertyIds` · `reflectionMode` (`snapshot`/`live`/`materialized`) · `reflectionPropagation` (`async`/`sync` — yalnız `materialized`) (salt-okunur) |
+| `parentProperty` | `parentPropertyId` (bağlayan alan) · `refPropertyId` (üst servisteki yansıtılan alan) · `reflectionMode` (`snapshot`/`live`/`materialized`) · `reflectionPropagation` (`async`/`sync` — yalnız `materialized`) (salt-okunur) |
 | `userInfo` | `userInfoValue` · `reflectionMode` (`snapshot`/`live` — vars. `snapshot`; salt-okunur kullanıcı metadata) |
 | `groupByTaxReceipt` | `disableTaxAttachmentView` · `isActiveKkegAttachment` |
 | `keyValueList` | `addNewEnabled` · `deleteEnabled` · `keyDescription` · `valueDescription` · `comboBoxItems` · `keyValueItems` |
@@ -138,4 +137,4 @@
   artık yalnız Combobox/Radiobutton **dinamik seçenek kaynağı**. Seçenek verisi için ayrı tablo yok — statik `propertyItems`
   (`PropertyItem`) **devam** (davranış → `../../service-settings/properties.md` §2.4).
 
-*Oluşturma: 2026-07-02.*
+*Oluşturma: 2026-07-02. Güncelleme: 2026-09-07 (reflectionMode: kopyalama anı = ilişki anı · `parentPropertyId`/`refPropertyId` semantiği · `relatedPropertyIds` kaldırıldı, KARAR v0.45).*

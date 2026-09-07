@@ -104,7 +104,7 @@ Tipe-özel ayarlar → §3.
 > **dinamik = iş kuralı `fillDataSource`**; mevcut `PropertyItem` yapısı **aynen kullanılmaya devam eder**.
 
 ### 2.5 — İlişki alanları (ilişkisel alanlar için)
-`childServiceId` · `serviceItemControlId` · `refPropertyId` · `parentPropertyId` · `relatedPropertyIds` · `reflectionMode` · `reflectionPropagation`.
+`childServiceId` · `serviceItemControlId` · `refPropertyId` · `parentPropertyId` · `reflectionMode` · `reflectionPropagation`.
 _(Kullanımı → §3.13 Form List, §3.15 Parent Property; `reflectionMode` ayrıca **§3.14 Flow Info / §3.16 User Info**'da da geçerli — `reflectionPropagation` yalnız `parentProperty`+`materialized`)_
 
 ### 2.6 — PropertyItem (seçim öğesi — statik liste elemanı)
@@ -252,7 +252,16 @@ isteniyorsa seçim yapılır; parent'ın seçilmiş alanını **`reflectionMode`
 `sync` (yazma anında, guardrail'li) → [`../models/enums/reflection-propagation.md`](../models/enums/reflection-propagation.md). Yayılım
 mekanizması (ayrı bir "link" tablosu **yok**; `AssociatedInstance` + `Property` metadata ile çözülür) →
 [`../models/processInstances/reflection-propagation.md`](../models/processInstances/reflection-propagation.md).
-**Modelleme (ilişki → §2.5):** `parentPropertyId` (üst alan) · `refPropertyId` (referans alınan alan) · `relatedPropertyIds` · `reflectionMode` · `reflectionPropagation` (yalnız `materialized`).
+**Kopyalama anı (KARAR v0.45):** `snapshot`/`materialized` kopyası **ilişki kurulduğu anda** alınır (`AssociatedInstance` kaydı — Form List'e
+ekleme, "var olandan ekle", ilişkili Combobox seçimi); instance **oluşturma anına bağlı değildir** (child çoğu zaman bağdan önce var olur).
+Bağ **kaldırılınca** kopya **`null`**'a çekilir; üst sonradan değişirse yeni değeri yalnız `materialized` izler. `live`'da saklanan değer
+olmadığından işlem yoktur. → [`../models/processInstances/reflection-propagation.md`](../models/processInstances/reflection-propagation.md) §3a.
+**Modelleme (ilişki → §2.5, KARAR v0.45):** `parentPropertyId` = **bağlayan alan** — ilişkiyi kuran **Form List** (üst serviste) **veya tek-seçimli**
+ilişkili Combobox (`isAssociatedCombobox=true`, `isMultiSelect=false`; bu servisin kendisinde); **üst servis buradan türetilir**. `refPropertyId` = üst
+servisteki **yansıtılacak alan** (üst servise ait olmalı — Designer doğrular). `reflectionMode` · `reflectionPropagation` (yalnız `materialized`).
+Çok-seçimli Combobox bağlayan alan olamaz. Aynı bağlayan alanda birden çok üst bağı oluşursa **birincil üst = en erken bağ** (§3.22 ile aynı kural).
+**Faz:** `snapshot`/`live` Motor Faz 1; `materialized` F1.A.4 (outbox/projector) ile — öncesinde Designer reddeder
+(→ [`../models/processInstances/reflection-propagation.md`](../models/processInstances/reflection-propagation.md) §3a/§10).
 
 ### 3.16 — `userInfo` (User Info)
 **Kullanıcı bilgilerini** forma getirmek için kullanılır — örn. **giriş yapan kullanıcının** adı, e-postası, departmanı,
@@ -302,4 +311,4 @@ dolu** (key boş değil, value seçili) olması zorunludur.
 
 ---
 
-*Oluşturma: 2026-06-26.*
+*Oluşturma: 2026-06-26. Güncelleme: 2026-09-07 (§3.15 kopyalama anı = ilişki anı · FK semantiği · birincil üst · faz, KARAR v0.45; `relatedPropertyIds` kaldırıldı).*

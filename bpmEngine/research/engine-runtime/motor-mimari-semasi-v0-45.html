@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Kaynak: bpmEngine/engine-runtime*.md · models/processInstances/workflow-*.md · service-settings/process-step.md (v0.44 taslak seti) + R18/Q23 önerisi. Metot-düzeyi ayrıştırma ÖNERİDİR; bağlayıcı metin dokümanların kendisidir. -->
+<title>Flovo Motor Şeması</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#F2F5F7; --surface:#FFFFFF; --surface-2:#E9EEF2; --ink:#151D26; --muted:#5C6B7A; --line:#D5DDE5; --line-strong:#B9C5D0;
+    --accent:#12666B; --accent-ink:#0E5357; --accent-soft:#DCEDED; --accent-line:#9CCACB;
+    --time:#B26F14; --time-soft:#F6E9D4;
+    --i:#2E7D4F; --i-soft:#E0F0E6; --u:#2F63C9; --u-soft:#E2EAF9; --d:#B8352F; --d-soft:#F8E3E1; --r:#6B7683; --r-soft:#E9EEF2; --n:#7A3E9D; --n-soft:#F0E6F7;
+    --code-bg:#EEF2F5; --grid:rgba(21,29,38,.06);
+    --shadow:0 1px 2px rgba(21,29,38,.06), 0 6px 20px -12px rgba(21,29,38,.18);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0E141A; --surface:#151D25; --surface-2:#1B2530; --ink:#E4EAF0; --muted:#94A3B2; --line:#263240; --line-strong:#354455;
+      --accent:#5CBFC1; --accent-ink:#8ED6D7; --accent-soft:#12343A; --accent-line:#245C60;
+      --time:#E0A452; --time-soft:#3A2B14;
+      --i:#78C695; --i-soft:#153224; --u:#7FA6F0; --u-soft:#17273F; --d:#F08A83; --d-soft:#3D1D1B; --r:#9AA6B3; --r-soft:#1E2831; --n:#C59BE0; --n-soft:#2B1E36;
+      --code-bg:#1B2530; --grid:rgba(228,234,240,.06);
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -14px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0E141A; --surface:#151D25; --surface-2:#1B2530; --ink:#E4EAF0; --muted:#94A3B2; --line:#263240; --line-strong:#354455;
+    --accent:#5CBFC1; --accent-ink:#8ED6D7; --accent-soft:#12343A; --accent-line:#245C60;
+    --time:#E0A452; --time-soft:#3A2B14;
+    --i:#78C695; --i-soft:#153224; --u:#7FA6F0; --u-soft:#17273F; --d:#F08A83; --d-soft:#3D1D1B; --r:#9AA6B3; --r-soft:#1E2831; --n:#C59BE0; --n-soft:#2B1E36;
+    --code-bg:#1B2530; --grid:rgba(228,234,240,.06);
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -14px rgba(0,0,0,.6);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth} @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} }
+  body{ margin:0; background:var(--bg); color:var(--ink); font-family:"IBM Plex Sans","Segoe UI",Roboto,system-ui,sans-serif; font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased; }
+  h1,h2,h3,h4{ font-family:"Bricolage Grotesque","IBM Plex Sans",system-ui,sans-serif; font-weight:600; line-height:1.15; margin:0; text-wrap:balance; letter-spacing:-.01em }
+  h1{ font-size:clamp(2rem,4vw,3rem); font-weight:700; letter-spacing:-.025em } h2{ font-size:1.7rem } h3{ font-size:1.2rem; margin:2rem 0 .6rem } h4{ font-size:1rem; margin:1.4rem 0 .4rem }
+  p{ margin:.6rem 0 } a{ color:var(--accent-ink); text-decoration-color:var(--accent-line); text-underline-offset:3px } a:focus-visible{ outline:2px solid var(--accent); outline-offset:2px }
+  code,.mono{ font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.86em }
+  p code, li code, td code, .note code, dd code{ background:var(--code-bg); padding:.05em .35em; border-radius:3px }
+  strong{ font-weight:600 } small{ color:var(--muted) }
+
+  .layout{ display:grid; grid-template-columns:minmax(0,1fr); max-width:1360px; margin:0 auto; padding:0 1.25rem 4rem }
+  @media (min-width:1080px){ .layout{ grid-template-columns:224px minmax(0,1fr); gap:3rem; padding:0 2rem 5rem } }
+  nav.toc{ display:none } @media (min-width:1080px){ nav.toc{ display:block; position:sticky; top:1.5rem; align-self:start; max-height:calc(100vh - 3rem); overflow:auto; padding-top:3.6rem; font-size:.86rem } }
+  nav.toc .lbl{ font-size:.7rem; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); margin-bottom:.6rem; font-weight:500 }
+  nav.toc ol{ list-style:none; margin:0; padding:0; border-left:1px solid var(--line) } nav.toc li a{ display:block; padding:.32rem .8rem; color:var(--muted); text-decoration:none; border-left:2px solid transparent; margin-left:-1px }
+  nav.toc li a:hover{ color:var(--ink) } nav.toc li a.active{ color:var(--accent-ink); border-left-color:var(--accent); font-weight:500 }
+  main{ min-width:0 }
+  header.mast{ padding:3rem 0 2.2rem; border-bottom:1px solid var(--line) }
+  .eyebrow{ font-size:.74rem; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); font-weight:500; margin-bottom:.9rem; display:flex; gap:.6rem; align-items:center; flex-wrap:wrap }
+  .pill{ display:inline-flex; align-items:center; padding:.18rem .6rem; border-radius:999px; font-size:.74rem; text-transform:none; font-weight:500; border:1px solid var(--line-strong); background:var(--surface) }
+  .pill.draft{ border-color:var(--time); color:var(--time); background:var(--time-soft) }
+  .lede{ font-size:1.15rem; line-height:1.55; max-width:66ch; margin-top:1.2rem }
+  .legend{ display:flex; gap:.6rem 1.2rem; flex-wrap:wrap; margin-top:1.4rem; font-size:.84rem; color:var(--muted); align-items:center }
+
+  section.sec{ padding:3rem 0 1rem; scroll-margin-top:1rem } section.sec + section.sec{ border-top:1px solid var(--line) }
+  .sec-head{ margin-bottom:1.2rem } .sec-head .src{ font-family:"IBM Plex Mono",monospace; font-size:.74rem; color:var(--muted); margin-bottom:.5rem; display:flex; gap:.5rem; flex-wrap:wrap } .sec-head .src span{ background:var(--surface-2); padding:.1rem .45rem; border-radius:3px }
+  .prose{ max-width:72ch } .prose ul,.prose ol{ padding-left:1.3rem } .prose li{ margin:.3rem 0 }
+  .note{ border:1px solid var(--line); border-left:3px solid var(--accent); background:var(--surface); border-radius:0 6px 6px 0; padding:.8rem 1rem; margin:1rem 0; font-size:.93rem } .note.time{ border-left-color:var(--time) } .note.warn{ border-left-color:var(--d) }
+
+  .io{ display:inline-block; font-family:"IBM Plex Mono",monospace; font-size:.7rem; font-weight:500; padding:.04rem .42rem; border-radius:4px; border:1px solid transparent; white-space:nowrap; line-height:1.55; vertical-align:middle }
+  .io.i{ color:var(--i); background:var(--i-soft); border-color:color-mix(in srgb,var(--i) 40%,transparent) }
+  .io.u{ color:var(--u); background:var(--u-soft); border-color:color-mix(in srgb,var(--u) 40%,transparent) }
+  .io.d{ color:var(--d); background:var(--d-soft); border-color:color-mix(in srgb,var(--d) 40%,transparent) }
+  .io.r{ color:var(--r); background:var(--r-soft); border-color:var(--line) }
+  .io.n{ color:var(--n); background:var(--n-soft); border-color:color-mix(in srgb,var(--n) 40%,transparent) }
+  .io.tx{ color:var(--time); background:var(--time-soft); border-color:color-mix(in srgb,var(--time) 45%,transparent) }
+  .host{ display:inline-block; font-size:.72rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; padding:.06rem .45rem; border-radius:3px; background:var(--accent-soft); color:var(--accent-ink); vertical-align:middle }
+
+  .diagram{ background:var(--surface); background-image:linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size:24px 24px; border:1px solid var(--line); border-radius:8px; padding:1rem; margin:1rem 0; overflow-x:auto }
+  .diagram pre.mermaid{ background:transparent; margin:0; display:flex; justify-content:center }
+  .diagram .cap{ font-size:.8rem; color:var(--muted); margin-top:.6rem; text-align:center }
+
+  /* call tree */
+  .tree{ list-style:none; margin:1rem 0; padding:0 }
+  .tree ul{ list-style:none; margin:.35rem 0 0 1.05rem; padding-left:1.1rem; border-left:2px solid var(--line) }
+  .tree li{ margin:.45rem 0; position:relative }
+  .tree ul li::before{ content:""; position:absolute; left:-1.1rem; top:.95rem; width:.8rem; border-top:2px solid var(--line) }
+  .node{ background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:.6rem .8rem; box-shadow:var(--shadow) }
+  .node.entry{ border-color:var(--accent-line); border-width:1px 1px 1px 4px }
+  .node.tx{ border-left:4px solid var(--time) }
+  .node .h{ display:flex; gap:.6rem; align-items:baseline; flex-wrap:wrap }
+  .node .n{ font-family:"IBM Plex Mono",monospace; font-size:.74rem; color:var(--muted); min-width:2.4rem }
+  .node .m{ font-family:"IBM Plex Mono",monospace; font-weight:600; font-size:.9rem; color:var(--accent-ink) }
+  .node .m .sig{ font-weight:400; color:var(--muted) }
+  .node .why{ font-size:.9rem; color:var(--ink); margin-top:.15rem }
+  .node .tbls{ display:flex; gap:.3rem; flex-wrap:wrap; margin-top:.4rem }
+  .node .stop{ font-size:.82rem; color:var(--muted); margin-top:.35rem; font-style:italic }
+
+  .scroll{ overflow-x:auto; margin:1rem 0; border:1px solid var(--line); border-radius:8px; background:var(--surface) }
+  table.tbl{ border-collapse:collapse; width:100%; font-size:.88rem; min-width:720px }
+  table.tbl th{ text-align:left; font-size:.68rem; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); font-weight:500; padding:.6rem .7rem; border-bottom:1px solid var(--line-strong); background:var(--surface-2); white-space:nowrap }
+  table.tbl td{ padding:.5rem .7rem; border-bottom:1px solid var(--line); vertical-align:top } table.tbl tr:last-child td{ border-bottom:0 }
+  table.tbl td.m{ font-family:"IBM Plex Mono",monospace; font-size:.8rem; white-space:nowrap; font-weight:500 }
+  table.matrix th.rot{ writing-mode:vertical-rl; transform:rotate(180deg); white-space:nowrap; padding:.6rem .4rem; font-size:.7rem; letter-spacing:.05em; text-transform:none; font-family:"IBM Plex Mono",monospace }
+  table.matrix td.c{ text-align:center; white-space:nowrap; padding:.35rem .3rem }
+  table.matrix td.grp{ background:var(--surface-2); font-weight:600; font-size:.78rem; letter-spacing:.06em; text-transform:uppercase; color:var(--muted) }
+
+  .grid{ display:grid; gap:1rem } .c2{ grid-template-columns:repeat(auto-fit,minmax(300px,1fr)) } .c3{ grid-template-columns:repeat(auto-fit,minmax(240px,1fr)) }
+  .card{ background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:1rem 1.1rem; box-shadow:var(--shadow) }
+  .card h4{ margin:0 0 .3rem; font-family:"IBM Plex Mono",monospace; font-size:.92rem; font-weight:600; color:var(--accent-ink) }
+  .card p{ margin:.3rem 0; font-size:.9rem } .card .dim{ color:var(--muted); font-size:.85rem }
+  .card ul{ margin:.4rem 0 0; padding-left:1.1rem; font-size:.88rem } .card li{ margin:.15rem 0 }
+  footer.foot{ margin-top:3rem; padding-top:1.4rem; border-top:1px solid var(--line); font-size:.84rem; color:var(--muted) }
+
+  /* ---- el yerleşimli mimari şeması (SVG) ---- */
+  .arch{ background:var(--surface); background-image:linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size:24px 24px; border:1px solid var(--line); border-radius:8px; padding:.6rem; margin:1rem 0; overflow-x:auto }
+  .arch svg{ width:100%; min-width:1700px; height:auto; display:block }
+  .arch .bx{ fill:var(--surface); stroke:var(--line-strong); stroke-width:1.5 }
+  .arch .bx.host{ stroke:var(--accent); stroke-width:2 }
+  .arch .bx.eng{ stroke:var(--accent-line); stroke-width:1.5 }
+  .arch .cont{ fill:var(--accent-soft); fill-opacity:.35; stroke:var(--accent-line); stroke-dasharray:6 4 }
+  .arch .cont.pg{ fill:var(--surface-2); fill-opacity:.55; stroke:var(--line-strong) }
+  .arch .bus{ fill:var(--n-soft); stroke:var(--n); stroke-width:2 }
+  .arch .ext{ fill:var(--surface); stroke:var(--muted); stroke-dasharray:5 4; stroke-width:1.5 }
+  .arch .ro{ stroke-dasharray:5 4 }
+  .arch .band{ fill:var(--accent-soft); stroke:none }
+  .arch .chev{ fill:var(--accent) }
+  .arch text{ font-family:"IBM Plex Sans",sans-serif; fill:var(--ink); font-size:12px }
+  .arch text.t{ font-family:"Bricolage Grotesque","IBM Plex Sans",sans-serif; font-weight:600; font-size:15px }
+  .arch text.m{ font-family:"IBM Plex Mono",monospace; font-size:11.5px }
+  .arch text.s{ font-size:11.5px; fill:var(--muted) }
+  .arch text.ct{ font-size:12px; fill:var(--muted); font-weight:500; letter-spacing:.04em }
+  .arch text.lbl{ font-size:11.5px; fill:var(--muted); paint-order:stroke; stroke:var(--surface); stroke-width:5px; stroke-linejoin:round }
+  .arch .e{ fill:none; stroke:var(--ink); stroke-width:1.8 }
+  .arch .e.d{ stroke-dasharray:6 4; stroke:var(--muted) }
+  .arch .e.n{ stroke:var(--n) }
+  .arch .io-i{ fill:var(--i); font-weight:600; font-family:"IBM Plex Mono",monospace } .arch .io-u{ fill:var(--u); font-weight:600; font-family:"IBM Plex Mono",monospace }
+  .arch .io-d{ fill:var(--d); font-weight:600; font-family:"IBM Plex Mono",monospace } .arch .io-r{ fill:var(--r); font-weight:600; font-family:"IBM Plex Mono",monospace }
+  .arch-legend{ display:flex; gap:.5rem 1.4rem; flex-wrap:wrap; font-size:.82rem; color:var(--muted); margin:.4rem 0 0 }
+  .arch-legend i{ display:inline-block; width:26px; height:0; border-top:2px solid var(--ink); vertical-align:middle; margin-right:.4rem }
+  .arch-legend i.d{ border-top-style:dashed; border-color:var(--muted) } .arch-legend i.n{ border-color:var(--n) } .arch-legend i.b{ height:10px; border:0; background:var(--accent-soft) }
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="toc" aria-label="İçindekiler">
+  <div class="lbl">İçindekiler</div>
+  <ol>
+    <li><a href="#bakis">Kuş bakışı</a></li>
+    <li><a href="#tablolar">Tablolar</a></li>
+    <li><a href="#akis-aksiyon">Akış 1 · Kullanıcı aksiyonu</a></li>
+    <li><a href="#akis-worker">Akış 2 · Worker işi</a></li>
+    <li><a href="#akis-scheduler">Akış 3 · Scheduler</a></li>
+    <li><a href="#agac">Çağrı ağacı</a></li>
+    <li><a href="#matris">Metot × tablo matrisi</a></li>
+    <li><a href="#yuruteciler">Adım yürütücüleri</a></li>
+    <li><a href="#nats">Olay → NATS</a></li>
+    <li><a href="#notlar">Notlar &amp; açık noktalar</a></li>
+  </ol>
+</nav>
+
+<main>
+<header class="mast">
+  <div class="eyebrow"><span>Flovo BPM Motoru · Runtime mimarisi</span><span class="pill draft">Öneri · metot-düzeyi ayrıştırma · v0.45 çalışma</span></div>
+  <h1>Motor Mimari Şeması</h1>
+  <p class="lede">Motorun <b>hangi metotlarının hangi sırayla</b> çalıştığı, <b>hangi metodun hangisini çağırdığı</b> ve <b>hangi tabloya ne yazdığı</b>. Tablolar ve olaylar v0.44 taslak setinden; metot ayrıştırması bu şemanın <b>önerisi</b>dir (dokümanlarda henüz yok) ve kullanıcı aksiyonunun otomatik zinciri <b>istek içinde koşturması</b> (inline devam, R18 önerisi) dâhildir.</p>
+  <div class="legend">
+    <span><b>Tablo erişimi:</b></span>
+    <span class="io i">I</span><span>INSERT</span>
+    <span class="io u">U</span><span>UPDATE</span>
+    <span class="io d">D</span><span>DELETE</span>
+    <span class="io r">R</span><span>yalnız okuma</span>
+    <span class="io n">NATS</span><span>publish</span>
+    <span class="io tx">TX</span><span>tek transaction sınırı</span>
+    <span class="host">host</span><span>metodun koştuğu pod</span>
+  </div>
+</header>
+
+<!-- ================================================================ KUŞ BAKIŞI -->
+<section class="sec" id="bakis">
+  <div class="sec-head"><div class="src"><span>engine-runtime.md §2</span></div><h2>Kuş bakışı: dört barındırıcı, tek motor kütüphanesi</h2></div>
+  <div class="prose"><p>İşi yapan kod tek bir <b>motor kütüphanesi</b>dir (<code>engine</code> paketi). Üç pod bu kütüphaneyi farklı tetikleyicilerle çağırır; housekeeping işleri tekil temizlik yapar. Veritabanı motorun hafızası, NATS ise podlar arası teslim ve frontend'e canlı bildirim kanalıdır.</p></div>
+  <div class="arch">
+  <svg viewBox="0 0 1800 960" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Motor mimarisi kuş bakışı">
+  <defs>
+    <marker id="mk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--ink)"/></marker>
+    <marker id="mkm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker>
+    <marker id="mkn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--n)"/></marker>
+  </defs>
+  <text class="ct" x="300" y="30">İSTEMCİ</text>
+  <text class="ct" x="630" y="120">MESAJ OMURGASI</text>
+  <text class="ct" x="300" y="200">BARINDIRICILAR — dört pod, aynı motor kütüphanesi</text>
+  <text class="ct" x="300" y="360">MOTOR KÜTÜPHANESİ</text>
+  <text class="ct" x="300" y="712">KALICILIK</text>
+  <rect class="bx " x="300" y="40" width="300" height="60" rx="8"/>
+<text class="t" x="450.0" y="66" text-anchor="middle">Frontend</text>
+<text class="s" x="450.0" y="87" text-anchor="middle">form · aksiyon düğmeleri · canlı bildirim</text>
+  <rect class="bus" x="630" y="130" width="1030" height="46" rx="23"/>
+  <text class="t" x="1145" y="149" text-anchor="middle" style="font-size:14px">NATS JetStream — FLOVO_EVENTS</text>
+  <text class="s" x="1145" y="166" text-anchor="middle">step_ready · resume · suspended · step_completed · failed   ·   at-least-once + Nats-Msg-Id · durable consumer</text>
+  <rect class="bx host" x="300" y="210" width="300" height="90" rx="8"/>
+<text class="t" x="450.0" y="236" text-anchor="middle">API pod</text>
+<text class="m" x="450.0" y="257" text-anchor="middle">TakeAction · StartProcess · Recover</text>
+<text class="s" x="450.0" y="276" text-anchor="middle">aktörü doğrular · actionTaken yazar · zinciri inline koşturur</text>
+  <rect class="bx host" x="630" y="210" width="300" height="90" rx="8"/>
+<text class="t" x="780.0" y="236" text-anchor="middle">Worker pod</text>
+<text class="m" x="780.0" y="257" text-anchor="middle">HandleJob</text>
+<text class="s" x="780.0" y="276" text-anchor="middle">step_ready / resume tüketir → Advance (adım başına 60 s guard)</text>
+  <rect class="bx host" x="960" y="210" width="300" height="90" rx="8"/>
+<text class="t" x="1110.0" y="236" text-anchor="middle">Scheduler pod ×N</text>
+<text class="m" x="1110.0" y="257" text-anchor="middle">Tick (1 s) → ClaimDueTimers → ApplyTimer</text>
+<text class="s" x="1110.0" y="276" text-anchor="middle">FOR UPDATE SKIP LOCKED · lider seçimi yok</text>
+  <rect class="bx host" x="1290" y="210" width="300" height="90" rx="8"/>
+<text class="t" x="1440.0" y="236" text-anchor="middle">Housekeeping (tekil)</text>
+<text class="m" x="1440.0" y="257" text-anchor="middle">RelaySweep · StuckDetector · Prune · Retention</text>
+<text class="s" x="1440.0" y="276" text-anchor="middle">pg_try_advisory_lock — alamayan kopya atlar</text>
+  <rect class="cont" x="300" y="370" width="1290" height="270" rx="10"/>
+  <text class="ct" x="320" y="393">engine paketi — tek kütüphane; API, Worker, Scheduler ve Housekeeping bunu çağırır</text>
+  <rect class="bx eng" x="320" y="410" width="590" height="90" rx="8"/>
+<text class="t" x="615.0" y="436" text-anchor="middle">Advance → RunStep</text>
+<text class="m" x="615.0" y="457" text-anchor="middle">CheckGuards · BeginStep [TX-A] · ExecuteStep · SelectAction · CompleteStep [TX-B]</text>
+<text class="s" x="615.0" y="476" text-anchor="middle">Suspend · EndProcess · HandleStepError (ScheduleRetry · ResolveOnFail · DeadLetter)</text>
+  <rect class="bx eng" x="960" y="410" width="300" height="90" rx="8"/>
+<text class="t" x="1110.0" y="436" text-anchor="middle">Timer işlemleri</text>
+<text class="m" x="1110.0" y="457" text-anchor="middle">ClaimDueTimers · ApplyTimer</text>
+<text class="s" x="1110.0" y="476" text-anchor="middle">FireRetry · FireTaskTimeout · FireStepTimer · FireCron · Defer · Cancel</text>
+  <rect class="bx eng" x="1290" y="410" width="280" height="90" rx="8"/>
+<text class="t" x="1430.0" y="436" text-anchor="middle">Housekeeping işleri</text>
+<text class="m" x="1430.0" y="457" text-anchor="middle">RelaySweep · StuckDetector</text>
+<text class="s" x="1430.0" y="476" text-anchor="middle">PruneShortLived · RetentionJob · ConsistencyCheck</text>
+  <rect class="bx eng" x="320" y="530" width="380" height="70" rx="8"/>
+<text class="t" x="510.0" y="556" text-anchor="middle">Adım yürütücüleri — Executor[type].Run</text>
+<text class="m" x="510.0" y="577" text-anchor="middle">Compare · Assign · Switch · HttpRequest · Notify</text>
+<text class="s" x="510.0" y="596" text-anchor="middle">Human · Timer · InstanceCreator · ProcessEnd · SubProcess</text>
+  <rect class="bus" x="740" y="530" width="830" height="70" rx="8"/>
+  <text class="t" x="1155" y="556" text-anchor="middle" style="font-size:14px">PublishDispatch</text>
+  <text class="s" x="1155" y="575" text-anchor="middle">commit sonrası olayın dispatch'ini yayınlar, publishedAt işaretler — NATS'a <tspan style="font-weight:600">tek çıkış</tspan></text>
+  <text class="s" x="1155" y="592" text-anchor="middle">kaçanı RelaySweep (5 s) tamamlar · çift yayın zararsız (tüketici messageId ile atlar)</text>
+  <rect class="ext" x="40" y="520" width="210" height="80" rx="8"/>
+  <text class="t" x="145" y="546" text-anchor="middle" style="font-size:14px">Dış sistemler</text>
+  <text class="s" x="145" y="566" text-anchor="middle">ERP · SMTP / push · webhook</text>
+  <text class="s" x="145" y="584" text-anchor="middle">HttpRequest ve Notify çağırır</text>
+  <rect class="band" x="320" y="648" width="1250" height="36" rx="6"/>
+  <text x="945" y="671" text-anchor="middle" style="font-size:12.5px;font-weight:500">SQL — her geçiş <tspan style="font-weight:600">tek transaction</tspan>: olay (workflow_events) + türetilmiş tablolar aynı TX'te (Partial Event Sourcing) · tasarım tabloları yalnız okunur · yazan metotlar kutuların içinde</text>
+  <polygon class="chev" points="497,686 513,686 505,698"/>
+  <polygon class="chev" points="1102,686 1118,686 1110,698"/>
+  <polygon class="chev" points="1422,686 1438,686 1430,698"/>
+  <rect class="cont pg" x="300" y="700" width="1290" height="245" rx="10"/>
+  <text class="ct" x="320" y="723">PostgreSQL — RLS Pattern B v2 (her tabloda organizationId)</text>
+  <rect class="bx" x="320" y="740" width="195" height="185" rx="7"/>
+<text class="m" style="font-weight:600;font-size:12px" x="417.5" y="762" text-anchor="middle">workflow_events</text>
+<text class="s" x="330" y="786">kaynak günlük · append-only</text>
+<text class="s" x="330" y="801">version · messageId UNIQUE</text>
+<text class="s" x="330" y="816">dispatch · publishedAt (outbox)</text>
+<text class="s" x="330" y="832"><tspan class="io-i">I</tspan>  BeginStep · CompleteStep</text>
+<text class="s" x="330" y="848"><tspan class="io-i">I</tspan>  Suspend · EndProcess · Fire*</text>
+<text class="s" x="330" y="863"><tspan class="io-i">I</tspan>  StartProcess · Recover</text>
+<text class="s" x="330" y="878"><tspan class="io-i">I</tspan>  ScheduleRetry · DeadLetter</text>
+<text class="s" x="330" y="894"><tspan class="io-u">U</tspan>  publishedAt ← PublishDispatch</text>
+  <rect class="bx" x="530" y="740" width="195" height="185" rx="7"/>
+<text class="m" style="font-weight:600;font-size:12px" x="627.5" y="762" text-anchor="middle">workflow_projection</text>
+<text class="s" x="540" y="786">1–1 motor imleci</text>
+<text class="s" x="540" y="801">lastVersion · state · waitReason</text>
+<text class="s" x="540" y="816">attempt · guard sayaçları · lastError</text>
+<text class="s" x="540" y="832"><tspan class="io-u">U</tspan>  olay yazan her TX (upsert)</text>
+<text class="s" x="540" y="848"><tspan class="io-r">R</tspan>  LoadContext · ApplyTimer</text>
+<text class="s" x="540" y="863"><tspan class="io-r">R</tspan>  StuckDetector · ConsistencyCheck</text>
+<text class="s" x="540" y="878"><tspan class="io-d">D</tspan>  Prune (done/cancelled > 90 g)</text>
+  <rect class="bx" x="740" y="740" width="195" height="185" rx="7"/>
+<text class="m" style="font-weight:600;font-size:12px" x="837.5" y="762" text-anchor="middle">workflow_timer</text>
+<text class="s" x="750" y="786">çalar saat · armed · dueAt</text>
+<text class="s" x="750" y="801">stepTimer · taskTimeout · retry · cron</text>
+<text class="s" x="750" y="816"><tspan class="io-i">I</tspan>  ArmTimer (Suspend) · ScheduleRetry</text>
+<text class="s" x="750" y="832"><tspan class="io-i">I</tspan>  FireCron (sonraki tetik)</text>
+<text class="s" x="750" y="848"><tspan class="io-u">U</tspan>  ApplyTimer (fired / deferred)</text>
+<text class="s" x="750" y="863"><tspan class="io-u">U</tspan>  cancel: RecordActionTaken · EndProcess</text>
+<text class="s" x="750" y="878"><tspan class="io-d">D</tspan>  PruneShortLived (> 30 g)</text>
+  <rect class="bx" x="950" y="740" width="195" height="185" rx="7"/>
+<text class="m" style="font-weight:600;font-size:12px" x="1047.5" y="762" text-anchor="middle">ProcessInstance · PSI</text>
+<text class="m" style="font-weight:600;font-size:12px" x="1047.5" y="777" text-anchor="middle">InstanceAwaitingUser</text>
+<text class="s" x="960" y="800"><tspan class="io-i">I</tspan>  StartProcess (PI) · BeginStep (PSI)</text>
+<text class="s" x="960" y="816"><tspan class="io-i">I</tspan>  Suspend (insan adımı PSI kaydı)</text>
+<text class="s" x="960" y="832"><tspan class="io-u">U</tspan>  RecordActionTaken · CompleteStep</text>
+<text class="s" x="960" y="847"><tspan class="io-u">U</tspan>  ApplyTimer (preemption)</text>
+<text class="s" x="960" y="862"><tspan class="io-i">I/D</tspan>  Awaiting: ResolveAssignees</text>
+<text class="s" x="960" y="878"><tspan class="io-d">D</tspan>  Awaiting: aksiyon · timeout · failed</text>
+  <rect class="bx" x="1160" y="740" width="195" height="185" rx="7"/>
+<text class="m" style="font-weight:600;font-size:12px" x="1257.5" y="762" text-anchor="middle">Instance.statusId · InstanceValue</text>
+<text class="m" style="font-weight:600;font-size:12px" x="1257.5" y="777" text-anchor="middle">InstanceValueOutbox</text>
+<text class="s" x="1170" y="800"><tspan class="io-u">U</tspan>  statusId: aksiyonun hedef statüsü</text>
+<text class="s" x="1170" y="816"><tspan class="io-u">U</tspan>  InstanceValue: MergeChangeList</text>
+<text class="s" x="1170" y="832"><tspan class="io-u">U</tspan>  InstanceValue: Assign / Creator (TX-B)</text>
+<text class="s" x="1170" y="847"><tspan class="io-i">I</tspan>  Outbox: her değer yazımı</text>
+<text class="s" x="1170" y="862"><tspan class="io-d">D</tspan>  Outbox: Prune (> 7 g)</text>
+  <rect class="bx ro" x="1370" y="740" width="195" height="185" rx="7"/>
+<text class="m" style="font-weight:600;font-size:12px" x="1467.5" y="762" text-anchor="middle">Tasarım ve organizasyon</text>
+<text class="m" style="font-weight:600;font-size:12px" x="1467.5" y="777" text-anchor="middle">(salt-okunur)</text>
+<text class="s" x="1380" y="800">Service · ProcessStep · ProcessStepAction</text>
+<text class="s" x="1380" y="816">ServiceTrigger · ViewProfile</text>
+<text class="s" x="1380" y="832">User · UserGroup · Position</text>
+<text class="s" x="1380" y="847">WorkingSchedule · VacationDay</text>
+<text class="s" x="1380" y="862"><tspan class="io-r">R</tspan>  LoadContext · SelectAction</text>
+<text class="s" x="1380" y="878"><tspan class="io-r">R</tspan>  ResolveAssignees · ArmTimer · FireCron</text>
+  <path class="e" d="M450,100 V210" marker-start="url(#mk)" marker-end="url(#mk)"/>
+  <text class="lbl" x="462" y="160">HTTP — aksiyon · başlat · recover  →  200 / 202 yanıt</text>
+  <path class="e d n" d="M630,153 H615 V70 H600" marker-end="url(#mkn)"/>
+  <text class="lbl" x="640" y="118">realtime → FE: suspended.v1 · failed.v1</text>
+  <path class="e n" d="M780,176 V210" marker-end="url(#mkn)"/>
+  <text class="lbl" x="790" y="197">consume: step_ready · resume</text>
+  <path class="e" d="M450,300 V410" marker-end="url(#mk)"/>
+  <text class="lbl" x="460" y="350">inline Advance (bütçe ≈ 5 s) → 200 / 202</text>
+  <path class="e" d="M780,300 V410" marker-end="url(#mk)"/>
+  <text class="lbl" x="790" y="350">HandleJob → Advance (bütçesiz)</text>
+  <path class="e" d="M1110,300 V410" marker-end="url(#mk)"/>
+  <text class="lbl" x="1120" y="350">Tick → ClaimDueTimers → ApplyTimer</text>
+  <path class="e" d="M1430,300 V410" marker-end="url(#mk)"/>
+  <text class="lbl" x="1440" y="350">advisory lock ile tekil işler</text>
+  <path class="e" d="M510,500 V530" marker-end="url(#mk)"/>
+  <text class="lbl" x="520" y="519">ExecuteStep</text>
+  <path class="e n" d="M830,500 V530" marker-end="url(#mkn)"/>
+  <text class="lbl" x="840" y="519">dispatch (step_ready · suspended · failed)</text>
+  <path class="e n" d="M1110,500 V530" marker-end="url(#mkn)"/>
+  <text class="lbl" x="1120" y="519">resume.v1 · step_ready (cron)</text>
+  <path class="e n" d="M1430,500 V530" marker-end="url(#mkn)"/>
+  <text class="lbl" x="1440" y="519">RelaySweep → yeniden yayın</text>
+  <path class="e n" d="M1570,565 H1640 V176" marker-end="url(#mkn)"/>
+  <text class="lbl" x="1650" y="380" transform="rotate(-90 1650 380)" text-anchor="middle">publish — NATS'a tek çıkış (publishedAt)</text>
+  <path class="e" d="M320,565 H250" marker-end="url(#mk)"/>
+  <text class="lbl" x="285" y="556" text-anchor="middle">yan etki</text>
+  <path class="e d" d="M145,520 V255 H300" marker-end="url(#mkm)"/>
+  <text class="lbl" x="135" y="395" transform="rotate(-90 135 395)" text-anchor="middle">webhook → TakeAction / StartProcess</text>
+  </svg>
+  </div>
+  <div class="arch-legend">
+    <span><i></i>çağrı / veri akışı</span>
+    <span><i class="n"></i>NATS mesajı (dispatch → publish → consume)</span>
+    <span><i class="d"></i>dış sistem / realtime</span>
+    <span><i class="b"></i>SQL yazımları (aynı TX'te olay + türetilmişler)</span>
+    <span>Tablo kutularındaki <b style="color:var(--i)">I</b> / <b style="color:var(--u)">U</b> / <b style="color:var(--d)">D</b> / <b style="color:var(--r)">R</b> = o tabloya INSERT / UPDATE / DELETE yapan ya da yalnız okuyan metotlar</span>
+  </div>
+  <div class="prose"><p><small>Tek kaynak-hakikat <code>workflow_events</code>; diğer motor tabloları aynı TX'te yazılan türetilmişlerdir. Scheduler adım <b>koşturmaz</b>; timer'ı uygular, devamı <code>PublishDispatch</code> → NATS → Worker'a bırakır. Hiçbir iş kodu NATS'a doğrudan yazmaz — her mesaj bir olayın <code>dispatch</code>'inde doğar.</small></p></div>
+</section>
+
+<!-- ================================================================ TABLOLAR -->
+<section class="sec" id="tablolar">
+  <div class="sec-head"><div class="src"><span>models/processInstances/</span><span>engine-runtime.md §9</span></div><h2>Tablolar: motorun dokunduğu her şey</h2></div>
+  <div class="scroll"><table class="tbl">
+    <thead><tr><th>Tablo</th><th>Rol</th><th>Anahtar sütunlar (motor açısından)</th><th>Yazan metotlar</th></tr></thead>
+    <tbody>
+      <tr><td class="m">workflow_events</td><td><b>Kaynak günlük</b> (append-only) + idempotency + version + outbox</td><td><code>version</code> UNIQUE · <code>eventType</code> · <code>messageId</code> UNIQUE · <code>payload</code> · <code>dispatch</code> · <code>publishedAt</code> · <code>actor*</code></td><td>RecordActionTaken · BeginStep · CompleteStep · Suspend · EndProcess · ScheduleRetry · DeadLetter · ApplyTimer · StartProcess · Recover · PublishDispatch (yalnız <code>publishedAt</code>)</td></tr>
+      <tr><td class="m">workflow_projection</td><td><b>Motor imleci</b> (1–1)</td><td><code>lastVersion</code> · <code>executionState</code> · <code>waitReason</code> · <code>activeProcessStepInstanceId</code> · <code>attempt</code> · <code>nextRetryAt</code> · <code>autoStepRun</code> · <code>totalSteps</code> · <code>lastError</code> · <code>lastEventAt</code></td><td>Olay yazan <b>her</b> TX (upsert) — tek başına asla</td></tr>
+      <tr><td class="m">workflow_timer</td><td><b>Çalar saat</b> (4 tür)</td><td><code>kind</code> · <code>status</code> · <code>dueAt</code> · <code>processStepInstanceId</code> · <code>deferCount</code> · <code>cancelReason</code></td><td>ArmTimer (Suspend, ScheduleRetry, timerStart) · CancelTimers (RecordActionTaken, EndProcess, DeadLetter, Recover) · ClaimDueTimers/ApplyTimer · PruneTimers</td></tr>
+      <tr><td class="m">ProcessInstance</td><td>Süreç kaydı (+ <code>executionState</code> kopyası)</td><td><code>executionState</code> · <code>parentProcessInstanceId</code> · <code>createdBy*</code></td><td>StartProcess (I) · durum değiştiren her TX (U)</td></tr>
+      <tr><td class="m">ProcessStepInstance</td><td>Adım çalıştırma kaydı (iş + motor alanları)</td><td><code>executionDate</code> · <code>actionTriggerDate</code> · <code>processStepActionId</code> · <code>processStepActionParameter</code> · <code>atUserId/atDelegateUserId</code></td><td>BeginStep (I) · Suspend (I, insan adımı PSI'sı) · CompleteStep (U) · RecordActionTaken (U kapatır) · ApplyTimer (U preemption)</td></tr>
+      <tr><td class="m">InstanceAwaitingUser</td><td>Canlı bekleyen seti</td><td><code>instanceId</code> · <code>userId</code></td><td>Suspend/ResolveAssignees (I sync) · RecordActionTaken · ApplyTimer · DeadLetter · Recover(cancel) (D)</td></tr>
+      <tr><td class="m">Instance</td><td>Formun <b>iş durumu</b></td><td><code>statusId</code></td><td>RecordActionTaken · CompleteStep · Suspend · EndProcess (aksiyonun hedef statüsü varsa U)</td></tr>
+      <tr><td class="m">InstanceValue</td><td>Form değeri (JSONB)</td><td><code>data</code> · <code>version</code></td><td>MergeChangeList (BeginStep içinde) · Değer Atama / Instance Creator yürütücüleri (TX-B içinde)</td></tr>
+      <tr><td class="m">InstanceValueOutbox</td><td>Değer-değişim outbox'ı (projektör için)</td><td><code>changedPropertyCodes</code> · <code>processedDate</code></td><td>MergeChangeList (I) · PruneOutbox (D)</td></tr>
+      <tr><td class="m">Service · ProcessStep · ProcessStepAction · ServiceTrigger · ViewProfile · User · UserGroup · Position · WorkingSchedule · VacationDay</td><td><b>Tasarım / organizasyon</b> — motor yalnız okur</td><td><code>settings</code> · <code>targetProcessStepId</code> · <code>mergeParameter</code> · <code>userType</code> · cron · takvim</td><td>—</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ================================================================ AKIŞ 1 -->
+<section class="sec" id="akis-aksiyon">
+  <div class="sec-head"><div class="src"><span>engine-runtime.md §4.4 · §5.2</span><span>R18 önerisi</span></div><h2>Akış 1 · Kullanıcı aksiyonu — API isteği içinde inline zincir</h2></div>
+  <div class="prose"><p>En sık yol. Handler aksiyonu kaydeder, otomatik adımları <b>aynı istek içinde</b> koşturur, form-döndüren bir adıma gelince durur ve cevabı döner. Her adım kendi transaction'larını commit eder; bir sonraki adımın <code>BeginStep</code>'i, öncekinin <code>dispatch</code>'ini "tüketildi" işaretler.</p></div>
+  <div class="diagram">
+<pre class="mermaid">
+sequenceDiagram
+    autonumber
+    participant FE as Frontend
+    participant API as API · TakeAction
+    participant ENG as engine · Advance/RunStep
+    participant EXE as Adım yürütücüsü
+    participant PG as PostgreSQL
+    participant N as NATS
+    FE->>API: POST /instances/{id}/actions/{code} (Idempotency-Key)
+    API->>PG: LoadContext — R projection, PI, aktif PSI, ProcessStep+actions, InstanceValue
+    API->>PG: CheckIdempotency — R workflow_events.messageId (varsa → 200 replay, bitti)
+    API->>PG: AuthorizeActor — R InstanceAwaitingUser, grup üyeliği, vekalet (yoksa 403)
+    API->>API: ValidateAction — 409 processAlreadyAdvanced / staleView / notAwaitingAction · 422 unknownAction
+    API->>PG: RecordActionTaken [TX] I events(actionTaken, dispatch=step_ready) · U PSI kapat · D AwaitingUser · U timer(taskTimeout→cancelled) · U projection running · U PI · U Instance.statusId
+    API->>ENG: Advance(ctx, budget≈5 s)
+    loop otomatik adım (hedef Karşılaştırma / Değer Atama / Switch / HTTP …)
+      ENG->>PG: CheckGuards — R projection (autoStepRun, totalSteps)
+      ENG->>PG: BeginStep [TX-A] I events(stepStarted, messageId=dispatch.id) · I PSI · MergeChangeList (U InstanceValue, I InstanceValueOutbox) · U projection · U önceki event.publishedAt
+      ENG->>EXE: ExecuteStep(settings, form, transfer) — asıl iş (bellek / dış sistem)
+      EXE-->>ENG: sonuç (değer / response / hata)
+      ENG->>PG: SelectAction — R ProcessStepAction (true/false/default/response.action)
+      ENG->>PG: CompleteStep [TX-B] I events(stepCompleted, dispatch=step_ready(hedef)) · U PSI · U Instance.statusId · U projection
+    end
+    ENG->>PG: Suspend [TX] ResolveAssignees (R User/Group/InstanceValue) · I PSI · I AwaitingUser · ArmTimer(taskTimeout) I timer · I events(suspended, dispatch=suspended.v1) · U projection waiting · U PI · U statusId · U önceki publishedAt
+    ENG->>N: PublishDispatch — suspended.v1 (realtime) · U events.publishedAt
+    ENG-->>API: nihai durum (waiting · humanTask · aktif adım · bekleyenler)
+    API->>PG: BuildActionResponse — R projection, PSI, AwaitingUser, InstanceValue (view profile)
+    API-->>FE: 200 { executionState, activeStep, status, awaiting[], form, path[] }
+    N-->>FE: suspended.v1 (diğer istemciler için canlı "aksiyon bekliyor")
+</pre>
+    <div class="cap">Bütçe aşılırsa (yavaş HTTP Request) handler <b>202</b> döner, yürütme aynı süreçte arka planda sürer; pod ölürse tüketilmemiş <code>dispatch</code>'i RelaySweep yayınlar, Akış 2 devralır.</div>
+  </div>
+</section>
+
+<!-- ================================================================ AKIŞ 2 -->
+<section class="sec" id="akis-worker">
+  <div class="sec-head"><div class="src"><span>engine-runtime.md §4.2</span><span>engine-runtime-errors.md §2–§5</span></div><h2>Akış 2 · Worker işi — yeniden teslim, in-doubt ve hata dalları</h2></div>
+  <div class="prose"><p>Worker, NATS'tan <code>step_ready</code> / <code>resume</code> alır ve <b>aynı</b> <code>Advance</code>'i çağırır — fark yalnız tetikleyici ve bütçedir (adım başına 60 s guard, toplam bütçe yok). Bu diyagram hata dallarını ve redelivery'yi de gösterir.</p></div>
+  <div class="diagram">
+<pre class="mermaid">
+sequenceDiagram
+    autonumber
+    participant N as NATS
+    participant W as Worker · HandleJob
+    participant ENG as engine · RunStep
+    participant EXE as Yürütücü
+    participant PG as PostgreSQL
+    N->>W: step_ready / resume (Nats-Msg-Id)
+    W->>PG: CheckIdempotency — messageId var mı? (varsa ACK, çık)
+    W->>PG: DetectInDoubt — stepStarted var, sonuç yok? (idempotent adım → yeniden koş · değil → HandleStepError(inDoubt))
+    W->>ENG: Advance(ctx)
+    ENG->>PG: BeginStep [TX-A]
+    ENG->>EXE: ExecuteStep
+    alt başarı
+        EXE-->>ENG: sonuç
+        ENG->>PG: CompleteStep [TX-B] dispatch=step_ready(sonraki)
+        ENG->>N: PublishDispatch (inline devam da olabilir)
+    else hata
+        EXE-->>ENG: error
+        ENG->>ENG: HandleStepError → ClassifyError (transient / permanent / design / inDoubt)
+        alt transient & attempt < maxAttempts
+            ENG->>PG: ScheduleRetry [TX] I events(stepFailed{retryable,nextRetryAt}) · I events(suspended{retry}) · I timer(retry, dueAt) · U projection waiting/retry · U PI
+        else onFail aksiyonu var
+            ENG->>PG: CompleteStep [TX-B] selectedAction=onFail · parameters.error · dispatch=step_ready(onFail hedefi)
+        else onFail yok / guard / inDoubt
+            ENG->>PG: DeadLetter [TX] I events(failed, dispatch=failed.v1) · D AwaitingUser · U timer(cancelled) · U projection failed · U PI
+            ENG->>N: PublishDispatch failed.v1 → süreç yöneticisi bildirimi
+        end
+    end
+    W->>N: ACK
+</pre>
+    <div class="cap">Version çakışması (başkası ilerletmiş) her TX'te UNIQUE ihlali olarak yakalanır → TX geri alınır, worker ACK'ler ve atlar. JetStream <code>MaxDeliver</code> aşımı → worker mesajı terminate eder, <code>DeadLetter(inDoubt)</code>.</div>
+  </div>
+</section>
+
+<!-- ================================================================ AKIŞ 3 -->
+<section class="sec" id="akis-scheduler">
+  <div class="sec-head"><div class="src"><span>engine-runtime-scheduler.md §1 · §4</span></div><h2>Akış 3 · Scheduler — dolan timer'ı uygula, devamı worker'a bırak</h2></div>
+  <div class="diagram">
+<pre class="mermaid">
+sequenceDiagram
+    autonumber
+    participant S as Scheduler · Tick (her 1 s)
+    participant PG as PostgreSQL
+    participant N as NATS
+    participant W as Worker
+    S->>PG: ClaimDueTimers [TX açılır] SELECT … WHERE status IN (armed,deferred) AND dueAt<=now() LIMIT 100 FOR UPDATE SKIP LOCKED
+    loop her timer
+        S->>PG: R workflow_projection (executionState, waitReason) FOR UPDATE
+        alt süreç running (otomatik zincir koşuyor)
+            S->>PG: DeferTimer — U timer(deferred, dueAt+30 s, deferCount++)
+        else süreç done / cancelled / failed
+            S->>PG: CancelTimer — U timer(cancelled, processEnded)
+        else waiting & kind=retry
+            S->>PG: FireRetry — I events(timerFired, dispatch=resume) · U timer(fired) · U projection running
+        else waiting & kind=taskTimeout
+            S->>PG: FireTaskTimeout — I events(timerFired{preemptedPSI, selectedAction}) · U PSI kapat (sistem) · D AwaitingUser · dispatch=step_ready(timeout hedefi) · U projection · (Notify yürütücüsü)
+        else waiting & kind=stepTimer
+            S->>PG: FireStepTimer — aynı + preemption (başka adımda bekliyorsa o PSI kapanır, Timer adımı PSI açılır) · dispatch=step_ready(default hedefi)
+        else kind=serviceTriggerCron
+            S->>PG: FireCron — R ServiceTrigger aktif mi · StartProcess (I PI, I projection, I events(startRequested, dispatch=step_ready)) · I timer(sonraki cron)
+        end
+    end
+    S->>PG: COMMIT
+    S->>N: PublishDispatch — resume.v1 / step_ready.v1 · U events.publishedAt
+    N->>W: HandleJob → Akış 2
+</pre>
+    <div class="cap">N scheduler kopyası aynı satırı alamaz (<code>SKIP LOCKED</code>); at-most-once = satır kilidi + <code>timerFired.messageId = timer:{id}</code> UNIQUE. Lider seçimi yok.</div>
+  </div>
+</section>
+
+<!-- ================================================================ ÇAĞRI AĞACI -->
+<section class="sec" id="agac">
+  <div class="sec-head"><div class="src"><span>öneri</span></div><h2>Çağrı ağacı: hangi metot hangisini, hangi sırayla</h2></div>
+  <div class="prose"><p>Numaralar çağrı sırasıdır. Sol kenarı <span style="color:var(--time);font-weight:600">amber</span> düğümler bir transaction açıp commit eder; yeşil-mavi kenarlı düğümler giriş noktalarıdır. Etiketler o metodun <b>doğrudan</b> dokunduğu tablolardır (alt çağrılarınki kendi düğümlerinde).</p></div>
+
+  <ul class="tree">
+    <li><div class="node entry"><div class="h"><span class="n">1</span><span class="m">TakeAction<span class="sig">(instanceId, actionCode, req)</span></span><span class="host">API</span></div><div class="why"><code>POST /instances/{id}/actions/{code}</code> — kullanıcı aksiyonunu alır, zinciri inline koşturur, formu döner.</div></div>
+      <ul>
+        <li><div class="node"><div class="h"><span class="n">1.1</span><span class="m">LoadContext<span class="sig">(processInstanceId)</span></span></div><div class="why">Sürecin çalışma bağlamı: imleç, süreç, aktif adım, adım tasarımı + aksiyonları, form değeri.</div><div class="tbls"><span class="io r">R workflow_projection</span><span class="io r">R ProcessInstance</span><span class="io r">R ProcessStepInstance</span><span class="io r">R ProcessStep · ProcessStepAction</span><span class="io r">R InstanceValue · Instance</span></div></div></li>
+        <li><div class="node"><div class="h"><span class="n">1.2</span><span class="m">CheckIdempotency<span class="sig">(messageId = Idempotency-Key)</span></span></div><div class="why">Aynı tıklamanın tekrarı mı? Varsa <b>200 replay</b> (güncel durumla), akış biter.</div><div class="tbls"><span class="io r">R workflow_events.messageId</span></div></div></li>
+        <li><div class="node"><div class="h"><span class="n">1.3</span><span class="m">AuthorizeActor<span class="sig">(ctx, actor)</span></span></div><div class="why">Aktör bekleyenlerde mi (grup üyeliği okuma-anı, vekalet dâhil)? Değilse <b>403 notAssigned</b>.</div><div class="tbls"><span class="io r">R InstanceAwaitingUser</span><span class="io r">R UserGroup · vekalet</span></div></div></li>
+        <li><div class="node"><div class="h"><span class="n">1.4</span><span class="m">ValidateAction<span class="sig">(ctx, actionCode, expectedPsi?)</span></span></div><div class="why">Süreç <code>waiting(humanTask|processing)</code> mi (409 notAwaitingAction) · FE eski görünümde mi (409 staleView) · aksiyon adımda var mı (422).</div><div class="tbls"><span class="io r">R ProcessStepAction</span></div></div></li>
+        <li><div class="node tx"><div class="h"><span class="n">1.5</span><span class="m">RecordActionTaken<span class="sig">(ctx, action, transfer)</span></span><span class="io tx">TX</span></div><div class="why"><code>actionTaken</code> olayı (<code>version = lastVersion+1</code>, <code>messageId</code> = Idempotency-Key, <code>dispatch</code> = hedef adım için <code>step_ready</code>); bekleyen adım kapanır; UNIQUE ihlali → <b>409 processAlreadyAdvanced</b>.</div><div class="tbls"><span class="io i">I workflow_events(actionTaken)</span><span class="io u">U ProcessStepInstance (kapat: actionTriggerDate, actionId, parameter, atUserId)</span><span class="io d">D InstanceAwaitingUser</span><span class="io u">U workflow_timer (taskTimeout → cancelled)</span><span class="io u">U workflow_projection (running, lastVersion)</span><span class="io u">U ProcessInstance.executionState</span><span class="io u">U Instance.statusId</span></div></div></li>
+        <li><div class="node"><div class="h"><span class="n">1.6</span><span class="m">Advance<span class="sig">(ctx, budget)</span></span></div><div class="why">İlerletme döngüsü: bekleyen <code>dispatch</code> varken <code>RunStep</code>; durma koşulu <code>suspended</code> / <code>ended</code> / <code>failed</code> / bütçe. Worker'la <b>ortak</b>.</div>
+          <ul>
+            <li><div class="node"><div class="h"><span class="n">1.6.1</span><span class="m">RunStep<span class="sig">(ctx, job)</span></span></div><div class="why">Tek adımın tam turu. Hedef adım tipine göre 1.6.1.a (otomatik) ya da 1.6.1.b (insan/bekleme) ya da 1.6.1.c (bitiş).</div>
+              <ul>
+                <li><div class="node"><div class="h"><span class="n">a1</span><span class="m">CheckGuards<span class="sig">(ctx)</span></span></div><div class="why"><code>autoStepRun ≥ 200</code> · <code>totalSteps ≥ 10 000</code> · alt süreç derinliği · kaskad → <code>DeadLetter(guard)</code>.</div><div class="tbls"><span class="io r">R workflow_projection</span></div></div></li>
+                <li><div class="node tx"><div class="h"><span class="n">a2</span><span class="m">BeginStep<span class="sig">(ctx, job)</span></span><span class="io tx">TX-A</span></div><div class="why"><code>stepStarted</code> (<code>messageId</code> = job/dispatch id); yeni PSI; gelen <code>changeList</code> forma merge; sayaçlar; <b>önceki olayın <code>dispatch</code>'i tüketildi</b> (inline devam — R18).</div><div class="tbls"><span class="io i">I workflow_events(stepStarted)</span><span class="io i">I ProcessStepInstance (executionDate)</span><span class="io u">U workflow_projection (attempt, autoStepRun++, totalSteps++, activePsi)</span><span class="io u">U workflow_events(önceki).publishedAt</span></div>
+                  <ul><li><div class="node"><div class="h"><span class="n">a2.1</span><span class="m">MergeChangeList<span class="sig">(ctx, changeList)</span></span></div><div class="why">Evrensel giriş kuralı: gelen <code>changeList</code> boş değilse form değerine yaz + projektör outbox'ı.</div><div class="tbls"><span class="io u">U InstanceValue.data</span><span class="io i">I InstanceValueOutbox</span></div></div></li></ul>
+                </div></li>
+                <li><div class="node"><div class="h"><span class="n">a3</span><span class="m">ExecuteStep<span class="sig">(ctx) → Executor[stepType].Run(settings, form, transfer)</span></span></div><div class="why"><b>Asıl iş.</b> Karşılaştırma ifadeyi hesaplar, HTTP Request dış sistemi çağırır, Değer Atama değeri üretir… Yan etki burada; süre sınırı 60 s. Tabloya <b>yazmaz</b> (sonucu döner; yazım a5'te).</div><div class="tbls"><span class="io r">R ProcessStep.settings</span><span class="io r">R InstanceValue</span><span class="io r">dış sistem</span></div></div></li>
+                <li><div class="node"><div class="h"><span class="n">a4</span><span class="m">SelectAction<span class="sig">(ctx, result)</span></span></div><div class="why">Sonucu aksiyon koduna eşle (<code>true/false/default/response.action</code>) → <code>ProcessStepAction</code>; <code>mergeParameter</code> ise gelen + üretilen parametreler birleşir. Hata ise → <code>HandleStepError</code>.</div><div class="tbls"><span class="io r">R ProcessStepAction</span></div></div></li>
+                <li><div class="node tx"><div class="h"><span class="n">a5</span><span class="m">CompleteStep<span class="sig">(ctx, action, outgoingTransfer)</span></span><span class="io tx">TX-B</span></div><div class="why"><code>stepCompleted</code> + <code>dispatch = step_ready(targetProcessStepId)</code> (giden aksiyon yoksa → <code>EndProcess(terminalStep)</code>); PSI sonucu; Değer Atama / Instance Creator'ın yazdığı form değeri de bu TX'te.</div><div class="tbls"><span class="io i">I workflow_events(stepCompleted)</span><span class="io u">U ProcessStepInstance (processStepActionParameter, actionId, actionTriggerDate)</span><span class="io u">U InstanceValue (yürütücü yazdıysa) · I InstanceValueOutbox</span><span class="io u">U Instance.statusId</span><span class="io u">U workflow_projection (lastVersion, lastError=null)</span></div></div></li>
+                <li><div class="node"><div class="h"><span class="n">a6</span><span class="m">HandleStepError<span class="sig">(ctx, err)</span></span></div><div class="why">a3/a4 hata verdiyse a5'in yerine geçer.</div>
+                  <ul>
+                    <li><div class="node"><div class="h"><span class="n">a6.1</span><span class="m">ClassifyError<span class="sig">(stepType, err) → WorkflowErrorClass</span></span></div><div class="why"><code>transient · permanent · design · inDoubt</code> (adım tipine göre tespit tablosu — errors §1).</div></div></li>
+                    <li><div class="node tx"><div class="h"><span class="n">a6.2</span><span class="m">ScheduleRetry<span class="sig">(ctx, err)</span></span><span class="io tx">TX</span></div><div class="why"><code>transient</code> ve deneme kaldıysa: backoff hesapla, retry timer kur, süreç <code>waiting(retry)</code>.</div><div class="tbls"><span class="io i">I workflow_events(stepFailed{retryable, nextRetryAt})</span><span class="io i">I workflow_events(suspended{retry})</span><span class="io i">I workflow_timer(retry, dueAt, attempt+1)</span><span class="io u">U workflow_projection (waiting, retry, nextRetryAt, lastError)</span><span class="io u">U ProcessInstance</span></div></div></li>
+                    <li><div class="node"><div class="h"><span class="n">a6.3</span><span class="m">ResolveOnFail<span class="sig">(ctx, err) → action?</span></span></div><div class="why">Adımın <code>onFail</code> aksiyonu (post-MVP: servis-düzeyi) varsa → <code>CompleteStep(onFail, parameters.error)</code>; <code>guard</code> sınıfı buraya <b>gelmez</b>.</div><div class="tbls"><span class="io r">R ProcessStepAction</span></div></div></li>
+                    <li><div class="node tx"><div class="h"><span class="n">a6.4</span><span class="m">DeadLetter<span class="sig">(ctx, reason)</span></span><span class="io tx">TX</span></div><div class="why">Süreç <code>failed</code>; bekleyenler temizlenir, timer'lar iptal, <code>failed.v1</code> yayınlanır (süreç yöneticisi bildirimi).</div><div class="tbls"><span class="io i">I workflow_events(stepFailed)</span><span class="io i">I workflow_events(failed, dispatch=failed.v1)</span><span class="io d">D InstanceAwaitingUser</span><span class="io u">U workflow_timer (cancelled)</span><span class="io u">U workflow_projection (failed, lastError)</span><span class="io u">U ProcessInstance</span></div></div></li>
+                  </ul>
+                </div></li>
+                <li><div class="node tx"><div class="h"><span class="n">b</span><span class="m">Suspend<span class="sig">(ctx, waitReason)</span></span><span class="io tx">TX</span></div><div class="why">Hedef adım Kullanıcı / Grup / Üst Form / autoAction'sız Processing / Timer beklemesi ise: bekleme kaydı, worker serbest. <code>dispatch = suspended.v1</code> (realtime).</div><div class="tbls"><span class="io i">I ProcessStepInstance (insan adımı PSI'sı)</span><span class="io i">I workflow_events(suspended)</span><span class="io u">U workflow_projection (waiting, waitReason, waitingSince, autoStepRun=0)</span><span class="io u">U ProcessInstance</span><span class="io u">U Instance.statusId</span><span class="io u">U workflow_events(önceki).publishedAt</span></div>
+                  <ul>
+                    <li><div class="node"><div class="h"><span class="n">b1</span><span class="m">ResolveAssignees<span class="sig">(ctx, step) → users[]</span></span></div><div class="why"><code>userType/userGroupType</code> çözümü: statik kullanıcı, form alanındaki kullanıcı (dinamik), kaynak adımda aksiyon alanın yöneticisi, grup. Boş → <code>permanent</code> hata.</div><div class="tbls"><span class="io r">R User · UserGroup · Position</span><span class="io r">R InstanceValue</span><span class="io r">R ProcessStepInstance (kaynak adım aktörü)</span><span class="io i">I InstanceAwaitingUser (senkron: ekle/sil)</span></div></div></li>
+                    <li><div class="node"><div class="h"><span class="n">b2</span><span class="m">ArmTimer<span class="sig">(ctx, kind, dueAt)</span></span></div><div class="why"><code>taskTimeout</code> (timeoutActive ise) ya da <code>stepTimer</code> (Timer adımı); <code>dueAt</code> takvime göre hesaplanır ve sabitlenir.</div><div class="tbls"><span class="io r">R WorkingSchedule · VacationDay</span><span class="io i">I workflow_timer(armed)</span><span class="io u">U workflow_timer (aynı PSI+kind eskisi → rearmed)</span></div></div></li>
+                  </ul>
+                </div></li>
+                <li><div class="node tx"><div class="h"><span class="n">c</span><span class="m">EndProcess<span class="sig">(ctx, endType)</span></span><span class="io tx">TX</span></div><div class="why">Süreç Bitişi / Alt Süreç Bitişi / terminal adım. Alt süreçse ana sürece <code>subProcess</code> beklemesini bitirecek olay (Q9 önerisi).</div><div class="tbls"><span class="io i">I workflow_events(ended)</span><span class="io u">U workflow_timer (tümü cancelled, processEnded)</span><span class="io u">U workflow_projection (done)</span><span class="io u">U ProcessInstance (done)</span><span class="io u">U Instance.statusId</span></div></div></li>
+              </ul>
+            </div></li>
+            <li><div class="node"><div class="h"><span class="n">1.6.2</span><span class="m">PublishDispatch<span class="sig">(event)</span></span></div><div class="why">Döngü durduğunda son olayın <code>dispatch</code>'i (realtime <code>suspended.v1</code> / <code>failed.v1</code>, ya da bütçe aşımında worker'a <code>step_ready</code>) NATS'a yayınlanır. Kaçarsa RelaySweep.</div><div class="tbls"><span class="io n">NATS publish</span><span class="io u">U workflow_events.publishedAt</span></div></div></li>
+          </ul>
+        </div></li>
+        <li><div class="node"><div class="h"><span class="n">1.7</span><span class="m">BuildActionResponse<span class="sig">(ctx) → 200 | 202</span></span></div><div class="why">Güncel konum + bekleyenler + aktörün yetkisine göre form görünümü; zincir sürüyorsa <code>202 pending</code>.</div><div class="tbls"><span class="io r">R workflow_projection</span><span class="io r">R ProcessStepInstance</span><span class="io r">R InstanceAwaitingUser</span><span class="io r">R InstanceValue · ViewProfile</span></div></div></li>
+      </ul>
+    </li>
+
+    <li><div class="node entry"><div class="h"><span class="n">2</span><span class="m">HandleJob<span class="sig">(msg: step_ready | resume)</span></span><span class="host">Worker</span></div><div class="why">NATS consumer. <code>CheckIdempotency</code> (1.2) → <code>DetectInDoubt</code> → <code>Advance</code> (1.6, bütçesiz) → ACK. Version çakışması ya da bilinen <code>messageId</code> → ACK ve atla.</div>
+      <ul>
+        <li><div class="node"><div class="h"><span class="n">2.1</span><span class="m">DetectInDoubt<span class="sig">(ctx, job)</span></span></div><div class="why">Aynı <code>messageId</code> ile <code>stepStarted</code> var ama <code>stepCompleted/stepFailed</code> yok → yan etki şüpheli. İdempotent adım tipiyse yeniden koş (<code>stepStarted</code> tekrar yazılmaz), değilse <code>HandleStepError(inDoubt)</code>.</div><div class="tbls"><span class="io r">R workflow_events</span></div></div></li>
+      </ul>
+    </li>
+
+    <li><div class="node entry"><div class="h"><span class="n">3</span><span class="m">Tick<span class="sig">()</span></span><span class="host">Scheduler ×N</span></div><div class="why">Her 1 s. Adım koşturmaz; timer'ları uygular, devamı <code>dispatch</code> ile worker'a bırakır.</div>
+      <ul>
+        <li><div class="node tx"><div class="h"><span class="n">3.1</span><span class="m">ClaimDueTimers<span class="sig">() → rows</span></span><span class="io tx">TX açılır</span></div><div class="why"><code>FOR UPDATE SKIP LOCKED … LIMIT 100</code> — kopyalar çakışmaz.</div><div class="tbls"><span class="io r">R workflow_timer (kilitli)</span></div></div></li>
+        <li><div class="node"><div class="h"><span class="n">3.2</span><span class="m">ApplyTimer<span class="sig">(timer)</span></span></div><div class="why">Projeksiyonu okur (<code>FOR UPDATE</code>); duruma göre alt metotlardan biri.</div><div class="tbls"><span class="io r">R workflow_projection</span></div>
+          <ul>
+            <li><div class="node"><div class="h"><span class="n">3.2.1</span><span class="m">DeferTimer</span></div><div class="why">Süreç <code>running</code>: +30 s, sayaç.</div><div class="tbls"><span class="io u">U workflow_timer (deferred, dueAt, deferCount)</span></div></div></li>
+            <li><div class="node"><div class="h"><span class="n">3.2.2</span><span class="m">CancelTimer<span class="sig">(reason)</span></span></div><div class="why">Süreç bitmiş/iptal/failed, ya da <code>taskTimeout</code>'un adımı zaten geçilmiş.</div><div class="tbls"><span class="io u">U workflow_timer (cancelled, cancelReason)</span></div></div></li>
+            <li><div class="node"><div class="h"><span class="n">3.2.3</span><span class="m">FireRetry</span></div><div class="why"><code>timerFired</code> + <code>resume.v1</code>; worker aynı adımı <code>attempt+1</code> ile koşar.</div><div class="tbls"><span class="io i">I workflow_events(timerFired, dispatch=resume)</span><span class="io u">U workflow_timer (fired)</span><span class="io u">U workflow_projection (running, waitReason=null)</span><span class="io u">U ProcessInstance</span></div></div></li>
+            <li><div class="node"><div class="h"><span class="n">3.2.4</span><span class="m">FireTaskTimeout</span></div><div class="why">Bekleyen insan adımı kapanır (sistem), bekleyenler temizlenir, timeout aksiyonunun hedefi için <code>step_ready</code>; bildirim varsa Notify yürütücüsü.</div><div class="tbls"><span class="io i">I workflow_events(timerFired{preempted, selectedAction}, dispatch=step_ready)</span><span class="io u">U ProcessStepInstance (kapat, aktör yok)</span><span class="io d">D InstanceAwaitingUser</span><span class="io u">U workflow_timer (fired)</span><span class="io u">U workflow_projection (running)</span></div></div></li>
+            <li><div class="node"><div class="h"><span class="n">3.2.5</span><span class="m">FireStepTimer</span></div><div class="why">Timer adımının <code>default</code> aksiyonu; süreç başka insan adımında bekliyorsa <b>preemption</b> (o PSI kapanır, Timer adımı PSI'sı açılır).</div><div class="tbls"><span class="io i">I workflow_events(timerFired, dispatch=step_ready)</span><span class="io u">U/I ProcessStepInstance</span><span class="io d">D InstanceAwaitingUser</span><span class="io u">U workflow_timer</span><span class="io u">U workflow_projection</span></div></div></li>
+            <li><div class="node"><div class="h"><span class="n">3.2.6</span><span class="m">FireCron</span></div><div class="why">Trigger aktif ve servis yayında ise <code>StartProcess(serviceTrigger)</code> (4) + sonraki tetik satırı.</div><div class="tbls"><span class="io r">R ServiceTrigger · Service</span><span class="io u">U workflow_timer (fired)</span><span class="io i">I workflow_timer (sonraki cron)</span></div></div></li>
+          </ul>
+        </div></li>
+        <li><div class="node"><div class="h"><span class="n">3.3</span><span class="m">PublishDispatch</span><span class="sig"> (COMMIT sonrası)</span></div><div class="tbls"><span class="io n">NATS resume.v1 / step_ready.v1</span><span class="io u">U workflow_events.publishedAt</span></div></div></li>
+      </ul>
+    </li>
+
+    <li><div class="node entry"><div class="h"><span class="n">4</span><span class="m">StartProcess<span class="sig">(serviceId, source, transfer, parent?)</span></span><span class="host">API · Worker · Scheduler</span></div><div class="why"><code>processStart</code> (API) · <code>subProcessStart</code> (worker, alt süreç yürütücüsü) · <code>serviceTrigger</code> (scheduler cron / associate). Ardından API'de <code>Advance</code> inline, diğerlerinde <code>PublishDispatch</code>.</div><div class="tbls"><span class="io i">I ProcessInstance (executionState=new)</span><span class="io i">I workflow_projection</span><span class="io i">I workflow_events(startRequested v1, dispatch=step_ready(ilk adım))</span></div></div></li>
+
+    <li><div class="node entry"><div class="h"><span class="n">5</span><span class="m">Recover<span class="sig">(processInstanceId, mode, selectedActionCode?, note?)</span></span><span class="host">API (admin)</span></div><div class="why"><code>POST /process-instances/{id}/recover</code>. Yetki: <code>processAdminUserGroupId</code> (Q12). Her mod bir olaydır; projeksiyon elle düzenlenmez.</div><div class="tbls"><span class="io i">I workflow_events(recovered{retry|skip} | cancelled)</span><span class="io u">U workflow_projection</span><span class="io u">U ProcessInstance</span><span class="io u">U workflow_timer (retry now → rearmed · cancel → cancelled)</span><span class="io d">D InstanceAwaitingUser (cancel)</span></div><div class="stop">retry/skip → <code>Advance</code> (inline) ya da <code>PublishDispatch(step_ready)</code>.</div></div></li>
+
+    <li><div class="node entry"><div class="h"><span class="n">6</span><span class="m">Housekeeping<span class="sig">(jobName) — pg_try_advisory_lock</span></span><span class="host">tekil</span></div><div class="why">Periyodik, tek kopyada.</div>
+      <ul>
+        <li><div class="node"><div class="h"><span class="n">6.1</span><span class="m">RelaySweep</span><span class="sig"> · 5 s</span></div><div class="why"><code>dispatch NOT NULL AND publishedAt IS NULL AND occurredAt &lt; now()-5s</code> → <code>PublishDispatch</code>. Çift yayın zararsız.</div><div class="tbls"><span class="io r">R workflow_events (partial index)</span><span class="io n">NATS</span><span class="io u">U publishedAt</span></div></div></li>
+        <li><div class="node"><div class="h"><span class="n">6.2</span><span class="m">StuckDetector</span><span class="sig"> · 1 dk</span></div><div class="why"><code>running AND lastEventAt &lt; now()-5m</code> → RelaySweep tetikle; hâlâ takılıysa alarm.</div><div class="tbls"><span class="io r">R workflow_projection</span></div></div></li>
+        <li><div class="node"><div class="h"><span class="n">6.3</span><span class="m">PruneShortLived</span><span class="sig"> · günlük</span></div><div class="tbls"><span class="io d">D workflow_timer (fired/cancelled &gt; 30 g)</span><span class="io d">D InstanceValueOutbox (processed &gt; 7 g)</span><span class="io d">D workflow_projection (done/cancelled &gt; 90 g)</span></div></div></li>
+        <li><div class="node"><div class="h"><span class="n">6.4</span><span class="m">RetentionJob</span><span class="sig"> · aylık</span></div><div class="why">Partition: 2 ay önceden oluştur · sıcak→soğuk DETACH/ATTACH · soğuk→MinIO JSONL.gz + DROP. Aktif süreç içeren partition bekletilir.</div><div class="tbls"><span class="io u">DDL workflow_events partition</span></div></div></li>
+        <li><div class="node"><div class="h"><span class="n">6.5</span><span class="m">ConsistencyCheck</span><span class="sig"> · saatlik</span></div><div class="why">Örneklem: <code>projection.lastVersion ↔ MAX(events.version)</code>; sapma → alarm + o sürecin rebuild'i (replay).</div><div class="tbls"><span class="io r">R workflow_projection · workflow_events</span></div></div></li>
+      </ul>
+    </li>
+  </ul>
+</section>
+
+<!-- ================================================================ MATRİS -->
+<section class="sec" id="matris">
+  <div class="sec-head"><div class="src"><span>öneri</span></div><h2>Metot × tablo yazma matrisi</h2></div>
+  <div class="prose"><p>Satır = metot (yazan TX), sütun = tablo. Boş hücre = dokunmaz. Okumalar ağaçta; burada yalnız yazımlar.</p></div>
+  <div class="scroll"><table class="tbl matrix">
+    <thead><tr><th>Metot</th><th class="rot">workflow_events</th><th class="rot">workflow_projection</th><th class="rot">workflow_timer</th><th class="rot">ProcessInstance</th><th class="rot">ProcessStepInstance</th><th class="rot">InstanceAwaitingUser</th><th class="rot">Instance.statusId</th><th class="rot">InstanceValue</th><th class="rot">InstanceValueOutbox</th><th class="rot">NATS</th></tr></thead>
+    <tbody>
+      <tr><td class="grp" colspan="11">Giriş &amp; kayıt</td></tr>
+      <tr><td class="m">StartProcess</td><td class="c"><span class="io i">I</span></td><td class="c"><span class="io i">I</span></td><td class="c"></td><td class="c"><span class="io i">I</span></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"><span class="io n">N</span></td></tr>
+      <tr><td class="m">RecordActionTaken</td><td class="c"><span class="io i">I</span></td><td class="c"><span class="io u">U</span></td><td class="c"><span class="io u">U</span></td><td class="c"><span class="io u">U</span></td><td class="c"><span class="io u">U</span></td><td class="c"><span class="io d">D</span></td><td class="c"><span class="io u">U</span></td><td class="c"></td><td class="c"></td><td class="c"></td></tr>
+      <tr><td class="m">Recover</td><td class="c"><span class="io i">I</span></td><td class="c"><span class="io u">U</span></td><td class="c"><span class="io u">U</span></td><td class="c"><span class="io u">U</span></td><td class="c"></td><td class="c"><span class="io d">D</span></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"><span class="io n">N</span></td></tr>
+      <tr><td class="grp" colspan="11">Adım turu (RunStep)</td></tr>
+      <tr><td class="m">BeginStep (TX-A)</td><td class="c"><span class="io i">I</span> <span class="io u">U*</span></td><td class="c"><span class="io u">U</span></td><td class="c"></td><td class="c"></td><td class="c"><span class="io i">I</span></td><td class="c"></td><td class="c"></td><td class="c"><span class="io u">U</span></td><td class="c"><span class="io i">I</span></td><td class="c"></td></tr>
+      <tr><td class="m">ExecuteStep</td><td class="c" colspan="10" style="text-align:left;color:var(--muted);font-size:.84rem">— yazmaz (iş bellekte / dış sistemde; sonuç a5'te yazılır) —</td></tr>
+      <tr><td class="m">CompleteStep (TX-B)</td><td class="c"><span class="io i">I</span></td><td class="c"><span class="io u">U</span></td><td class="c"></td><td class="c"></td><td class="c"><span class="io u">U</span></td><td class="c"></td><td class="c"><span class="io u">U</span></td><td class="c"><span class="io u">U</span></td><td class="c"><span class="io i">I</span></td><td class="c"></td></tr>
+      <tr><td class="m">Suspend</td><td class="c"><span class="io i">I</span> <span class="io u">U*</span></td><td class="c"><span class="io u">U</span></td><td class="c"><span class="io i">I</span></td><td class="c"><span class="io u">U</span></td><td class="c"><span class="io i">I</span></td><td class="c"><span class="io i">I</span> <span class="io d">D</span></td><td class="c"><span class="io u">U</span></td><td class="c"></td><td class="c"></td><td class="c"><span class="io n">N</span></td></tr>
+      <tr><td class="m">EndProcess</td><td class="c"><span class="io i">I</span></td><td class="c"><span class="io u">U</span></td><td class="c"><span class="io u">U</span></td><td class="c"><span class="io u">U</span></td><td class="c"></td><td class="c"></td><td class="c"><span class="io u">U</span></td><td class="c"></td><td class="c"></td><td class="c"><span class="io n">N</span></td></tr>
+      <tr><td class="m">ScheduleRetry</td><td class="c"><span class="io i">I</span><span class="io i">I</span></td><td class="c"><span class="io u">U</span></td><td class="c"><span class="io i">I</span></td><td class="c"><span class="io u">U</span></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td></tr>
+      <tr><td class="m">DeadLetter</td><td class="c"><span class="io i">I</span><span class="io i">I</span></td><td class="c"><span class="io u">U</span></td><td class="c"><span class="io u">U</span></td><td class="c"><span class="io u">U</span></td><td class="c"></td><td class="c"><span class="io d">D</span></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"><span class="io n">N</span></td></tr>
+      <tr><td class="grp" colspan="11">Scheduler</td></tr>
+      <tr><td class="m">DeferTimer / CancelTimer</td><td class="c"></td><td class="c"></td><td class="c"><span class="io u">U</span></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td></tr>
+      <tr><td class="m">FireRetry</td><td class="c"><span class="io i">I</span></td><td class="c"><span class="io u">U</span></td><td class="c"><span class="io u">U</span></td><td class="c"><span class="io u">U</span></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"><span class="io n">N</span></td></tr>
+      <tr><td class="m">FireTaskTimeout / FireStepTimer</td><td class="c"><span class="io i">I</span></td><td class="c"><span class="io u">U</span></td><td class="c"><span class="io u">U</span></td><td class="c"><span class="io u">U</span></td><td class="c"><span class="io u">U</span> <span class="io i">I</span></td><td class="c"><span class="io d">D</span></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"><span class="io n">N</span></td></tr>
+      <tr><td class="m">FireCron (→ StartProcess)</td><td class="c"><span class="io i">I</span></td><td class="c"><span class="io i">I</span></td><td class="c"><span class="io u">U</span> <span class="io i">I</span></td><td class="c"><span class="io i">I</span></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"><span class="io n">N</span></td></tr>
+      <tr><td class="grp" colspan="11">Yayın &amp; housekeeping</td></tr>
+      <tr><td class="m">PublishDispatch / RelaySweep</td><td class="c"><span class="io u">U*</span></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"><span class="io n">N</span></td></tr>
+      <tr><td class="m">PruneShortLived</td><td class="c"></td><td class="c"><span class="io d">D</span></td><td class="c"><span class="io d">D</span></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"><span class="io d">D</span></td><td class="c"></td></tr>
+      <tr><td class="m">RetentionJob</td><td class="c"><span class="io d">DDL</span></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td></tr>
+    </tbody>
+  </table></div>
+  <div class="prose"><p><small><span class="io u">U*</span> = <code>workflow_events</code> üzerindeki tek UPDATE yolu: <code>publishedAt</code> (yayınlandı ya da inline tüketildi). Bunun ve KVKK anonimleştirmesinin dışında olay satırı değişmez.</small></p></div>
+</section>
+
+<!-- ================================================================ YÜRÜTÜCÜLER -->
+<section class="sec" id="yuruteciler">
+  <div class="sec-head"><div class="src"><span>process-step.md §3</span><span>engine-runtime-errors.md §1 · §3</span></div><h2>Adım yürütücüleri: <code>Executor[stepType].Run</code></h2></div>
+  <div class="prose"><p><code>ExecuteStep</code> adım tipine göre bir yürütücü seçer. Her yürütücü aynı sözleşmeyi uygular: <code>Run(settings, form, incomingTransfer) → (result | error)</code>. Sonucun tabloya yazımı yürütücünün değil <code>CompleteStep</code>'in işidir; yürütücü yalnız iş yapar ve döner. Aşağıda hangi yürütücünün ne yaptığı, hangi tabloyu okuduğu, idempotent olup olmadığı (in-doubt'ta güvenle tekrar koşar mı).</p></div>
+  <div class="grid c3">
+    <div class="card"><h4>Compare · Karşılaştırma</h4><p>İki değeri ifade ile karşılaştırır → <code>true</code>/<code>false</code>.</p><ul><li>R: parametreler, InstanceValue</li><li>Yan etki yok · <b>idempotent</b></li><li>Hata: ifade çalışma hatası → permanent; derlenmez → design</li></ul></div>
+    <div class="card"><h4>Assign · Değer Atama</h4><p>Parametre/ifade → form alanı değeri üretir (yazım TX-B'de).</p><ul><li>R: InstanceValue, Property</li><li>Yazım: InstanceValue + InstanceValueOutbox (CompleteStep içinde)</li><li><b>idempotent</b></li></ul></div>
+    <div class="card"><h4>Switch</h4><p>Değeri dallara eşler → dal kodu.</p><ul><li>R: parametreler, InstanceValue</li><li><b>idempotent</b></li></ul></div>
+    <div class="card"><h4>HttpRequest</h4><p>Dış sistemi çağırır; response'u aksiyon koduna (<code>response.action</code>) ve parametrelere eşler.</p><ul><li>R: settings (endpoint, DynamicParameter), dış sistem</li><li>Yan etki <b>var</b> · idempotent değil (hedef <code>Idempotency-Key</code> desteklemiyorsa — Q21 <code>idempotencyKeyHeader</code>)</li><li>transient: 5xx/408/429/timeout · permanent: 4xx/parse</li></ul></div>
+    <div class="card"><h4>Notify · Bildirim</h4><p>Kanal sağlayıcısına mesaj bırakır (e-posta/push/SMS).</p><ul><li>R: alıcı çözümü, şablon</li><li>Yan etki var · idempotent değil</li><li>transient: SMTP 4xx / push 5xx</li></ul></div>
+    <div class="card"><h4>Human · Kullanıcı / Grup / Üst Form</h4><p>Yürütücü değil, <b>bekleme</b>: <code>ResolveAssignees</code> + <code>Suspend</code>. Atanan boş → permanent.</p><ul><li>R: User, UserGroup, Position, InstanceValue, kaynak PSI aktörü</li><li>I: InstanceAwaitingUser · timer</li><li><b>idempotent</b></li></ul></div>
+    <div class="card"><h4>Timer · TimerStart · TimerEnd</h4><p>Timer adımı → <code>Suspend(timer)</code> + <code>ArmTimer(stepTimer)</code>; TimerStart timer kurar ve <code>default</code> ile ilerler; TimerEnd o Timer'ın armed satırlarını iptal eder.</p><ul><li>R: WorkingSchedule, VacationDay</li><li>I/U: workflow_timer</li><li><b>idempotent</b></li></ul></div>
+    <div class="card"><h4>InstanceCreator · Deleter · CustomId</h4><p>Yeni instance oluşturur / siler / özel kimlik üretir.</p><ul><li>Yazım: Instance, InstanceValue (CompleteStep TX'inde)</li><li>Creator/Deleter idempotent değil; CustomId aynı id'yi üretiyorsa idempotent</li></ul></div>
+    <div class="card"><h4>SubProcessStart · ProcessStepTrigger</h4><p>Alt süreç açar (<code>StartProcess</code> ile) ya da başka süreç adımını tetikler; <code>async=false</code> ise ana süreç <code>Suspend(subProcess)</code> (Q9 önerisi).</p><ul><li>Guard: derinlik 8, senkron derinlik 3</li></ul></div>
+    <div class="card"><h4>ProcessEnd · SubProcessEnd</h4><p>Yürütücü değil: <code>EndProcess(endType)</code>.</p><ul><li>U: timer cancel, projection done, statusId</li><li><b>idempotent</b></li></ul></div>
+    <div class="card"><h4>Processing</h4><p><code>default autoAction</code> varsa saf geçiş (idempotent); yoksa <code>Suspend(processing)</code> — dış webhook <code>TakeAction</code> ile uyandırır.</p></div>
+    <div class="card"><h4>FlovoAI (post-MVP)</h4><p>AI servisini çağırır; HttpRequest ile aynı sınıflandırma; idempotent değil.</p></div>
+  </div>
+</section>
+
+<!-- ================================================================ NATS -->
+<section class="sec" id="nats">
+  <div class="sec-head"><div class="src"><span>engine-runtime.md §3</span><span>workflow-event.md §3.5</span></div><h2>Olay → <code>dispatch</code> → NATS: kim üretir, kim tüketir</h2></div>
+  <div class="scroll"><table class="tbl">
+    <thead><tr><th>Olay (workflow_events)</th><th>dispatch subject</th><th>Tür</th><th>Üreten metot</th><th>Tüketen</th><th>Tüketici idempotency</th></tr></thead>
+    <tbody>
+      <tr><td><code>startRequested</code></td><td><code>flovo.workflow.step_ready.v1</code></td><td>iş</td><td>StartProcess</td><td>Worker.HandleJob — ya da API inline (Advance)</td><td><code>messageId</code> = dispatch id → BeginStep</td></tr>
+      <tr><td><code>actionTaken</code></td><td><code>step_ready.v1</code></td><td>iş</td><td>RecordActionTaken</td><td>API inline (Advance); kaçarsa Worker</td><td>aynı</td></tr>
+      <tr><td><code>stepCompleted</code></td><td><code>step_ready.v1</code> (+ <code>step_completed.v1</code> dinleyiciler)</td><td>iş + olay</td><td>CompleteStep</td><td>inline / Worker · audit-realtime dinleyicileri</td><td>aynan · dinleyici kendi inbox'ı</td></tr>
+      <tr><td><code>suspended</code></td><td><code>suspended.v1</code></td><td>realtime</td><td>Suspend, ScheduleRetry</td><td>Frontend (bell/badge), bildirim</td><td>gerekmez (durum idempotent)</td></tr>
+      <tr><td><code>timerFired</code></td><td><code>resume.v1</code> / <code>step_ready.v1</code></td><td>iş</td><td>ApplyTimer (Fire*)</td><td>Worker.HandleJob</td><td><code>messageId = timer:{id}</code></td></tr>
+      <tr><td><code>failed</code></td><td><code>failed.v1</code></td><td>olay</td><td>DeadLetter</td><td>Süreç yöneticisi bildirimi, izleme</td><td>bildirim inbox'ı</td></tr>
+      <tr><td><code>recovered</code></td><td><code>step_ready.v1</code></td><td>iş</td><td>Recover</td><td>inline / Worker</td><td>dispatch id</td></tr>
+      <tr><td><code>ended</code> · <code>cancelled</code> · <code>stepStarted</code> · <code>stepFailed</code> · <code>stepSkipped</code></td><td>— (alt süreç <code>ended</code>: ana süreç için <code>resume.v1</code> — Q9)</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note"><b>Tek kural:</b> yayınlanacak her mesaj bir olayın <code>dispatch</code>'inde doğar (aynı TX), commit'ten sonra <code>PublishDispatch</code> ile çıkar, kaçarsa <code>RelaySweep</code> çıkarır. Doğrudan <code>nats.Publish</code> çağıran hiçbir iş kodu yoktur — outbox-in-event (R5).</div>
+</section>
+
+<!-- ================================================================ NOTLAR -->
+<section class="sec" id="notlar">
+  <div class="sec-head"><div class="src"><span>engine-runtime-plan.md</span></div><h2>Notlar &amp; bu şemanın dokümanlara eklediği öneriler</h2></div>
+  <div class="grid c2">
+    <div class="card"><h4>R18 · Inline devam (senkron ilerletme penceresi)</h4><p><code>TakeAction</code>, <code>actionTaken</code>'dan sonra otomatik zinciri <b>istek içinde</b> koşturur; form-döndüren adımda durup 200 döner; bütçe (öneri 5 s) aşılırsa 202. <code>dispatch</code>'in tüketimi = sonraki adımın <code>BeginStep</code> TX'inde <code>publishedAt</code> işareti. Worker ile aynı <code>Advance</code>. <span class="dim">Dokümanda karşılığı yok: engine-runtime §4.4/§5.1, workflow-event §3.5 (<code>publishedAt</code> anlamı), customer-api aksiyon yanıtı güncellenmeli.</span></p></div>
+    <div class="card"><h4>Q23 · Inline pencere parametreleri</h4><p>Bütçe süresi · hangi adım tipleri inline (hepsi mi, yan etkililer hariç mi) · 202 gövdesi · <code>path[]</code> alanı · bütçe aşımında arka planda devam mı, hemen devir mi.</p></div>
+    <div class="card"><h4>Metot adları öneridir</h4><p>Ayrıştırma ve adlar (İngilizce, proje kuralı) tasarım seviyesindedir; uygulama modülleri farklı bölebilir. Değişmez olanlar: TX sınırları, hangi olayın hangi tablolarla aynı TX'te yazıldığı, idempotency/version kuralları.</p></div>
+    <div class="card"><h4>Kapsam dışı</h4><p>Değer projektörü (<code>InstanceValueOutbox</code> → <code>InstanceAttr</code>), bildirim kanal sağlayıcısı, Settings API yazımları, KVKK erasure job'ı — ayrı dokümanlarda.</p></div>
+  </div>
+</section>
+
+<footer class="foot">Kaynak: <code>bpmEngine/engine-runtime*.md</code> · <code>models/processInstances/workflow-*.md</code> · <code>service-settings/process-step.md</code> — v0.44 taslak seti + R18/Q23 önerisi (2026-09-01). Metot düzeyi ayrıştırma öneridir; bağlayıcı metin dokümanlardır.</footer>
+</main>
+</div>
+
+<script>
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('nav.toc a[href^="#"]'));
+  if(!links.length || !('IntersectionObserver' in window)) return;
+  var secs = links.map(function(a){ return document.getElementById(a.getAttribute('href').slice(1)); }).filter(Boolean);
+  var vis = {};
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ vis[e.target.id] = e.isIntersecting ? e.boundingClientRect.top : null; });
+    var best=null, top=Infinity;
+    secs.forEach(function(s){ var t=vis[s.id]; if(t!==null && t!==undefined && t<top){ best=s.id; top=t; } });
+    if(best) links.forEach(function(a){ a.classList.toggle('active', a.getAttribute('href')==='#'+best); });
+  }, { rootMargin:'-10% 0px -70% 0px', threshold:[0,.1] });
+  secs.forEach(function(s){ io.observe(s); });
+})();
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>
+(function(){
+  if(!window.mermaid) return;
+  var dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  var stamped = document.documentElement.getAttribute('data-theme');
+  if(stamped === 'dark') dark = true; if(stamped === 'light') dark = false;
+  mermaid.initialize({ startOnLoad: true, theme: dark ? 'dark' : 'neutral', securityLevel: 'loose',
+    themeVariables: { fontFamily: 'IBM Plex Sans, sans-serif' } });
+})();
+</script>
+</body>
+</html>

@@ -88,8 +88,8 @@ flowchart LR
 - **Tutar Başlangıcı** alt sürecini tetikleyenin **Ekstre Satırı** olması: ilişki yönü ve tetikleme (ServiceTrigger mi,
   akış-üzeri `triggerProcessStep` mi) sonra netleşecek — görselde Ekstre Satırı tarafında **"Ekstre Tutar Alt süreç Başlat"**
   adımı var.
-- **`flowInfo` alan tipi (açık):** `creditCardStatementId` = **flowInfo → instanceId** (instance kimliğini alan olarak yüzeye
-  çıkarır, salt-okunur). Bu tipin **PropertyType** listesinde karşılığı teyit edilecek → [`../../models/enums/property-type.md`](../../models/enums/property-type.md).
+- **`flowInfo` alan tipi (teyit edildi — v0.45):** `creditCardStatementId` = **flowInfo → instanceId** (instance kimliğini alan olarak yüzeye
+  çıkarır, salt-okunur). Tip **PropertyType** listesinde mevcut → [`../../models/enums/property-type.md`](../../models/enums/property-type.md). Ekstre Satırı bu değeri `parentProperty` (`snapshot`) ile devralır.
 - **İş kuralı (Σ) reaktif tetiklenir:** Ekstre toplam kuralları (`totalAmountAtama`/`remainingAmountAtama`/`usedAmountAtama`) **ilgili alan
   değiştikçe** çalışır — bir **ekstre satırında değişiklik** olduğunda ya da **yeni satır eklenip/çıkarıldığında** yeniden hesaplanır
   (reaktif; bayat/stale toplam oluşmaz).
@@ -99,4 +99,4 @@ flowchart LR
 - **İş kuralı ↔ alt-süreç adımı — ikisi de gerekli (netleşti, D3):** iki **farklı tetikleyici**, çakışma değil: **(1) iş kuralı — frontend realtime:** kullanıcı bir alanı (ör. satırda `amount`) güncelleyince instance üzerinde **anında** hesaplar; **(2) alt-süreç adımı — backend:** **ilişkili servisten** (Masraf eşleştirme / ServiceTrigger) bu alanları etkileyen bir güncelleme geldiğinde çalışır (frontend edit'i yok). Aynı alanlar iki bağlamda değiştiğinden ikisine de ihtiyaç var.
 - İlişki: **Ekstre → (içerir) → Ekstre Satırı** (→ [`creditCardStatementLine.md`](./creditCardStatementLine.md)).
 
-*Oluşturma: 2026-07-29.*
+*Oluşturma: 2026-07-29. Güncelleme: 2026-09-07 (flowInfo tip teyidi kapatıldı, v0.45).*

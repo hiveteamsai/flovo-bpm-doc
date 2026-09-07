@@ -360,6 +360,12 @@
   Detay → `commitNotes/v0-32` · `flovo-bpm-engine §4.3/§6.2`.
 - **Üst Form Kullanıcı (§3.22) kenar durumlar (ÇÖZÜLDÜ — v0.32):** üstte aksiyon alan yoksa alt kayıt **read-only** · birden fazla üst →
   **ilk tespit** · atananlar kopyalanmaz, **canlı** okunur. Detay → `commitNotes/v0-32` · `process-step §3.22`.
+- **`parentProperty` kopyalama anı (ÇÖZÜLDÜ — v0.45):** `snapshot`/`materialized` kopyası **ilişki kurulduğu anda** (`AssociatedInstance` insert)
+  üstten alınır, bağ **kaldırılınca `null`**; instance oluşturma anına bağlı değil; `live`'da işlem yok. **Ek kararlar (aynı sürüm):** birden fazla üst
+  instance → **birincil üst = en erken bağ** (§3.22 ile aynı) · Designer: bağlayan alan yalnız Form List / tek-seçimli ilişkili Combobox ·
+  `parentPropertyId` = **bağlayan alan**, `refPropertyId` = **üst servisteki yansıtılan alan**, `relatedPropertyIds` **kaldırıldı** (eski uygulamada **DataGrid alt-alan/kolon listesi**ydi — `relatedPropertyDtos` ile çift; DataGrid yeni tasarımda yok) ·
+  faz: `snapshot`/`live` Motor Faz 1, `materialized` **F1.A.4** ile (öncesinde reddedilir); örnek süreçte alan bazında mod atandı.
+  Detay → `commitNotes/v0-45` · `models/processInstances/reflection-propagation.md §3a/§10`.
 - **Çekirdek ↔ tipe-özel alan ayrımı (ÇÖZÜLDÜ — v0.31):** tipe-özel ayarlar `Property.settings` **JSONB** (tip-başına JSON Schema);
   ilişkisel-okunan metadata **kolonda** kalır. Detay → `commitNotes/v0-31` · `models/service-settings/property.md §2`.
 - **Status: kategori/grup (ÇÖZÜLDÜ — v0.33): gerek yok** — `code`/`definition` yeterli; ayrı kategori/grup boyutu eklenmez. _(status §4)_

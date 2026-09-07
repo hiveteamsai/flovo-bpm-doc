@@ -21,6 +21,8 @@
 | [`models/processInstances/workflow-timer.md`](./models/processInstances/workflow-timer.md) | `WorkflowTimer` — zamanlanmış uyandırma (4 tür) | 📝 YENİ v0.44 |
 | Enum'lar: [`workflow-event-type`](./models/enums/workflow-event-type.md) · [`workflow-wait-reason`](./models/enums/workflow-wait-reason.md) · [`workflow-timer-kind`](./models/enums/workflow-timer-kind.md) · [`workflow-timer-status`](./models/enums/workflow-timer-status.md) · [`workflow-error-class`](./models/enums/workflow-error-class.md) | | 📝 YENİ v0.44 |
 | [`models/enums/process-execution-state.md`](./models/enums/process-execution-state.md) | `cancelled` değeri eklendi (öneri Q6) | 📝 güncellendi |
+| [`research/engine-runtime/motor-runtime-v0-44-ozet-detay.html`](./research/engine-runtime/motor-runtime-v0-44-ozet-detay.html) | **Özet + detay HTML anlatımı** (inceleme/sunum yardımcısı; bağlayıcı değil — dokümanlar esas) → [`research/engine-runtime/index.md`](./research/engine-runtime/index.md) | 📝 anlatım (2026-09-01) |
+| [`research/engine-runtime/motor-mimari-semasi-v0-45.html`](./research/engine-runtime/motor-mimari-semasi-v0-45.html) | **Metot-düzeyi mimari şeması** (çağrı ağacı · 3 akış · metot × tablo matrisi) — **öneri**; **R18 inline devam + Q23** adayı burada doğdu (plana işlenmesi bekliyor) | 📝 öneri (2026-09-01) |
 | Güncellenen mevcutlar | `flovo-bpm-engine.md §7` · `process-step-action.md §5` · `process-instance.md` · `process-step-instance.md` · `scheduler-job.md` · `service-trigger.md` · `process-step.md §3.7` · `flovo-customer-api.md` · `tech-stack/postgresql.md` · `tech-stack/nats-jetstream.md` · indeksler | 📝 v0.44 |
 
 ---

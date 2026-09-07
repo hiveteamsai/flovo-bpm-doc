@@ -111,8 +111,8 @@ flowchart LR
 |---|---|---|
 | `amount` | Numeric | Masraf tutarı. |
 | `expenseId` | **flowInfo → instanceId** | Masrafın kimliği = kendi `instanceId`'si (akış bilgisinden; salt-okunur). |
-| `expenseFormId` | **parentProperty** → Masraf Formu (`expenseForm`).`expenses` | Masraf'ı `expenses` listesinde tutan **Masraf Formu**'nun `expenseFormId` değerini **kopyalar** → masrafın **hangi masraf formuna** ait olduğunu belirler. |
-| `creditCardStatementId` | **parentProperty** → Masraf Formu (`expenseForm`).`expenses` | Masraf'ı `expenses` listesinde tutan **Masraf Formu**'ndan `creditCardStatementId` değerini **kopyalar** → masrafın **hangi ekstreye ait** olduğunu belirler. |
+| `expenseFormId` | **parentProperty** → Masraf Formu (`expenseForm`).`expenses` · `reflectionMode=snapshot` | Masraf'ı `expenses` listesinde tutan **Masraf Formu**'nun `expenseFormId` değerini **kopyalar** → masrafın **hangi masraf formuna** ait olduğunu belirler. İlişki-anı kopya yeterli (kaynak değişmez); formdan çıkarılınca `null`. |
+| `creditCardStatementId` | **parentProperty** → Masraf Formu (`expenseForm`).`expenses` · `reflectionMode=materialized` + `async` (F1.A.4 öncesi `live`) | Masraf'ı `expenses` listesinde tutan **Masraf Formu**'ndan `creditCardStatementId` değerini **kopyalar** → masrafın **hangi ekstreye ait** olduğunu belirler. Masraf ekstreden **önce** bağlandığı için ilişki-anı kopyası boş kalır; ekstre eklenince üst değişimi **yayılımla** doldurur. |
 | `matchedStatementLine` | **Combobox** — `isAssociatedCombobox = true`, `associatedServiceId = creditCardStatementLine` | Masrafı bir **Ekstre Satırı** ile eşleştirir. Seçim **association** kurar → **ServiceTrigger'ı tetikler** (bkz. `targetPropertyId`). Seçenekleri iş kuralı `matchedStatementLineDoldurma` doldurur. |
 
 ## İş Kuralları (business rules)
@@ -143,7 +143,10 @@ flowchart LR
   kurmaz) → **A→B→A döngüsü oluşmaz** (→ [`creditCardStatementLine.md`](./creditCardStatementLine.md)).
 - **parentProperty hedefi (`creditCardStatementId` · `expenseFormId`):** `expenses` Form List'i **Masraf Formu (`expenseForm`)**
   servisinde olduğundan üst form = **Masraf Formu**'dur. _(Kullanıcı "expense" olarak belirtti; `expenses` listesi expenseForm'da olduğundan üst = expenseForm.)_
-- **`flowInfo` / `parentProperty` alan tipleri (açık):** `expenseId` (flowInfo) · `expenseFormId` + `creditCardStatementId`
-  (parentProperty) — **PropertyType** listesinde karşılıkları teyit edilecek → [`../../models/enums/property-type.md`](../../models/enums/property-type.md).
+  Kopya **ilişki kurulduğu anda** (`expenses`'e ekleme / "var olandan ekle") masraf formundan alınır, **formdan çıkarılınca `null`** (KARAR v0.45).
+  `expenseFormId` için `snapshot` yeterli (kaynak değişmez); `creditCardStatementId` masraf bağlandıktan **sonra** dolabildiğinden `snapshot` ile
+  dolmaz → **KARAR v0.45:** `materialized` + `async` (hedef); outbox/projector (F1.A.4) öncesi `live` (→ `reflection-propagation.md` §10).
+- **`flowInfo` / `parentProperty` alan tipleri (teyit edildi — v0.45):** `expenseId` (flowInfo) · `expenseFormId` + `creditCardStatementId`
+  (parentProperty) — ikisi de **PropertyType** listesinde mevcut → [`../../models/enums/property-type.md`](../../models/enums/property-type.md).
 
-*Oluşturma: 2026-07-29.*
+*Oluşturma: 2026-07-29. Güncelleme: 2026-09-07 (parentProperty kopyalama anı + alan bazında `reflectionMode`, KARAR v0.45).*

@@ -11,6 +11,9 @@
   (beklediği) insan-görev adımıdır. Masraf **bir masraf formuyla ilişkilendirildiğinde** instance **ParentUser** (Üst Form
   Kullanıcı) adımına ilerler ve **masraf formunun süreç adımına göre** davranır (atananlar/görünüm üst formdan).
 - **Parent Kontrol:** `expenseFormId` alanı **dolu mu?** → **dolu** ise `true` → **ParentUser**; **boş** ise `false` → **Kullanıcı** (Taslak).
+- **parentProperty dolumu (KARAR v0.45):** Masraf'ın `expenseFormId` / `creditCardStatementId` kopyaları **masraf formuyla ilişki kurulduğu anda**
+  (`AssociatedInstance` kaydı) masraf formundan alınır, **formdan çıkarılınca temizlenir** (`null`)
+  (→ [`../../models/processInstances/reflection-propagation.md`](../../models/processInstances/reflection-propagation.md) §3a).
 - **Masraf iki yoldan oluşur:** **(1)** masraf formundan **bağımsız** (ilişkilendirilmeden), **(2)** masraf formu **`expenses`
   Form List** üzerinden.
 - **İlişkilendirilmemiş masraflar Taslak statüsünde tutulur** → "var olanlardan ekle" bunları listeler.
@@ -51,7 +54,7 @@
 | # | Aktör / Sistem | Ne olur | Servis · Adım |
 |---|---|---|---|
 | 1 | Kullanıcı | `expenses` Form List'inde 3 başlatma aksiyonundan biri | Masraf Formu · `expenses` → Masraf · Başlangıç |
-| 2 | Sistem | **Form Creator** masraf instance'ı üretir; oluşturulduktan **sonra** expense, expenseForm'a Form List üzerinden bağlanır → **`AssociatedInstance` kaydı atılır** | Masraf · Form Creator + AssociatedInstance |
+| 2 | Sistem | **Form Creator** masraf instance'ı üretir; oluşturulduktan **sonra** expense, expenseForm'a Form List üzerinden bağlanır → **`AssociatedInstance` kaydı atılır**; kayıtla birlikte Masraf'ın **parentProperty** alanları (`expenseFormId`, `creditCardStatementId`) masraf formundan **kopyalanır** (ilişki-anı ilk dolum) | Masraf · Form Creator + AssociatedInstance |
 | 3 | Sistem | Kayıt atıldığı için masraf formundaki **`whenAddedAssociate`** trigger'ı tespit edilir → expense'in **Forma Ekle alt süreç başlangıcı** tetiklenir | Masraf Formu ServiceTrigger → Masraf · Forma Ekle Başlangıcı |
 | 4 | Sistem | Alt süreçte **Status Kontrol** → masraf **henüz Kullanıcı adımında değil** → **false** → alt süreç **işlem yapmadan** sonlanır | Masraf · Forma Ekle alt süreç · Status Kontrol |
 | 5 | Sistem | Bu esnada ana süreç **AI** adımına ilerler → AI biter → **Bildirim** → **Parent Kontrol** | Masraf · AI / Bildirim / Parent Kontrol |
@@ -70,7 +73,7 @@
 | # | Aktör / Sistem | Ne olur | Servis · Adım |
 |---|---|---|---|
 | 1 | Kullanıcı | Masraf Formu'nda **"var olanlardan ekle"** — eklenebilir statü **Taslak** seçili olduğundan, ilişkilendirilmemiş (Kullanıcı adımındaki) masraflar listelenir → seçer | Masraf Formu · `expenses` (`addFromExistingStatusIds=[Taslak]`) |
-| 2 | Sistem | Seçilen expense Form List'e eklenir → **`AssociatedInstance` kaydı atılır** | AssociatedInstance |
+| 2 | Sistem | Seçilen expense Form List'e eklenir → **`AssociatedInstance` kaydı atılır**; Masraf'ın **parentProperty** alanları (`expenseFormId`, `creditCardStatementId`) o anda masraf formundan **kopyalanır** | AssociatedInstance |
 | 3 | Sistem | Kayıt atılırken masraf formundaki **Forma Ekleme trigger'ı** (`whenAddedAssociate`) tespit edilir → seçilen expense'in **Forma Ekle alt süreci** başlar | Masraf Formu ServiceTrigger → Masraf · Forma Ekle Başlangıcı |
 | 4 | Sistem | Alt süreçte **Status Kontrol** → instance **Taslak** → **true** → **trigger süreç adımı** (`triggerProcessStep`) ile Kullanıcı adımındaki **Forma Ekle (webhook)** aksiyonu tetiklenir | Masraf · Forma Ekle alt süreç · Status Kontrol(true) → Forma Ekle aksiyon tetikleme |
 | 5 | Sistem | Forma Ekle aksiyonu expense'i **Kullanıcı → ParentUser** adımına ilerletir | Masraf · Kullanıcı → ParentUser |
@@ -93,7 +96,7 @@
 | A1 | Kullanıcı | Masraf formuna **ekstre** eklenir | Masraf Formu · `creditCardStatement` (Form List) |
 | A2 | Sistem | **İK-1** `enabled=false` (max 1 ekstre) · **İK-2** ekstrenin `creditCardStatementId` değeri masraf formundaki textbox'a **kopyalanır** | Masraf Formu · İK-1 / İK-2 |
 | A3 | Kullanıcı | Ekstre içine **ekstre satırları** eklenir, `amount` girilir | Ekstre · `creditCardStatementLines` |
-| A4 | Sistem | Masraf formuyla ilişkili masrafların `creditCardStatementId`'si **parentProperty** ile masraf formundan **beslenir/dolar** | Masraf · `creditCardStatementId` (parentProperty) |
+| A4 | Sistem | Masraf formuyla ilişkili masrafların `creditCardStatementId`'si **parentProperty** ile masraf formundan **beslenir/dolar** — masraflar ekstreden **önce** bağlandığı için ilişki-anı kopyası boştu; bu yüzden alan **`materialized` + `async`** (KARAR v0.45; outbox/projector F1.A.4 öncesi `live`) — `snapshot` ile dolmazdı | Masraf · `creditCardStatementId` (parentProperty) |
 | A5 | Sistem | Masraf içinde **`matchedStatementLineDoldurma`** (`fillDataSource`): `creditCardStatementId` eşit **ve** `used==false` satırlar `matchedStatementLine` combobox'ına dolar → **seçilebilir** | Masraf · İş kuralı |
 
 **Aşama B — Eşleştirme (kaskad):**
@@ -120,7 +123,7 @@ satır **tümüyle kullanıldığında** (`used == true`, yani `remainingAmount 
 
 | # | Aktör / Sistem | Ne olur | Servis · Adım |
 |---|---|---|---|
-| 1 | Kullanıcı | Masraf formundaki Form List'ten bir masrafı **siler** → **`AssociatedInstance` kaydı silinir** | Masraf Formu · `expenses` |
+| 1 | Kullanıcı | Masraf formundaki Form List'ten bir masrafı **siler** → **`AssociatedInstance` kaydı silinir**; silinirken Masraf'ın **parentProperty** kopyaları (`expenseFormId`, `creditCardStatementId`) **`null`**'a çekilir | Masraf Formu · `expenses` |
 | 2 | Sistem | Masraf formu servisindeki **`whenRemoveAssociate`** trigger'ı çalışır → silinecek instance'ın **Formdan Çıkart alt süreci** tetiklenir | Masraf Formu ServiceTrigger → Masraf · Formdan Çıkart Başlangıcı |
 | 3 | Sistem | Alt süreçte **trigger süreç adımı** (`triggerProcessStep`) ile ParentUser'daki **Formdan Çıkart** aksiyonu tetiklenir → expense **ParentUser → Kullanıcı** (Taslak) | Masraf · ParentUser · Formdan Çıkart |
 | 4 | Sistem | **değerAtama** adımı ile expense'in **`matchedStatementLine`** alanındaki değer **silinir** (görselde "Ekstre Satırı Kaldır") | Masraf · Formdan Çıkart alt süreç · değerAtama |
@@ -129,7 +132,7 @@ satır **tümüyle kullanıldığında** (`used == true`, yani `remainingAmount 
 | 7 | Sistem | Ekstre Satırı alt sürecinde **trigger süreç adımı** ("Ekstre Tutar Alt süreç Başlat") ile ilişkili **Ekstre**'nin **Tutar Başlangıcı** alt süreci tetiklenir → ekstre verileri, **expense'ten parametre olarak gelen verilerle** güncellenir | Ekstre Satırı → Ekstre · Tutar Başlangıcı |
 | 8 | Sistem | Ardından **Ekstre Satırı** instance'ının değerleri güncellenir | Ekstre Satırı · değer atama adımları |
 
-**Son durum:** Masraf formdan çıkarıldı (**Taslak**, Kullanıcı'da); expense ↔ Ekstre Satırı ilişkisi çözüldü; **Ekstre Satırı** serbest/güncellendi; **Ekstre** tutarları yeniden hesaplandı.
+**Son durum:** Masraf formdan çıkarıldı (**Taslak**, Kullanıcı'da; `expenseFormId`/`creditCardStatementId` **boş** → Parent Kontrol tekrar koşarsa `false`); expense ↔ Ekstre Satırı ilişkisi çözüldü; **Ekstre Satırı** serbest/güncellendi; **Ekstre** tutarları yeniden hesaplandı.
 
 ---
 
@@ -138,4 +141,4 @@ satır **tümüyle kullanıldığında** (`used == true`, yani `remainingAmount 
 - **Parametre içeriği (adım 7):** expense'ten Ekstre Satırı → Ekstre'ye aktarılan `expenseId`/`amount`'ın Tutar alt sürecinde tam kullanımı.
 - **İsim setleri (netleşti):** Masraf'ın kendi alt süreçleri **Forma Ekle / Formdan Çıkart Başlangıcı**; Ekstre Satırı'nınkiler **Masraf İlişkilendirme / Masraf İlişki Kaldırma Başlangıcı** — iki ayrı çift (→ [`creditCardStatementLine.md`](./creditCardStatementLine.md)).
 
-*Oluşturma: 2026-07-29.*
+*Oluşturma: 2026-07-29. Güncelleme: 2026-09-07 (parentProperty ilişki-anı dolum/temizleme, KARAR v0.45).*

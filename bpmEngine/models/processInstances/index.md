@@ -22,7 +22,7 @@
 | [`instance-list-item.md`](./instance-list-item.md) | **Liste kalemleri fihristi** — liste-of-model (`groupByTax`, key-value) alanları için kalem-bazlı projeksiyon. |
 | [`instance-value-outbox.md`](./instance-value-outbox.md) | **Outbox olayı** — değer update'iyle aynı TX'te; relay → NATS → projektör. |
 | [`instance-value-change.md`](./instance-value-change.md) | **Değer geçmişi** (append-only audit; `saveChangeLog=true` alanlar) — projeksiyon değil, kaynak kanıt. |
-| [`reflection-propagation.md`](./reflection-propagation.md) | **Yansıma yayılım mekanizması** (tablo değil, runtime akış) — `parentProperty` `reflectionMode=materialized` (A′) parent→child tazeleme; `AssociatedInstance` + `Property` metadata ile çözülür; `async` (vars.) / `sync`. |
+| [`reflection-propagation.md`](./reflection-propagation.md) | **Yansıma yayılım mekanizması** (tablo değil, runtime akış) — `parentProperty` **ilk dolum/temizleme** (§3a: ilişki kurulunca kopya · bağ kalkınca `null`, KARAR v0.45) + `reflectionMode=materialized` (A′) parent→child tazeleme; `AssociatedInstance` + `Property` metadata ile çözülür; `async` (vars.) / `sync`. |
 | [`propertyValuesTemplates/`](./propertyValuesTemplates/index.md) | **Değer şablonları (property tipine göre)** — her `propertyType` için `data` içindeki JSONB şekli + `projectToAttr` projeksiyon eşlemesi; **core `labeled-value.md`** (etiketli değer şekli) bu klasördedir. |
 
 ### Motor yürütme (event sourcing — runtime state machine) · 📝 TASLAK v0.44, onay bekliyor

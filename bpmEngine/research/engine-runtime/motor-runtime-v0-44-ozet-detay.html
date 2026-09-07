@@ -1,0 +1,1060 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Kaynak: bpmEngine/engine-runtime*.md · models/processInstances/workflow-*.md · engine-runtime-plan.md (v0.44, commit 416425d). Bu sayfa anlatımdır; bağlayıcı metin dokümanların kendisidir. Hız bölümü R18 önerisine dayalı değerlendirmedir. -->
+<title>Flovo Motor Runtime</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --bg:#F2F5F7; --surface:#FFFFFF; --surface-2:#E9EEF2; --ink:#151D26; --muted:#5C6B7A; --line:#D5DDE5; --line-strong:#B9C5D0;
+    --accent:#12666B; --accent-ink:#0E5357; --accent-soft:#DCEDED; --accent-line:#9CCACB;
+    --time:#B26F14; --time-soft:#F6E9D4;
+    --st-new:#7A8794; --st-running:#2F63C9; --st-waiting:#B26F14; --st-failed:#B8352F; --st-done:#2E7D4F; --st-cancelled:#5F6B78;
+    --st-running-soft:#E2EAF9; --st-waiting-soft:#F6E9D4; --st-failed-soft:#F8E3E1; --st-done-soft:#E0F0E6; --st-new-soft:#E9EEF2; --st-cancelled-soft:#E5E9ED;
+    --paper:#F7F9FA; --code-bg:#EEF2F5;
+    --shadow:0 1px 2px rgba(21,29,38,.06), 0 6px 20px -12px rgba(21,29,38,.18);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0E141A; --surface:#151D25; --surface-2:#1B2530; --ink:#E4EAF0; --muted:#94A3B2; --line:#263240; --line-strong:#354455;
+      --accent:#5CBFC1; --accent-ink:#8ED6D7; --accent-soft:#12343A; --accent-line:#245C60;
+      --time:#E0A452; --time-soft:#3A2B14;
+      --st-new:#8B98A6; --st-running:#7FA6F0; --st-waiting:#E0A452; --st-failed:#F08A83; --st-done:#78C695; --st-cancelled:#9AA6B3;
+      --st-running-soft:#17273F; --st-waiting-soft:#3A2B14; --st-failed-soft:#3D1D1B; --st-done-soft:#153224; --st-new-soft:#1B2530; --st-cancelled-soft:#1E2831;
+      --paper:#F3F5F7; --code-bg:#1B2530;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -14px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0E141A; --surface:#151D25; --surface-2:#1B2530; --ink:#E4EAF0; --muted:#94A3B2; --line:#263240; --line-strong:#354455;
+    --accent:#5CBFC1; --accent-ink:#8ED6D7; --accent-soft:#12343A; --accent-line:#245C60;
+    --time:#E0A452; --time-soft:#3A2B14;
+    --st-new:#8B98A6; --st-running:#7FA6F0; --st-waiting:#E0A452; --st-failed:#F08A83; --st-done:#78C695; --st-cancelled:#9AA6B3;
+    --st-running-soft:#17273F; --st-waiting-soft:#3A2B14; --st-failed-soft:#3D1D1B; --st-done-soft:#153224; --st-new-soft:#1B2530; --st-cancelled-soft:#1E2831;
+    --paper:#F3F5F7; --code-bg:#1B2530;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -14px rgba(0,0,0,.6);
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} }
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:"IBM Plex Sans", "Segoe UI", Roboto, system-ui, sans-serif;
+    font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{ font-family:"Bricolage Grotesque", "IBM Plex Sans", system-ui, sans-serif; font-weight:600; line-height:1.15; margin:0; text-wrap:balance; letter-spacing:-.01em; }
+  h1{font-size:clamp(2rem, 4vw, 3rem); font-weight:700; letter-spacing:-.025em}
+  h2{font-size:1.7rem; margin-top:0}
+  h3{font-size:1.2rem; margin-top:2rem; margin-bottom:.6rem}
+  h4{font-size:1rem; margin-top:1.4rem; margin-bottom:.4rem}
+  p{margin:.6rem 0}
+  a{color:var(--accent-ink); text-decoration-color:var(--accent-line); text-underline-offset:3px}
+  a:hover{text-decoration-color:var(--accent)}
+  a:focus-visible, button:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:2px}
+  code, .mono{ font-family:"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace; font-size:.86em; }
+  p code, li code, td code, dd code, .note code{ background:var(--code-bg); padding:.05em .35em; border-radius:3px; color:var(--ink); }
+  pre{ margin:0; font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:.82rem; line-height:1.55; }
+  pre.code{ background:var(--code-bg); border:1px solid var(--line); border-radius:6px; padding:.9rem 1rem; overflow-x:auto; white-space:pre; }
+  strong{font-weight:600}
+  small{color:var(--muted)}
+  hr{border:0; border-top:1px solid var(--line); margin:2.5rem 0}
+
+  .layout{ display:grid; grid-template-columns:minmax(0,1fr); gap:0; max-width:1320px; margin:0 auto; padding:0 1.25rem 4rem; }
+  @media (min-width:1040px){
+    .layout{ grid-template-columns:232px minmax(0,1fr); gap:3rem; padding:0 2rem 5rem; }
+  }
+  nav.toc{ display:none; }
+  @media (min-width:1040px){
+    nav.toc{ display:block; position:sticky; top:1.5rem; align-self:start; max-height:calc(100vh - 3rem); overflow:auto; padding-top:3.6rem; font-size:.86rem; }
+  }
+  nav.toc .toc-label{ font-size:.7rem; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); margin-bottom:.6rem; font-weight:500; }
+  nav.toc ol{ list-style:none; margin:0; padding:0; border-left:1px solid var(--line); }
+  nav.toc li a{ display:block; padding:.32rem .8rem; color:var(--muted); text-decoration:none; border-left:2px solid transparent; margin-left:-1px; }
+  nav.toc li a:hover{ color:var(--ink) }
+  nav.toc li a.active{ color:var(--accent-ink); border-left-color:var(--accent); font-weight:500; }
+  nav.toc li.group{ margin-top:.9rem; }
+  nav.toc li.group span{ display:block; padding:.1rem .8rem; font-size:.68rem; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); }
+
+  main{ min-width:0; }
+  header.masthead{ padding:3rem 0 2.2rem; border-bottom:1px solid var(--line); }
+  .eyebrow{ font-size:.74rem; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); font-weight:500; margin-bottom:.9rem; display:flex; gap:.6rem; align-items:center; flex-wrap:wrap; }
+  .pill{ display:inline-flex; align-items:center; gap:.4rem; padding:.18rem .6rem; border-radius:999px; font-size:.74rem; letter-spacing:.02em; text-transform:none; font-weight:500; border:1px solid var(--line-strong); color:var(--ink); background:var(--surface); }
+  .pill.draft{ border-color:var(--time); color:var(--time); background:var(--time-soft); }
+  .lede{ font-size:1.18rem; line-height:1.55; color:var(--ink); max-width:64ch; margin-top:1.2rem; }
+  .meta{ display:flex; gap:1.6rem; flex-wrap:wrap; margin-top:1.4rem; font-size:.86rem; color:var(--muted); }
+  .meta b{ color:var(--ink); font-weight:500 }
+
+  section.sec{ padding:3rem 0 1rem; scroll-margin-top:1rem; }
+  section.sec + section.sec{ border-top:1px solid var(--line); }
+  .sec-head{ margin-bottom:1.4rem; }
+  .sec-head .src{ font-family:"IBM Plex Mono", monospace; font-size:.74rem; color:var(--muted); margin-bottom:.5rem; display:flex; gap:.5rem; flex-wrap:wrap; }
+  .sec-head .src span{ background:var(--surface-2); padding:.1rem .45rem; border-radius:3px; }
+  .prose{ max-width:70ch; }
+  .prose ul, .prose ol{ padding-left:1.3rem; }
+  .prose li{ margin:.3rem 0 }
+  .prose li::marker{ color:var(--muted) }
+
+  .thesis{ font-family:"Bricolage Grotesque", sans-serif; font-size:clamp(1.35rem, 2.4vw, 1.75rem); font-weight:600; line-height:1.3; letter-spacing:-.015em; padding:1.4rem 1.6rem; border-left:4px solid var(--accent); background:var(--surface); border-radius:0 8px 8px 0; box-shadow:var(--shadow); margin:1.4rem 0 2rem; max-width:44ch; text-wrap:balance; }
+  .thesis em{ font-style:normal; color:var(--accent-ink) }
+
+  .grid{ display:grid; gap:1rem; }
+  .grid.c2{ grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); }
+  .grid.c3{ grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); }
+  .card{ background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:1.1rem 1.2rem; box-shadow:var(--shadow); }
+  .card h4{ margin-top:0; margin-bottom:.35rem; font-size:1.02rem }
+  .card .kicker{ font-family:"IBM Plex Mono", monospace; font-size:.74rem; color:var(--accent-ink); margin-bottom:.4rem; }
+  .card p{ margin:.35rem 0; font-size:.94rem; color:var(--ink) }
+  .card p.dim{ color:var(--muted); font-size:.88rem }
+  .card.time{ border-top:3px solid var(--time) }
+  .card.acc{ border-top:3px solid var(--accent) }
+
+  .steps{ counter-reset:step; list-style:none; padding:0; margin:1rem 0; display:grid; gap:.7rem; }
+  .steps li{ display:grid; grid-template-columns:2.2rem minmax(0,1fr); gap:.9rem; align-items:start; background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:.9rem 1rem; }
+  .steps li::before{ counter-increment:step; content:counter(step); font-family:"Bricolage Grotesque", sans-serif; font-weight:700; font-size:1.3rem; color:var(--accent); line-height:1.1; }
+  .steps li b{ display:block; font-weight:600; margin-bottom:.15rem }
+  .steps li span{ font-size:.94rem; color:var(--ink) }
+
+  .actors{ display:grid; grid-template-columns:repeat(auto-fit, minmax(170px,1fr)); gap:.7rem; margin:1rem 0; }
+  .actor{ border:1px solid var(--line); border-radius:8px; padding:.8rem .9rem; background:var(--surface); font-size:.9rem; }
+  .actor b{ display:block; font-family:"Bricolage Grotesque", sans-serif; font-weight:600; font-size:1rem; margin-bottom:.2rem }
+  .actor small{ display:block; margin-top:.3rem }
+
+  .chip{ display:inline-block; font-family:"IBM Plex Mono", monospace; font-size:.74rem; padding:.08rem .5rem; border-radius:999px; border:1px solid transparent; white-space:nowrap; line-height:1.5; }
+  .chip.new{ color:var(--st-new); background:var(--st-new-soft); border-color:color-mix(in srgb, var(--st-new) 40%, transparent) }
+  .chip.running{ color:var(--st-running); background:var(--st-running-soft); border-color:color-mix(in srgb, var(--st-running) 40%, transparent) }
+  .chip.waiting{ color:var(--st-waiting); background:var(--st-waiting-soft); border-color:color-mix(in srgb, var(--st-waiting) 40%, transparent) }
+  .chip.failed{ color:var(--st-failed); background:var(--st-failed-soft); border-color:color-mix(in srgb, var(--st-failed) 40%, transparent) }
+  .chip.done{ color:var(--st-done); background:var(--st-done-soft); border-color:color-mix(in srgb, var(--st-done) 40%, transparent) }
+  .chip.cancelled{ color:var(--st-cancelled); background:var(--st-cancelled-soft); border-color:color-mix(in srgb, var(--st-cancelled) 40%, transparent) }
+  .chip.plain{ color:var(--muted); background:var(--surface-2); border-color:var(--line) }
+  .chip.acc{ color:var(--accent-ink); background:var(--accent-soft); border-color:var(--accent-line) }
+
+  .scroll{ overflow-x:auto; margin:1rem 0; border:1px solid var(--line); border-radius:8px; background:var(--surface); }
+  table.tbl{ border-collapse:collapse; width:100%; font-size:.9rem; min-width:640px; }
+  table.tbl th{ text-align:left; font-size:.7rem; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); font-weight:500; padding:.65rem .8rem; border-bottom:1px solid var(--line-strong); background:var(--surface-2); white-space:nowrap; }
+  table.tbl td{ padding:.6rem .8rem; border-bottom:1px solid var(--line); vertical-align:top; }
+  table.tbl tr:last-child td{ border-bottom:0 }
+  table.tbl td.num{ font-variant-numeric:tabular-nums; font-family:"IBM Plex Mono", monospace; font-size:.82rem; color:var(--muted); white-space:nowrap }
+  table.tbl td code{ white-space:nowrap }
+  table.tbl.compact td, table.tbl.compact th{ padding:.45rem .7rem; font-size:.86rem }
+  table.tbl.ledger{ min-width:860px }
+  table.tbl.ledger td{ font-size:.86rem }
+  table.tbl.ledger td .payload{ font-family:"IBM Plex Mono", monospace; font-size:.78rem; color:var(--muted); display:block; margin-top:.15rem; white-space:normal }
+  table.tbl.ledger tr.tx td:first-child{ border-left:3px solid var(--accent) }
+
+  .diagram{ background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:1rem; margin:1rem 0; overflow-x:auto; }
+  .diagram pre.mermaid{ background:transparent; margin:0; display:flex; justify-content:center; }
+  .diagram .cap{ font-size:.8rem; color:var(--muted); margin-top:.6rem; text-align:center; }
+
+  .note{ border:1px solid var(--line); border-left:3px solid var(--accent); background:var(--surface); border-radius:0 6px 6px 0; padding:.8rem 1rem; margin:1rem 0; font-size:.93rem; }
+  .note.time{ border-left-color:var(--time) }
+  .note.warn{ border-left-color:var(--st-failed) }
+  .note b{ font-weight:600 }
+
+  dl.terms{ display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr)); gap:.8rem 1.6rem; margin:1rem 0; }
+  dl.terms div{ border-top:1px solid var(--line); padding-top:.55rem }
+  dl.terms dt{ font-weight:600; font-size:.94rem }
+  dl.terms dt code{ font-weight:500 }
+  dl.terms dd{ margin:.15rem 0 0; font-size:.9rem; color:var(--muted) }
+
+  .flow{ display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:.5rem; margin:1rem 0; }
+  .flow .box{ background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:.7rem .8rem; font-size:.86rem; position:relative; }
+  .flow .box b{ display:block; font-family:"IBM Plex Mono", monospace; font-size:.8rem; color:var(--accent-ink); font-weight:500; margin-bottom:.2rem }
+  .flow .box.time b{ color:var(--time) }
+  .tiers{ display:grid; grid-template-columns:repeat(auto-fit, minmax(190px,1fr)); gap:.6rem; margin:1rem 0; }
+  .tier{ border:1px solid var(--line); border-radius:8px; padding:.9rem 1rem; background:var(--surface); font-size:.9rem; }
+  .tier .t{ font-family:"Bricolage Grotesque", sans-serif; font-weight:600; font-size:1.05rem; margin-bottom:.15rem }
+  .tier .d{ font-family:"IBM Plex Mono", monospace; font-size:.78rem; color:var(--time); margin-bottom:.4rem }
+  .tier p{ margin:.2rem 0; color:var(--muted); font-size:.86rem }
+
+  .pri{ display:inline-block; width:.6rem; height:.6rem; border-radius:50%; margin-right:.4rem; vertical-align:middle; }
+  .pri.r{ background:var(--st-failed) } .pri.o{ background:var(--st-waiting) } .pri.g{ background:var(--st-done) }
+  .legend{ display:flex; gap:1.2rem; flex-wrap:wrap; font-size:.84rem; color:var(--muted); margin:.4rem 0 1rem }
+
+  .plan{ list-style:none; padding:0; margin:1rem 0; display:grid; gap:.4rem; }
+  .plan li{ display:grid; grid-template-columns:3rem minmax(0,1fr) auto; gap:.8rem; align-items:baseline; padding:.55rem .8rem; border:1px solid var(--line); border-radius:6px; background:var(--surface); font-size:.9rem; }
+  .plan li .p{ font-family:"IBM Plex Mono", monospace; font-size:.8rem; color:var(--muted) }
+  .plan li.next{ border-color:var(--accent-line); background:var(--accent-soft) }
+
+  .files{ columns:2; column-gap:2rem; font-size:.86rem; font-family:"IBM Plex Mono", monospace; margin:.6rem 0 1rem; }
+  @media (max-width:700px){ .files{ columns:1 } }
+  .files li{ break-inside:avoid; margin:.2rem 0; list-style:none; color:var(--muted) }
+  .files li b{ color:var(--ink); font-weight:500 }
+  .files{ padding:0 }
+
+  footer.foot{ margin-top:3rem; padding-top:1.4rem; border-top:1px solid var(--line); font-size:.84rem; color:var(--muted); }
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="toc" aria-label="İçindekiler">
+  <div class="toc-label">İçindekiler</div>
+  <ol>
+    <li><a href="#ozet">Özet — bütün resim</a></li>
+    <li><a href="#ornek">Örnek: bir sürecin hayatı</a></li>
+    <li class="group"><span>Detay</span></li>
+    <li><a href="#durum">Yürütme durumu</a></li>
+    <li><a href="#event">WorkflowEvent — kaynak günlük</a></li>
+    <li><a href="#tur">Worker turu: iki TX</a></li>
+    <li><a href="#idempotency">Idempotency &amp; çakışma</a></li>
+    <li><a href="#projection">WorkflowProjection — imleç</a></li>
+    <li><a href="#timer">WorkflowTimer &amp; Scheduler</a></li>
+    <li><a href="#hata">Hata &amp; dayanıklılık</a></li>
+    <li><a href="#saklama">Saklama &amp; KVKK</a></li>
+    <li><a href="#hiz">Hız &amp; performans</a></li>
+    <li class="group"><span>İnceleme</span></li>
+    <li><a href="#kararlar">Kararlar R1–R17</a></li>
+    <li><a href="#sorular">Açık sorular Q1–Q22</a></li>
+    <li><a href="#plan">Plan &amp; inceleme rehberi</a></li>
+    <li><a href="#dokumanlar">Doküman haritası</a></li>
+  </ol>
+</nav>
+
+<main>
+<header class="masthead">
+  <div class="eyebrow">
+    <span>Flovo BPM Motoru · Çalışma-zamanı mimarisi</span>
+    <span class="pill draft">Taslak v0.44 · onay bekliyor</span>
+  </div>
+  <h1>Motor Runtime v0.44</h1>
+  <p class="lede">
+    Tasarım dokümanlarındaki senkron yürütme döngüsünün, <b>Go durumsuz worker + NATS JetStream + PostgreSQL</b> üzerinde
+    kalıcı, kaldığı yerden devam eden ve hiçbir adımı iki kez ilerletmeyen bir olay-akışına nasıl çevrildiğinin anlatımı:
+    önce bütün resim, sonra her parça ayrıntısıyla.
+  </p>
+  <div class="meta">
+    <span>Commit <b class="mono">416425d</b> · 31 dosya</span>
+    <span>Yeni <b>12</b> · güncellenen <b>18</b></span>
+    <span>Karar önerisi <b>R1–R17</b> · açık soru <b>Q1–Q22</b></span>
+    <span><code>todo.md</code> <b>dokunulmadı</b> (inceleme sonrası)</span>
+  </div>
+</header>
+
+<!-- ============================================================ ÖZET -->
+<section class="sec" id="ozet">
+  <div class="sec-head">
+    <div class="src"><span>engine-runtime.md</span><span>engine-runtime-plan.md §0</span></div>
+    <h2>Özet — bütün resim</h2>
+  </div>
+
+  <div class="prose">
+    <p>
+      <code>flovo-bpm-engine.md</code> §4.4 motorun yürütme döngüsünü tek bir <code>while</code> gibi anlatır: adımı koş, aksiyonu al,
+      hedef adıma geç, bitişe kadar devam et. Gerçek motor bunu yapamaz. Bir onay adımı <b>günlerce</b> bekleyebilir; worker <b>çökebilir</b>;
+      aynı mesaj kuyruktan <b>iki kez</b> gelebilir; ERP'ye giden POST <b>tam bir kez</b> gitmelidir; iki onaycı aynı saniyede "Onayla" ve "Reddet"
+      diyebilir. v0.44 seti, bu döngüyü parçalara ayırıp her parçaya bir kalıcı karşılık verir.
+    </p>
+  </div>
+
+  <div class="thesis">Süreç bir program değildir; <em>Postgres'te duran bir durum</em> ile <em>NATS'ta akan olaylardır.</em> Worker'lar hiçbir şey hatırlamaz; her şeyi tablo hatırlar.</div>
+
+  <h3>Üç tablo — motorun hafızası</h3>
+  <div class="grid c3">
+    <div class="card acc">
+      <div class="kicker">workflow_events · append-only</div>
+      <h4>WorkflowEvent — kaynak günlük</h4>
+      <p>Bir sürecin <b>her geçişi</b> değiştirilemez, sıralı bir satırdır: başlatıldı, adım başladı, adım bitti, askıya alındı, aksiyon alındı, timer doldu, hata, bitti (12 tip).</p>
+      <p class="dim">Aynı satır dört işi görür: audit/replay kaynağı · idempotency (<code>messageId</code>) · optimistic concurrency (<code>version</code>) · outbox (<code>dispatch</code>). Kaynak-hakikat budur; gerisi türetilir.</p>
+    </div>
+    <div class="card acc">
+      <div class="kicker">workflow_projection · 1–1</div>
+      <h4>WorkflowProjection — motor imleci</h4>
+      <p>Süreç başına <b>tek sıcak satır</b>: son sürüm (<code>lastVersion</code>), yürütme durumu + bekleme sebebi, aktif adım, deneme sayısı, döngü sayaçları, son hata.</p>
+      <p class="dim">Worker, scheduler ve API her turda bunu okur ve olayla aynı TX'te günceller. Silinse bile günlükten yeniden kurulur.</p>
+    </div>
+    <div class="card time">
+      <div class="kicker">workflow_timer · armed</div>
+      <h4>WorkflowTimer — çalar saat</h4>
+      <p>Uyanması gereken her şey bir satırdır (<code>dueAt</code>): Timer adımı, insan-görev <b>timeout</b>'u, <b>retry</b> backoff'u, ServiceTrigger <b>cron</b> tetiği.</p>
+      <p class="dim">Scheduler dolan satırları Postgres'te <code>FOR UPDATE SKIP LOCKED</code> ile sahiplenir; bu yüzden N kopya çalışır, lider seçimi gerekmez.</p>
+    </div>
+  </div>
+
+  <h3>Aktörler</h3>
+  <div class="actors">
+    <div class="actor"><b>Worker</b>JetStream'den <code>step_ready</code> işi çeker, <b>tek adımı</b> koşar, olayları yazar, sonrakini kuyruğa bırakır.<small>Go, durumsuz, yatay ölçek</small></div>
+    <div class="actor"><b>Scheduler</b><code>workflow_timer</code>'ı her saniye tarar, dolanları claim eder, <code>timerFired</code> yazar, <code>resume.v1</code> yayınlar.<small>Durumsuz, replica-N, lider yok</small></div>
+    <div class="actor"><b>API katmanı</b>Kullanıcı aksiyonunu <b>senkron</b> işler: aktörü doğrular, <code>actionTaken</code> yazar, 200 / 409 / 403 döner.<small>Idempotency-Key ile replay</small></div>
+    <div class="actor"><b>Outbox relay</b>Commit edilmiş ama yayınlanamamış <code>dispatch</code>'leri 5 sn'de bir yeniden yayınlar.<small>Housekeeping, advisory lock</small></div>
+    <div class="actor"><b>NATS JetStream</b>İş kuyruğu + olay omurgası: <code>step_ready</code> · <code>resume</code> · <code>step_completed</code> · <code>suspended</code> · <code>failed</code>.<small>Kalıcı, sıralı, Nats-Msg-Id</small></div>
+    <div class="actor"><b>PostgreSQL</b>Üç motor tablosu + <code>ProcessInstance</code> / <code>ProcessStepInstance</code> / <code>InstanceAwaitingUser</code> / <code>InstanceValue</code>.<small>RLS Pattern B v2</small></div>
+  </div>
+
+  <h3>Nasıl çalışır — altı hareket</h3>
+  <ol class="steps">
+    <li><b>Başlat</b><span>Kullanıcı, API veya ServiceTrigger bir <code>ProcessInstance</code> açar ve ilk olayı yazar: <code>startRequested</code> (version 1). Aynı satırın <code>dispatch</code>'inde ilk <code>step_ready</code> işi durur; commit'ten sonra NATS'a yayınlanır.</span></li>
+    <li><b>Adımı koş</b><span>Bir worker işi çeker. Önce <code>stepStarted</code> yazar ve commit eder (TX-A), sonra işi yapar (HTTP çağrısı, hesap, atama), sonra <code>stepCompleted</code> ya da <code>stepFailed</code> yazar (TX-B) — bu satırın <code>dispatch</code>'inde bir sonraki adımın <code>step_ready</code>'si vardır. Otomatik adımlar böyle zincirlenir.</span></li>
+    <li><b>Askıya al</b><span>Sıra bir insan adımına, Timer adımına veya dış cevap bekleyen Processing adımına gelince worker <code>suspended</code> yazar, kimlerin aksiyon alabileceğini <code>InstanceAwaitingUser</code>'a, varsa timeout/timer'ı <code>workflow_timer</code>'a koyar ve <b>serbest kalır</b>. Kuyrukta iş yoktur; süreç günlerce kaynak tutmadan bekler.</span></li>
+    <li><b>Uyandır</b><span>Bir dış olay süreci uyandırır: kullanıcı aksiyonu (API, <code>actionTaken</code>), dolan timer (scheduler, <code>timerFired</code>) veya webhook. Uyandıran taraf olayı yazar ve hedef adım için yeni bir <code>step_ready</code> yayınlar; worker kaldığı yerden devam eder.</span></li>
+    <li><b>Hatayı yönet</b><span>Her deneme ya <code>stepCompleted</code> ya <code>stepFailed</code> üretir. Hata <b>geçici</b> ise süreç <code>waiting(retry)</code>'e geçer ve bir retry timer'ı kurulur; kalıcıysa adımın <code>onFail</code> dalı seçilir; o da yoksa süreç <code>failed</code> olur ve admin <code>retry / skip / cancel</code> ile — yine olay yazarak — kurtarır.</span></li>
+    <li><b>Bitir ve yaşlandır</b><span>Bitiş düğümü <code>ended</code> yazar, süreç <code>done</code> olur. Olaylar aylık partition'larda sıcaktan soğuğa, oradan MinIO arşivine geçer ve süre dolunca partition olarak düşer. KVKK silme talebinde satır silinmez; kişiyi gösteren kolonlar bir "silinmiş kullanıcı"ya çevrilir.</span></li>
+  </ol>
+
+  <h3>Neyi garanti ediyor</h3>
+  <div class="grid c2">
+    <div class="card"><h4>Kayıp yok</h4><p>Durum ve yayınlanacak mesaj <b>aynı transaction</b>'da yazılır (<code>dispatch</code>). Commit'ten sonra yayın kaçarsa relay 5 sn içinde tamamlar. "Süreç <code>running</code>'de takılı kaldı" durumu oluşamaz.</p></div>
+    <div class="card"><h4>Çift ilerleme yok</h4><p>Her gelen mesajın kimliği <code>messageId</code> olarak UNIQUE saklanır — aynı mesaj ikinci kez gelirse atlanır. Her olay <code>lastVersion + 1</code> ile yazılır — biri önce davranmışsa UNIQUE ihlali olur, worker atlar, kullanıcı <b>409</b> alır.</p></div>
+    <div class="card"><h4>Yan etki görünür</h4><p><code>stepStarted</code> yan etkiden <b>önce</b> commit edildiği için worker ortada çökse bile iz kalır: "başladı ama bitmedi" = <b>in-doubt</b>. İdempotent adımlar yeniden koşar, diğerleri hata olarak işlenir; ERP'ye ikinci POST körlemesine gitmez.</p></div>
+    <div class="card"><h4>Tek aktif kol</h4><p>Bir süreçte aynı anda tek adım ilerler. Timer yalnız süreç <code>waiting</code> iken uygulanır; <code>running</code> ise 30 sn ertelenir, <code>done</code> ise iptal edilir. Fork/join MVP'de yok; paralellik ayrı alt süreçlerle sağlanır.</p></div>
+    <div class="card"><h4>Lider yok</h4><p>Scheduler kopyaları dolan timer satırlarını <code>FOR UPDATE SKIP LOCKED</code> ile paylaşır; aynı satırı iki kopya alamaz. Advisory lock yalnız tekil temizlik işlerinde. Ek altyapı (NATS KV lock) gerekmedi.</p></div>
+    <div class="card"><h4>Her şey olay</h4><p>Kurtarma dâhil hiçbir şey projeksiyonu elle düzeltmez; admin <code>recovered</code> / <code>cancelled</code> olayı yazar. Projeksiyon, <code>executionState</code>, bekleyen kullanıcılar ve armed timer seti günlükten <b>replay</b> ile yeniden kurulabilir.</p></div>
+  </div>
+
+  <h3>Durum makinesi</h3>
+  <div class="diagram">
+<pre class="mermaid">
+stateDiagram-v2
+    direction LR
+    [*] --> new : startRequested
+    new --> running : step_ready
+    running --> running : stepStarted → stepCompleted (otomatik zincir)
+    running --> waiting : suspended (humanTask · timer · processing · retry · subProcess)
+    waiting --> running : actionTaken · timerFired · resume
+    running --> done : ended
+    running --> failed : failed (onFail yok · retry tükendi · design · guard · inDoubt)
+    failed --> running : recovered (retry · skip)
+    failed --> cancelled : cancelled (admin)
+    waiting --> cancelled : cancelled (admin)
+    done --> [*]
+    cancelled --> [*]
+</pre>
+    <div class="cap"><code>ProcessExecutionState</code>: new · running · waiting · failed · done · <b>cancelled</b> (v0.44 önerisi, Q6). <code>waiting</code> tek durumdur; sebep <code>waitReason</code>'da.</div>
+  </div>
+
+  <h3>Kavramlar</h3>
+  <dl class="terms">
+    <div><dt>Partial Event Sourcing</dt><dd>Kaynak bir olay günlüğüdür ama okunan tablolar (projeksiyonlar) olayla <b>aynı TX'te</b> senkron yazılır; "olay var, projeksiyon yok" anı olmaz.</dd></div>
+    <div><dt>Projeksiyon</dt><dd>Günlükten türetilmiş, sorgu için tutulan tablo. Silinip replay ile yeniden kurulabilir.</dd></div>
+    <div><dt>Idempotency (<code>messageId</code>)</dt><dd>Aynı mesajın ikinci gelişinin etkisiz olması. Kaynak: NATS <code>Nats-Msg-Id</code>, API <code>Idempotency-Key</code>, scheduler <code>timer:{id}</code>.</dd></div>
+    <div><dt>Optimistic concurrency (<code>version</code>)</dt><dd>Kilit yok; yazan "son sürüm + 1" ile INSERT eder, biri önce davranmışsa UNIQUE ihlaliyle anlar.</dd></div>
+    <div><dt>Outbox-in-event</dt><dd>Yayınlanacak NATS mesajı ayrı bir outbox tablosuna değil, olayın kendi <code>dispatch</code> kolonuna yazılır; <code>publishedAt</code> boşsa relay yayınlar.</dd></div>
+    <div><dt>Claim (<code>SKIP LOCKED</code>)</dt><dd>Birden çok kopyanın aynı tablodan satır "kapması": kilitli satır atlanır, her satırı tam bir kopya alır.</dd></div>
+    <div><dt>In-doubt</dt><dd>Yan etkinin yapılıp yapılmadığı bilinmeyen deneme: <code>stepStarted</code> var, sonucu yok.</dd></div>
+    <div><dt>Pseudonymization</dt><dd>Kaydı silmeden kişiyi geri döndürülemez biçimde bir tombstone kullanıcıya bağlamak; denetim izi kalır, kimlik gider.</dd></div>
+  </dl>
+</section>
+
+<!-- ============================================================ ÖRNEK -->
+<section class="sec" id="ornek">
+  <div class="sec-head">
+    <div class="src"><span>workflow-event.md §2–§3</span><span>engine-runtime.md §4</span></div>
+    <h2>Örnek: bir masraf formunun hayatı</h2>
+  </div>
+  <div class="prose">
+    <p>
+      "Yurt dışı seyahat" masraf formu servisinin adımları: <code>callErp</code> (HTTP Request, ERP'ye kayıt) → <code>managerApproval</code>
+      (Kullanıcı adımı, 2 iş günü timeout) → <code>notifyEmployee</code> (Bildirim) → Süreç Bitişi. ERP ilk çağrıda 503 veriyor, yönetici ikinci gün onaylıyor.
+      Aşağıdaki tablo bu sürecin <code>workflow_events</code> satırlarıdır — motorun gördüğü tek gerçek.
+    </p>
+  </div>
+  <div class="scroll">
+    <table class="tbl ledger">
+      <thead><tr><th>v</th><th>eventType</th><th>Adım / attempt</th><th>Payload (özet) · yan tablolar</th><th>dispatch</th><th>messageId</th><th>Durum</th></tr></thead>
+      <tbody>
+        <tr><td class="num">1</td><td><code>startRequested</code></td><td>—</td><td><span class="payload">{ source: "processStart" }</span> <code>ProcessInstance</code> + projeksiyon açılır</td><td><code>step_ready(callErp)</code></td><td class="num">Idempotency-Key (API)</td><td><span class="chip new">new</span></td></tr>
+        <tr class="tx"><td class="num">2</td><td><code>stepStarted</code></td><td><code>callErp</code> · 1</td><td><span class="payload">{ stepCode, stepType: "httpRequest", incomingActionTransfer }</span> TX-A: <code>ProcessStepInstance</code> açılır, <code>changeList</code> forma merge edilir, <code>attempt=1</code>. Commit → HTTP POST gider.</td><td>—</td><td class="num">Nats-Msg-Id (job)</td><td><span class="chip running">running</span></td></tr>
+        <tr class="tx"><td class="num">3</td><td><code>stepFailed</code></td><td><code>callErp</code> · 1</td><td><span class="payload">{ errorClass: "transient", errorCode: "http.5xx", httpStatus: 503, retryable: true, nextRetryAt: +10 s, maxAttempts: 5 }</span> TX-B. <code>lastError</code> dolar.</td><td>—</td><td class="num">—</td><td><span class="chip running">running</span></td></tr>
+        <tr><td class="num">4</td><td><code>suspended</code></td><td><code>callErp</code></td><td><span class="payload">{ waitReason: "retry", nextRetryAt }</span> <code>WorkflowTimer(kind=retry, attempt=2, dueAt=+10 s)</code> kurulur. Worker serbest.</td><td>—</td><td class="num">—</td><td><span class="chip waiting">waiting · retry</span></td></tr>
+        <tr><td class="num">5</td><td><code>timerFired</code></td><td><code>callErp</code></td><td><span class="payload">{ workflowTimerId: 9081, kind: "retry", dueAt, firedAt }</span> Scheduler claim etti; timer <code>fired</code>.</td><td><code>resume.v1</code></td><td class="num">timer:9081</td><td><span class="chip running">running</span></td></tr>
+        <tr class="tx"><td class="num">6</td><td><code>stepStarted</code></td><td><code>callErp</code> · 2</td><td><span class="payload">{ … attempt: 2 }</span> TX-A. HTTP POST tekrar gider — bu kez 200.</td><td>—</td><td class="num">Nats-Msg-Id</td><td><span class="chip running">running</span></td></tr>
+        <tr class="tx"><td class="num">7</td><td><code>stepCompleted</code></td><td><code>callErp</code> · 2</td><td><span class="payload">{ selectedActionCode: "default", outgoingActionTransfer: { parameters: { erpDocNo: "MS-2026-0417" } }, durationMs: 412 }</span> TX-B. <code>ProcessStepInstance.processStepActionParameter</code> kopyası dolar.</td><td><code>step_ready(managerApproval)</code></td><td class="num">—</td><td><span class="chip running">running</span></td></tr>
+        <tr><td class="num">8</td><td><code>suspended</code></td><td><code>managerApproval</code></td><td><span class="payload">{ waitReason: "humanTask", awaiting: [{ userId: 42 }], timerId: 9102 }</span> <code>InstanceAwaitingUser</code>: 42 · <code>WorkflowTimer(kind=taskTimeout, dueAt = +2 iş günü)</code> · <code>suspended.v1</code> ile FE'ye "aksiyon bekliyor".</td><td>—</td><td class="num">Nats-Msg-Id</td><td><span class="chip waiting">waiting · humanTask</span></td></tr>
+        <tr><td class="num">9</td><td><code>actionTaken</code></td><td><code>managerApproval</code></td><td><span class="payload">{ actionCode: "approve", actionTransfer, source: "user" }</span> <code>actorUserId=42</code> kolonda. API katmanı senkron yazdı; taskTimeout timer'ı <code>cancelled(actionTaken)</code>. Aynı UUID ikinci kez gelirse → 200 replay.</td><td><code>step_ready(notifyEmployee)</code></td><td class="num">Idempotency-Key (UUID)</td><td><span class="chip running">running</span></td></tr>
+        <tr class="tx"><td class="num">10</td><td><code>stepStarted</code></td><td><code>notifyEmployee</code> · 1</td><td><span class="payload">{ stepType: "notification" }</span> TX-A.</td><td>—</td><td class="num">Nats-Msg-Id</td><td><span class="chip running">running</span></td></tr>
+        <tr class="tx"><td class="num">11</td><td><code>stepCompleted</code></td><td><code>notifyEmployee</code> · 1</td><td><span class="payload">{ selectedActionCode: "default", durationMs: 96 }</span> TX-B.</td><td><code>step_ready(processEnd)</code></td><td class="num">—</td><td><span class="chip running">running</span></td></tr>
+        <tr><td class="num">12</td><td><code>ended</code></td><td>Süreç Bitişi</td><td><span class="payload">{ endType: "processEnd" }</span> Kalan armed timer yok; projeksiyon <code>done</code>, <code>ProcessInstance.executionState</code> kopyası aynı TX'te.</td><td>—</td><td class="num">Nats-Msg-Id</td><td><span class="chip done">done</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+    <p><small>Sol kenarı vurgulu satırlar bir otomatik adımın iki transaction'ını (TX-A / TX-B) gösterir. <code>Instance.statusId</code> (kullanıcının gördüğü iş durumu: "Onay Bekliyor", "Onaylandı") bu tabloda yoktur — ayrı evrilir.</small></p>
+    <p>Aynı süreçte farklı bir yol: yönetici iki gün içinde tıklamazsa 8. satırdaki <code>taskTimeout</code> dolar → <code>timerFired{ preemptedProcessStepInstanceId }</code>, bekleyen adım sistem tarafından kapatılır, <code>InstanceAwaitingUser</code> temizlenir ve <code>settings.timeout</code>'taki eskalasyon aksiyonunun hedef adımı için <code>step_ready</code> yayınlanır. ERP beşinci denemede de 503 verseydi: <code>onFail</code> aksiyonu varsa <code>parameters.error</code> ile o dala; yoksa <code>failed{ reason: "retryExhausted" }</code> ve süreç yöneticisine bildirim.</p>
+  </div>
+</section>
+
+<!-- ============================================================ DURUM -->
+<section class="sec" id="durum">
+  <div class="sec-head">
+    <div class="src"><span>engine-runtime.md §1</span><span>process-execution-state.md</span><span>workflow-wait-reason.md</span></div>
+    <h2>Yürütme durumu</h2>
+  </div>
+  <div class="prose">
+    <p>Her <code>ProcessInstance</code> iki bağımsız durum taşır. <code>Instance.statusId</code> kullanıcının gördüğü <b>iş durumu</b>dur ("Onay Bekliyor", "Reddedildi") ve tasarımcı belirler. <code>executionState</code> ise <b>motorun</b> iç konumudur; günlükten türetilir ve tasarımcı dokunamaz. İkisi karıştırılmaz.</p>
+  </div>
+  <div class="scroll">
+    <table class="tbl compact">
+      <thead><tr><th>executionState</th><th>Anlam</th><th>Giriş olayı</th><th>Not</th></tr></thead>
+      <tbody>
+        <tr><td><span class="chip new">new</span></td><td>Süreç açıldı, ilk adım henüz koşmadı</td><td><code>startRequested</code></td><td>Çok kısa yaşar</td></tr>
+        <tr><td><span class="chip running">running</span></td><td>Otomatik zincir koşuyor ya da kuyrukta iş var</td><td><code>stepStarted</code> · <code>actionTaken</code> · <code>timerFired</code> · <code>recovered</code></td><td>Timer bu durumda uygulanmaz (ertelenir)</td></tr>
+        <tr><td><span class="chip waiting">waiting</span></td><td>Dış bir şey bekleniyor; worker serbest</td><td><code>suspended</code></td><td><code>waitReason</code>: <code>humanTask</code> · <code>processing</code> · <code>timer</code> · <code>retry</code> · <code>subProcess</code> (öneri)</td></tr>
+        <tr><td><span class="chip failed">failed</span></td><td>Dead-letter — motor durdu, admin bekleniyor</td><td><code>failed</code></td><td>Kaynak tutmaz; retention'da <b>aktif</b> sayılır</td></tr>
+        <tr><td><span class="chip done">done</span></td><td>Bitiş düğümüne ulaşıldı</td><td><code>ended</code></td><td>Ana süreçte yetkili geri-taşıma mümkün</td></tr>
+        <tr><td><span class="chip cancelled">cancelled</span></td><td>Admin iptal etti, bitişe ulaşılmadı</td><td><code>cancelled</code></td><td><b>v0.44 önerisi</b> (Q6). Alternatif <code>done + endType</code> yanıltıcı bulundu</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note"><b>Neden <code>retrying</code> ayrı bir durum değil (R13):</b> enum küçük kalsın diye <code>waiting</code> tek değerdir; "onay bekleyenler" ile "retry bekleyenler" listeleri <code>waitReason</code> ile ayrışır. Frontend yalnız <code>humanTask</code> (ve görünürlük için <code>processing</code>) ile ilgilenir; <code>timer</code>/<code>retry</code> motor-içi beklemedir.</div>
+  <div class="prose">
+    <p><b>Mevcut konum</b> = projeksiyondaki <code>activeProcessStepInstanceId</code>. <b>Askı kaydı</b> = <code>waiting(humanTask)</code> iken <code>InstanceAwaitingUser</code> (kim aksiyon alabilir; grup üyeliği okuma anında çözülür) + varsa <code>WorkflowTimer</code>. <b>Biriken parametreler</b> = son <code>ProcessStepInstance.processStepActionParameter</code>; kaynak kopyası <code>workflow_events.payload</code>'dadır.</p>
+  </div>
+</section>
+
+<!-- ============================================================ EVENT -->
+<section class="sec" id="event">
+  <div class="sec-head">
+    <div class="src"><span>models/processInstances/workflow-event.md</span><span>enums/workflow-event-type.md</span></div>
+    <h2>WorkflowEvent — kaynak günlük</h2>
+  </div>
+  <div class="prose">
+    <p>Tablonun adı dokümanlarda yerleşik <code>workflow_events</code> (konvansiyona göre <code>workflow_event</code> olmalı — Q1). Satırlar <b>yalnız INSERT</b> edilir; iki istisna vardır: <code>publishedAt</code> işareti ve KVKK anonimleştirmesi. Başka UPDATE/DELETE yoktur; saklama süresi dolan veri partition olarak düşer.</p>
+  </div>
+
+  <h3>Alanlar</h3>
+  <div class="scroll">
+    <table class="tbl compact">
+      <thead><tr><th>Alan</th><th>Tip</th><th>Anahtar</th><th>Ne için</th></tr></thead>
+      <tbody>
+        <tr><td><code>id</code></td><td>bigint</td><td>PK</td><td>Global sıra; <code>causationId</code> hedefi</td></tr>
+        <tr><td><code>processInstanceId</code></td><td>int</td><td>FK</td><td>Ait olduğu süreç — her zaman dolu</td></tr>
+        <tr><td><code>organizationId</code></td><td>int</td><td>RLS</td><td>Kiracı (denormalize)</td></tr>
+        <tr><td><code>version</code></td><td>int</td><td><b>UNIQUE</b> (processInstanceId, version)</td><td>Süreç-içi monoton sayaç, boşluksuz → <b>optimistic concurrency</b></td></tr>
+        <tr><td><code>eventType</code></td><td>enum</td><td>—</td><td>12 geçiş türü</td></tr>
+        <tr><td><code>processStepInstanceId</code> · <code>processStepId</code> · <code>processStepActionId</code></td><td>int?</td><td>FK</td><td>Adım çalıştırması, adım tasarımı (denormalize — replay PSI'ya bağımlı kalmaz), seçilen aksiyon</td></tr>
+        <tr><td><code>attempt</code></td><td>int</td><td>—</td><td>Deneme sayısı (1 = ilk); yalnız <code>stepStarted/Completed/Failed</code>'da anlamlı</td></tr>
+        <tr><td><code>actorUserId</code> · <code>actorApiKeyId</code> · <code>actorDelegateUserId</code></td><td>int?</td><td>FK</td><td>Tetikleyen kullanıcı / API anahtarı / vekil. <b>Kolonda</b> (R3) — KVKK anonimleştirme kolon-hedefli çalışır</td></tr>
+        <tr><td><code>payload</code></td><td>JSONB</td><td>—</td><td>Tipe-özel içerik; JSON Schema ile doğrulanır (<code>additionalProperties:false</code>)</td></tr>
+        <tr><td><code>messageId</code></td><td>string?</td><td><b>UNIQUE</b> partial</td><td>Gelen mesajın kimliği: <code>Nats-Msg-Id</code> · <code>Idempotency-Key</code> · <code>timer:{id}</code> → <b>idempotency</b></td></tr>
+        <tr><td><code>causationId</code></td><td>bigint?</td><td>FK self</td><td>Bu olayı doğuran önceki olay (zincir izi)</td></tr>
+        <tr><td><code>correlationId</code></td><td>int</td><td>FK</td><td>Kök ana süreç (alt süreç zincirinin en üstü); tüm alt süreç olaylarını tek sorguda toplar (Q4)</td></tr>
+        <tr><td><code>dispatch</code></td><td>JSONB?</td><td>—</td><td><b>Outbox-in-event:</b> commit sonrası yayınlanacak NATS mesajı <code>{ subject, messageId, body }</code></td></tr>
+        <tr><td><code>publishedAt</code></td><td>datetime?</td><td>—</td><td>Yayınlandı mı; null + dispatch dolu = relay yeniden yayınlar</td></tr>
+        <tr><td><code>occurredAt</code></td><td>datetime</td><td>partition</td><td>UTC; aylık <code>RANGE</code> partition anahtarı (Q2)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>12 olay tipi ve payload'ları</h3>
+  <div class="scroll">
+    <table class="tbl compact">
+      <thead><tr><th>eventType</th><th>Ne zaman</th><th>Payload</th><th>Durum etkisi</th></tr></thead>
+      <tbody>
+        <tr><td><code>startRequested</code></td><td>Yeni süreç — <b>version 1</b></td><td><code>source</code> (processStart · subProcessStart · serviceTrigger), <code>serviceTriggerId?</code>, <code>parentProcessInstanceId?</code>, <code>initialActionTransfer?</code></td><td><span class="chip new">new</span></td></tr>
+        <tr><td><code>stepStarted</code></td><td>Otomatik adım, yan etkiden <b>önce</b></td><td><code>stepCode</code>, <code>stepType</code>, <code>incomingActionTransfer?</code></td><td><span class="chip running">running</span></td></tr>
+        <tr><td><code>stepCompleted</code></td><td>Adım bitti, aksiyon seçildi</td><td><code>selectedActionCode</code>, <code>outgoingActionTransfer</code> (kaynak kopya — R2), <code>durationMs</code></td><td><span class="chip running">running</span></td></tr>
+        <tr><td><code>stepSkipped</code></td><td>İnsan adımı atlandı (<code>skipIfPreApproved</code> / <code>skipIfUserProcessStarter</code>)</td><td><code>skipRule</code>, <code>skippedForUserId</code>, <code>selectedActionCode</code></td><td><span class="chip running">running</span></td></tr>
+        <tr><td><code>suspended</code></td><td>İnsan · Processing · Timer · retry beklemesi</td><td><code>waitReason</code>, <code>awaiting[]</code> (yalnız id'ler), <code>timerId?</code>, <code>nextRetryAt?</code></td><td><span class="chip waiting">waiting</span></td></tr>
+        <tr><td><code>actionTaken</code></td><td>Kullanıcı / API / webhook aksiyonu</td><td><code>actionCode</code>, <code>actionTransfer</code>, <code>source</code>, <code>idempotencyKey?</code>, <code>expectedProcessStepInstanceId?</code></td><td><span class="chip running">running</span></td></tr>
+        <tr><td><code>timerFired</code></td><td>Timer scheduler tarafından uygulandı</td><td><code>workflowTimerId</code>, <code>kind</code>, <code>dueAt</code>, <code>firedAt</code>, <code>preemptedProcessStepInstanceId?</code>, <code>selectedActionCode?</code></td><td><span class="chip running">running</span></td></tr>
+        <tr><td><code>stepFailed</code></td><td>Bir deneme hata verdi</td><td><code>errorClass</code>, <code>errorCode</code>, <code>message</code>, <code>detail?</code> (≤ 2 KB, PII-siz — Q3), <code>httpStatus?</code>, <code>retryable</code>, <code>nextRetryAt?</code>, <code>maxAttempts</code></td><td>retry → waiting · onFail → running</td></tr>
+        <tr><td><code>failed</code></td><td>Dead-letter</td><td><code>reason</code>: noOnFail · retryExhausted · design · guard · inDoubt; <code>attempts</code></td><td><span class="chip failed">failed</span></td></tr>
+        <tr><td><code>recovered</code></td><td>Admin retry / skip</td><td><code>mode</code>, <code>selectedActionCode?</code>, <code>note?</code></td><td><span class="chip running">running</span></td></tr>
+        <tr><td><code>cancelled</code></td><td>Admin iptali</td><td><code>previousExecutionState</code>, <code>note?</code></td><td><span class="chip cancelled">cancelled</span></td></tr>
+        <tr><td><code>ended</code></td><td>Bitiş düğümü veya terminal otomatik adım</td><td><code>endType</code>: processEnd · subProcessEnd · terminalStep</td><td><span class="chip done">done</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note"><b>Geçiş kuralları:</b> <code>startRequested → stepStarted | suspended</code> · <code>stepStarted → stepCompleted | stepFailed | suspended</code> · <code>stepCompleted → stepStarted | suspended | ended</code> · <code>suspended → actionTaken | timerFired | cancelled</code> · <code>stepFailed → suspended(retry) | stepStarted(onFail) | failed</code> · <code>failed → recovered | cancelled</code>. Kural dışı geçiş yazılmaz, alarm üretir.</div>
+
+  <h3>İndeksler, partition, boyut</h3>
+  <div class="scroll">
+    <table class="tbl compact">
+      <thead><tr><th>Nesne</th><th>Tanım</th><th>Ne için</th></tr></thead>
+      <tbody>
+        <tr><td>UNIQUE</td><td>(<code>processInstanceId</code>, <code>version</code>)</td><td>Optimistic concurrency + süreç akışını sırayla okuma</td></tr>
+        <tr><td>UNIQUE partial</td><td>(<code>messageId</code>) WHERE NOT NULL</td><td>Idempotency</td></tr>
+        <tr><td>B-tree</td><td>(<code>organizationId</code>, <code>occurredAt</code>) · (<code>correlationId</code>, <code>occurredAt</code>)</td><td>Kiracı + zaman raporu · kök süreç → tüm alt süreçler</td></tr>
+        <tr><td>B-tree partial</td><td>(<code>occurredAt</code>) WHERE dispatch NOT NULL AND publishedAt NULL</td><td>Relay taraması — küçük kalır</td></tr>
+        <tr><td>Partition</td><td><code>RANGE(occurredAt)</code> aylık</td><td>Saklama = partition drop. Değer tablolarının <code>HASH(service_id)</code>'sinden bilinçli farklı (Q2)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose"><p><small>Boyut tahmini: adım başına 2–3 olay × ~1 KB; 1M adım/ay ≈ 3 GB/ay. Aylık partition + soğuk arşivle yönetilir.</small></p></div>
+</section>
+
+<!-- ============================================================ TUR -->
+<section class="sec" id="tur">
+  <div class="sec-head">
+    <div class="src"><span>engine-runtime.md §4.2</span><span>workflow-event.md §3.2</span><span>engine-runtime-errors.md §3</span></div>
+    <h2>Worker turu: otomatik adım iki transaction</h2>
+  </div>
+  <div class="prose">
+    <p>Tek TX'te yazsaydık "yan etkiyi yaptığımızı gördüğümüz" bir kayıt kalmazdı: worker ERP'ye POST attıktan sonra çökünce kuyruk aynı işi yeniden teslim eder ve POST ikinci kez gider. İki TX'in maliyeti adım başına <b>bir küçük ek INSERT</b>; kazancı yan etkinin görünür olması (R4).</p>
+  </div>
+  <div class="diagram">
+<pre class="mermaid">
+sequenceDiagram
+    participant N as NATS JetStream
+    participant W as Worker
+    participant P as PostgreSQL
+    participant E as Dış sistem (ERP)
+    N->>W: step_ready (Nats-Msg-Id)
+    W->>P: 1 · Yükle: projeksiyon (lastVersion, attempt), adım tasarımı, form değeri
+    Note over W,P: messageId zaten var → ACK ve atla · stepStarted var, sonuç yok → in-doubt
+    W->>P: 2 · TX-A: stepStarted (v+1) · ProcessStepInstance · changeList merge · attempt
+    P-->>W: commit
+    W->>E: 3 · Yan etki (HTTP POST) — en fazla 60 s
+    E-->>W: 200 / 5xx / timeout
+    W->>W: 4 · Sonucu aksiyon koduna eşle (true/false/default/response.action) · hata ise sınıflandır
+    W->>P: 5 · TX-B: stepCompleted | stepFailed (v+1) · dispatch = step_ready(next) · projeksiyon · retry timer / onFail
+    P-->>W: commit
+    W->>N: 6 · publish(dispatch) → publishedAt
+    W->>N: ACK
+</pre>
+    <div class="cap">Bir tur = iki küçük Postgres TX + bir NATS publish. Saf-hesap adımlarda (Değer Atama, Karşılaştırma, Switch) yan etki olmadığı için TX-A/TX-B tek TX'e katlanabilir; semantik aynı kalır.</div>
+  </div>
+
+  <h3>Redelivery geldiğinde — in-doubt kuralı</h3>
+  <div class="scroll">
+    <table class="tbl compact">
+      <thead><tr><th>Görülen</th><th>Anlam</th><th>Davranış</th></tr></thead>
+      <tbody>
+        <tr><td><code>stepStarted</code> yok</td><td>İlk teslim</td><td>Normal çalıştır</td></tr>
+        <tr><td><code>stepStarted</code> var, sonuç var</td><td>Zaten işlendi</td><td>ACK, atla</td></tr>
+        <tr><td><code>stepStarted</code> var, <b>sonuç yok</b></td><td>Worker yan etki sırasında/sonrasında çöktü → <b>in-doubt</b></td><td>Adım <b>idempotent</b> ise yeniden koş (aynı <code>attempt</code>, <code>stepStarted</code> tekrar yazılmaz); değilse <code>stepFailed(inDoubt)</code> → onFail / failed</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+    <p><b>İdempotent sayılanlar</b> (öneri, Q21): Değer Atama · Karşılaştırma · Switch · Kullanıcı/Grup atama çözümü · Süreç Bitişi · Timer Start/End · Custom ID Creator (aynı id'yi üretiyorsa). <b>Sayılmayanlar:</b> HTTP Request (hedef <code>Idempotency-Key</code> desteklemiyorsa) · Bildirim · Instance Creator/Deleter · Flovo AI. HTTP Request'e <code>idempotencyKeyHeader</code> ayarı eklenirse motor <code>attempt</code>-bağımsız sabit anahtar gönderir ve adım idempotent sayılır.</p>
+    <p><b>İnsan / bekleme adımı</b> farklı çalışır: worker atananı çözer, <code>InstanceAwaitingUser</code>'ı senkronlar, <code>suspended</code> yazar, <code>suspended.v1</code> yayınlar ve serbest kalır; <code>stepStarted</code> yazılmaz. Atama çözülemezse (yönetici tanımsız, grup boş) bu <code>permanent</code> hatadır. Atlama kuralları (<code>skipIfPreApproved</code> vb.) beklemeye geçmeden <code>stepSkipped</code> ile hedef aksiyonu tetikler.</p>
+  </div>
+</section>
+
+<!-- ============================================================ IDEMPOTENCY -->
+<section class="sec" id="idempotency">
+  <div class="sec-head">
+    <div class="src"><span>engine-runtime.md §5</span><span>workflow-event.md §3.3–§3.5</span><span>flovo-customer-api.md</span></div>
+    <h2>Idempotency, version, outbox ve çakışma sözleşmesi</h2>
+  </div>
+  <div class="grid c3">
+    <div class="card"><div class="kicker">messageId UNIQUE</div><h4>Aynı mesaj iki kez</h4><p>NATS at-least-once teslim eder. Gelen her iş/istek bir kimlik taşır; günlükte varsa "zaten işlendi": worker ACK'ler, API aynı sonucu (200) döner.</p></div>
+    <div class="card"><div class="kicker">(processInstanceId, version) UNIQUE</div><h4>Biri önce davrandı</h4><p>Yazan <code>lastVersion + 1</code> ile INSERT eder. UNIQUE ihlali = başkası ilerletti. Worker/scheduler için sessiz atlama; API için <b>409</b>.</p></div>
+    <div class="card"><div class="kicker">dispatch · publishedAt</div><h4>Commit ↔ publish boşluğu</h4><p>Postgres commit ile NATS publish atomik değil. Mesaj olayın <code>dispatch</code>'ine aynı TX'te yazılır; hızlı yol hemen yayınlar, kaçarsa relay (<code>publishedAt IS NULL</code>, &gt; 5 s) yeniden yayınlar. Çift yayın zararsızdır.</p></div>
+  </div>
+
+  <h3>Kullanıcı aksiyonu — <code>POST /instances/{id}/actions/{code}</code> (R15)</h3>
+  <div class="prose"><p>FE her tıklamada bir UUID üretip <code>Idempotency-Key</code> başlığıyla gönderir (Customer API'de zorunlu — Q17). API katmanı aksiyonu <b>senkron</b> işler, worker'a gitmez: aktörü <code>InstanceAwaitingUser</code>'a karşı doğrular, <code>actionTaken</code> yazar, timeout timer'ını iptal eder, hedef adım için <code>step_ready</code> dispatch eder ve form bilgisini response'ta döner.</p></div>
+  <div class="scroll">
+    <table class="tbl compact">
+      <thead><tr><th>Durum</th><th>Tespit</th><th>Yanıt</th><th>FE davranışı</th></tr></thead>
+      <tbody>
+        <tr><td>Aynı tıklamanın tekrarı (double-click, ağ retry)</td><td><code>Idempotency-Key</code> günlükte var</td><td><b>200</b> — ilk isteğin sonucuyla aynı (replay)</td><td>Hiçbir şey</td></tr>
+        <tr><td>Başkası ilerletti (Onayla ↔ Reddet yarışı)</td><td>version çakışması veya PSI'da <code>actionTriggerDate</code> dolu</td><td><b>409</b> <code>processAlreadyAdvanced</code> + güncel durum, <code>actionTakenAt</code>, <code>actionTakenByDisplay?</code></td><td>"Bu kayıt az önce işlendi" + formu yenile</td></tr>
+        <tr><td>Eski görünüm</td><td>opsiyonel <code>expectedProcessStepInstanceId</code> ≠ aktif</td><td><b>409</b> <code>staleView</code></td><td>Formu yenile</td></tr>
+        <tr><td>Aktör atanmamış</td><td><code>InstanceAwaitingUser</code>'da yok (vekalet dâhil)</td><td><b>403</b> <code>notAssigned</code></td><td>Mesaj</td></tr>
+        <tr><td>Aksiyon kodu adımda yok</td><td><code>ProcessStepAction</code> eşleşmez</td><td><b>422</b> <code>unknownAction</code></td><td>Mesaj (tasarım hatası)</td></tr>
+        <tr><td>Süreç bekliyor değil</td><td><code>executionState ≠ waiting(humanTask | processing)</code></td><td><b>409</b> <code>notAwaitingAction</code></td><td>Mesaj + yenile</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note"><code>actionTakenByDisplay</code> yalnız aynı organizasyon içinde ve yetki varsa döner (kişisel veri). Başlık yoksa replay yapılamaz; çift tıklama 409 alır — zararsız ama kötü deneyim, bu yüzden zorunluluk öneriliyor.</div>
+</section>
+
+<!-- ============================================================ PROJECTION -->
+<section class="sec" id="projection">
+  <div class="sec-head">
+    <div class="src"><span>models/processInstances/workflow-projection.md</span></div>
+    <h2>WorkflowProjection — motor imleci</h2>
+  </div>
+  <div class="prose">
+    <p><b>Neden ayrı tablo (R6):</b> bu satır her adımda güncellenir (MVCC yeniden-yazım); <code>ProcessInstance</code> ise kayıt niteliğindedir, seyrek değişir. Ayrı tutmak sıcak satırı izole eder ve <code>TRUNCATE + replay</code> ile <code>ProcessInstance</code>'a dokunmadan yeniden kurmayı mümkün kılar. <code>ProcessInstance.executionState</code> yine de <b>kopya</b> olarak kalır ki liste sorguları join'siz çalışsın (Q5); iki değer aynı TX'te yazılır.</p>
+  </div>
+  <div class="scroll">
+    <table class="tbl compact">
+      <thead><tr><th>Alan</th><th>Ne için</th></tr></thead>
+      <tbody>
+        <tr><td><code>processInstanceId</code> (PK)</td><td>1–1</td></tr>
+        <tr><td><code>lastVersion</code> · <code>lastEventId</code></td><td>Uygulanan son olay; yazan <code>lastVersion + 1</code> üretir</td></tr>
+        <tr><td><code>executionState</code> · <code>waitReason</code></td><td>Durum + ne beklendiği (<code>waiting</code> dışında null)</td></tr>
+        <tr><td><code>activeProcessStepInstanceId</code> · <code>activeProcessStepId</code></td><td>Mevcut konum + adım tasarımı (liste/filtre)</td></tr>
+        <tr><td><code>attempt</code> · <code>nextRetryAt</code></td><td>Aktif adımın denemesi; retry'da sonraki zaman (bilgi — asıl tetik <code>WorkflowTimer</code>)</td></tr>
+        <tr><td><code>lastError</code></td><td>Son <code>stepFailed/failed</code> özeti <code>{ errorClass, errorCode, message, at }</code>; başarılı adımda temizlenir</td></tr>
+        <tr><td><code>autoStepRun</code> · <code>totalSteps</code></td><td>Döngü korumaları: son askıdan bu yana ardışık otomatik adım (limit 200) · toplam adım (limit 10 000)</td></tr>
+        <tr><td><code>waitingSince</code> · <code>lastEventAt</code></td><td>SLA/yaşlanma raporu · <b>stuck detector</b> (<code>running</code> ve 5 dk olay yok → relay tetikle, alarm)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+    <p><b>Güncelleme kuralı:</b> yalnız olay yazan TX günceller (upsert). Canlı yazımda ve replay'de <b>aynı</b> <code>apply(event)</code> fonksiyonu kullanılır. Housekeeping rastgele örneklemle <code>lastVersion ↔ MAX(version)</code> karşılaştırır; sapma = alarm + o sürecin rebuild'i. İndeksler "hatalı süreçler / retry bekleyenler / onay bekleyenler" listelerini (<code>organizationId, executionState, waitReason</code>) ve stuck taramasını (<code>lastEventAt WHERE running</code>) besler.</p>
+    <p><b>Sınır:</b> "kim aksiyon alabilir" → <code>InstanceAwaitingUser</code> (form-odaklı); "süreç nerede, neyi bekliyor" → bu tablo (süreç-odaklı). ServiceTrigger <code>async=false</code> önerisi kabul edilirse <code>waitingForProcessInstanceId</code> alanı eklenir (Q9).</p>
+  </div>
+</section>
+
+<!-- ============================================================ TIMER -->
+<section class="sec" id="timer">
+  <div class="sec-head">
+    <div class="src"><span>engine-runtime-scheduler.md</span><span>models/processInstances/workflow-timer.md</span></div>
+    <h2>WorkflowTimer &amp; Scheduler — zaman bir tablodur</h2>
+  </div>
+  <div class="prose">
+    <p>Scheduler cron ifadesi <b>değerlendirmez</b>, bekleyen süreç hatırlamaz; yalnızca <code>dueAt</code> dolan satırları alır ve uygular. Dört farklı ihtiyaç tek tabloda tek claim döngüsüyle çözülür. <code>SchedulerJob</code> (organizasyon-düzeyi cron'lu arka plan fonksiyonları) ile karışmaz — bu tablo süreç-örneği düzeyinde tek-atımlık uyandırmadır.</p>
+  </div>
+
+  <h3>Dört tür</h3>
+  <div class="scroll">
+    <table class="tbl compact">
+      <thead><tr><th>kind</th><th>Kurulur</th><th>İptal edilir</th><th>Dolunca</th></tr></thead>
+      <tbody>
+        <tr><td><code>stepTimer</code></td><td>Timer adımına girilince (süreç <code>waiting(timer)</code>) <b>veya</b> <code>timerStart</code> koşunca (süreç ilerlemeye devam eder)</td><td><code>timerEnd</code> · süreç bitti/iptal · yeniden <code>timerStart</code> (<code>rearmed</code>)</td><td>Timer adımının <code>default</code> aksiyonu → hedef adım. Süreç başka adımda bekliyorsa o bekleme <b>kapatılır</b> (preemption)</td></tr>
+        <tr><td><code>taskTimeout</code></td><td>İnsan adımı <code>suspended</code> olurken, <code>settings.timeout.timeoutActive</code> ise</td><td>O adımda aksiyon alınınca (<code>actionTaken</code>) · süreç bitti/iptal</td><td>Bildirim (varsa) + timeout aksiyonuyla ilerleme — <b>eskalasyon = hedef adım</b></td></tr>
+        <tr><td><code>retry</code></td><td><code>stepFailed(retryable)</code> yazılırken, <code>dueAt = now() + backoff</code></td><td>Admin cancel/skip · süreç iptal · <code>retry now</code> (<code>rearmed</code>)</td><td>Aynı adım <code>attempt + 1</code> ile <code>stepStarted</code></td></tr>
+        <tr><td><code>serviceTriggerCron</code></td><td>Trigger oluşturulup/aktifleşince ilk tetik; her tetikten sonra bir sonraki (settings-api / scheduler yazar)</td><td>Trigger <code>active=false</code> / silindi</td><td>Hedef servis için <b>yeni ana</b> <code>ProcessInstance</code> + <code>startRequested</code>; yeni satır kurulur</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Claim döngüsü — lider seçimi neden yok (R7)</h3>
+  <pre class="code">her T = 1 s:
+  BEGIN
+    rows = SELECT * FROM workflow_timer
+           WHERE status IN ('armed','deferred') AND dueAt &lt;= now()
+           ORDER BY dueAt LIMIT 100
+           FOR UPDATE SKIP LOCKED          -- N kopya çakışmaz: kilitli satır atlanır
+    for r in rows: apply(r)               -- olay yaz / defer / cancel — aynı TX
+  COMMIT
+  publish(dispatch of written events)     -- hızlı yol; kaçarsa relay</pre>
+  <div class="prose">
+    <p>Her dolan satırı <b>tam olarak bir</b> kopya alır; kopya çökerse kilit TX ile düşer ve satır sonraki turda başkasına gider. At-most-once uygulama = satır kilidi + <code>timerFired.messageId = timer:{id}</code> UNIQUE. Advisory lock yalnız singleton housekeeping için kalır: stuck detector (1 dk), outbox relay sweep (5 s), timer pruning (günlük), event retention (günlük), tutarlılık denetimi (saatlik). Bu, <code>bpm-engine-build-plan.md</code> §6.4'teki "advisory lock ile tek lider" önerisinin yerini alır ve todo'daki "NATS KV ↔ Postgres advisory" ikilemini kapatır (Q20).</p>
+  </div>
+
+  <h3>Uygulama kuralı — tek aktif kol korunur (R14)</h3>
+  <div class="scroll">
+    <table class="tbl compact">
+      <thead><tr><th>Süreç durumu</th><th><code>stepTimer</code> / <code>taskTimeout</code></th><th><code>retry</code></th></tr></thead>
+      <tbody>
+        <tr><td><span class="chip waiting">waiting</span> (uygun waitReason)</td><td><b>Uygula</b></td><td><code>waitReason = retry</code> ise uygula</td></tr>
+        <tr><td><span class="chip running">running</span></td><td><b>deferred</b>: <code>dueAt = now() + 30 s</code>, <code>deferCount++</code> — otomatik zincir bitince uygulanır (üst sınır 20 → alarm, denemeye devam — Q14)</td><td>Olmaz (yalnız waiting'de kurulur)</td></tr>
+        <tr><td><span class="chip done">done</span> · <span class="chip cancelled">cancelled</span> · <span class="chip failed">failed</span></td><td><code>cancelled(processEnded)</code></td><td><code>cancelled</code></td></tr>
+        <tr><td><span class="chip waiting">waiting</span> ama <b>başka</b> adımda</td><td><code>stepTimer</code>: uygula (preemption — tasarım gereği) · <code>taskTimeout</code>: <code>cancelled(actionTaken)</code></td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note time"><b>Preemption:</b> <code>timerStart</code> ile kurulmuş "süreçten bağımsız" bir Timer, süreç başka bir insan adımında beklerken dolarsa, bekleyen adım sistem tarafından kapatılır (aktör yok), <code>InstanceAwaitingUser</code> temizlenir, Timer adımı için yeni PSI açılır ve <code>default</code> aksiyonuyla hedefe gidilir. "X süre içinde tamamlanmazsa şu adıma git" kalıbının runtime karşılığı budur — timeout'un genelleştirilmişi.</div>
+
+  <h3>Cron: saat dilimi, DST, kaçırılan tetikler (Q15)</h3>
+  <div class="grid c3">
+    <div class="card time"><h4>Saat dilimi</h4><p>Organization'da timezone alanı yok (v0.33). Cron dağıtım konfigürasyonu <code>FLOVO_SCHEDULER_TZ</code> ile değerlendirilir; varsayılan <code>Europe/Istanbul</code> (kalıcı UTC+3, DST yok). <code>dueAt</code> UTC saklanır.</p></div>
+    <div class="card time"><h4>DST (TZ değişirse)</h4><p>Standart cron semantiği: yerel saatte var olmayan an atlanır; iki kez oluşan anda ilk oluşum alınır. Türkiye için etkisiz.</p></div>
+    <div class="card time"><h4>Kaçırılan tetik</h4><p>"Bir kez yakala, yığın yok": geçmişte kalan cron satırı ilk turda bir kez uygulanır; arada kaçanlar üretilmez (10 saat kesintide saatlik trigger 10 süreç açmaz). <code>dueAt &lt; now() − 24 h</code> ise uygulanmaz, yalnız log. En sık 1 dk.</p></div>
+  </div>
+  <div class="prose">
+    <p><b>Süre hesabı</b> (<code>stepTimer</code>/<code>taskTimeout</code>): <code>workCalendar</code> → organizasyonun <code>WorkingSchedule</code> + <code>VacationDay</code> üzerinden yalnız çalışma zamanı sayılır, çalışma dışına düşen sonuç sonraki çalışma başlangıcına yuvarlanır · <code>normalCalendar</code> → takvim günü + <code>workTimeSelection</code> + erteleme · <code>fixedDateTime</code> → verilen an ± erteleme, geçmişse hemen dolar. <code>dueAt</code> kurulumda hesaplanır ve <b>sabitlenir</b>; takvim sonradan değişse yeniden hesaplanmaz (Q16). Takvim sürecin organizasyonunundur, atananın kişisel takvimi değil.</p>
+  </div>
+</section>
+
+<!-- ============================================================ HATA -->
+<section class="sec" id="hata">
+  <div class="sec-head">
+    <div class="src"><span>engine-runtime-errors.md</span><span>enums/workflow-error-class.md</span></div>
+    <h2>Hata &amp; dayanıklılık</h2>
+  </div>
+  <div class="prose">
+    <p>Hata, adımın bir <b>çıktısıdır</b>: her deneme ya <code>stepCompleted</code> ya <code>stepFailed</code> üretir. <code>stepFailed</code> sınıflandırılır; yalnız <code>transient</code> yeniden denenir. Denemeler bitince veya sınıf kalıcıysa adımın <code>onFail</code> aksiyonu varsa akış o dala döner; yoksa süreç <code>failed</code> olur ve admin kurtarır. Sessiz yutma yoktur.</p>
+  </div>
+
+  <h3>Beş hata sınıfı</h3>
+  <div class="scroll">
+    <table class="tbl compact">
+      <thead><tr><th>errorClass</th><th>Ne demek</th><th>HTTP Request örneği</th><th>Ne olur</th></tr></thead>
+      <tbody>
+        <tr><td><code>transient</code></td><td>Geçici; tekrar denenirse geçebilir</td><td>5xx · 408 · 429 · bağlantı/DNS/TLS · istek zaman aşımı</td><td>Retry timer'ıyla bekle</td></tr>
+        <tr><td><code>permanent</code></td><td>Kalıcı; tekrar aynı sonucu verir</td><td>4xx (408/429 hariç) · response parse/şema hatası</td><td><code>onFail</code> → yoksa <code>failed</code></td></tr>
+        <tr><td><code>design</code></td><td>Tasarım hatası; designer düzeltmeli</td><td><code>endpoint</code> boş · <code>DynamicParameter</code> çözümlenemedi · aksiyon hedefi arşivli</td><td><code>onFail</code> → yoksa <code>failed</code>; designer'a alarm</td></tr>
+        <tr><td><code>inDoubt</code></td><td>Yan etki oldu mu bilinmiyor</td><td><code>stepStarted</code> var, sonuç yok; adım idempotent değil</td><td><code>onFail</code> → yoksa <code>failed</code>; admin teyit eder</td></tr>
+        <tr><td><code>guard</code></td><td>Motor koruması devreye girdi</td><td>200 ardışık otomatik adım (A→B→A döngüsü)</td><td><b>Doğrudan</b> <code>failed</code> — onFail'e gitmez (döngü orada da sürebilir)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose"><p><small>Diğer adım tipleri için tespit kuralları errors §1'de: saf-hesap adımlarında ifade çalışma hatası <code>permanent</code>, derlenmeyen ifade <code>design</code>; atama çözümünde boş atanan <code>permanent</code>; Bildirim'de SMTP 4xx <code>transient</code>. Sınıflandırılamayan bilinmeyen exception <code>transient</code> sayılır ama en fazla 1 ek deneme alır.</small></p></div>
+
+  <h3>Retry politikası (R8 · Q7)</h3>
+  <div class="grid c2">
+    <div class="card">
+      <h4>Varsayılanlar</h4>
+      <div class="scroll" style="margin:.6rem 0 0;border:0"><table class="tbl compact" style="min-width:0"><tbody>
+        <tr><td><code>maxAttempts</code></td><td class="num">5 (ilk deneme dâhil → 4 retry)</td></tr>
+        <tr><td><code>initialDelaySeconds</code></td><td class="num">10</td></tr>
+        <tr><td><code>multiplier</code></td><td class="num">3 → 10 s · 30 s · 90 s · 270 s</td></tr>
+        <tr><td><code>maxDelaySeconds</code></td><td class="num">600</td></tr>
+        <tr><td><code>jitter</code></td><td class="num">±20 %</td></tr>
+        <tr><td>En kötü toplam</td><td class="num">≈ 6,7 dk</td></tr>
+      </tbody></table></div>
+      <p class="dim" style="margin-top:.6rem"><code>delay(attempt) = min(maxDelay, initial × multiplier^(attempt−1)) × U(0.8, 1.2)</code></p>
+    </div>
+    <div class="card">
+      <h4>Adım-bazlı override</h4>
+      <p><code>ProcessStep</code>'e ortak, nullable JSONB kolon <code>retryPolicy { maxAttempts, initialDelaySeconds, multiplier, maxDelaySeconds }</code> — tipe-özel <code>settings</code>'in dışında, her adım tipi için geçerli. <code>null</code> → sistem varsayılanı; <code>maxAttempts = 1</code> → retry kapalı.</p>
+      <p class="dim">Örnek: ERP gece bakımı 30 dk sürüyorsa HTTP Request adımına <code>{ maxAttempts: 8, maxDelaySeconds: 900 }</code>. Model dosyasına onaydan sonra eklenecek.</p>
+    </div>
+  </div>
+  <div class="note"><b>Retry nerede bekler:</b> BPM-düzeyi timer'da, JetStream NAK-delay'de <b>değil</b>. Böylece dayanıklı (stream limitinden bağımsız), <b>görünür</b> (admin: "3/5 deneme, sonraki 14:32") ve timer/timeout ile aynı mekanizma. JetStream <code>MaxDeliver</code> (öneri 3, <code>AckWait</code> 90 s &gt; worker turu 60 s) yalnız worker <b>crash-loop</b> korumasıdır: aşılınca mesaj terminate edilir, süreç <code>failed(inDoubt)</code> olur (Q8). Retry sırasında kullanıcı formu görür ama aksiyon alamaz; <code>Instance.statusId</code> değişmez.</div>
+
+  <h3><code>onFail</code> çözümleme sırası (R9 · R10)</h3>
+  <div class="flow">
+    <div class="box"><b>1 · Adımın onFail'i</b><code>onFail</code> kodlu <code>ProcessStepAction</code> varsa seçilir; hata bilgisi <code>parameters.error</code> ile taşınır. Hedef geçersizse (<code>design</code>) → 3.</div>
+    <div class="box"><b>2 · Servis-düzeyi (post-MVP)</b><code>Service.onFailProcessStepId</code> tanımlıysa 1 gibi davranır — Q10, iskelet hazır.</div>
+    <div class="box"><b>3 · failed</b>Dead-letter: <code>failed{reason}</code>, <code>InstanceAwaitingUser</code> temizlenir, bekleyen timer'lar iptal, <code>failed.v1</code> → süreç yöneticisine bildirim.</div>
+  </div>
+  <pre class="code">// onFail ile ilerleyen ActionTransfer — parameters.error rezerve anahtardır
+{
+  "parameters": {
+    "error": {
+      "stepCode": "callErp",
+      "errorClass": "permanent",
+      "errorCode": "http.4xx",        // katalog: http.5xx · http.4xx · http.timeout · expr.runtime · assign.unresolved · schema.changeList …
+      "message": "ERP returned 422",  // kısa, kişisel-veri-siz
+      "httpStatus": 422,
+      "attempts": 1,
+      "at": "2026-08-31T11:02:14Z"
+    }
+  },
+  "changeList": {},                    // onFail forma yazmaz; isterse hedef adım Değer Atama ile yazar
+  "action": null
+}</pre>
+  <div class="prose"><p><code>onFail</code> opsiyoneldir; yan etkili adımlarda (HTTP Request) tanımlanmamışsa tasarım-zamanı <b>uyarı</b> verilir, engel değil. <code>onFail</code> dalı da hata verirse aynı kural o adım için çalışır; zincir <code>autoStepRun</code> limitiyle sınırlıdır. Kullanıcı tarafında form açılır, <code>Instance.statusId</code> değişmez, banner "süreç hatası — yönetici inceliyor" görünür.</p></div>
+
+  <h3>Kurtarma — her mod bir olay (R11)</h3>
+  <div class="scroll">
+    <table class="tbl compact">
+      <thead><tr><th>Mod</th><th>Ne yapar</th><th>Olaylar</th><th>Kısıt</th></tr></thead>
+      <tbody>
+        <tr><td><code>retry</code></td><td>Hatalı adımı yeniden koşar (<code>attempt</code> = son + 1; limit yeniden uygulanır)</td><td><code>recovered(retry)</code> → <code>stepStarted</code> …</td><td><code>inDoubt</code>'ta "yan etki oldu mu"yu admin teyit eder</td></tr>
+        <tr><td><code>skip</code></td><td>Hatalı adımı atlar, admin'in seçtiği aksiyon koduyla ilerler</td><td><code>recovered(skip, selectedActionCode)</code> → <code>step_ready</code></td><td><code>changeList</code> boş; istenirse <code>parameters</code> verilir</td></tr>
+        <tr><td><code>cancel</code></td><td>Süreci iptal eder (bitişe ulaşmaz)</td><td><code>cancelled</code> → <span class="chip cancelled">cancelled</span></td><td><code>Instance.statusId</code> değişmez; iptal statüsü tasarımda verilir</td></tr>
+        <tr><td><code>retry now</code></td><td><code>waiting(retry)</code> süreçte backoff beklemeden dener</td><td>timer <code>cancelled(rearmed)</code> → <code>recovered(retry)</code></td><td>Yalnız waiting'de</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose"><p>API önerisi: <code>POST /process-instances/{id}/recover { mode, selectedActionCode?, parameters?, note? }</code>. Yetki: yeni org yetkisi <code>processAdminUserGroupId</code> (Q12).</p></div>
+
+  <h3>Guard'lar — döngü ve derinlik korumaları (R17 · Q13)</h3>
+  <div class="scroll">
+    <table class="tbl compact">
+      <thead><tr><th>Koruma</th><th>Sayaç</th><th>Limit</th><th>Aşılınca</th></tr></thead>
+      <tbody>
+        <tr><td>Ardışık otomatik adım</td><td><code>autoStepRun</code> (her <code>suspended</code>'da 0)</td><td class="num">200</td><td><code>failed(guard)</code> — A→B→A döngüsü</td></tr>
+        <tr><td>Toplam adım</td><td><code>totalSteps</code></td><td class="num">10 000</td><td><code>failed(guard)</code></td></tr>
+        <tr><td>Alt süreç derinliği</td><td><code>parentProcessInstanceId</code> zinciri</td><td class="num">8</td><td>Alt süreç başlatılmaz; tetikleyen adım <code>stepFailed(guard)</code></td></tr>
+        <tr><td>Senkron bekleme derinliği</td><td>iç içe <code>waitReason=subProcess</code></td><td class="num">3</td><td>Tetikleme <code>permanent</code> hata</td></tr>
+        <tr><td>ServiceTrigger kaskadı</td><td>aynı <code>correlationId</code>'de aynı trigger sayısı</td><td class="num">20</td><td>Trigger ateşlenmez; yalnız log + bildirim (ana süreç zarar görmez)</td></tr>
+        <tr><td>Worker turu süresi</td><td>adım yürütme zaman aşımı</td><td class="num">60 s</td><td><code>stepFailed(transient, step.timeout)</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose"><p>Limitler sistem konfigürasyonudur (org-bazlı değil). <b>Compensation</b> (telafi) MVP'de yok (R12); iskelet: adım tasarımına opsiyonel <code>compensationProcessStepId</code>, iptalde tamamlanan adımlar ters sırayla gezilir ve tanımlı olanlar için ayrı bir compensation kolu koşar — hangi adımların tamamlandığı zaten <code>stepCompleted</code> listesidir.</p></div>
+</section>
+
+<!-- ============================================================ SAKLAMA -->
+<section class="sec" id="saklama">
+  <div class="sec-head">
+    <div class="src"><span>engine-runtime-retention.md</span></div>
+    <h2>Saklama &amp; KVKK</h2>
+  </div>
+  <div class="thesis" style="font-size:1.25rem;max-width:56ch">Denetim izi silinmez, <em>kişi anonimleştirilir</em>; veri katmanlar arasında yaşlanır, <em>satır-satır silinmez.</em></div>
+
+  <h3><code>workflow_events</code> yaşam döngüsü (R16 · Q18)</h3>
+  <div class="tiers">
+    <div class="tier"><div class="t">Sıcak</div><div class="d">partition ayı + 3 ay</div><p>Ana tablo, tüm indeksler.</p><p>Motor + UI tarihçe, anlık.</p></div>
+    <div class="tier"><div class="t">Soğuk</div><div class="d">+ 21 ay (toplam 24 ay DB'de)</div><p>Partition <code>DETACH</code> → <code>workflow_events_cold</code>; yalnız PK + org/zaman indeksi. Veri kopyalanmaz, metadata işlemi.</p><p>Tarihçe (yavaş kabul), rapor.</p></div>
+    <div class="tier"><div class="t">Arşiv</div><div class="d">10 yıl (TTK 82 hizası — hukuk teyidi)</div><p>MinIO, org bucket, aylık <code>JSONL.gz</code> + şema sürümü + checksum manifest. Object-lock <b>compliance</b> — değiştirilemez.</p><p>Talep üzerine (denetim), UI'dan değil.</p></div>
+    <div class="tier"><div class="t">Drop</div><div class="d">süre dolunca</div><p>Partition <code>DROP</code>; arşiv objesi object-lock bitince silinir.</p><p><code>DELETE</code> hiç çalışmaz — vacuum yükü yok.</p></div>
+  </div>
+  <div class="note"><b>Aktif süreçler asla düşmez:</b> partition detach koşulludur — içindeki tüm süreçler <code>done</code>/<code>cancelled</code> değilse (<code>failed</code> aktif sayılır) partition bekletilir. Org-bazlı politika önerisi: <code>Organization.retentionPolicy { hotMonths, coldMonths, archiveYears }</code>; on-prem müşteride arşiv hedefi kendi MinIO'su.</div>
+
+  <h3>Diğer motor tabloları</h3>
+  <div class="scroll">
+    <table class="tbl compact">
+      <thead><tr><th>Tablo</th><th>Kişisel veri</th><th>Yeniden kurulabilir</th><th>Saklama</th></tr></thead>
+      <tbody>
+        <tr><td><code>workflow_projection</code></td><td>dolaylı (yok)</td><td>evet (replay)</td><td>Süreç yaşadığı sürece; <code>done/cancelled</code> + 90 gün sonra silinir</td></tr>
+        <tr><td><code>workflow_timer</code></td><td>yok</td><td>evet</td><td><code>fired/cancelled</code> 30 gün sonra <code>DELETE</code></td></tr>
+        <tr><td><code>ProcessStepInstance</code></td><td><code>atUserId</code> · <code>atDelegateUserId</code></td><td>motor alanları evet</td><td>Silinmez (form tarihçesi); events ile birlikte arşive</td></tr>
+        <tr><td><code>InstanceAwaitingUser</code></td><td><code>userId</code></td><td>evet</td><td>Yaşam = bekleme; süreç ilerleyince zaten silinir</td></tr>
+        <tr><td><code>InstanceValueOutbox</code></td><td>yok</td><td>—</td><td><code>processedDate</code> &gt; 7 gün → <code>DELETE</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>KVKK silme hakkı ↔ denetim izi (Q19 — hukuki)</h3>
+  <div class="prose">
+    <p>Denetim kaydı "<b>kim</b> onayladı" bilgisini taşır. Kaydı silmek denetim bütünlüğünü bozar; tutmak hakkı ihlal eder. Çözüm <b>pseudonymization</b>: organizasyon başına sistem <code>User</code> kaydı <code>deletedUser</code> ("Silinmiş Kullanıcı"); FK'ler kırılmaz, kimlik geri döndürülemez biçimde gider, "bir yönetici onayladı" bilgisi kalır.</p>
+  </div>
+  <div class="scroll">
+    <table class="tbl compact">
+      <thead><tr><th>Hedef</th><th>Kolon / yol</th><th>İşlem</th></tr></thead>
+      <tbody>
+        <tr><td><code>workflow_events</code></td><td><code>actorUserId</code> · <code>actorDelegateUserId</code></td><td>= tombstone</td></tr>
+        <tr><td><code>workflow_events.payload</code></td><td>tip-başına kişisel yol listesi: <code>actionTransfer.parameters.&lt;user-ref&gt;</code> (<code>{userId, nameSurname}</code>) · <code>awaiting[].userId</code> · <code>skippedForUserId</code> · <code>stepFailed.detail</code> (serbest metin → boşaltılır)</td><td><code>jsonb_set</code> ile tombstone / null</td></tr>
+        <tr><td><code>ProcessStepInstance</code> · <code>ProcessInstance</code></td><td><code>atUserId</code> · <code>atDelegateUserId</code> · <code>createdByUserId</code></td><td>= tombstone</td></tr>
+        <tr><td>Form verisi (<code>InstanceValue</code>/<code>InstanceAttr</code>)</td><td>user-ref alanlar</td><td>Ayrı konu ("retention manuel" v0.31), aynı talebin parçası</td></tr>
+        <tr><td>Arşiv (MinIO)</td><td>JSONL objeleri — object-lock, değiştirilemez</td><td><code>kvkk_erasure_log</code> tutulur; okurken <b>read-time redaction</b></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+    <p>İşlem: <code>POST /organizations/{org}/kvkk/erasure { userId }</code> → tek job, tüm hedefler, satır sayısı raporu → <code>SettingsLog</code>. Bu, <code>workflow_events</code> üzerindeki <b>tek UPDATE yolu</b>dur (+ <code>publishedAt</code>); trigger ile başka kolon güncellemesi engellenir. Kişisel veriyi baştan azaltma kuralları: <code>stepFailed.detail</code> ham response gövdesi taşımaz (≤ 2 KB, PII-siz); <code>suspended.awaiting</code> yalnız id taşır, isim okuma zamanında çözülür.</p>
+  </div>
+</section>
+
+<!-- ============================================================ HIZ -->
+<section class="sec" id="hiz">
+  <div class="sec-head">
+    <div class="src"><span>değerlendirme · v0.45 çalışma</span><span>R18 inline-devam önerisine dayanır</span></div>
+    <h2>Hız &amp; performans değerlendirmesi</h2>
+  </div>
+  <div class="prose">
+    <p>Soru: <b>event-driven mimari son kullanıcıyı bekletir mi?</b> Cevap: hayır — kullanıcı aksiyonunun kritik yolu <b>yerel ve kısadır</b>. Aksiyonu alan API, otomatik zinciri kuyruk beklemeden <b>istek içinde</b> koşturur (R18 önerisi); NATS ve worker kritik yolda yer almaz, yalnız devir/sigorta olarak çalışır. Kuyruk, sistem çöktüğünde devreye girer — kullanıcı beklerken değil.</p>
+  </div>
+
+  <h3>Kritik yolun maliyet dökümü</h3>
+  <div class="prose"><p>Örnek: bir insan aksiyonu + 2 otomatik adım (Karşılaştırma + Değer Atama) + yeni insan adımı — yönlendirmeli-onay sürecindeki "Yönetici Onayla" turu.</p></div>
+  <div class="scroll">
+    <table class="tbl compact">
+      <thead><tr><th>#</th><th>İş</th><th>Yerel Postgres (SSD)</th><th>Azure PG (pilot)</th></tr></thead>
+      <tbody>
+        <tr><td class="num">1</td><td>Bağlam yükleme — projeksiyon + süreç + aktif adım + form değeri (tek sorguya katlanabilir)</td><td class="num">1–2 ms</td><td class="num">3–5 ms</td></tr>
+        <tr><td class="num">2</td><td>Aktör doğrulama — bekleyen listesi / grup üyeliği</td><td class="num">0,5–1 ms</td><td class="num">2–3 ms</td></tr>
+        <tr><td class="num">3</td><td>TX <code>actionTaken</code> (1 INSERT + 4 küçük UPDATE/DELETE, 1 commit)</td><td class="num">1–3 ms</td><td class="num">3–8 ms</td></tr>
+        <tr><td class="num">4</td><td>Karşılaştırma adımı — bellekte hesap + tek TX (saf-hesapta TX-A/TX-B katlanır)</td><td class="num">1–3 ms</td><td class="num">3–8 ms</td></tr>
+        <tr><td class="num">5</td><td>Değer Atama — JSONB merge + tek TX</td><td class="num">2–4 ms</td><td class="num">4–10 ms</td></tr>
+        <tr><td class="num">6</td><td>Atanan çözümü + TX <code>suspended</code> (bekleyen listesi + timeout timer'ı)</td><td class="num">2–4 ms</td><td class="num">4–10 ms</td></tr>
+        <tr><td class="num">7</td><td>Response oluşturma (form görünümü)</td><td class="num">1–2 ms</td><td class="num">2–4 ms</td></tr>
+        <tr><td></td><td><b>Toplam (sunucu-tarafı)</b></td><td class="num"><b>≈ 10–20 ms</b></td><td class="num"><b>≈ 20–50 ms</b></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note"><b>Kritik yolda NATS yok, worker yok, kuyruk beklemesi yok.</b> <code>suspended.v1</code> realtime yayını cevap gönderildikten sonra yapılır; kaçarsa relay tamamlar. Eski senkron motora göre ek maliyet, adım başına <b>bir küçük INSERT</b> (<code>workflow_events</code>) + bir projeksiyon upsert'idir — birkaç milisaniye. Kullanıcının algıladığı gecikmenin baskın kısmı ağ + frontend render'ıdır.</div>
+
+  <h3>Gecikme asıl nereden gelir?</h3>
+  <div class="prose">
+    <ul>
+      <li><b>HTTP Request</b> (ERP 300 ms – 30 s) — eski sistem de burada bekliyordu. Yeni tasarımda inline bütçe (öneri 5 s — Q23) dolarsa <b>202</b> döner, yürütme arkada sürer, FE <code>suspended.v1</code> push'uyla tamamlanır; kullanıcı asılı kalmaz.</li>
+      <li><b>Bildirim</b> — kanal sağlayıcısına gönderim kritik yolda olmamalı; Notify yürütücüsü sağlayıcıya kuyruklar, SMTP'yi beklemez.</li>
+      <li><b>Büyük JSONB</b> — <code>InstanceValue</code> güncellemesi satırın tamamını yeniden yazar (MVCC); form değeri küçük tutulur, dosyalar MinIO'da (value-storage kararı).</li>
+      <li><b>Grup çözümü</b> — büyük grup / pozisyon hiyerarşisi sorguları önbelleğe alınır.</li>
+    </ul>
+  </div>
+
+  <h3>Tasarımın performansı koruyan yanları</h3>
+  <div class="grid c2">
+    <div class="card"><h4>Inline devam (R18)</h4><p>Worker'a devretmek yerine istek içinde koşmak, NATS gidiş-dönüşünü (2–5 ms) ve worker zamanlama varyansını (on ms'ler – saniyeler) kritik yoldan çıkarır. "Worker + bekle" alternatifi burada belirgin daha yavaş olurdu.</p></div>
+    <div class="card"><h4>Kısa transaction'lar</h4><p>Her TX milisaniyelik; dış çağrı TX içinde değil → kilit tutulmaz, bağlantı havuzu verimli, MVCC şişmesi düşük.</p></div>
+    <div class="card"><h4>Sıcak satır izolasyonu</h4><p>Yalnız o sürecin <code>workflow_projection</code> satırı güncellenir; global sıcak satır/sayaç yok → kullanıcılar birbirini kilitlemez.</p></div>
+    <div class="card"><h4>Saf-hesapta tek TX</h4><p>İki-TX maliyeti yalnız yan etkili adımlarda ödenir — orada zaten dış çağrı süresi baskındır.</p></div>
+    <div class="card"><h4>Projeksiyon asenkron</h4><p><code>InstanceAttr</code> fihristi outbox'la arkada güncellenir; kayıt/aksiyon hızını etkilemez.</p></div>
+    <div class="card"><h4>Publish cevaptan sonra</h4><p>Realtime yayın response'u geciktirmez; NATS yavaşsa bile kullanıcı etkilenmez, relay güvencedir.</p></div>
+  </div>
+
+  <h3>Nerede bozulur → önlemi</h3>
+  <div class="scroll">
+    <table class="tbl compact">
+      <thead><tr><th>Risk</th><th>Belirti</th><th>Önlem (tasarımı değiştirmez)</th></tr></thead>
+      <tbody>
+        <tr><td>Her TX yeni bağlantı</td><td>Eşzamanlılık artınca bağlantı bekleme</td><td><b>PgBouncer transaction mode</b> (pilotta henüz yok — canlı öncesi şart)</td></tr>
+        <tr><td>Bağlam 5–6 ayrı sorgu</td><td>Gidiş-dönüş toplamı büyür</td><td>Tek CTE/join; <b>tasarım tablolarını süreç-içi cache'le</b> (sürüm damgasıyla geçersiz kılma) → 0 DB okuması</td></tr>
+        <tr><td>Idempotency için ayrı SELECT</td><td>+1 gidiş-dönüş</td><td>Kontrolü INSERT'e katla: UNIQUE ihlali = replay</td></tr>
+        <tr><td>Yönetilen PG'de commit gecikmesi</td><td>4 commit × 8 ms</td><td>Saf-hesap zinciri tek TX'e katlanır; <code>synchronous_commit</code> <b>açık kalır</b> (dayanıklılıktan vazgeçilmez)</td></tr>
+        <tr><td><code>messageId</code> UUID indeksi</td><td>Yüksek hacimde rastgele B-tree yazımı</td><td>Partial UNIQUE zaten küçük; gerekirse UUIDv7 (zaman-sıralı)</td></tr>
+        <tr><td>Yan etkili adım bütçeyi aşıyor</td><td>Kullanıcı bütçe kadar bekleyip 202 alıyor</td><td>Bütçeyi düşür + FE "işleniyor" + realtime; tasarım-zamanı uyarı: insan adımından hemen sonra yavaş dış çağrı</td></tr>
+        <tr><td>Realtime publish cevaptan önce</td><td>NATS yavaşsa cevap gecikir</td><td>Publish her zaman <b>cevaptan sonra</b>; relay güvence</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Benchmark hedefi (öneri)</h3>
+  <div class="prose">
+    <p>Tech-stack'teki benchmark kapısına bir kalem eklenmeli: <b>"aksiyon → response p95"</b>. Test senaryosu: yukarıdaki tur (insan aksiyonu + 2 otomatik adım + insan adımı), 200 eşzamanlı kullanıcı, 1M olaylık <code>workflow_events</code> üstünde. Hedef: saf-hesap zincirde <b>p95 &lt; 100 ms</b> sunucu-tarafı; dış çağrılı zincirde <b>dış çağrı süresi + 30 ms</b>. Sayı tutmuyorsa sorun mimaride değil, bu tablodaki bir kalemdedir — her birinin ölçülebilir düzeltmesi vardır.</p>
+    <p><small>Bu bölüm bir <b>değerlendirmedir</b>; sayılar donanım/ağ profiline göre değişir ve R18 (inline devam) önerisinin kabulüne dayanır. R18 reddedilirse ("worker + bekle" modeli) kritik yola NATS devri ve worker zamanlaması eklenir; hedefler yeniden hesaplanmalıdır.</small></p>
+  </div>
+</section>
+
+<!-- ============================================================ KARARLAR -->
+<section class="sec" id="kararlar">
+  <div class="sec-head">
+    <div class="src"><span>engine-runtime-plan.md §2</span></div>
+    <h2>Kararlar R1–R17 — bu turda önerilen</h2>
+  </div>
+  <div class="prose"><p>Hepsi <b>öneri</b>; onaylanınca dokümanlarda ✅ + tarih, reddedilince alternatife dönüş. Geri bildirim biçimi: <code>R4: kabul</code>.</p></div>
+  <div class="scroll">
+    <table class="tbl compact">
+      <thead><tr><th>#</th><th>Karar</th><th>Gerekçe</th><th>Alternatif</th></tr></thead>
+      <tbody>
+        <tr><td class="num">R1</td><td><code>WorkflowEvent</code> modeli: 12 tip, <code>version</code> monoton, <code>messageId</code> UNIQUE, <code>causationId</code>/<code>correlationId</code></td><td>State machine'in her kenarı bir olay; audit + replay + idempotency tek tabloda</td><td>6 tip (v0.40 listesi) — retry/skip/kurtarma görünmez kalır</td></tr>
+        <tr><td class="num">R2</td><td>Payload = <code>ActionTransfer</code> tam snapshot (kaynak); PSI kolonu okuma kopyası</td><td>Replay değişebilir tablolara bağımlı olmasın; paket küçük</td><td>Payload'da yalnız PSI referansı</td></tr>
+        <tr><td class="num">R3</td><td>Aktör kolonda, payload'da değil</td><td>KVKK anonimleştirme kolon-hedefli, indekslenebilir</td><td>Payload içinde</td></tr>
+        <tr><td class="num">R4</td><td>Otomatik adım = iki TX + in-doubt kuralı</td><td>Yan etkinin ikinci kez koşmasını görünür kılar</td><td>Tek TX (basit; çift POST riski)</td></tr>
+        <tr><td class="num">R5</td><td>Outbox-in-event (<code>dispatch</code> + <code>publishedAt</code>); ayrı outbox tablosu yok</td><td>Commit↔publish boşluğu kapanır; <code>InstanceValueOutbox</code> ile aynı ilke</td><td>Ayrı <code>workflow_outbox</code> · publish-önce-commit</td></tr>
+        <tr><td class="num">R6</td><td><code>WorkflowProjection</code> ayrı tablo; <code>ProcessInstance.executionState</code> kopya kalır</td><td>Sıcak satır izolasyonu + rebuild + join'siz liste</td><td>Yalnız PI kolonları · yalnız projeksiyon</td></tr>
+        <tr><td class="num">R7</td><td><code>WorkflowTimer</code> tek tablo (4 tür) + <code>SKIP LOCKED</code> claim → lider seçimi yok</td><td>At-most-once satır kilidiyle; yatay ölçek; ek altyapı yok</td><td>NATS KV lock · advisory lock ile tek lider</td></tr>
+        <tr><td class="num">R8</td><td>Retry = BPM-düzeyi timer; <code>MaxDeliver</code> yalnız crash-loop</td><td>Dayanıklı + görünür + timer'la aynı mekanizma</td><td>JetStream NAK + backoff (görünmez)</td></tr>
+        <tr><td class="num">R9</td><td><code>onFail</code> opsiyonel; sıra adım → (global post-MVP) → <code>failed</code>; <code>guard</code> doğrudan failed</td><td>build-plan §6.5 ile uyumlu; MVP basit</td><td><code>onFail</code> zorunlu</td></tr>
+        <tr><td class="num">R10</td><td>Hata bilgisi <code>parameters.error</code> rezerve anahtarıyla</td><td>No-code erişim (Değer Atama okur)</td><td>Ayrı alan / taşınmaz</td></tr>
+        <tr><td class="num">R11</td><td>Kurtarma = olay; projeksiyon elle düzenlenmez</td><td>Audit bütünlüğü</td><td>Admin doğrudan state düzeltir</td></tr>
+        <tr><td class="num">R12</td><td>Compensation post-MVP; iskelet tanımlı</td><td>build-plan §6.3</td><td>MVP'ye al</td></tr>
+        <tr><td class="num">R13</td><td><code>waiting</code> tek durum + <code>waitReason</code></td><td>Enum küçük; listeler waitReason ile ayrışır</td><td><code>retrying</code> ayrı state</td></tr>
+        <tr><td class="num">R14</td><td>Timer yalnız <code>waiting</code>'de; <code>running</code> → deferred; <code>done</code> → cancel</td><td>Tek aktif kol korunur</td><td>Fire'ı kuyrukla, zincir bitince uygula (eşdeğer, karmaşık)</td></tr>
+        <tr><td class="num">R15</td><td>Aksiyon çakışma sözleşmesi: 200 replay · 409 <code>processAlreadyAdvanced</code> · 403 · 409 <code>staleView</code></td><td>Double-click ile gerçek yarışı ayırır</td><td>Her çakışma 409</td></tr>
+        <tr><td class="num">R16</td><td>Retention: aylık partition → soğuk → MinIO arşiv → drop; KVKK = pseudonymization</td><td>Append-only korunur; denetim izi ↔ silme hakkı uzlaşır</td><td>Satır silme · anonimleştirme yok</td></tr>
+        <tr><td class="num">R17</td><td>Guard limitleri 200 / 10 000 / 8 / 3 / 20 / 60 s — sistem konfig</td><td>Sonsuz döngü + kaskad korumaları tek yerde</td><td>Org-bazlı limit</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================================ SORULAR -->
+<section class="sec" id="sorular">
+  <div class="sec-head">
+    <div class="src"><span>engine-runtime-plan.md §3</span></div>
+    <h2>Açık sorular Q1–Q22 — karar bekliyor</h2>
+  </div>
+  <div class="legend"><span><i class="pri r"></i>Faz 1 yazımını bloklar</span><span><i class="pri o"></i>Faz 1 içinde netleşmeli</span><span><i class="pri g"></i>Sonra / post-MVP</span></div>
+  <div class="scroll">
+    <table class="tbl compact">
+      <thead><tr><th>#</th><th>Soru</th><th>Öneri</th><th>Örnek</th></tr></thead>
+      <tbody>
+        <tr><td colspan="4" style="background:var(--surface-2);font-weight:600;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">Model</td></tr>
+        <tr><td class="num"><i class="pri o"></i>Q1</td><td>Fiziksel tablo adı: <code>workflow_events</code> ↔ konvansiyon <code>workflow_event</code></td><td>Konvansiyona uy, dokümanları bir geçişte düzelt</td><td>—</td></tr>
+        <tr><td class="num"><i class="pri o"></i>Q2</td><td>Partition: <code>RANGE(occurredAt)</code> aylık ↔ <code>HASH(service_id)</code></td><td>RANGE — olay tablosu zamanla yaşlanır</td><td>24 ay sonra Ocak-2027 partition'ı tek DROP; 3 GB DELETE yok</td></tr>
+        <tr><td class="num"><i class="pri o"></i>Q3</td><td><code>stepFailed.detail</code> boyutu; ham gövde nereye?</td><td>≤ 2 KB özet + <code>debugCapture</code> açık adımlarda 7 gün MinIO</td><td>ERP 422 gövdesi 40 KB XML JSONB'ye girmez</td></tr>
+        <tr><td class="num"><i class="pri g"></i>Q4</td><td><code>correlationId</code>: host zinciri mi, tetikleyen mi?</td><td>Host zinciri (v0.24 ile tutarlı)</td><td>Kart ekstre satırı alt süreci → kök = masraf formunun ana süreci</td></tr>
+        <tr><td class="num"><i class="pri o"></i>Q5</td><td><code>executionState</code> kopyası <code>ProcessInstance</code>'ta kalsın mı?</td><td>Kalsın (liste join'siz; aynı TX)</td><td>—</td></tr>
+        <tr><td class="num"><i class="pri r"></i>Q6</td><td><code>ProcessExecutionState.cancelled</code> eklensin mi?</td><td>Evet (6. değer)</td><td>Alternatif <code>done + endType=cancelled</code> yanıltıcı</td></tr>
+        <tr><td colspan="4" style="background:var(--surface-2);font-weight:600;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">Hata &amp; dayanıklılık</td></tr>
+        <tr><td class="num"><i class="pri r"></i>Q7</td><td>Retry varsayılanları + <code>ProcessStep.retryPolicy</code> kolonu</td><td>Değerler kabul + kolon eklensin</td><td>ERP bakımı 30 dk → <code>{maxAttempts: 8, maxDelaySeconds: 900}</code></td></tr>
+        <tr><td class="num"><i class="pri o"></i>Q8</td><td>JetStream <code>MaxDeliver</code> = 3, aşımı → <code>failed(inDoubt)</code>; <code>AckWait</code> 90 s</td><td>Kabul</td><td>—</td></tr>
+        <tr><td class="num"><i class="pri o"></i>Q10</td><td>Servis-düzeyi global hata adımı — MVP mi post-MVP mi?</td><td>Post-MVP; iskelet hazır</td><td>Tüm HTTP hataları "Admin'e bildir" adımına, her adıma onFail bağlamadan</td></tr>
+        <tr><td class="num"><i class="pri g"></i>Q11</td><td>Compensation iskeleti kabul mü?</td><td>Kabul, tasarım post-MVP</td><td>—</td></tr>
+        <tr><td class="num"><i class="pri o"></i>Q12</td><td>Kurtarma yetkisi kimde? KVKK işlemi aynı yetki mi?</td><td>Yeni org yetkisi <code>processAdminUserGroupId</code></td><td>—</td></tr>
+        <tr><td class="num"><i class="pri o"></i>Q13</td><td>Guard limit değerleri</td><td>200 / 10 000 / 8 / 3 / 20 / 60 s</td><td>Switch→Değer Atama→Switch döngüsü 200 adımda failed(guard)</td></tr>
+        <tr><td class="num"><i class="pri o"></i>Q21</td><td>İdempotent adım listesi + HTTP <code>idempotencyKeyHeader</code></td><td>Liste kabul; ayar eklensin</td><td>—</td></tr>
+        <tr><td colspan="4" style="background:var(--surface-2);font-weight:600;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">Zamanlayıcı &amp; uyandırma</td></tr>
+        <tr><td class="num"><i class="pri o"></i>Q14</td><td><code>deferred</code> politikası; süreç günlerce running'de takılırsa?</td><td>+30 s, üst sınır 20 → alarm; stuck detector devreye girer, timer denemeye devam eder</td><td>—</td></tr>
+        <tr><td class="num"><i class="pri o"></i>Q15</td><td>Cron TZ / DST / kaçırılan tetik / en sık cron</td><td><code>Europe/Istanbul</code> · standart DST · bir kez yakala, &gt; 24 h atla · 1 dk</td><td>Pzt 09:00 rapor; sistem 08–11 kapalı → 11:00'de <b>bir</b> süreç</td></tr>
+        <tr><td class="num"><i class="pri g"></i>Q16</td><td>Süre hesabı sabitlenmesi; kullanıcı-bazlı takvim?</td><td><code>dueAt</code> kurulumda sabit; takvim = organizasyonun</td><td>—</td></tr>
+        <tr><td class="num"><i class="pri o"></i>Q20</td><td>Lider-seçim teyidi</td><td><code>SKIP LOCKED</code> ile gereksiz; todo ikilemi kapanır</td><td>—</td></tr>
+        <tr><td class="num"><i class="pri o"></i>Q9</td><td>ServiceTrigger <code>async=false</code> runtime karşılığı</td><td>Tetikleyen süreç <code>waiting(subProcess)</code>; alt sürecin <code>ended</code>'i uyandırır; API'den geliyorsa N s bekle, sonra 202</td><td>Karta satır eklendi → alt süreç bitince ana süreç devam</td></tr>
+        <tr><td colspan="4" style="background:var(--surface-2);font-weight:600;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">Eşzamanlılık · Saklama · Ertelenen</td></tr>
+        <tr><td class="num"><i class="pri o"></i>Q17</td><td><code>Idempotency-Key</code> zorunlu mu?</td><td>Customer API'de ve FE'de zorunlu; <code>expectedProcessStepInstanceId</code> opsiyonel</td><td>—</td></tr>
+        <tr><td class="num"><i class="pri o"></i>Q18</td><td>Retention süreleri + <code>Organization.retentionPolicy</code></td><td>3 ay / 21 ay / 10 yıl (TTK 82 — hukuk teyidi); alan eklensin</td><td>—</td></tr>
+        <tr><td class="num"><i class="pri r"></i>Q19</td><td>(Hukuki) Silme hakkı ↔ denetim izi</td><td>Pseudonymization + arşivde read-time redaction; payload yol listesinin bakımı kimde?</td><td>—</td></tr>
+        <tr><td class="num"><i class="pri g"></i>Q22</td><td>Fork/join</td><td>MVP tek aktif kol; Q9 tek-çocuk join'dir, fork/join'e kapı açmaz — teyit</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================================ PLAN -->
+<section class="sec" id="plan">
+  <div class="sec-head">
+    <div class="src"><span>engine-runtime-plan.md §1 · §4 · §5</span></div>
+    <h2>Plan &amp; inceleme rehberi</h2>
+  </div>
+  <div class="prose">
+    <p><b>Önerilen okuma sırası:</b> <code>workflow-event.md</code> → <code>workflow-projection.md</code> → <code>engine-runtime.md</code> (§1, §4, §5) → <code>engine-runtime-errors.md</code> → <code>engine-runtime-scheduler.md</code> + <code>workflow-timer.md</code> → <code>engine-runtime-retention.md</code>. Dokümanlarda 📝 / 🟦 işaretli yerler karar bekler ve bu sayfadaki R numaralarıyla eşleşir.</p>
+    <p><b>Geri bildirim biçimi:</b> <code>R4: kabul</code> · <code>Q7: maxAttempts 8 olsun</code> · <code>workflow-event §2 stepFailed.detail 4 KB</code> — dokümanlar buna göre güncellenir, plan §5 review log'una işlenir.</p>
+  </div>
+  <ol class="plan">
+    <li><span class="p">P1</span><span><code>WorkflowEvent</code> + <code>WorkflowProjection</code> + enum'lar (model)</span><span class="chip acc">taslak yazıldı</span></li>
+    <li><span class="p">P2</span><span><code>engine-runtime.md</code> güncelleme — iki TX, outbox-in-event, 409 sözleşmesi, projeksiyon</span><span class="chip acc">yazıldı</span></li>
+    <li><span class="p">P3</span><span>Hata &amp; dayanıklılık spec</span><span class="chip acc">yazıldı</span></li>
+    <li><span class="p">P4</span><span>Scheduler &amp; <code>WorkflowTimer</code></span><span class="chip acc">yazıldı</span></li>
+    <li><span class="p">P5</span><span>Retention / KVKK</span><span class="chip acc">yazıldı</span></li>
+    <li class="next"><span class="p">P6</span><span><b>Kullanıcı incelemesi</b> → R/Q kararları → dokümanlara işleme + review log</span><span class="chip waiting">sıradaki</span></li>
+    <li><span class="p">P7</span><span>Onaylanan model alanları: <code>ProcessStep.retryPolicy</code> (Q7) · <code>Service.onFailProcessStepId</code> (Q10) · <code>Organization.retentionPolicy</code> (Q18) · <code>processAdminUserGroupId</code> (Q12) · HTTP <code>idempotencyKeyHeader</code> (Q21)</span><span class="chip plain">P6'ya bağlı</span></li>
+    <li><span class="p">P8</span><span>Customer API: aksiyon ucu 200/409/403 şeması + <code>Idempotency-Key</code>; <code>recover</code> ucu; KVKK <code>erasure</code> ucu</span><span class="chip plain">P6'ya bağlı</span></li>
+    <li><span class="p">P9</span><span><code>todo.md</code> güncellemesi + <code>bpm-engine-build-plan.md</code> durum panosu</span><span class="chip plain">en sonda</span></li>
+    <li><span class="p">P10</span><span>Grup D (adım-içi yürütme spec'leri) — bu konu kapanmış olur</span><span class="chip plain">P9'a bağlı</span></li>
+  </ol>
+  <div class="note"><b>Bitti sayılma ölçütü:</b> R1–R17 karara bağlandı · Q1–Q22 kapatıldı veya todo'ya taşındı · <code>engine-runtime*.md</code> + 3 model + 5 enum 🟢 · build-plan F1.A.1/A.2/B.1–B.4/C.1 ✅.</div>
+</section>
+
+<!-- ============================================================ DOKÜMANLAR -->
+<section class="sec" id="dokumanlar">
+  <div class="sec-head">
+    <div class="src"><span>commit 416425d</span><span>commitNotes/v0-44.md</span></div>
+    <h2>Doküman haritası — 31 dosya</h2>
+  </div>
+  <h4>Yeni (12)</h4>
+  <ul class="files">
+    <li><b>bpmEngine/engine-runtime-errors.md</b> — hata · retry · onFail · kurtarma · guard</li>
+    <li><b>bpmEngine/engine-runtime-scheduler.md</b> — claim · timer türleri · cron · housekeeping</li>
+    <li><b>bpmEngine/engine-runtime-retention.md</b> — katmanlar · partition · KVKK</li>
+    <li><b>bpmEngine/engine-runtime-plan.md</b> — R1–R17 · Q1–Q22 · P1–P10 · review log</li>
+    <li><b>models/processInstances/workflow-event.md</b></li>
+    <li><b>models/processInstances/workflow-projection.md</b></li>
+    <li><b>models/processInstances/workflow-timer.md</b></li>
+    <li><b>models/enums/workflow-event-type.md</b></li>
+    <li><b>models/enums/workflow-wait-reason.md</b></li>
+    <li><b>models/enums/workflow-timer-kind.md</b></li>
+    <li><b>models/enums/workflow-timer-status.md</b></li>
+    <li><b>models/enums/workflow-error-class.md</b></li>
+  </ul>
+  <h4>Güncellenen (18)</h4>
+  <ul class="files">
+    <li><b>engine-runtime.md</b> — §1 · §2 · §4.2 iki TX · §4.4 · §5 sözleşme · §6/§7 özet · §9 · §10 · §11</li>
+    <li><b>flovo-bpm-engine.md</b> §7 — hata modeli özeti</li>
+    <li><b>flovo-customer-api.md</b> — aksiyon ucu sözleşmesi + <code>recover</code></li>
+    <li><b>service-settings/process-step-action.md</b> §5 · <b>process-step.md</b> §3.7</li>
+    <li><b>models/processInstances/index.md</b> · <b>process-instance.md</b> · <b>process-step-instance.md</b></li>
+    <li><b>models/enums/index.md</b> · <b>process-execution-state.md</b> (<code>cancelled</code>)</li>
+    <li><b>models/index.md</b> — ilişki haritası "motor yürütme" bloğu</li>
+    <li><b>organization-settings/scheduler-job.md</b> — WorkflowTimer sınırı</li>
+    <li><b>service-settings/service-trigger.md</b> — DST/TZ · async=false önerisi</li>
+    <li><b>jsonTemplateModels/action-transfer.md</b> — <code>parameters.error</code> rezerve</li>
+    <li><b>tech-stack/postgresql.md</b> · <b>tech-stack/nats-jetstream.md</b></li>
+    <li><b>bpmEngine/index.md</b> · <b>bpm-engine-build-plan.md</b> §8 · <b>commitNotes/v0-44.md</b></li>
+  </ul>
+  <div class="prose"><p><small><code>todo.md</code> bu commit'te değişmedi; inceleme tamamlanınca Tier 1 "Çalışma-zamanı mimarisi", ServiceTrigger DST/async ve Hata yönetimi maddeleri birlikte güncellenir. Runtime kararları/soruları o zamana dek <code>engine-runtime-plan.md</code>'de yaşar (v0-45 geçici istisnası).</small></p></div>
+</section>
+
+<footer class="foot">
+  Kaynak: <code>bpmEngine/engine-runtime*.md</code> · <code>models/processInstances/workflow-*.md</code> · <code>engine-runtime-plan.md</code> — commit <code>416425d</code>, 31 Ağustos 2026. Bu sayfa taslak setin anlatımıdır; bağlayıcı metin dokümanların kendisidir.
+</footer>
+</main>
+</div>
+
+<script>
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('nav.toc a[href^="#"]'));
+  if(!links.length || !('IntersectionObserver' in window)) return;
+  var map = {};
+  links.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
+  var sections = Object.keys(map).map(function(id){ return document.getElementById(id); }).filter(Boolean);
+  var current = null;
+  function setActive(id){
+    if(current === id) return;
+    current = id;
+    links.forEach(function(a){ a.classList.toggle('active', a.getAttribute('href') === '#' + id); });
+  }
+  var visible = {};
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ visible[e.target.id] = e.isIntersecting ? e.boundingClientRect.top : null; });
+    var best = null, bestTop = Infinity;
+    sections.forEach(function(s){
+      var t = visible[s.id];
+      if(t !== null && t !== undefined && t < bestTop){ best = s.id; bestTop = t; }
+    });
+    if(best) setActive(best);
+  }, { rootMargin: '-10% 0px -70% 0px', threshold: [0, 0.1] });
+  sections.forEach(function(s){ io.observe(s); });
+})();
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>
+(function(){
+  if(!window.mermaid) return;
+  var dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  var stamped = document.documentElement.getAttribute('data-theme');
+  if(stamped === 'dark') dark = true; if(stamped === 'light') dark = false;
+  mermaid.initialize({ startOnLoad: true, theme: dark ? 'dark' : 'neutral', securityLevel: 'loose',
+    themeVariables: { fontFamily: 'IBM Plex Sans, sans-serif' } });
+})();
+</script>
+</body>
+</html>

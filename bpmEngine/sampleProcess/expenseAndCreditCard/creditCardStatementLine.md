@@ -81,7 +81,7 @@ flowchart LR
 | `usedAmount` | Numeric | ❌ | Kullanılan tutar — **yalnız süreç adımıyla** atanır (iş kuralı yok). |
 | `used` | Checkbox | ❌ | `remainingAmount == 0` (iş kuralı `usedAtama`). |
 | `expenseIds` | **combobox** (`isMultiSelect = true`, `isAssociatedCombobox = false`) → **Masraf (`expense`)** | ❌ | İlişkili **masraf (`expense`) instance'larının** id'leri (liste) — **yalnız bilgi amaçlı**. **`isAssociatedCombobox = false`** → `AssociatedInstance` kaydı **oluşturmaz**; böylece **Masraf ↔ Ekstre Satırı döngüsü** (A→B→A) **önlenir**. Değerler alt süreçte parametreyle gelen expense id'sinin **list.add/list.remove**'uyla güncellenir. |
-| `creditCardStatementId` | **parentProperty** → Ekstre.`creditCardStatementLines` | ❌ | Üst formdan — bu satırı `creditCardStatementLines` listesinde tutan **Ekstre**'den — **`creditCardStatementId` değerini kopyalar**; satırı ait olduğu ekstreye bağlar. |
+| `creditCardStatementId` | **parentProperty** → Ekstre.`creditCardStatementLines` · `reflectionMode=snapshot` | ❌ | Üst formdan — bu satırı `creditCardStatementLines` listesinde tutan **Ekstre**'den — **`creditCardStatementId` değerini kopyalar**; satırı ait olduğu ekstreye bağlar. Satır ekstreye eklendiği anda kopya (KARAR v0.45); kaynak değişmez, listeden çıkarılınca `null`. |
 
 ## İş Kuralları (business rules)
 > Model → [`../../models/service-settings/business-rule.md`](../../models/service-settings/business-rule.md). Frontend'de çalışır (realtime).
@@ -110,9 +110,9 @@ flowchart LR
   id'sini **bilgi olarak** tutar ama **geri association kurmaz** → Masraf'ın ServiceTrigger'ı yeniden ateşlenmez, **A→B→A döngüsü
   oluşmaz**. _(ServiceTrigger "döngü koruması" açık maddesinin tasarım-zamanı örneği → [`../../models/service-settings/service-trigger.md`](../../models/service-settings/service-trigger.md).)_
 - `expenseIds` alanı, alt süreçteki **"expenseIds ekle / çıkar"** adımlarıyla güncellenir: eklemede parametreyle gelen **expense instance id**'si **list.add** ile eklenir; kaldırmada **list.remove** ile çıkarılır.
-- **`parentProperty` / `flowInfo` alan tipleri (açık):** `creditCardStatementId` (**parentProperty** — üst formdan değer kopyalar)
-  ve Ekstre'deki `creditCardStatementId` (**flowInfo**) gibi özel alan tiplerinin **PropertyType** listesinde karşılığı teyit edilecek
-  → [`../../models/enums/property-type.md`](../../models/enums/property-type.md). _(Parent Property, todo'da da açık: `process-step §4`.)_
+- **`parentProperty` / `flowInfo` alan tipleri (teyit edildi — v0.45):** `creditCardStatementId` (**parentProperty** — üst formdan değer kopyalar)
+  ve Ekstre'deki `creditCardStatementId` (**flowInfo**) **PropertyType** listesinde mevcut
+  → [`../../models/enums/property-type.md`](../../models/enums/property-type.md). Kopyalama anı/semantik → `reflection-propagation.md` §3a.
 - **İki hesaplama mekanizması (D3 — ikisi de gerekli):** `remainingAmount`/`used`/`usedAmount` **iki bağlamda** güncellenir:
   **(1) iş kuralı — frontend realtime:** kullanıcı satırda `amount`'ı düzenleyince instance üzerinde anında hesaplar (`remainingAmountAtama`/`usedAtama`);
   **(2) alt-süreç adımı — backend:** ilişkili **Masraf** servisinden eşleştirme/ayırma (ServiceTrigger) geldiğinde `usedAmount`'ı (ve türevlerini) günceller.

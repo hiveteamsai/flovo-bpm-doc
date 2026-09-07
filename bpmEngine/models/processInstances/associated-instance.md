@@ -49,9 +49,16 @@
 > Tespit **DB güncelleme katmanında, çekirdek (core)** olarak yapılır — böylece ilişki kuran her yerde ayrıca tekrarlanmaz
 > (→ [`../service-settings/service-trigger.md`](../service-settings/service-trigger.md)).
 
+> **Yazım-yolu tüketicisi — `parentProperty` ilk dolum / temizleme (KARAR v0.45):** Aynı çekirdek katmanda, **insert**'te
+> `parentPropertyId == associatedPropertyId` olan `snapshot`/`materialized` child alanları üst instance'tan **kopyalanır**, **delete**'te
+> **`null`**'a çekilir (`live` → işlem yok). Child/üst'ün hangi kolonda olduğu bağlayan alanın tipine göredir: **Form List** → child =
+> `instanceId`, üst = `associatedInstanceId` · **Combobox** → tersi. Aynı bağlayan alanda birden çok bağ varsa **birincil üst = en erken bağ**
+> (en küçük `id`; §3.22 "ilk tespit edilen" ile aynı kural). Yazım ortak kapıdan (aynı TX + outbox) geçer
+> (→ [`reflection-propagation.md`](./reflection-propagation.md) §3a).
+
 ## İlişkiler
 - **N – 1** → `Instance` (`instanceId` = işaret edilen, `associatedInstanceId` = property'yi içeren), `Property` (`associatedPropertyId`).
 - Instance ↔ Instance **N–N** köprü tablosu (property boyutuyla). Tek bir Instance birden çok `AssociatedInstance` kaydına bağlı olabilir
   (ör. bir masraf; masraf formuna, seyahate, avansa ayrı ayrı bağlanabilir).
 
-*Oluşturma: 2026-07-06.*
+*Oluşturma: 2026-07-06. Güncelleme: 2026-09-07 (parentProperty ilk dolum/temizleme tüketicisi, KARAR v0.45).*

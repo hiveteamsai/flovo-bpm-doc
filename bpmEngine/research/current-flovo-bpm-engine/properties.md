@@ -78,7 +78,7 @@ Form alanları (Property), BPM sürecinde kullanıcının veri girişi yaptığ�
 |------|-----|----------|
 | `refPropertyId` | int | Referans alan ID'si (kopyalanan alandan) |
 | `parentPropertyId` | int | Üst alan ID'si |
-| `relatedPropertyIds` | String | İlişkili alan ID'leri |
+| `relatedPropertyIds` | String | İlişkili alan ID'leri — **DataGrid alt-alan (kolon) listesi**; `relatedPropertyDtos` (List\<PropertyDto\>) ile çift, yalnız DataGrid ayarında düzenlenir, kontrol tipi değişince temizlenir. Parent Property ile ilgisi yok. |
 | `childServiceId` | int | Alt servis ID'si |
 | `serviceItemControlId` | int | Servis öğe kontrol ID'si |
 
