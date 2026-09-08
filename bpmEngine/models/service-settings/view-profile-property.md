@@ -35,6 +35,12 @@ yapılır; yerleşim motoru cihazı bilmez.
 
 *(Kaynak: `supabase/migrations/20260904130000_viewprofile_property_breakpoint_width.sql` :4 no sentinel · :7 `SetProperties/MatrixEntry` C2 matrix REPLACE-ALL — app-repo `f942a3c`.)*
 
+**Sözleşmenin şekli.** Genişlik sözleşmesi `(genişlik, mod) × cihaz`'dır: dört kolon **iki çifttir** — masaüstü (`displayWidth`, `widthMode`) ve mobil (`mobileDisplayWidth`, `mobileWidthMode`).
+
+**İki yönlü bağımsızlık garantisi.** Mobil düzenlendiğinde **yalnız mobil kolonları** yazılır; masaüstü değeri **kasıtlı korunur**. Tersi de geçerlidir: masaüstü düzenlemesi mobil değerini değiştirmez.
+
+**Çözümleme.** Çağıran, aktif cihaza göre çifti çözer ve çözülmüş `(genişlik, mod)` ikilisini çalışma-zamanı şemasına yazar; yerleşim motoru cihazı bilmez. *(Taşıma paylaşılır, politika çağıranda kalır.)*
+
 **Yerleşim semantiği:** alanlar bir satır kabında soldan sağa dizilir, sığmayınca alt satıra sarar.
 `fraction` → genişlik `displayWidth/12` (boşluk payı düşülür; yoksa 6+6 bir satıra sığmaz).
 `fill` → satırdaki kalan boşluğu alır; birden çok `fill` kalanı **eşit** böler.
