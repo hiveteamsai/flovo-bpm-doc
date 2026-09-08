@@ -271,6 +271,7 @@ servisteki **yansıtılacak alan** (üst servise ait olmalı — Designer doğru
 **Ayarlar:** `userInfoValue` (hangi kullanıcı bilgisi getirilecek) · **`reflectionMode`** — `snapshot` (oluşturma-anı dondurulmuş, **vars.**) · `live` (User'dan güncel). `materialized` **yok** (yalnız parentProperty). → [`../models/enums/reflection-mode.md`](../models/enums/reflection-mode.md). Girdi değildir.
 
 ### 3.17 — `groupByTaxReceipt` (Group By Tax Receipt)
+> ⏸️ **Tax / Currency askıya alındı (KARAR v0.47)** — organizasyon vergi/para-birimi ayarı **modellenmez**; bu alan tipinin kaderi (askıya alma ↔ vergi oranı serbest sayı) **açık** → [`../todo.md`](../todo.md) "Kapsam-dışı varlıklar".
 Masraf/fiş kalemlerini **vergiye göre gruplandıran** özel alan (masraf süreçleri). Kullanıcı **satır satır** kalem ekler;
 her satırda **gider türü** (ExpenseType), **vergi oranı** (Tax) ve **tutar** seçilir/girilir; kalem ve vergi toplamları
 otomatik hesaplanır.

@@ -91,7 +91,7 @@ dökümanlar eksik ve hangi sırayla yazılmalı"** sorusunu iki faza bölerek y
 **Faz 2 blokları:**
 1. 🔴 **"Gelen kutusu / bekleyen formlar" liste ucu belgelenmemiş** — model var (`InstanceAwaitingUser`), endpoint (`GET /me/awaiting-instances` benzeri) yok.
 2. 🔴 **Response daraltma / sparse-fieldset DTO yok** — genel detay/form okuması **tüm `InstanceValue.data`'yı** döndürüyor; **ViewProfile client-side görünürlük**, response'u küçültmüyor. Faz 2'nin asıl gereksinimini (yalnız gereken veri) karşılayan mekanizma yalnız `POST /instances/search`'te (`wantedPropertyIds[]`) var, genel okumada yok.
-3. 🟡 **Customer API request/response şemaları TASLAK** — token kapsam/süre, webhook güvenliği (secret/imza)+idempotency, search sorgu dili, rate-limit/sayfalama.
+3. ⏭️ *(MVP-sonrası, v0.47)* 🟡 **Customer API request/response şemaları TASLAK** — token kapsam/süre, webhook güvenliği (secret/imza)+idempotency, search sorgu dili, rate-limit/sayfalama.
 4. 🟡 **Ortak hata + sayfalama sözleşmesi** üç API'de de açık; ekran-bazlı DTO (liste-kartı vs detay) formalize değil.
 
 ### 2.3 Kritik mimari not (Faz 1 kapsamını daraltır)
@@ -128,17 +128,17 @@ hangisi motor-adımı, hangisi frontend-kuralı) motorun kapsamını netleştird
 
 ### Grup C — Zamanlama & tetikleme altyapısı
 - [ ] **F1.C.1 — Scheduler lider-seçim mekanizması SEÇ**: NATS KV lock ↔ Postgres advisory lock (çok-örneklilikte "en-fazla-bir-kez" timer). → engine-runtime §7
-- [ ] **F1.C.2 — [`SchedulerJob`](bpmEngine/models/organization-settings/scheduler-job.md) modelini tamamla**: timer/cron kalıcı kayıtları ("altyapı, sonraya" durumundan çıkar); `...At`/`...Time` adlandırma + enum kararları. → todo Tier 3
-- [ ] **F1.C.3 — Trigger döngü koruması**: A→B→A recursion derinlik/çevrim sınırı + `async` kaskad derinlik sınırı + timer DST kenar durumu. → service-trigger §Açık noktalar
+- [ ] ⏭️ *(MVP-sonrası → `bpmEngine/todo-phase2.md` §5)* **F1.C.2 — [`SchedulerJob`](bpmEngine/models/organization-settings/scheduler-job.md) modelini tamamla**: timer/cron kalıcı kayıtları ("altyapı, sonraya" durumundan çıkar); `...At`/`...Time` adlandırma + enum kararları. → todo Tier 3
+- [ ] ⏭️ *(MVP-sonrası → `bpmEngine/todo-phase2.md` §10)* **F1.C.3 — Trigger döngü koruması**: A→B→A recursion derinlik/çevrim sınırı + `async` kaskad derinlik sınırı + timer DST kenar durumu. → service-trigger §Açık noktalar
 
 ### Grup D — Adım-içi yürütme spec'leri (işiniYap algoritmaları)
 - [ ] **F1.D.1 — Yürütme-spec şablonu + çekirdek otomatik adımlar**: "girdi→işlem→ActionTransfer çıktısı" algoritması — `httpRequest` · `valueAssignment` · `customIdCreator` · `instanceCreator`. (Settings şemaları var; **icra algoritması** yazılacak.) → process-step-settings/
-- [ ] **F1.D.2 — `triggerProcessStep` settings + yürütme davranışı** (şu an HİÇ modellenmemiş): hangi associatedInstance'lar seçilir (ilişki/yön) + alt süreç/aksiyon tetikleme. → process-step §3.5/§3.20
-- [ ] **F1.D.3 — `formRedirect` settings + yürütme davranışı** (şu an HİÇ modellenmemiş). → process-step §3.19
+- [ ] ⏭️ *(MVP-sonrası → `bpmEngine/todo-phase2.md` §8)* **F1.D.2 — `triggerProcessStep` settings + yürütme davranışı** (şu an HİÇ modellenmemiş): hangi associatedInstance'lar seçilir (ilişki/yön) + alt süreç/aksiyon tetikleme. → process-step §3.5/§3.20
+- [ ] ⏭️ *(MVP-sonrası → `bpmEngine/todo-phase2.md` §8)* **F1.D.3 — `formRedirect` settings + yürütme davranışı** (şu an HİÇ modellenmemiş). → process-step §3.19
 - [ ] **F1.D.4 — Kalan adım detayları**: Instance Deleter (§3.10) icra + Flovo AI **post-MVP** işaretle (motor-seviyesi AI entegrasyonu flovo-bpm-engine §11 boş; MVP dışı). → process-step §3.10 · flovo-ai.md
 
 ### Grup E — Kimlik & yetki (motor tarafı — minimum)
-- [ ] **F1.E.1 — `ApiKey` modeli** (yeni): kapsam/süre/rotasyon/`organizationId`/oluşturan + 3 FK bağı (`createdByApiKeyId`/`atApiKeyId`/`changedByApiKeyId`). *Detay Customer API'ye bağlı; iskelet Faz 1'de.* → todo `apiKeyId`
+- [ ] **F1.E.1 — `ApiKey` modeli** (yeni; ⏭️ detay Faz 2 Customer API → `bpmEngine/todo-phase2.md` §13 — MVP'de yalnız **iskelet**): kapsam/süre/rotasyon/`organizationId`/oluşturan + 3 FK bağı (`createdByApiKeyId`/`atApiKeyId`/`changedByApiKeyId`). *Detay Customer API'ye bağlı; iskelet Faz 1'de.* → todo `apiKeyId`
 - [ ] **F1.E.2 — Aksiyon-seviyesi yetkilendirme runtime kontrolü**: `authorizationLevel` / `actionDisplayAuthorizedUserGroupId` API'de aksiyon tetiklenirken nasıl zorlanır. → process-step-action §5 (boş)
 - [ ] **F1.E.3 — Motoru ilerleten minimal runtime uç sözleşmesi**: `POST /instances/{id}/actions/{code}` request/response (RESUME yolu — aktör `InstanceAwaitingUser`'a karşı doğrulanır). *Customer API'nin motor için gereken alt-kümesi; tam Customer API Faz 2.* → engine-runtime §4.4
 
@@ -162,8 +162,8 @@ hangisi motor-adımı, hangisi frontend-kuralı) motorun kapsamını netleştird
 
 ### Grup I — Sözleşme & tutarlılık
 - [ ] **F2.I.1 — Ortak hata sözleşmesi + sayfalama sözleşmesi** (üç API ortak). → settings-api §7 · todo
-- [ ] **F2.I.2 — Customer API request/response şemaları**: token kapsam/süre/yenileme · webhook güvenliği (secret/imza)+idempotency · rate-limit. → flovo-customer-api §3
-- [ ] **F2.I.3 — Search sorgu dili hizalama**: Customer API `POST /instances/search` ↔ business-rule uçları tek dile. → todo
+- [ ] ⏭️ *(MVP-sonrası → `bpmEngine/todo-phase2.md` §13)* **F2.I.2 — Customer API request/response şemaları**: token kapsam/süre/yenileme · webhook güvenliği (secret/imza)+idempotency · rate-limit. → flovo-customer-api §3
+- [ ] ⏭️ *(MVP-sonrası → `bpmEngine/todo-phase2.md` §13)* **F2.I.3 — Search sorgu dili hizalama**: Customer API `POST /instances/search` ↔ business-rule uçları tek dile. → todo
 - [ ] **F2.I.4 — Protobuf `.proto` mesaj şekilleri**: somut mesajlar (api-contract kaynak-hakikat → codegen). *İç/dış tüm uçların tipli sözleşmesi.* → api-contract.md
 
 ---

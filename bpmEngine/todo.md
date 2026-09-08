@@ -5,24 +5,24 @@
 > işaretçi** verir (tutarsızlığı önlemek için). Her madde kaynağını `(<doküman> §..)` ile belirtir; çözülünce `[x]`.
 >
 > **Öncelik mantığı:** Tier 0 = bir kararla **birçok dokümanı** kapatan çapraz-kesen konular · Tier 1 = motor
-> çekirdeği (mimari) · Tier 2 = özellik netleştirmeleri · Tier 3 = detay/sonraya.
+> çekirdeği (mimari) · Tier 2 = özellik netleştirmeleri · Tier 3 = detay/sonraya · ⏭️ **Faz 2 = MVP-sonrası** — ayrı dosya
+> [`todo-phase2.md`](./todo-phase2.md) (bu dosya yalnız **MVP** kapsamını tutar).
+
+---
+
+## ⏭️ Faz 2'ye (MVP-sonrası) taşınanlar → [`todo-phase2.md`](./todo-phase2.md)
+> **v0.47 kararı:** aşağıdaki konular MVP geliştirmesinden **sonra** detaylandırılıp eklenecek; ayrıntı/alt sorular ayrı dosyada.
+> Tasarım dokümanlarındaki eski `todo.md` işaretçileri bu satır üzerinden çözülür; bir konu MVP'ye geri çekilirse maddesi buraya taşınır.
+- ⏭️ **Yetkilendirme kapsamının detaylandırılması** (§1) · **Vekalet sistemi `UserDelegate`** (§2) · **Loglama** — denetim izi / ayar-değişiklik / sistem
+  logları (§3) · **Toplu senkron ucu** (§4) · **`SchedulerJob`** (§5) · **Form List red-akışı bayrakları** (§6) · **Flovo AI adım ayarları** (§7) ·
+  **`triggerProcessStep` / `formRedirect` adımları** (§8) · **Timer üçlüsü** (§9) · **ServiceTrigger kenar durumları** (§10) · **View profile / Form List
+  tik değişim olayları** (§11 — ServiceTrigger ile birlikte) · **Servis template & JSON** (§12) · **Customer API** (§13 — O6 dış referans anahtarı · `apiKeyId` dahil).
 
 ---
 
 ## ⭐ Tier 0 — Çapraz-kesen kararlar (önce bunlar; bir karar → çok doküman)
 
-- [x] **İki-katman sınırı — ÇÖZÜLDÜ (v0.43)** — **değer atama & karşılaştırma** hem süreç adımı hem iş kuralı olarak var; sınır
-  kararları (detay → `business-rule.md` §0.1 · `commitNotes/v0-43.md`):
-  - **(S1) Kısıt yok:** no-code platform; bir iş **ikisinde de** ayarlandıysa **ikisi de çalışır** (kombinasyon = tasarımcı senaryosu).
-  - **(S2) Değer akışı & bütünlük:** iş kuralı değeri **`changeList` → kaydedilir** (`InstanceValue`); motor adımları **DB'deki kayıtlı
-    güncel veriyle** işler (geçici frontend değerine bakmaz). → flovo-bpm-engine §3.1.
-  - **(S3) API/webhook başlatma:** frontend'den geçmeyen instance'da iş kuralı **koşmaz** → telafi eden motor adımlarını kurmak
-    **süreç tasarımcısının sorumluluğunda** (BPM aracı; senaryo tasarımcıya ait).
-  - **(S4) Parite:** iş kuralı ↔ süreç adımı **fonksiyon/operatör + ifade dili hizalı, aynı girdi=aynı çıktı** (backend Go ↔ frontend
-    JS+Dart); **Karşılaştırma adımı** `compareType`/operatörleri iş kuralı koşullarıyla **birebir aynı** (→ Tier 3 comparison değer-kaynağı ortak modele hizalanır).
-  - **(S5) atlandı** — öncelik/çelişme ayrı açık konu değil.
-  - **(S6) Form List:** iş kuralı Form List'ten **okuyup hesaplar**; **toplu alt-servis yazımı yalnız motor Değer Atama adımı** (§3.4).
-  _(flovo-bpm-engine §1.4/§3.1 · business-rule §0.1 · process-step §3.4/§3.13)_
+_(açık madde yok — kapananlar alt bölümde: ✅ → 📦 konsolide edilen çözülmüş maddeler)_
 
 ---
 
@@ -48,20 +48,6 @@
   (new/running/waiting/done); saklama/pruning. _(flovo-bpm-engine §8)_
   - 🧱 **Tech-stack:** kalıcılık **substratı** = PostgreSQL + **Partial Event Sourcing** (`workflow_events` append-only); *ne
     saklanır / yaşam döngüsü / pruning* tasarımı açık. → [`./tech-stack/postgresql.md`](./tech-stack/postgresql.md)
-- [ ] **Denetim izi (audit) / loglama + dosya/binary depolama performansı** — **loglar nasıl ve nerede tutulacak**
-  (workflow/form logları · **ayar değişiklik** logları · sistem logları); organizasyonlar **kendi loglarına** nasıl erişecek
-  (izolasyon/yetki); saklama/pruning; mevcut "yavaş belge yükleme" şikâyetiyle doğrudan bağlı; KVKK. _(flovo-bpm-engine §8 / §12)_
-  - 🧱 **Tech-stack (kısmen):** **dosya/binary depolama → MinIO** (URL-in-JSONB; "yavaş belge yükleme" çözülür) karara bağlandı;
-    **loglama modeli** (nerede/erişim/pruning) hâlâ açık. → [`./tech-stack/minio.md`](./tech-stack/minio.md)
-  - 📋 **Ayar değişiklik logu — tasarım planı hazır (v0.14), karar bekliyor:** sayfa bazlı denetim izi; tek generic tablo +
-    JSONB delta + uygulama katmanı + append-only (`SettingsLog` · `SettingsLogBatch` · `SettingsLogBatchPage`); erişim/yetki
-    mevcut `organizationSettings`/`serviceSettings` ikiliği + RLS ile çözülüyor. → [`./research/settings-log/index.md`](./research/settings-log/index.md)
-    - **Ön koşul:** Customer API'de **ayar yazma / toplu senkron ucu yok** (bugün yalnız `GET /users/{userId}` · `GET /me`) —
-      toplu güncelleme loglanmadan önce bu uç tasarlanmalı. _(flovo-customer-api §1)_
-    - **Açık:** **saklama süresi / KVKK** (log kişisel veri + ham istek gövdesi içerir; "denetim kaydı silinmez" ↔ silme hakkı — **hukuki karar**) ·
-      `requestBody` satır-içi ↔ MinIO **eşiği** · **`HttpMethod` enum'una `patch`** eklenmesi (Customer API zaten `PATCH` kullanıyor).
-    - **Bölünmeli:** bu madde **üç** log sınıfını birlikte soruyor (workflow/form · **ayar** · sistem); üçü farklı doğada —
-      ayar sınıfı bu planla kapanacak, **sistem logları** (Loki/OTel) için henüz **hiçbir karar yok**.
 - [ ] **Ortam (environment) modeli** — **parent-child env** yapısı kurulacak mı? Her ortamın **formları ayrı mı**? Geliştirmeyi
   bir ortamda yapıp **canlı ortamda oluşturulmuş formları görüntüleme** senaryosu nasıl çözülecek? _(environmentRestriction
   alanları: process-step §2 / action · flovo-bpm-engine §8)_
@@ -87,90 +73,38 @@
   "herhangi bir adım = araç" + MCP? _(flovo-bpm-engine §11)_
   - 🧱 **Tech-stack:** AI **substratı** = **Python AI Service** (🟡 post-MVP) + **pgvector**; entegrasyon **MODELİ** açık. → [`./tech-stack/python-ai-service.md`](./tech-stack/python-ai-service.md)
 - [ ] **Settings API (tasarım-zamanı ayar CRUD) — açık noktalar** — yüzey tasarlandı ([`settings-api.md`](./settings-api.md)); kalan:
-  **ortak hata sözleşmesi** · **ortamlar-arası (env) kopya/promote** · **toplu senkron** ucu (org referans
-  verisi upsert; Customer API ön-koşulu) · ayar-değişiklik **loglama** (SettingsLog) · `settings`/`configuration` **referans bütünlüğü +
-  silme koruması** kesin kuralları · **yetki granülaritesi** (hangi rol hangi kaynağı yazar). _(settings-api §5–§9)_
+  **ortak hata sözleşmesi** · **ortamlar-arası (env) kopya/promote** · `settings`/`configuration` **referans bütünlüğü +
+  silme koruması** kesin kuralları · **yetki granülaritesi** (hangi rol hangi kaynağı yazar). _(settings-api §5–§9)_ ⏭️ Toplu senkron ucu + ayar-değişiklik loglama → **Faz 2** ([`todo-phase2.md`](./todo-phase2.md) §3–§4).
   - **Pilotta inşa edildi (v0.41-1):** **draft/publish + servis versiyonlama** (`ServiceVersion` · `currentVersion` ·
     `hasUnpublishedChanges` · `lastPublishedAt` + code-lock) ve **süreç arşivleme** (`archivedAt`/`archivedBy` + `ArchivedChecker`
     cross-domain guard + `archiveFilter`) — **ortam modelinden bağımsız**. → [`implementation-status.md`](./implementation-status.md) ·
     `models/service-settings/service.md`. **Kalan:** `ServiceVersion` **snapshot içeriği** + ortamlar-arası kopya.
 - [ ] **Hata yönetimi** — her adımda `onFail` var mı/zorunlu mu; **retry** (deneme + bekleme); süreç-seviye global
   hata yakalayıcı; telafi/compensation; `action` zinciri **sonsuz döngü** koruması. _(flovo-bpm-engine §7 · process-step-action §7)_
-- [ ] **Vekalet (proxy / yetki verme) sistemi** — **görev-devri yerine** kalıcı vekalet: kullanıcılar başka kişilere vekalet verir;
-  **vekil, vekaleti veren kişinin yerine geçerek onun adına işlem yapar** (aksiyon alabilenler kümesi atananın **aktif vekilleriyle**
-  genişler). **Ayrıntı sonra** verilecek — model (`UserProxy`: grantor/grantee/süre/kapsam) + kapsam (tüm servis ↔ servis-bazlı) +
-  iz/log ("X adına Y") + grup görevlerini kapsama + zincir/tek-kademe kararları açık. _(process-step §3.15/§3.16 · instance-awaiting-user.md)_
-- [ ] **Timer üçlüsü** (Timer / Timer Start / Timer End) yaşam döngüsü ve bağlanması; global timer kayıtları?
-  _(process-step §4)_
-  - **Netleşen (v0.12):** `TimerCalculationType` + `ProcessStepTimerSettings` (çalışma/normal/sabit takvim blokları + timeout
-    bildirimi) modellendi; **yaşam döngüsü/bağlanma** (`selectedTimerProcessStepId`, global timer kayıtları) hâlâ açık. _(process-step §3.7)_
-- [ ] **Form yaşam döngüsü** — Instance Creator / Instance Deleter / Form Yönlendirme / Süreç Adımı Tetikleme; Parent Property
-  ile birlikte. _(process-step §4)_
+- [ ] **Form yaşam döngüsü** — Instance Creator / Instance Deleter; Parent Property ile birlikte. _(process-step §4)_
   - **Netleşen (v0.12):** **Instance Deleter** `deleteMode` (`InstanceDeleteMode`: `withRelated`/`unlinkRelated`) + **Instance Creator**
-    temel ayar modeli tanımlandı; **Form Yönlendirme / Süreç Adımı Tetikleme** hâlâ açık. _(process-step §3.9/§3.15/§3.16)_
-- [ ] **ServiceTrigger — kalan kenar durumlar** _(models/service-settings/service-trigger.md · enums/service-trigger-type.md)_.
-  Model **inşa edildi ve olgunlaştırıldı** (v0.23): `serviceTriggerType` (`timer`/`whenAddedAssociate`/`whenRemoveAssociate`) ·
-  `cronExpression` (timer) · `targetPropertyId` (associate) · `targetServiceId` · `targetStarterProcessStepId` (`subProcessStart`) ·
-  `async` · `parameters` (DynamicParameter[]) + kimlik/yaşam-döngüsü alanları (`code`/`definition`/`order`/`active`/`deleted`).
-  - **Çözülen (v0.23):** associate **tespiti** = `AssociatedInstance` yazımında (DB katmanı, **çekirdek**; ayrı yerlerde
-    tekrarlanmaz) · associate **filtresi** = `targetPropertyId` (`associatedPropertyId == targetPropertyId` → kaynak =
-    `associatedInstanceId`; "hangi taraf" belirsizliği kapandı) · **`timer`** = `cronExpression` + **`processStart`**
-    (alt süreç değil; her cron tetiğinde **yeni bağımsız ana süreç**, servis-global, kaynak instance yok) · associate →
-    `subProcessStart` · **`async=false`** = başlatılan süreç **Süreç Bitişi'ne** ulaşana kadar bekler, `async=true` = beklenmez ·
-    **karşı-instance parametresi gereksiz** · kimlik/yaşam-döngüsü alanları eklendi · **`triggerProcessStep` ile sınır**
-    (triggerProcessStep = akış-üzeri adım, girince alt süreç/aksiyon tetikler ↔ ServiceTrigger = akış-dışı otomatik olay/cron).
-  - **Çözülen (v0.24, expenseAndCreditCard örneğiyle):** **kaynak ↔ hedef ayrımı** — `parameters` **kaynağı = `associatedInstanceId`**
-    (üst form); **yürütme hedefi = `instanceId`** (targetService'teki **mevcut** instance). Associate alt süreci **yeni Instance (form kaydı)
-    oluşturmaz**; hedef instance için **yeni bir alt-`ProcessInstance`** olarak koşar — **`parentProcessInstanceId` = hedef
-    instance'ın ana `ProcessInstance`'ı** (tetikleyen `associatedInstanceId` değil); instance'a bağ bu zincirle **dolaylı**
-    (statü okur, `triggerProcessStep` ile ana-akış aksiyonu tetikler). Önceki "parent=associatedInstanceId" ifadesi düzeltildi.
-  - **Çözülen (v0.25):** **hedef servis ↔ hedef alan invariant'ı** (`targetServiceId == targetPropertyId'nin childServiceId/associatedServiceId`'si;
-    kaydetme-anı doğrulaması) · **`async` bekleme yeri** (bekleme, ilişki değişikliğini/`AssociatedInstance` yazımını yapan **tetikleme noktasında**
-    yapılır) · **`subProcessStart` tetikleme kataloğuna ServiceTrigger (associate) eklendi** (process-step §3.20/§3.16).
-  - **Açık kalan:** **(1) `timer` DST kenar durumları** — cron değerlendirmesinde DST geçişleri (saat dilimi **ayrı açık konu değil** —
-    v0.33: Organization'a org-bazlı timezone alanı **planlanmıyor**; cron sabit/varsayılan konvansiyona göre değerlendirilir); **(2) döngü koruması** — A→B→A tetikleme recursion'ı (derinlik/çevrim sınırı) _(tasarım-zamanı önleme
-    örneği: `isAssociatedCombobox=false` geri-referans — `sampleProcess/expenseAndCreditCard/creditCardStatementLine.md`; motor-düzeyi
-    güvenlik ağı açık)_; **(3) `async` kaskad kompozisyonu** — üst üste `async=false` senkron derinlik yaratır; seviyeler boyunca
-    async + işlem/derinlik sınırı (Senaryo 5 kaskadı); **(4) `triggerProcessStep` → ilişkili instance (associatedInstance) tetikleme** —
-    Süreç Adımı Tetikleme adımı, ilişkili instanceların **alt sürecini/aksiyonunu** tetikleyebilir; hangi associatedInstance'ların
-    seçileceği (ilişki alanı/yön) + ayar detayları **tanımlanacak** (process-step §3.5/§3.20). _(Not: "alt sürecin mevcut-instance
-    mekaniği" → **ÇÖZÜLDÜ v0.25**: yeni alt-`ProcessInstance`, `parentProcessInstanceId`=hedef instance'ın anası; `ProcessInstance`'a `instance` alanı eklenmez.)_
+    temel ayar modeli tanımlandı. **Form Yönlendirme / Süreç Adımı Tetikleme** ⏭️ **Faz 2** ([`todo-phase2.md`](./todo-phase2.md) §8). _(process-step §3.9)_
 - [ ] **Raporlama** ayrı özellik olarak nasıl modellenecek? _(view-profile §3 / §5)_
-- [ ] **Customer API** — kimlik/yetki (token kapsam/süre/yenileme); webhook güvenliği (secret/imza) + **idempotency**;
-  `POST /instances/search` sorgu dili; rate limit/sayfalama/hata sözleşmesi; request/response şemaları. _(flovo-customer-api §3)_
-  - **Dış referans anahtarı — statü çelişkisi (O6):** `flovo-customer-api.md` header'da `organizationId` kullanıp konuyu **açık**
-    sayıyor; `organization.md`/`models/index.md` ise **`organizationCode` (string) kararlaştırıldı** diyor. **Customer API detaylanınca
-    tek statüye** bağlanacak (o zamana dek atlandı).
-  - 🧱 **Tech-stack (kısmen):** kimlik = **Keycloak** (token) · sözleşme/şema = **OpenAPI** (api-contract) · idempotency deseni =
-    **NATS**; API'nin kendi tasarımı (search sorgu dili, rate limit, webhook imza) açık. → [`./tech-stack/keycloak.md`](./tech-stack/keycloak.md) · [`./tech-stack/api-contract.md`](./tech-stack/api-contract.md)
-- [ ] **Yetkilendirme (permissions) — açık kalanlar:** **(a)** `ProcessStepAction.authorizationLevel` (aksiyon-düzeyi sayısal
-  yetki) yeni **org-bazlı** yetki modeliyle nasıl uyumlanır; **(b)** **impersonation** kapsamı/denetimi (kimin yerine
-  geçilebilir; log/audit); **(c)** yetki setinin **genişletilebilirliği** (yeni yetki = Organization'a yeni `*UserGroupId`
-  alanı mı, dinamik mi?); **(d)** admin-only yetki yapılandırması ↔ `OrganizationSettings` grubu erişim sınırı.
-  _(permissions §5 · organization §5 · new-vs-current §14)_
 - [ ] **Aksiyon parametrelerinde ifade/kod desteği** — parametreler ne kadar "ifade" (expression/kod) destekleyecek
   (no-code ↔ pro-code dengesi); ifade motoru + veri eşleme (sürükle-bırak) + koşullu çalışma kapsamı. _(process-step-action §5 / §7)_
-- [ ] **Kapsam-dışı varlıklar + Org ↔ BPM entegrasyonu** — ExpenseType / Currency / Tax modellensin mi;
-  organizasyon ayarlarının BPM ile entegrasyon derinliği. _(Position/Staff modellendi → `position.md`.)_ _(index.md §4 · new-vs-current §14)_
+- [ ] **Kapsam-dışı varlıklar + Org ↔ BPM entegrasyonu** — ExpenseType modellensin mi; organizasyon ayarlarının BPM ile entegrasyon derinliği.
+  ⏸️ **Currency / Tax → askıya alındı (KARAR v0.47): yeni projede kullanılmayacak, modellenmez.** _(Position/Staff modellendi → `position.md`.)_ _(index.md §4 · new-vs-current §14)_
+  - **Bağımlı kararlar (v0.47, Tax/Currency askıya alınınca):** **`groupByTaxReceipt`** alan tipi vergi-oranı listesini org Tax ayarından alıyordu → alan tipi de
+    **askıya mı alınır** (`PropertyType` enum'undan düşer, settings/değer şablonu dosyaları arşivlenir) yoksa `taxRate` **serbest sayı** olarak kalıp alan tipi korunur mu? ·
+    ifade kataloğundaki **`getExchange`** (döviz kuru, async) **katalog-dışı adayı**. _(property-settings/group-by-tax-receipt.md · enums/property-type.md · business-rule-engine §9 katalog)_
 - [ ] **ActionTransfer'e `user` alanı** — `ActionTransfer` (DTO → `models/service-settings/jsonTemplateModels/action-transfer.md`;
   parameters/changeList/action → process-step-action §2) modeline bir **user** property'si eklenmeli mi (aksiyon/parametre
   verisinden `Instance.creatorUserId`'yi **isteğe bağlı** set etmek için)?
-  _(process-step-action §2 · process-step §3.12 · `apiKeyId` açık sorusuyla bağlantılı)_
+  _(process-step-action §2 · process-step §3.12 · `apiKeyId` açık sorusuyla bağlantılı → ⏭️ [`todo-phase2.md`](./todo-phase2.md) §13)_
   - **Netleşen (v0.17):** "`form` tipinde `creatorUserId` **zorunlu dolu**" kuralı **kaldırıldı** — süreç **API/webhook ile**
     (tek oluşturan kullanıcı olmadan, ör. gruba yönlendirilerek → `sampleProcess/referred`) başlatılabildiğinden
     `creatorUserId` **null olabilir**; başlatan **`ProcessInstance.createdByApiKeyId`** ile izlenir. Açık kalan: yalnız
     ActionTransfer.user ile creatorUserId'nin **opsiyonel atanması**.
-- [ ] **Form List tik (seçim) davranışı** — formların yanındaki **tiklerde** yapılan değişiklikler **aksiyon tetikleyecek mi**?
-  **Tik kaldırma nedeni** kullanıcıdan nasıl alınacak ve nasıl kaydedilecek? _(properties §3.13 Form List · `selectableVisible`/
-  `selectedEditable` · view-profile §5)_
 - [ ] **"Var olanlardan ekleme" filtreleri** — bugün yalnız **durum** (`addFromExistingStatusIds`) ile filtre var; ek olarak
   "yalnız **related-form** olanlar listelensin", "hangi **property** ile related olanlar listelensin" gibi seçenekler nasıl
   yönetilecek? _(view-profile §5 · properties §3.13 Form List · AssociatedInstance)_
 - [ ] **Ortamlar arası değişiklik aktarımı (promote/rollback)** — bir ortamda yapılan değişiklikleri **canlıya aktarma** ve
   **geri alma** yöntemi; ortamlar arası **pull-request** benzeri bir yapı nasıl kurulabilir? _(→ Tier 1 "Ortam (environment) modeli")_
-- [ ] **Servis template & JSON ile servis oluşturma** — servisler **template** olarak nasıl oluşturulacak; template ile servis
-  üretimi nasıl olacak; **n8n gibi JSON template** export/import ile mi; **ilişkili servisler toplu** mı oluşturulacak?
-  _(models/service-settings/service.md · solution.md · research/n8n)_
 - [ ] **İş kuralı — açık detaylar** (v0.34'te model iskeleti kuruldu: `BusinessRule.configuration` JSONB + `jsonTemplateModels/business-rule/`
   aksiyon konfig ailesi). Kalan açık noktalar:
   - **İfade dilinin somut seçimi** — sandbox'lı standart dil (**JSONLogic ↔ CEL**) + fonksiyon **katalog kapsamı**; **tam-frontend**
@@ -181,7 +115,7 @@
     `SubTextType` + `FillDataSourceOrganization`/`FillDataSourceParameter` oluşturuldu. **Açık:** masraf varlıkları (ExpenseType/ExpenseCategory)
     + `ValueTypeOfList` masraf değerleri (expenseType*/categoryCode) **kapsam-dışı** (masraf çekirdek modeli yok) → "Kapsam-dışı varlıklar".
   - **Lazy dataset runtime API sözleşmesi** — `serviceInstances` çalışma-anı fetch request/response (eski `GetWorkRuleDataSet*`/`DataSetDto`)
-    = runtime/Customer API tasarımı; iş-kuralı-tanımı değil, ayrı ele alınacak. _(jsonTemplateModels/business-rule/assign-value-from-dataset.md)_
+    = runtime API tasarımı (Customer API ⏭️ Faz 2; iş kuralının instance-fetch ucu MVP'de **motor/frontend API'sinde** kalır); iş-kuralı-tanımı değil, ayrı ele alınacak. _(jsonTemplateModels/business-rule/assign-value-from-dataset.md)_
   - **`search` değer kaynağı** davranışı (arama bağlamı). _(jsonTemplateModels/business-rule/assign-value.md)_
   - **`setStyle` `style` objesi** şeması (tekil görünüm nitelikleri: fontSize/titleColor…). _(jsonTemplateModels/business-rule/set-style.md)_
   - **`showMessage` "bir kez göster"** mekanizması. _(jsonTemplateModels/business-rule/show-message.md)_
@@ -212,19 +146,15 @@
 - [ ] **`actionDisplayType`** gözden geçir (`invisible`/`everywhere`/`onlyFormDetail`/`onlyFastApprove`). _(action §3)_
 - [ ] **İş kuralı performansı** — `always` kuralları yalnız ilgili property değişince (alan-bağımlı) tetiklensin mi?
   _(business-rule §6)_
-- [ ] **`SchedulerJob` altyapı modeli (erteleme)** — `...At` (`lastRunAt`/`createdAt`) ↔ `...Time` (`startTime`/`endTime`)
-  **adlandırma birliği** + `category`/`status`/`triggeredBy` serbest-string alanlarının enum'a çekilip çekilmeyeceği +
-  alan detayları. Altyapı-zamanlayıcı modeli olduğundan **sonraya** bırakıldı. _(models/organization-settings/scheduler-job.md)_
 - [ ] **Property `settings` şeması — tip-başına şemalardan açık alan kararları (v0.37):**
   - `flowInfoValue` / `userInfoValue` **değer kataloğu enum'a çekilsin mi** — şu an `settings`'te `string` seçici. **Karar: evet** —
     `flow-info-value.md` / `user-info-value.md` enum dosyaları + koşullu `settings` alanları **harici analiz PR'ı** ile geliyor (review bekliyor).
     ✅ v0.46: `mainAccount` ve `lastActionReason` **katalog-dışı** (gerekçe = eventForm parametresi → Değer Atama → form alanı; flowInfo değil). **Kalan:** enum dosyalarının repoya girmesi + §5 şemalarının `string` → `enum`'a daraltılması.
     _(jsonTemplateModels/property-settings/flow-info.md §7 · user-info.md)_
-  - **Form List red-akışı bayrakları** — eski `isRejectReasonRequired` (red gerekçesi zorunlu) + `isReapprovalLockedAfterReject`
-    (reddedilen satır yeniden onaya kapalı) yeni tasarımın settings/profil-bazlı katmanına **yerleştirilmedi** — karar gerek.
-    _(jsonTemplateModels/property-settings/form-list.md)_
+  - **Form List red-akışı bayrakları** ⏭️ **Faz 2** → [`todo-phase2.md`](./todo-phase2.md) §6.
   - **`groupByTaxReceipt` eski-kod ayar adayları** — `isLineAddActive`/`isLineReduceActive`/`isTaxEditable`/`isManuelTax`/
-    `kkegExpenseTypeId`/`multiKkegActive` kapsam-dışı bırakıldı; `settings` adayı mı? _(jsonTemplateModels/property-settings/group-by-tax-receipt.md)_
+    `kkegExpenseTypeId`/`multiKkegActive` kapsam-dışı bırakıldı; `settings` adayı mı? ⏸️ **Tax askıya alındı (v0.47)** → alan tipinin kaderiyle birlikte
+    karar (Tier 2 "Kapsam-dışı varlıklar" bağımlı kararlar). _(jsonTemplateModels/property-settings/group-by-tax-receipt.md)_
 - [ ] **Process step `settings` şeması — tip-başına şemalardan açık alan kararları (v0.38):**
   - **`comparison` değer-kaynağı** — `referenceValue`/`valueToCompare` **ValueAssignType** (fixed/property/calc) mı yoksa iş kuralıyla
     ortak **`BusinessRuleConditionCompareValue`** (`viewProfile` kaynağı dahil) mı olacak? Karşılaştırma adımı viewProfile'ı destekleyecekse
@@ -233,30 +163,21 @@
       kuralıyla **birebir aynı** çalışacağından. **Kalan:** şema hizalama detayı (comparison.md güncellemesi).
   - **`comparison` nested grup birleştiricisi** — `ComparisonCondition.children` alt-gruplarının kendi `and`/`or` birleştiricisi yok
     (yalnız kök `conditionType`); iş kuralı koşul ağacıyla hizalanmalı mı? _(process-step-settings/comparison.md)_
-  - **`triggerProcessStep` / `formRedirect` `settings` şeması** — hâlâ modellenmedi (aday kavramlar şema-dışı işaretli).
-    _(process-step-settings/trigger-process-step.md · form-redirect.md · process-step §3.16)_
-  - **`flovoAi`** `selectedAi` kanonik set · `fileSourceType` enum · `aiSettings` per-AI şema (mevcut §209 maddesiyle bağlı) ·
-    **`instanceCreator`** init-değer eşleme detayı (§3.9 "sonra genişletilecek"). _(process-step-settings/flovo-ai.md · instance-creator.md)_
+  - **`instanceCreator`** init-değer eşleme detayı (§3.9 "sonra genişletilecek"). _(process-step-settings/instance-creator.md)_
+  - `triggerProcessStep` / `formRedirect` `settings` şeması · `flovoAi` ayarları ⏭️ **Faz 2** → [`todo-phase2.md`](./todo-phase2.md) §7–§8.
 
 ---
 
 ## 🆕 Bu oturumda eklenen açık sorular
 
-- [ ] **`apiKeyId` içeriği/adı (Customer API kimliği)** — Customer API ile oluşturulan kayıtlarda oluşturan **User**
-  olmadığından işlemi kimin yaptığını kaydetmek için `apiKeyId` alanları var (`ProcessInstance.createdByApiKeyId`,
-  `ProcessStepInstance.atApiKeyId`). **Ad geçici**; içine gelecek veri Customer API **erişim mekanizması** kesinleşince
-  doğrulanacak. _(flovo-customer-api §3 · models/processInstances/process-instance.md · process-step-instance.md)_
 
 ### 🔎 Tutarlılık denetiminden (2026-07-02)
 - [ ] **`ProcessStep`/`BusinessRule` denormalize `organizationId`** — asıl kapsayıcı `serviceId`; kiracı için ayrıca
   `organizationId` tutulsun mu, yoksa `service → solution → org` üzerinden mi? _(models)_
 
 ### 🔧 v0.12 — Adım tipe-özel ayar modellemesinden (2026-07-16)
-- [ ] **Flovo AI adım ayarları detayı** — `selectedAi` kanonik AI seti; `fileSourceType` (thumbnail/fileProperty) ayrı enum mü;
-  AI'a-özel `aiSettings` şeması. _(process-step §3.2)_
 - [ ] **Adım `settings` JSONB doğrulama & referans bütünlüğü** — tip-başına **JSON Schema**; `settings` içindeki referans id'lerin
   (`propertyId`/`userGroupId`/`selectedTimerProcessStepId`…) **uygulama-katmanı** doğrulaması + **silme koruması**. _(process-step §2)_
-- [ ] **`triggerProcessStep` / `formRedirect` adım ayarları** — henüz modellenmedi (ayarsız grup §3.16). _(process-step §3.16)_
 - [ ] **`DynamicParameter.value` şekli** — değer-kaynağı (**ValueAssignType**: sabit/hesaplama/form property) + değerin JSONB
   temsili (iş-kuralı `AssignValueToFieldDto` muadili). _(process-step §3.1/§3.6)_
 
@@ -384,7 +305,7 @@
   dökümanlar tamamlanınca **baştan eksiksiz** yeniden oluşturulur. _(sampleProcess/index.md)_
 - **Aksiyonlarda swipe item (ÇÖZÜLDÜ — v0.33):** ayrı görünüm ayarı değil; `ActionType`'a **`delete`** eklendi (aksiyon → form UI'dan
   kalkar; card'da **swipe item**); `actionDisplayType` değişmedi. _(process-step-action §3.8 · action-type.md)_
-- **Customer API dış referans anahtarı (O6) (KONSOLİDE):** Tier 2 "Customer API" alt-maddesinde izleniyor (`organizationId` int ↔
+- **Customer API dış referans anahtarı (O6) (KONSOLİDE):** ⏭️ Faz 2 — [`todo-phase2.md`](./todo-phase2.md) §13 "Customer API" alt-maddesinde izleniyor (`organizationId` int ↔
   `organizationCode` string); Customer API detaylanınca tek statüye bağlanacak. _(flovo-customer-api §3)_
 - **Form validasyon durumu (ÇÖZÜLDÜ — v0.31): `Instance.validated` (bool)** — ayrı `FormValidation` tablosu yok; değer/iş-kuralı
   değişiminde `false`'a döner. _(models/processInstances/instance.md)_
@@ -394,3 +315,15 @@
 - **`ActionTransfer` DTO + `action`/`changeList` şekli (ÇÖZÜLDÜ):** `ActionTransfer` **DTO** olarak `models/service-settings/jsonTemplateModels/`
   altına alındı; `action` = **`string?`** (aksiyon kodu; doluysa aynı `code`'lu aksiyon, boş/null → **`default`**) — v0.33;
   `changeList` = **obje-map** `{ Property.code: value }` — v0.30. **Açık kalan:** `ActionTransfer.user` alanı (ayrı madde). _(jsonTemplateModels/action-transfer.md · process-step-action §2/§2.2)_
+- **İki-katman sınırı — ÇÖZÜLDÜ (v0.43)** — **değer atama & karşılaştırma** hem süreç adımı hem iş kuralı olarak var; sınır _(← Tier 0)_
+  kararları (detay → `business-rule.md` §0.1 · `commitNotes/v0-43.md`):
+  - **(S1) Kısıt yok:** no-code platform; bir iş **ikisinde de** ayarlandıysa **ikisi de çalışır** (kombinasyon = tasarımcı senaryosu).
+  - **(S2) Değer akışı & bütünlük:** iş kuralı değeri **`changeList` → kaydedilir** (`InstanceValue`); motor adımları **DB'deki kayıtlı
+    güncel veriyle** işler (geçici frontend değerine bakmaz). → flovo-bpm-engine §3.1.
+  - **(S3) API/webhook başlatma:** frontend'den geçmeyen instance'da iş kuralı **koşmaz** → telafi eden motor adımlarını kurmak
+    **süreç tasarımcısının sorumluluğunda** (BPM aracı; senaryo tasarımcıya ait).
+  - **(S4) Parite:** iş kuralı ↔ süreç adımı **fonksiyon/operatör + ifade dili hizalı, aynı girdi=aynı çıktı** (backend Go ↔ frontend
+    JS+Dart); **Karşılaştırma adımı** `compareType`/operatörleri iş kuralı koşullarıyla **birebir aynı** (→ Tier 3 comparison değer-kaynağı ortak modele hizalanır).
+  - **(S5) atlandı** — öncelik/çelişme ayrı açık konu değil.
+  - **(S6) Form List:** iş kuralı Form List'ten **okuyup hesaplar**; **toplu alt-servis yazımı yalnız motor Değer Atama adımı** (§3.4).
+  _(flovo-bpm-engine §1.4/§3.1 · business-rule §0.1 · process-step §3.4/§3.13)_

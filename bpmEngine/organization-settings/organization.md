@@ -71,7 +71,7 @@ Yetkiler **organizasyon bazında** (admin + grup-bazlı) **dinamik** yönetilir.
 
 > **Çözülenler (yerel karar log'u):**
 - [x] **`idleTimeoutMinute` alt/üst sınır (v0.33)** — sistemce **sınır dayatılmaz**; `0`=disable, `>0`= organizasyonca belirlenen dakika → süre dolunca **logout / tam yeniden giriş** (kilit davranışı v0.18).
-- [x] **timezone (v0.33)** — Organization'a **timezone alanı planlanmıyor**; ayrı açık konu değildir. Diğer alanlar (plan/abonelik, para birimi, bölge, güvenlik) **ihtiyaç anında** eklenir.
+- [x] **timezone (v0.33)** — Organization'a **timezone alanı planlanmıyor**; ayrı açık konu değildir. Diğer alanlar (plan/abonelik, bölge, güvenlik) **ihtiyaç anında** eklenir. _(Para birimi: Currency askıya alındı, v0.47.)_
 
 ---
 

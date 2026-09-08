@@ -66,3 +66,8 @@ Daha önce yapılan **pazar/ürün araştırmaları, ESN vakaları, vizyon ve su
    **(c)** **hemen ardından** bir sonraki **`v0-(X+1).md`**'yi **AÇIK boş şablon** olarak oluştur (Önceki linki, "Durum: 🟡 AÇIK",
    bekleyen açık konular, boş bölümler).
    ⚠️ **Adım (c) HER committen sonra ZORUNLUDUR — atlanmaz** (aksi hâlde bir sonraki sürümün çalışma dosyası eksik kalır).
+8. **`todo.md` kapanan madde kuralı (otomatik):** Bir üst-düzey madde kapanınca yalnız `- [ ]` → **`- [x]`** işaretlenir; **elle taşıma yapılmaz.**
+   `.claude/hooks/todo-archive-closed.py` (PostToolUse · SessionStart hook'u, `.claude/settings.json`) `[x]` maddeleri **otomatik** olarak
+   dosyanın altındaki "✅ … (log) → 📦 konsolide edilen çözülmüş maddeler" bölümüne taşır (kaynak bölümü `_(← Tier N)_` ile işaretler;
+   boşalan bölüme yer tutucu koyar). Kısmi çözümler (`✅ v0.X: …` notu) açık maddede kalır. **Faz 2** listesi → `bpmEngine/todo-phase2.md`
+   (aynı kural elle uygulanır; hook yalnız `todo.md`'yi işler). `.claude/hooks/` altındaki bakım scripti kural 1'in istisnasıdır (uygulama kodu değildir).

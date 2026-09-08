@@ -40,6 +40,6 @@ Yetkiler **organizasyon bazında** (admin + grup-bazlı) yönetilir. Her yetki i
 
 ## Notlar / açık noktalar
 - **Çözüldü (v0.33):** `idleTimeoutMinute` için **alt/üst sınır yok** — `0`=disable, `>0`= organizasyonca belirlenen dakika → süre dolunca **logout / yeniden giriş** (kilit davranışı v0.18). Sistemce dayatılan min/max **yoktur**.
-- **Çözüldü (v0.33):** **timezone** ayrı açık konu değildir — Organization'a **timezone alanı planlanmıyor**. Diğer alanlar (plan/abonelik, para birimi, bölge, güvenlik) **ihtiyaç anında** eklenir (açık karar değil).
+- **Çözüldü (v0.33):** **timezone** ayrı açık konu değildir — Organization'a **timezone alanı planlanmıyor**. Diğer alanlar (plan/abonelik, bölge, güvenlik) **ihtiyaç anında** eklenir (açık karar değil). _(Para birimi: Currency askıya alındı, v0.47.)_
 
 *Oluşturma: 2026-07-02.*

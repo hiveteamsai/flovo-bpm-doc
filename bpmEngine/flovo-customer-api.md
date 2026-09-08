@@ -1,6 +1,7 @@
 # Flovo Customer API — Tasarım (Taslak)
 
 > **Durum:** 🟡 TASLAK — şimdilik **endpoint listesi + teorik iş özeti**; request/response detayları sonra.
+> ⏭️ **Kapsam: MVP-sonrası (Faz 2, KARAR v0.47)** — bu API MVP'de inşa edilmez; açık soruları [`todo-phase2.md`](./todo-phase2.md) §13'te. Frontend'in kullandığı motor runtime uçları bu dokümanın kapsamı **değildir** (→ `bpm-engine-build-plan.md` F1.E.3 · F2.G).
 > **Amaç:** Müşterilerin/kullanıcıların **custom code** geliştirebilmesi için Flovo'nun sağlayacağı **API servisi.**
 > Süreç adımlarındaki **HTTP Request** (→ `service-settings/process-step.md` §3.2) müşteri sunucusundaki custom code'a istek atar;
 > custom code da **Flovo Customer API** ile Flovo **instance**'larını (doldurulmuş form kayıtları) okur/yazar ve **Webhook** aksiyonlarını (→ `service-settings/process-step-action.md` §3.6) tetikler.

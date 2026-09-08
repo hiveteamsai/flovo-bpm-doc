@@ -16,10 +16,11 @@
 | [`engine-runtime-scheduler.md`](./engine-runtime-scheduler.md) | 📝 **Zamanlayıcı & uyandırma** — `WorkflowTimer` claim modeli (`SKIP LOCKED`, lider yok) · Timer/timeout/retry/cron yaşam döngüsü · preemption kuralı · TZ/DST/kaçırılan tetik · housekeeping. (v0.44, onay bekliyor.) |
 | [`engine-runtime-retention.md`](./engine-runtime-retention.md) | 📝 **Runtime verisi saklama · pruning · KVKK** — `workflow_events` sıcak/soğuk/arşiv katmanları (RANGE partition → MinIO) · pseudonymization (tombstone) · kısa-ömürlü tablolar. (v0.44, onay bekliyor.) |
 | [`engine-runtime-plan.md`](./engine-runtime-plan.md) | 🟡 **Motor runtime — kararlar (R1–R17) · açık sorular (Q1–Q22) · geliştirme planı** — bu konunun inceleme çalışma dosyası; kesinleşince `todo.md`'ye taşınır. |
-| [`flovo-customer-api.md`](./flovo-customer-api.md) | **Flovo Customer API** — müşterilerin **custom code** geliştirmesi için sağlanacak API servisi (runtime veri: instance oku/yaz, webhook). |
+| [`flovo-customer-api.md`](./flovo-customer-api.md) | ⏭️ **MVP-sonrası (v0.47).** **Flovo Customer API** — müşterilerin **custom code** geliştirmesi için sağlanacak API servisi (runtime veri: instance oku/yaz, webhook). |
 | [`settings-api.md`](./settings-api.md) | **Flovo Settings API** — **tasarım-zamanı ayar CRUD'u** (service/property/step/view-profile/business-rule + org ayarları); `settings` doğrulama = tipe-özel JSON Schema. |
 | [`implementation-status.md`](./implementation-status.md) | **Uygulama Durumu** — tasarım ↔ fiilen **inşa-edilen/dağıtılan** farkı: Bölüm-1 (design-time) **BUILT** + pilot **DEPLOYED** (Azure Container Apps + Vercel + Azure-PG + Keycloak); NATS/MinIO/Redis/K8s + Motor runtime = **tasarım hedefi**. |
-| [`todo.md`](./todo.md) | **Açık sorular / TODO** — tüm dokümanlardaki açık kararlar, önceliklendirilmiş tek liste (Tier 0–3). |
+| [`todo.md`](./todo.md) | **Açık sorular / TODO** — tüm dokümanlardaki açık kararlar, önceliklendirilmiş tek liste (Tier 0–3) — **MVP kapsamı**. |
+| [`todo-phase2.md`](./todo-phase2.md) | ⏭️ **Faz 2 (MVP-sonrası) açık konular** — yetkilendirme detayı · vekalet `UserDelegate` · loglama · toplu senkron · `SchedulerJob` · Form List red akışı · Flovo AI · `triggerProcessStep`/`formRedirect` · Timer üçlüsü · ServiceTrigger · tik olayları · servis template · Customer API. |
 
 ## Alt klasörler
 | Klasör | İçerik (özet) | İndeks |

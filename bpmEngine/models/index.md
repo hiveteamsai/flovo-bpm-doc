@@ -204,7 +204,8 @@ LabeledValue = değer şekli (tablo değil): {value, display, translationCode} �
 | Varlık | Nerede geçiyor | Not |
 |---|---|---|
 | **ApiKey** (Customer API anahtarı) | `ProcessInstance.createdByApiKeyId`, `ProcessStepInstance.atApiKeyId` | API üzerinden başlatım/tetikleme kimliği (oluşturan `User` değilken "kim yaptı"). **Ad geçici**; Customer API erişim mekanizması kesinleşince doğrulanacak → `../todo.md`. |
-| **ExpenseType / Currency / Tax** | Masraf süreçleri | Masraf tipi, para birimi, vergi — referans dokümanında **kapsam dışı**. _(Position/Staff artık modellendi → `organization-settings/position.md`.)_ |
+| **ExpenseType** | Masraf süreçleri | Masraf tipi — referans dokümanında **kapsam dışı**; modellenip modellenmeyeceği açık (→ `../todo.md`). _(Position/Staff artık modellendi → `organization-settings/position.md`.)_ |
+| **Currency / Tax** | — | ⏸️ **Askıya alındı (KARAR v0.47): yeni projede kullanılmayacak** — para birimi / vergi ayarı **modellenmez**. Bağımlı kavramların kaderi (`groupByTaxReceipt` alan tipi · `getExchange` fonksiyonu) → `../todo.md`. |
 
 > **Instance (doldurulmuş form) + property value depolaması artık modellendi** → `processInstances/` (ProcessInstance · Instance ·
 > ProcessStepInstance · InstanceAwaitingUser · AssociatedInstance **+ InstanceValue · InstanceAttr · InstanceListItem · InstanceValueOutbox ·

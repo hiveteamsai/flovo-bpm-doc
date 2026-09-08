@@ -14,6 +14,7 @@
 - **Değer** = kalem listesi (`expenseType` etiketli seçim + `taxRate` sayısal oran + `amount` sayı + opsiyonel `isKkeg` bool) → değer `InstanceValue.data`'da **obje dizisi** olarak tutulur (değer şablonu §1).
 - **Projeksiyon** (`projectToAttr=true`): **kalem × alt-alan** → [`InstanceListItem`](../../../processInstances/instance-list-item.md) (her kalem `itemIndex`, her alt-alan `attrCode`); `SUM(amount) GROUP BY taxRate` bu fihrist üzerinden — değer şablonu §2. `savePropertyToDb` · `saveChangeLog` (§1.3).
 - **Gider türü / vergi oranı listeleri** kalem girişinde **organizasyon ayarlarından** (şirketin gider türü + vergi tanımları) yüklenir; kullanıcının seçtiği tekil değer kaleme yazılır. Bu listeler **alan `settings`'ine gömülmez** — runtime'da org verisinden gelir.
+- ⏸️ **Tax / Currency askıya alındı (KARAR v0.47):** organizasyon vergi ayarı **modellenmeyeceğinden** vergi-oranı listesi org verisinden gelemez → bu alan tipinin kaderi (askıya alma ↔ `taxRate` serbest sayı) **açık** → [`../../../../todo.md`](../../../../todo.md) "Kapsam-dışı varlıklar".
 - **Toplamlar** (kalem/vergi dip toplamı) `data`'da **saklanmaz** — gerektiğinde türetilir (değer şablonu §3).
 
 ## 3. Profil-bazlı

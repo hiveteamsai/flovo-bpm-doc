@@ -276,7 +276,7 @@ evaluateExpression ─→ [yerleşik fonksiyon kataloğu, §7]
 | **Kullanıcı/organizasyon** (çoğu async) | `getUserMail/FullName/Id/Code` · `getManagerUserId/Code` · `getUserManagerByProfession` · `getUserWorkerLevelCode` · `getUserCompany/Department/ProfessionCode/Name` · `getDepartmentManagerCode` · `getExpenseCenterAdditional` · `checkUserInUserGroup` |
 | **Kredi kartı** | `getCreditCardNumber` · `getUserCreditCardNumber/Code/Desc` · `getUserByCreditCardCode` |
 | **Kontrol-toplama/validasyon** | `sumDatagrid` · `avgDatagrid` · `findPropValueFromDatagrid` · `sumFormList` · `combineFormList` · `findPropValueFromFormList` · `isServiceValidate` · `isPropertyValidate` |
-| **Döviz/diğer** | `getExchange` (async) |
+| **Döviz/diğer** | `getExchange` (async) — ⏸️ **Currency askıya alındı (v0.47)** → katalog-dışı adayı (→ todo) |
 
 - 🟦 **AÇIK:** kataloğun yeni motordaki **kesin kapsamı** (hangileri taşınır/sadeleşir; masraf-spesifik olanlar — GroupByTax vb.) + **çok-client portlanabilirlik** → todo (ifade dili).
 

@@ -23,7 +23,7 @@
 | `flowInfo` | Flow Info — salt-okunur akış metadata. | Akış bilgisi göstermek. |
 | `parentProperty` | Parent Property — üst/referans alan (salt-okunur). | Başka alandan türetilen gösterim. |
 | `userInfo` | User Info — salt-okunur kullanıcı metadata. | Kullanıcı bilgisi göstermek. |
-| `groupByTaxReceipt` | Group By Tax Receipt — vergi fişi gruplama. | Fiş bazlı gruplu giriş. |
+| `groupByTaxReceipt` | Group By Tax Receipt — vergi fişi gruplama. | Fiş bazlı gruplu giriş. ⏸️ Tax askıda (v0.47) — alan tipi kararı `../../todo.md`. |
 | `keyValueList` | Key-Value List — anahtar-değer listesi. | Dinamik anahtar/değer çiftleri. |
 
 ## Notlar

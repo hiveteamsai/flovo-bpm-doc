@@ -1,0 +1,28 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/todo-archive-closed.py\"",
+            "timeout": 10,
+            "statusMessage": "todo.md: kapanan maddeler alt bölüme taşınıyor"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/todo-archive-closed.py\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
