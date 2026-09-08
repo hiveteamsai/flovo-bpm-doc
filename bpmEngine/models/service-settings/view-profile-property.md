@@ -22,17 +22,18 @@
 > **Neden burada?** `visible`/`enabled`/`required` alanın kendisinde (`Property`) değil, **profilde** tutulur:
 > *alan = ne olduğu*, *profil = nerede nasıl göründüğü*.
 
-## Genişlik — cihaz ekseni ve yerleşim
+## Genişlik — katman semantiği
 
-**Sözleşme `(genişlik, mod) × cihaz`'dır**; dört kolon iki çifttir: masaüstü ve mobil.
+Bir alan için görüntüleme-profili satırı yazıldığında **tüm** yerleşim alanları
+(`displayWidth`, `mobileDisplayWidth`, `widthMode`, `mobileWidthMode`) o satırdan okunur (**replace-all**).
+Bu katman *"seçilmedi"* durumunu **taşımaz**; her değer açıktır. Taban değer, profil satırı **oluşurken**
+geçerlidir ve satıra tohumlanır; sonrasında profil bağımsızdır — tabandaki sonraki bir değişiklik
+mevcut profil satırlarına **yayılmaz**.
 
-- **Devralma:** mobil değeri yoksa masaüstü değeri kullanılır (satır açılırken masaüstünden tohumlanır).
-- **Bağımsız düzenleme:** kullanıcı **Mobil** görünümündeyken genişliği değiştirirse **yalnız mobil
-  kolonu** yazılır; **masaüstü değeri kasıtlı korunur.** Tersi de geçerlidir.
-- **Çözümleme çağıranda yapılır:** render motoru cihaz kavramını **bilmez**; tasarımcı/önizleme kabuğu
-  aktif cihaza göre çifti çözer ve çözülmüş `(genişlik, mod)` ikilisini şemaya yazar.
-  *(Taşıma paylaşılır, politika çağıranda kalır.)*
-- **Önizleme yazmaz:** önizlemede cihaz sekmesini değiştirmek **gösterimi** değiştirir, **veriyi değil.**
+Masaüstü ve Mobil **bağımsız** düzenlenir. Çözüm (hangi cihazın değerinin geçerli olduğu) **çağıranda**
+yapılır; yerleşim motoru cihazı bilmez.
+
+*(Kaynak: `supabase/migrations/20260904130000_viewprofile_property_breakpoint_width.sql` :4 no sentinel · :7 `SetProperties/MatrixEntry` C2 matrix REPLACE-ALL — app-repo `f942a3c`.)*
 
 **Yerleşim semantiği:** alanlar bir satır kabında soldan sağa dizilir, sığmayınca alt satıra sarar.
 `fraction` → genişlik `displayWidth/12` (boşluk payı düşülür; yoksa 6+6 bir satıra sığmaz).
