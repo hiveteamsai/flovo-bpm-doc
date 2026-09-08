@@ -16,12 +16,11 @@ Flovo, **bulut tabanlı, yapay zeka destekli** bir **kurumsal iş süreçleri y�
 Hem mevcut Flovo uygulamasının hem de bu yeni motorun **tüm geliştirme sürecini Flovo firması** yürütür
 (Coden ile Flovo **ayrı firmalardır**).
 
-## Mevcut Projenin Kaynak Kodu
+## Mevcut (Eski) Projenin Kaynak Kodu
 
-Mevcut (eski) Flovo'nun **mobil kaynak kodu** şurada:
-`/Users/osmancanguven/Documents/GitHub/Pratico.Apps` — **Flutter** projesi, paket adı `flovo`,
-sürüm `4.14.12+443`. iOS + Android + Web (PWA) tek kod tabanı. Bu klasörde **kod değiştirilmez**;
-yalnızca **analiz** için okunur.
+Eski Flovo'nun kaynak kodu **varsayılan olarak analiz edilmez**; yolu bu dosyada **tutulmaz**.
+Eski koda bakmak gerekirse **kullanıcı** ilgili yolu ve **incelenecek yeri** açıkça iletir; bu kapsam dışında
+eski kodda arama/inceleme yapılmaz. Eski BPM'in doküman referansı → `bpmEngine/research/current-flovo-bpm-engine/`.
 
 ## Klasör Yapısı
 
@@ -55,7 +54,8 @@ Daha önce yapılan **pazar/ürün araştırmaları, ESN vakaları, vizyon ve su
 4. **Yeni-uygulama dökümanları kendi başına** yeni uygulamayı anlatır; eski uygulamayla **farklar yalnız**
    `bpmEngine/research/compare/new-vs-current.md`'de, diğer platform kıyasları `bpmEngine/research/compare/` altında
    tutulur. Tasarım dökümanlarına eski-app karşılaştırması / "eski adı …" ifadeleri **konmaz**.
-5. **Mevcut (eski) Flovo BPM referansı:** `bpmEngine/research/current-flovo-bpm-engine/`.
+5. **Mevcut (eski) Flovo BPM referansı:** `bpmEngine/research/current-flovo-bpm-engine/`. Eski **kaynak koda** bakılmaz;
+   gerekirse kullanıcı yolu ve incelenecek yeri verir (2026-09-08 kararı).
 6. **Kaynak göster:** internet araştırmasında kullanılan kaynakları doküman sonunda linkle.
 7. **Commit-notu workflow'u (`commitNotes/`):** Her sürümün değişiklikleri bir **`v0-X.md`** çalışma dosyasında toplanır
    (bölümler: 🆕 Eklenenler · 🔧 Değişenler/kararlar · 🩹 Düzeltmeler · ❓ Yeni açık sorular · ✅ Çözülen açık sorular).

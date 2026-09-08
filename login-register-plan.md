@@ -68,7 +68,7 @@ kararları** tek yerde tutar; kullanıcı bu konuya daha sonra dönecek. Devam e
 
 ## 3. Eski app referansı (özet — bağlam korunsun diye)
 
-> Kaynak: `/Users/osmancanguven/Documents/GitHub/Pratico.Apps` (Flutter, paket `flovo`). Salt referans; yeni tasarım kendi başına yazılır.
+> Eski app'ten salt-referans özet (kaynak-kod yolu tutulmaz; gerekirse kullanıcı verir). Yeni tasarım kendi başına yazılır.
 
 - **Login:** e-posta/telefon → **OTP** (`sendverificationcode` + `CheckVerificationCode`, 6 hane) → `AccountDto.authenticationType`'a göre dallanma:
   - `no` = şifresiz (sadece OTP) · `client-eba` = kul.adı+şifre · `azure-adb2c` = Azure AD B2C (backend'de; mobil sadece credential toplar).
@@ -157,7 +157,6 @@ kararları** tek yerde tutar; kullanıcı bu konuya daha sonra dönecek. Devam e
 - `bpmEngine/flovo-customer-api.md` — ApiKey/token bağı (🟡).
 - `bpmEngine/models/index.md` §4 — ApiKey FK'leri.
 - `bpmEngine/todo.md` — §2.4 açık maddeler.
-- Eski app: `/Users/osmancanguven/Documents/GitHub/Pratico.Apps/lib/Pages/Login&Register/` · `lib/Services/RemoteApiService.dart` (salt referans).
 
 ---
 

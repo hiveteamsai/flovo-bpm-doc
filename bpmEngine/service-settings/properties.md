@@ -242,6 +242,8 @@ ilişkilendirilip görüntülendiği **alt-servis** alanı.
 **Akış (süreç) ile ilgili bilgileri** forma getirmek için kullanılır — oluşturulma tarihi (createdDate), oluşturan
 kullanıcı (creator user), durum (status) vb. **Salt-okunur** akış metadata'sı.
 **Ayarlar:** `flowInfoValue` (hangi akış bilgisi getirilecek) · **`reflectionMode`** — değerin **oluşturma-anı mı (snapshot) güncel mi (live)** gösterileceği: `live` (canlı, **vars.**) · `snapshot` (dondurulmuş). `materialized` **yok** (yalnız parentProperty). → [`../models/enums/reflection-mode.md`](../models/enums/reflection-mode.md). Girdi değildir. _(Kullanıcı bilgisi → §3.16 User Info.)_
+**Aksiyon gerekçesi flowInfo değildir (KARAR v0.46):** gerekçe `eventForm` aksiyonu pop-up'ından `parameters` ile gelir, **Değer Atama** adımıyla istenen
+form alanına yazılır (no-code) → [`../models/service-settings/jsonTemplateModels/property-settings/flow-info.md`](../models/service-settings/jsonTemplateModels/property-settings/flow-info.md) §7.
 
 ### 3.15 — `parentProperty` (Parent Property)
 **Düzenlenebilir bir alan değildir.** Bağlı olduğu **parent**'taki (üst süreç/form) hangi alanın forma getirilmesi

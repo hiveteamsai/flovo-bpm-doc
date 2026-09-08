@@ -7,7 +7,7 @@
 ## 1. `settings` (JSONB) — tipe-özel ayarlar
 | Alan | Tip | Zorunlu | Varsayılan | Açıklama / kısıt |
 |---|---|---|---|---|
-| `flowInfoValue` | string (seçici) | **evet** | — | **Hangi akış (Instance) bilgisinin** forma getirileceğini seçen anahtar — alanın **neyi göstereceğini** belirler (türetmenin girdisi; değer-materialize eden/projektör bununla hangi `Instance` kolonu/join'i okuyacağını bilir). Kullanıcı girdisi **değildir**. Değer şablonunun tanıdığı çekirdek küme: `status` (güncel durum) · `createdDate` (oluşturulma tarihi) · `creatorUser` (oluşturan kullanıcı). Geniş katalog (eski koddan aday) ayrıca `instanceId` · `parentInstanceId` · `parentStatus` · `personToApprove` · `mainAccount` · `lastActionReason` içerir → **§Not** (henüz resmi enum değil). |
+| `flowInfoValue` | string (seçici) | **evet** | — | **Hangi akış (Instance) bilgisinin** forma getirileceğini seçen anahtar — alanın **neyi göstereceğini** belirler (türetmenin girdisi; değer-materialize eden/projektör bununla hangi `Instance` kolonu/join'i okuyacağını bilir). Kullanıcı girdisi **değildir**. Değer şablonunun tanıdığı çekirdek küme: `status` (güncel durum) · `createdDate` (oluşturulma tarihi) · `creatorUser` (oluşturan kullanıcı). Geniş katalog adayları: `instanceId` · `parentInstanceId` · `parentStatus` · `personToApprove` — katalog **`flow-info-value.md` enum'una** çekilecek (→ §5 not). **`mainAccount` ve `lastActionReason` katalogda yoktur** (KARAR v0.46 → §7). |
 
 ## 2. Çekirdek kolonda (settings'e girmez)
 - **`reflectionMode`** ([`ReflectionMode`](../../../enums/reflection-mode.md)) — değerin **oluşturma-anı mı (dondurulmuş) yoksa güncel mi** getirileceğini belirler: `live` (canlı — `data`'ya yazılmaz, okurken `Instance` kolonlarından/join ile **güncel** getirilir; **flowInfo varsayılanı**) · `snapshot` (oluşturma anında `data`'ya kopyalanıp **dondurulur**). `materialized` **geçerli değildir** (yalnız `parentProperty` — akış kolonları `AssociatedInstance` yayılım yolunda değildir). Motor/projektör okuduğundan **çekirdek kolonda** (§4). → [`../../../enums/reflection-mode.md`](../../../enums/reflection-mode.md).
@@ -44,4 +44,24 @@
 { "flowInfoValue": "status" }
 ```
 
-*Oluşturma: 2026-08-28.*
+## 7. Kararlar (v0.46) — `mainAccount` ve `lastActionReason` katalog-dışı
+**`lastActionReason` flowInfo değildir — bilinçli olarak yoktur.** Aksiyon gerekçesi bir akış metadata'sı değil, **form verisidir**; motor için
+özel bir mekanizma (kanonik "gerekçe" kolonu, "gerekçe zorunlu" bayrağı, flowInfo anahtarı) gerektirmez. Tamamen **no-code** kurulur:
+1. Aksiyon türü **`eventForm`** (→ [`../../../../service-settings/process-step-action.md`](../../../../service-settings/process-step-action.md) §3.2):
+   kullanıcı reddederken/geri gönderirken pop-up'ta gerekçeyi girer; değer **`ActionTransfer.parameters`** ile hedef adıma taşınır
+   (zorunluluk, `eventForm` servisindeki alanın kendi zorunluluk ayarıyla sağlanır).
+2. Hedef adım **Değer Atama** (→ [`../../../../service-settings/process-step.md`](../../../../service-settings/process-step.md) §3.4): gelen parametreyi
+   formdaki **istenen alana** (örn. `rejectReason` text property) yazar.
+3. Gerekçe artık **normal bir form alanıdır**: `InstanceValue.data`'da saklanır, `projectToAttr` ile fihriste girer; rapor/filtre/iş kuralı/görünüm
+   profili bu alan üzerinden çalışır. Hangi aksiyonda girildiği gerekirse `ProcessStepInstance.processStepActionParameter`'dan (aksiyon paketi) izlenir.
+> Örnek: [`../../../../sampleProcess/referred/referred.md`](../../../../sampleProcess/referred/referred.md) — `Yönlendir` (eventForm) →
+> `parameters: { transferUser }` → `atama` (Değer Atama) → "Yönlendirilen Kullanıcı" alanı; "Geri Gönder / Reddet" gerekçesi için aynı desen.
+> Değer Atama'nın gelen `parameters`'ı **hangi kaynak türüyle** okuduğu (`ValueAssignType` Değer Atama alt-kümesinde parametre kaynağı tanımlı değil)
+> → [`../../../../todo.md`](../../../../todo.md) açık sorusu.
+
+**`mainAccount` katalogdan düşürüldü.** Yeni modelde bir Instance'ın "hesap" düzeyinde okunacak bir kaynağı yoktur: kiracı
+**`Instance.organizationId`**'dir (RLS/tenant izolasyonu — formu gören herkes zaten aynı organizasyondadır, gösterilecek bilgi değildir); şirket ise
+**kullanıcıya** bağlıdır (`User.companyIds` → **`userInfo`** tipi, `company` anahtarı → [`user-info.md`](./user-info.md)). Akış bilgisi olarak
+karşılığı bulunmadığından `flow-info-value.md` enum'una **alınmaz**.
+
+*Oluşturma: 2026-08-28. Güncelleme: 2026-09-08 (v0.46) — §7 kararlar: `mainAccount` · `lastActionReason` katalog-dışı (gerekçe = eventForm → Değer Atama → form alanı).*

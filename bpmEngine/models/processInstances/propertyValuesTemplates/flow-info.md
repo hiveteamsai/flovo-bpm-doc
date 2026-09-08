@@ -34,6 +34,7 @@ Değer, `flowInfoValue` ile seçilen akış bilgisidir. **Oluşturma-anı mı (d
 - **Neden `live` varsayılan + kolon:** status sık değişir; `data`'ya yazılsa her değişimde tüm `InstanceValue` yeniden yazılır (MVCC) + rapor bayatlar. Bu yüzden `Instance.statusId` **ayrı indeksli kolondur** (→ [`../instance.md`](../instance.md)). Güncel-durum gösterimi için `live` doğal seçimdir.
 - **`snapshot`** yalnız "oluşturma-anı değerini dondur" gerektiğinde bilinçli seçilir (ör. başlangıç durumu/oluşturan denetimi). `createdDate`/`creatorUser` zaten değişmediğinden onlarda `live`↔`snapshot` farkı yoktur; fark esas **status**'ta anlamlıdır.
 - **`materialized` geçerli değildir** (yalnız `parentProperty`).
+- **Aksiyon gerekçesi bu şablona girmez** (`lastActionReason` yoktur — KARAR v0.46): gerekçe `eventForm` parametresi → Değer Atama ile **normal form alanına** yazılır → [`../../service-settings/jsonTemplateModels/property-settings/flow-info.md`](../../service-settings/jsonTemplateModels/property-settings/flow-info.md) §7.
 - Kullanıcı-metadata karşılığı → [`user-info.md`](./user-info.md) (ikisi de aynı `reflectionMode` ile snapshot↔live seçer; varsayılanları farklı: userInfo `snapshot`, flowInfo `live`).
 
-*Oluşturma: 2026-08-06.*
+*Oluşturma: 2026-08-06. Güncelleme: 2026-09-08 (v0.46) — not: `lastActionReason`/`mainAccount` katalog-dışı (→ property-settings/flow-info.md §7).*

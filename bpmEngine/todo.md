@@ -216,9 +216,10 @@
   **adlandırma birliği** + `category`/`status`/`triggeredBy` serbest-string alanlarının enum'a çekilip çekilmeyeceği +
   alan detayları. Altyapı-zamanlayıcı modeli olduğundan **sonraya** bırakıldı. _(models/organization-settings/scheduler-job.md)_
 - [ ] **Property `settings` şeması — tip-başına şemalardan açık alan kararları (v0.37):**
-  - `flowInfoValue` / `userInfoValue` **değer kataloğu enum'a çekilsin mi** — şu an `settings`'te `string` seçici; eski kodda
-    `PropertyFlowInfoValueType`/`PropertyUserInfoValueType` var ama bazı değerler masraf-spesifik/kapsam-dışı olabilir.
-    _(jsonTemplateModels/property-settings/flow-info.md · user-info.md)_
+  - `flowInfoValue` / `userInfoValue` **değer kataloğu enum'a çekilsin mi** — şu an `settings`'te `string` seçici. **Karar: evet** —
+    `flow-info-value.md` / `user-info-value.md` enum dosyaları + koşullu `settings` alanları **harici analiz PR'ı** ile geliyor (review bekliyor).
+    ✅ v0.46: `mainAccount` ve `lastActionReason` **katalog-dışı** (gerekçe = eventForm parametresi → Değer Atama → form alanı; flowInfo değil). **Kalan:** enum dosyalarının repoya girmesi + §5 şemalarının `string` → `enum`'a daraltılması.
+    _(jsonTemplateModels/property-settings/flow-info.md §7 · user-info.md)_
   - **Form List red-akışı bayrakları** — eski `isRejectReasonRequired` (red gerekçesi zorunlu) + `isReapprovalLockedAfterReject`
     (reddedilen satır yeniden onaya kapalı) yeni tasarımın settings/profil-bazlı katmanına **yerleştirilmedi** — karar gerek.
     _(jsonTemplateModels/property-settings/form-list.md)_
@@ -260,6 +261,12 @@
   temsili (iş-kuralı `AssignValueToFieldDto` muadili). _(process-step §3.1/§3.6)_
 
 ---
+- [ ] **Değer Atama — gelen `parameters`'tan değer atama kaynağı (v0.46)** — eventForm pop-up parametresini form alanına yazma deseni
+  (`referred`: `transferUser` → "Yönlendirilen Kullanıcı"; red gerekçesi için aynı desen — flowInfo `lastActionReason` bu yüzden yok) kullanılıyor,
+  fakat `ValueAssignType`'ın Değer Atama alt-kümesi (`fixedValue`/`propertyValue`/`fromCalculation`) **parametre kaynağı** içermiyor ve ifade
+  kataloğunda `parameters` erişimi tanımlı değil. Seçenek: **(a)** enum'a `parameterValue` + `parameterKey` ayarı (yalnız Değer Atama'da geçerli) ·
+  **(b)** `fromCalculation` ifadesine `parameters` bağlamı. Ayrıca "forma yazılınca parametre ileri taşınmaz (tüketilir)" kuralı (`referred.md` §4)
+  `mergeParameter`/§2 ile netleştirilmeli. _(process-step.md §3.4 · process-step-settings/value-assignment.md · enums/value-assign-type.md · process-step-action.md §2)_
 
 ## ✅ Bu oturumda çözülen tutarsızlıklar (log)
 
