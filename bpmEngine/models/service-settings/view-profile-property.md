@@ -14,9 +14,30 @@
 | `enabled` | bool | — | Alan düzenlenebilir mi (salt-okunur değil). |
 | `required` | bool | — | Alan zorunlu mu. |
 | `order` | int | — | Sıralama (sürükle-bırak). |
+| `displayWidth` | int | — | **Masaüstü** genişliği, 12-grid span (1..12, vars. 12). Profil satırı açılırken `Property.displayWidth`'ten tohumlanır. |
+| `mobileDisplayWidth` | int | — | **Mobil** genişliği (1..12, vars. 12). Satır açılırken **masaüstü değerini devralır**. |
+| `widthMode` | WidthMode | — | **Masaüstü** genişlik modu (`fraction` \| `fill`, vars. `fraction`) → `../enums/width-mode.md`. |
+| `mobileWidthMode` | WidthMode | — | **Mobil** genişlik modu (`fraction` \| `fill`, vars. `fraction`). |
 
 > **Neden burada?** `visible`/`enabled`/`required` alanın kendisinde (`Property`) değil, **profilde** tutulur:
 > *alan = ne olduğu*, *profil = nerede nasıl göründüğü*.
+
+## Genişlik — cihaz ekseni ve yerleşim
+
+**Sözleşme `(genişlik, mod) × cihaz`'dır**; dört kolon iki çifttir: masaüstü ve mobil.
+
+- **Devralma:** mobil değeri yoksa masaüstü değeri kullanılır (satır açılırken masaüstünden tohumlanır).
+- **Bağımsız düzenleme:** kullanıcı **Mobil** görünümündeyken genişliği değiştirirse **yalnız mobil
+  kolonu** yazılır; **masaüstü değeri kasıtlı korunur.** Tersi de geçerlidir.
+- **Çözümleme çağıranda yapılır:** render motoru cihaz kavramını **bilmez**; tasarımcı/önizleme kabuğu
+  aktif cihaza göre çifti çözer ve çözülmüş `(genişlik, mod)` ikilisini şemaya yazar.
+  *(Taşıma paylaşılır, politika çağıranda kalır.)*
+- **Önizleme yazmaz:** önizlemede cihaz sekmesini değiştirmek **gösterimi** değiştirir, **veriyi değil.**
+
+**Yerleşim semantiği:** alanlar bir satır kabında soldan sağa dizilir, sığmayınca alt satıra sarar.
+`fraction` → genişlik `displayWidth/12` (boşluk payı düşülür; yoksa 6+6 bir satıra sığmaz).
+`fill` → satırdaki kalan boşluğu alır; birden çok `fill` kalanı **eşit** böler.
+Genişlik bilgisi **olmayan** eski şemalar → `12` + `fraction` (bugünkü "alt alta" görünüm korunur).
 
 ## İlişkiler
 - **N – 1** → `ProcessViewProfile` (`viewProfileId`), `Property` (`propertyId`).

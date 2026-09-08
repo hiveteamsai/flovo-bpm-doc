@@ -25,6 +25,7 @@
 | `hint` | string | Placeholder metni. |
 | `helperText` | string | Yardımcı (alt) metin. |
 | `leadingView` / `trailingView` (+pozisyon) | string | Sol/sağ ikon. |
+| `displayWidth` | int | **12 kolonluk grid** üzerinde alanın taban genişliği (**1..12**, varsayılan **12** = tam satır). Bu **taban/varsayılan** değerdir; bir görüntüleme profilinde alan için satır açıldığında oraya **tohumlanır** ve profil bazında ezilebilir (→ `view-profile-property.md`). |
 
 ### 1.3 Davranış & kalıcılık
 | Alan | Tip | Açıklama / amaç |
@@ -43,6 +44,10 @@
 | `settings` | JSONB | **Tipe-özel ayarlar** (`propertyType`'a göre — §2). Ayrı alt-tablo/kolon **açılmaz** → gömülü JSONB; ayrımlayıcı `propertyType`; tip-başına **JSON Schema** ile doğrulanır. `ProcessStep.settings` deseniyle **birebir aynı** (v0.31 kararı). Yalnız **projektör/sorgu katmanının ilişkisel okuduğu metadata** çekirdek kolonda kalır (§2 karar notu). |
 
 > **Not:** `visible` / `enabled` / `required` bu modelde **değil**, `ProcessViewProfileProperty`'de tutulur.
+
+> **Not (genişlik):** Genişlik de profilde ezilir — ama `visible`/`enabled`/`required`'dan farklı olarak
+> burada bir **taban değeri vardır**: alan bir profile ilk eklendiğinde profil satırı bu değerle başlar.
+> ⚠️ `widthMode` bu modelde **yoktur** (uygulamada da yok) — açık nokta olarak PR gündeminde, S-1.
 
 ### 1.4 Veri kaynağı alanları (seçim alanları için)
 | Alan | Tip | Açıklama / amaç |
