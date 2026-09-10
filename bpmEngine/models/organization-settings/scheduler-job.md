@@ -37,7 +37,7 @@
 - **Altyapı modeli (erteleme):** `...At`/`...Time` alan adlandırma birliği + alan detayları sonra netleşecek → `../../todo.md`.
 - **`WorkflowTimer` ile sınır (📝 v0.44):** `SchedulerJob` = organizasyon-düzeyi **cron'lu arka plan fonksiyonları** (`functionName`; bakım, toplu işlem, hatırlatma job'ları).
   Süreç-örneği düzeyindeki **tek-atımlık uyandırmalar** (Timer adımı süresi · insan-görev timeout · retry backoff · ServiceTrigger cron sonraki tetik) **bu tabloda değil**,
-  [`../processInstances/workflow-timer.md`](../processInstances/workflow-timer.md)'da tutulur ve motor scheduler'ı tarafından claim edilir (→ [`../../engine-runtime-scheduler.md`](../../engine-runtime-scheduler.md)).
+  [`../processInstances/workflow-timer.md`](../processInstances/workflow-timer.md)'da tutulur ve motor scheduler'ı tarafından claim edilir (→ [`../../architectures/engine-runtime/engine-runtime-scheduler.md`](../../architectures/engine-runtime/engine-runtime-scheduler.md)).
   Motor housekeeping işleri (partition/retention · relay sweep · stuck detector) ileride `SchedulerJob` kaydı olarak **görünür kılınabilir** (öneri; karar sonra).
 
 *Oluşturma: 2026-07-03.*

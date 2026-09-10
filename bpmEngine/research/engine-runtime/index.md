@@ -4,7 +4,7 @@
 > iki-TX otomatik adım · idempotency & çakışma sözleşmesi · hata/dayanıklılık · zamanlayıcı/uyandırma · saklama/KVKK) **tek sayfalık
 > özet + detay anlatımı**. İnceleme ve sunum içindir; **bağlayıcı metin tasarım dokümanlarının kendisidir** (aşağıda). Anlatım dokümanlardan
 > farklılaşırsa dokümanlar esas alınır.
-> **Durum:** 📝 v0.44 taslak seti **onay bekliyor** (→ [`../../engine-runtime-plan.md`](../../engine-runtime-plan.md) R1–R17 · Q1–Q22); bu anlatım
+> **Durum:** 📝 v0.44 taslak seti **onay bekliyor** (→ [`../../architectures/engine-runtime/engine-runtime-plan.md`](../../architectures/engine-runtime/engine-runtime-plan.md) R1–R17 · Q1–Q22); bu anlatım
 > o setin **2026-08-31 (commit `416425d`) fotoğrafıdır**. Kararlar kesinleşince (plan §5 review log) sayfa ya güncellenir ya "arşiv" işareti alır.
 
 ## Dosyalar
@@ -18,11 +18,11 @@
 ## Anlatımın kaynağı (bağlayıcı dokümanlar)
 | Doküman | Rol |
 |---|---|
-| [`../../engine-runtime.md`](../../engine-runtime.md) | Runtime mimarisi **ana spec** (state machine · bileşenler · akış · idempotency · ölçek) |
-| [`../../engine-runtime-errors.md`](../../engine-runtime-errors.md) | Hata sınıfları · retry · in-doubt · onFail · dead-letter · kurtarma · guard'lar · compensation |
-| [`../../engine-runtime-scheduler.md`](../../engine-runtime-scheduler.md) | Scheduler claim modeli · WorkflowTimer yaşam döngüsü · timeout/stepTimer/retry/cron · TZ/DST · housekeeping |
-| [`../../engine-runtime-retention.md`](../../engine-runtime-retention.md) | Saklama katmanları · partition/arşiv · KVKK pseudonymization |
-| [`../../engine-runtime-plan.md`](../../engine-runtime-plan.md) | Kararlar R1–R17 · açık sorular Q1–Q22 · plan P1–P10 · review log |
+| [`../../architectures/engine-runtime/engine-runtime.md`](../../architectures/engine-runtime/engine-runtime.md) | Runtime mimarisi **ana spec** (state machine · bileşenler · akış · idempotency · ölçek) |
+| [`../../architectures/engine-runtime/engine-runtime-errors.md`](../../architectures/engine-runtime/engine-runtime-errors.md) | Hata sınıfları · retry · in-doubt · onFail · dead-letter · kurtarma · guard'lar · compensation |
+| [`../../architectures/engine-runtime/engine-runtime-scheduler.md`](../../architectures/engine-runtime/engine-runtime-scheduler.md) | Scheduler claim modeli · WorkflowTimer yaşam döngüsü · timeout/stepTimer/retry/cron · TZ/DST · housekeeping |
+| [`../../architectures/engine-runtime/engine-runtime-retention.md`](../../architectures/engine-runtime/engine-runtime-retention.md) | Saklama katmanları · partition/arşiv · KVKK pseudonymization |
+| [`../../architectures/engine-runtime/engine-runtime-plan.md`](../../architectures/engine-runtime/engine-runtime-plan.md) | Kararlar R1–R17 · açık sorular Q1–Q22 · plan P1–P10 · review log |
 | [`../../models/processInstances/workflow-event.md`](../../models/processInstances/workflow-event.md) · [`workflow-projection.md`](../../models/processInstances/workflow-projection.md) · [`workflow-timer.md`](../../models/processInstances/workflow-timer.md) | Üç motor modeli |
 | [`../../models/enums/workflow-event-type.md`](../../models/enums/workflow-event-type.md) · [`workflow-wait-reason.md`](../../models/enums/workflow-wait-reason.md) · [`workflow-timer-kind.md`](../../models/enums/workflow-timer-kind.md) · [`workflow-timer-status.md`](../../models/enums/workflow-timer-status.md) · [`workflow-error-class.md`](../../models/enums/workflow-error-class.md) | Enum'lar |
 

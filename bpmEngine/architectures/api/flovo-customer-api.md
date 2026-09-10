@@ -1,7 +1,7 @@
 # Flovo Customer API — Tasarım (Taslak)
 
 > **Durum:** 🟡 TASLAK — şimdilik **endpoint listesi + teorik iş özeti**; request/response detayları sonra.
-> ⏭️ **Kapsam: MVP-sonrası (Faz 2, KARAR v0.47)** — bu API MVP'de inşa edilmez; açık soruları [`todo-phase2.md`](./todo-phase2.md) §13'te. Frontend'in kullandığı motor runtime uçları bu dokümanın kapsamı **değildir** (→ `bpm-engine-build-plan.md` F1.E.3 · F2.G).
+> ⏭️ **Kapsam: MVP-sonrası (Faz 2, KARAR v0.47)** — bu API MVP'de inşa edilmez; açık soruları [`todo-phase2.md`](../../todo-phase2.md) §13'te. Frontend'in kullandığı motor runtime uçları bu dokümanın kapsamı **değildir** (→ `bpm-engine-build-plan.md` F1.E.3 · F2.G).
 > **Amaç:** Müşterilerin/kullanıcıların **custom code** geliştirebilmesi için Flovo'nun sağlayacağı **API servisi.**
 > Süreç adımlarındaki **HTTP Request** (→ `service-settings/process-step.md` §3.2) müşteri sunucusundaki custom code'a istek atar;
 > custom code da **Flovo Customer API** ile Flovo **instance**'larını (doldurulmuş form kayıtları) okur/yazar ve **Webhook** aksiyonlarını (→ `service-settings/process-step-action.md` §3.6) tetikler.
@@ -55,8 +55,8 @@
 ### Aksiyon / Webhook tetikleme
 | Uç (temsilî) | Ne yapar |
 |---|---|
-| `POST /instances/{instanceId}/actions/{actionCode}` | Bir instance'ta **aksiyon tetikler** (Webhook aksiyonu) — **`parameters`** ile. Süreci ilerletir. _(createPdfAsync, integration.)_ **📝 v0.44 çakışma/idempotency sözleşmesi (öneri):** header **`Idempotency-Key`** (zorunlu — plan Q17) → aynı anahtar **200 replay**; başkası ilerletmiş → **409 `processAlreadyAdvanced`**; eski görünüm → **409 `staleView`**; atanmamış → **403 `notAssigned`**; süreç beklemiyor → **409 `notAwaitingAction`**; aksiyon kodu yok → **422 `unknownAction`**. Tam tablo → [`engine-runtime.md`](./engine-runtime.md) §5.2. |
-| `POST /process-instances/{processInstanceId}/recover` | **📝 v0.44 (öneri, admin):** `failed` süreçte kurtarma — `{ mode: retry \| skip \| cancel, selectedActionCode?, parameters?, note? }`; her mod bir **olay** (`recovered`/`cancelled`). Yetki → plan Q12. Tam kural → [`engine-runtime-errors.md`](./engine-runtime-errors.md) §6. |
+| `POST /instances/{instanceId}/actions/{actionCode}` | Bir instance'ta **aksiyon tetikler** (Webhook aksiyonu) — **`parameters`** ile. Süreci ilerletir. _(createPdfAsync, integration.)_ **📝 v0.44 çakışma/idempotency sözleşmesi (öneri):** header **`Idempotency-Key`** (zorunlu — plan Q17) → aynı anahtar **200 replay**; başkası ilerletmiş → **409 `processAlreadyAdvanced`**; eski görünüm → **409 `staleView`**; atanmamış → **403 `notAssigned`**; süreç beklemiyor → **409 `notAwaitingAction`**; aksiyon kodu yok → **422 `unknownAction`**. Tam tablo → [`engine-runtime.md`](../engine-runtime/engine-runtime.md) §5.2. |
+| `POST /process-instances/{processInstanceId}/recover` | **📝 v0.44 (öneri, admin):** `failed` süreçte kurtarma — `{ mode: retry \| skip \| cancel, selectedActionCode?, parameters?, note? }`; her mod bir **olay** (`recovered`/`cancelled`). Yetki → plan Q12. Tam kural → [`engine-runtime-errors.md`](../engine-runtime/engine-runtime-errors.md) §6. |
 
 ### Kullanıcı / organizasyon
 | Uç (temsilî) | Ne yapar |
@@ -78,7 +78,7 @@
 ## 3. Açık Kararlar / Sorular
 
 > **Açık sorular tek yerde:** Bu dokümanın açık kararları/soruları, tutarsızlığı önlemek için **yalnız** merkezi
-> [`todo.md`](todo.md) dosyasında toplanır (önceliklendirilmiş tüm-doküman listesi). İlgili maddeler orada `(flovo-customer-api §..)`
+> [`todo.md`](../../todo.md) dosyasında toplanır (önceliklendirilmiş tüm-doküman listesi). İlgili maddeler orada `(flovo-customer-api §..)`
 > atfıyla bulunur; verilen kararlar bu dokümanın **gövdesinde** anlatılır.
 
 ---

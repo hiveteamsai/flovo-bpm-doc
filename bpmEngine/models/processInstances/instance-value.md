@@ -40,7 +40,7 @@
 - **Ortak değer dili (koleksiyon-tabanlı motor):** `data`'daki değer-modeli (code-keyed + `propertyValuesTemplates` şekilleri +
   `LabeledValue`), aksiyon veri-aktarımındaki **`changeList`/`parameters`** ile **aynıdır**. `changeList` = obje-map
   `{ Property.code: value }` → forma **doğrudan JSONB merge** (`data = data || changeList`); `parameters` = aynı değer şekli,
-  **serbest anahtar**, forma yazılmaz. Bu sayede değer adım↔adım↔form arasında **kayıpsız** akar. → `../../flovo-bpm-engine.md` §3 ·
+  **serbest anahtar**, forma yazılmaz. Bu sayede değer adım↔adım↔form arasında **kayıpsız** akar. → `../../architectures/engine-core/flovo-bpm-engine.md` §3 ·
   `../../service-settings/process-step-action.md` §2.2.
 - **`data` küçük tutulur:** JSONB update = satırın **tümünün** yeniden yazılması (MVCC). Bu yüzden dosya/binary
   **JSONB'ye gömülmez** — MinIO'ya konur, `data`'da yalnız URL/object key durur (→ `tech-stack/minio.md`).

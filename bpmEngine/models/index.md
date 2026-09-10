@@ -4,7 +4,7 @@
 > **Amaç:** `models/` ağacının **indeksi** — alt klasörlere yönlendirme (§1) + tüm modellerin **birbirleriyle ilişkileri**
 > (§2/§3, tek yerde). Her modelin **alan-düzeyi ayrıntısı** kendi dosyasında, **klasör dizini** ise alt klasör `index.md`'lerindedir.
 > Bu klasör **veri modeli/şema** odaklıdır; **davranış/kullanım** özellik dokümanlarındadır
-> (`../organization-settings/`, `../service-settings/`, `../flovo-bpm-engine.md`).
+> (`../organization-settings/`, `../service-settings/`, `../architectures/engine-core/flovo-bpm-engine.md`).
 >
 > **Anahtar kuralı:** Her modelin birincil anahtarı **`id`** (int). Yabancı anahtarlar **`...Id`** (örn. `serviceId`,
 > `styleId`). Kiracı kimliği **`organizationId`** (int); dış referanslarda **`organizationCode`** (string) kullanılır.
@@ -214,8 +214,8 @@ LabeledValue = değer şekli (tablo değil): {value, display, translationCode} �
 > sınırları, retention/KVKK — → `../todo.md`.)_
 >
 > **Motor yürütme modelleri eklendi (📝 v0.44, onay bekliyor)** → `processInstances/` (**WorkflowEvent** `workflow_events` · **WorkflowProjection** · **WorkflowTimer**)
-> + 5 enum (`WorkflowEventType` · `WorkflowWaitReason` · `WorkflowTimerKind` · `WorkflowTimerStatus` · `WorkflowErrorClass`). Davranış → `../engine-runtime.md` ailesi;
-> kararlar/açık sorular → [`../engine-runtime-plan.md`](../engine-runtime-plan.md). **Onaya bağlı aday alanlar (henüz modele girmedi):** `ProcessStep.retryPolicy` (Q7) ·
+> + 5 enum (`WorkflowEventType` · `WorkflowWaitReason` · `WorkflowTimerKind` · `WorkflowTimerStatus` · `WorkflowErrorClass`). Davranış → `../architectures/engine-runtime/engine-runtime.md` ailesi;
+> kararlar/açık sorular → [`../architectures/engine-runtime/engine-runtime-plan.md`](../architectures/engine-runtime/engine-runtime-plan.md). **Onaya bağlı aday alanlar (henüz modele girmedi):** `ProcessStep.retryPolicy` (Q7) ·
 > `Service.onFailProcessStepId` (Q10, post-MVP) · `Organization.retentionPolicy` (Q18) · permissions `processAdminUserGroupId` (Q12) · HTTP Request `idempotencyKeyHeader` (Q21).
 
 > **Not:** **User** ve **UserGroup** artık modellendi (→ §1 "Organizasyon ayarları"). `userGroupId` /

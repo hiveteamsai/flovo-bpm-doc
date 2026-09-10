@@ -2,7 +2,7 @@
 
 > **Durum:** 🟢 DETAYLANIYOR — adım kataloğu + ortak yapı tanımlı; bazı yeni adımların detayı doldurulacak.
 > **Amaç:** Flovo BPM motorunun **adım tipleri katalogunu** tanımlamak — "hangi süreç adımı **tipleri** var?"
-> (Bir adımın **içinde** ne yapıldığı → `process-step-action.md`; adımların **nasıl çalıştırıldığı** → `../flovo-bpm-engine.md`.)
+> (Bir adımın **içinde** ne yapıldığı → `process-step-action.md`; adımların **nasıl çalıştırıldığı** → `../architectures/engine-core/flovo-bpm-engine.md`.)
 >
 > **Terim:** Bir **süreç adımı (process step)** = iş akışındaki bir düğüm/kutu. Adımlar bağlanarak süreci oluşturur.
 
@@ -84,7 +84,7 @@ Aksiyon türleri: **`manual` · `eventForm` · `takePhoto` · `selectFile` · `s
 > adımlarda bulunur: **Değer Atama · HTTP Request** (response'ta `action` dönmezse / `async`) **· Processing** (koşullu: `default autoAction` varsa; yoksa bekler → §3.18) **· Bildirim ·
 > Timer Start / Timer End · Custom ID Creator** vb. **Birden fazla çıkışı** olan adımlarda ise ilerleme aksiyonu
 > **adıma-özel / dinamik** belirlenir: **Karşılaştırma** → koşul `true` ise `true`, değilse `false` aksiyonu · **Switch** →
-> seçilen alanın değerine **eşleşen `code`'lu** aksiyon (eşleşme yoksa **default**). _(Motor tarafı → `../flovo-bpm-engine.md` §4.3.)_
+> seçilen alanın değerine **eşleşen `code`'lu** aksiyon (eşleşme yoksa **default**). _(Motor tarafı → `../architectures/engine-core/flovo-bpm-engine.md` §4.3.)_
 
 ### 3.1 — Süreç Başlangıcı
 **Özet:** **Ana sürecin** başlama noktası (servis başına **1 zorunlu**). Altında yer alan **aksiyonların nasıl
@@ -103,7 +103,7 @@ başlatılabileceğini** ayarlamak için oluşturulur.
   **boş** → **herkes** başlangıç aksiyonlarını **görür ve** başlatır; **dolu** → **yalnız o gruptaki** kullanıcılar **görür ve**
   başlatır, **grup dışı kullanıcı bu aksiyonları görmez** (ayrı "görür ama tetikleyemez" durumu yoktur). **Webhook / Customer
   API** başlatımı bu kısıttan **etkilenmez** — kullanıcı değil **`ApiKey`** ile kimliklendirilir; dış erişim yetkisi ayrı
-  katmandadır (→ `../flovo-customer-api.md`).
+  katmandadır (→ `../architectures/api/flovo-customer-api.md`).
 > **Ayrım (anlam karmaşasını önle):** Hem **Süreç Başlangıcı** hem **§3.20 Alt Süreç Başlangıcı** dışarıdan **webhook** ile
 > tetiklenebilir; **farkları:**
 > - **Süreç Başlangıcı** = **ana süreci** başlatır (servis başına **1**); **manuel veya** webhook aksiyonu ile.
@@ -136,7 +136,7 @@ başlatılabileceğini** ayarlamak için oluşturulur.
 
 **Çalışma:** Adım tetiklendiğinde AI çalışır, **parametre üretir**.
 - **Başarılı** → **`default`** aksiyon (parametreyi taşıyarak).
-- **Hata** → **`onFail`** aksiyonu (→ `../flovo-bpm-engine.md` §7).
+- **Hata** → **`onFail`** aksiyonu (→ `../architectures/engine-core/flovo-bpm-engine.md` §7).
 
 **Başlangıçta planlanan AI'lar:** **Masraf · Fatura · Kredi Kartı Ekstresi** (üçü de parametre olarak dosya alır).
 > Örn. `../sampleProcess/expense`.
@@ -193,10 +193,10 @@ Kullanıcı grubu · Daha önce aksiyon alanlar. Her alıcı, **birincil alıcı
 - **Sabit zaman** — belirli tarih/saat.
 
 **Zaman aşımı bildirimi:** süre dolduğunda bildirim gönderilebilir.
-> Aynı zaman-aşımı yapısı **Kullanıcı / Kullanıcı Grubu** adımlarının **timeout** ayarında da kullanılır (→ §3.15 / §3.16, `../flovo-bpm-engine.md` §6.2).
+> Aynı zaman-aşımı yapısı **Kullanıcı / Kullanıcı Grubu** adımlarının **timeout** ayarında da kullanılır (→ §3.15 / §3.16, `../architectures/engine-core/flovo-bpm-engine.md` §6.2).
 > **Runtime karşılığı (📝 v0.44):** Timer adımına girilince / `timerStart` koşunca bir **`WorkflowTimer(kind=stepTimer)`** kurulur; süre dolunca scheduler `default`
 > aksiyonu uygular — süreç başka bir insan adımında bekliyorsa o bekleme **kapatılır** (preemption). `timerEnd` = `armed` timer'ı iptal eder. Süre hesabı (`workCalendar`
-> → organizasyonun `WorkingSchedule`/`VacationDay`) **kurulum anında** sabitlenir. → [`../engine-runtime-scheduler.md`](../engine-runtime-scheduler.md) §2–§4/§6 ·
+> → organizasyonun `WorkingSchedule`/`VacationDay`) **kurulum anında** sabitlenir. → [`../architectures/engine-runtime/engine-runtime-scheduler.md`](../architectures/engine-runtime/engine-runtime-scheduler.md) §2–§4/§6 ·
 > [`../models/processInstances/workflow-timer.md`](../models/processInstances/workflow-timer.md).
 
 ### 3.8 — Timer Start
@@ -254,11 +254,11 @@ Süreci başlatan · **Sabit kullanıcı** (`fixedUserId`) · **Kullanıcının 
 > onayı veren** kişiye göre belirlenir (`userAdministratorSourceProcessStepId` → o adımda **son aksiyonu alan** kullanıcının
 > yöneticisi bu adımın sahibi olur). Böylece "yönetici" muğlak kalmaz, belirli bir adımın onaylayanına bağlanır.
 
-**Diğer ayarlar:** `processViewProfileId` (görüntüleme profili → `view-profile.md`) · adıma gelince **bildirim** · **timeout** (→ §3.7, `../flovo-bpm-engine.md` §6.2).
+**Diğer ayarlar:** `processViewProfileId` (görüntüleme profili → `view-profile.md`) · adıma gelince **bildirim** · **timeout** (→ §3.7, `../architectures/engine-core/flovo-bpm-engine.md` §6.2).
 
 > **Atama çözülemezse → hata/fallback (KARAR):** `userType` (ör. **kullanıcının yöneticisi** / **departman yöneticisi** /
 > **değişken kullanıcı** [property'den]) **boş** dönerse (yönetici tanımsız, property boş vb.) atanan **belirlenemez**; adım
-> **sessizce atanansız beklemez** → **hata** üretir ve **`onFail`/fallback** akışına düşer (→ `../flovo-bpm-engine.md` §7).
+> **sessizce atanansız beklemez** → **hata** üretir ve **`onFail`/fallback** akışına düşer (→ `../architectures/engine-core/flovo-bpm-engine.md` §7).
 > Aynı kural **Kullanıcı Grubu**'nun dinamik atama yöntemlerinde de geçerlidir.
 
 ### 3.16 — Kullanıcı Grubu
@@ -286,7 +286,7 @@ ilerler. Bu, **aynı `ProcessInstance` üzerinde** yeniden başlatmadır (yeni �
 **Ayarlar:** `processViewProfileId` (bitişte görüntüleme profili) · `userGroupIds` (bitiş sonrası erişip
 geri-taşıma aksiyonu **alabilecek** gruplar).
 > Motor tarafı: BİTİŞ düğümü yürütme döngüsünü sonlandırır; geri-taşıma, yetkilinin **manuel aksiyonu** ile aynı instance'ta
-> **yeniden başlar** (→ `../flovo-bpm-engine.md` §4.4).
+> **yeniden başlar** (→ `../architectures/engine-core/flovo-bpm-engine.md` §4.4).
 
 ### 3.18 — Processing
 **Özet:** Form, **bir kullanıcıya** (Kullanıcı/Kullanıcı Grubu gibi) atanır; o kullanıcı bunu **"bu işlemin tamamlanmasını
@@ -298,7 +298,7 @@ Otomatik ilerleme **opsiyoneldir**:
   (motorda otomatik adım gibi davranır; ör. `../sampleProcess/expense` — loading gösterip AI adımına ilerler).
 - **Yoksa** → süreç bu adımda **bekler**; ilerleme, adıma tanımlı bir **webhook** (veya başka) aksiyonun dışarıdan tetiklenmesiyle
   olur (ör. `../sampleProcess/integration` — aktarım sonucunu webhook ile bekler).
-_(→ `../flovo-bpm-engine.md` §4.3 / §6.1.)_
+_(→ `../architectures/engine-core/flovo-bpm-engine.md` §4.3 / §6.1.)_
 
 **Ayar — `showLoading` (bool):** Bu adımdayken formun **detayına girilmesi** veya **alan değerlerinin görüntülenmesi**
 istenmiyorsa **aktif edilir**; frontendde kullanıcı formu **"yükleniyor"** görür (giriş engellenir).
@@ -347,7 +347,7 @@ PDF geldiğinde bildirim gönderen kol). **Servis başına birden fazla** olabil
   süreç adımına** ilerler.
 - Tetikleme **girdisi bir `ActionTransfer` modelidir** (DTO → [`../models/service-settings/jsonTemplateModels/action-transfer.md`](../models/service-settings/jsonTemplateModels/action-transfer.md); `parameters` · `changeList` · `action` → `process-step-action.md` §2).
   Bu girdi, **`default`** aksiyonu ile **bir sonraki adıma taşınır** (`changeList`, evrensel giriş kuralı gereği adım işini
-  yapmadan **önce** forma uygulanır → `../flovo-bpm-engine.md` §4.2).
+  yapmadan **önce** forma uygulanır → `../architectures/engine-core/flovo-bpm-engine.md` §4.2).
 - **Yeni `ProcessInstance` (bağımsız çalıştırma):** Tetiklenen alt süreç **yeni bir `ProcessInstance`** olarak
   çalışır (yeni **Instance/form kaydı** oluşmaz); `ProcessInstance.parentProcessInstanceId`'ye alt sürecin koştuğu **hedef/host instance'ın ana `ProcessInstance` id'si** yazılır (**tetikleyen** süreç değil; instance'a bağ bu zincirle **dolaylı**dır) (→ `../models/processInstances/process-instance.md`).
 > Örn. `../sampleProcess/createPdfAsync`: webhook `parameters: { pdfUrl }` ile `pdfReady` (Alt Süreç Başlangıcı) tetiklenir;
@@ -360,12 +360,12 @@ süreçten tetiklenen alt sürecin yürütmesi artık **geçerli `processStepId`
 bu adıma bağlı **`default`** aksiyonuna dönüşür (örn. `../sampleProcess/createPdfAsync`).
 
 **Ayarlar:** _(sonra detaylandırılacak — tetikleme kaynağı (webhook / iç tetikleme) · webhook güvenliği (secret/imza) +
-idempotency → `process-step-action.md` §3.6 / `../flovo-customer-api.md`.)_
+idempotency → `process-step-action.md` §3.6 / `../architectures/api/flovo-customer-api.md`.)_
 
 ### 3.21 — Alt Süreç Bitişi
 **Özet:** Bir **alt sürecin son adımıdır** — ana sürecin **Süreç Bitişi (§3.17)**'nin alt-süreç karşılığı. Alt süreç
 kısa ömürlü ve otomatik ilerlediğinden, kolun **açık bir bitiş düğümüyle** sonlanmasını sağlar: motor bu adıma
-ulaştığında alt süreç yürütmesi **sonlanır** (yürütme döngüsünün çıkış düğümü → `../flovo-bpm-engine.md` §4.4).
+ulaştığında alt süreç yürütmesi **sonlanır** (yürütme döngüsünün çıkış düğümü → `../architectures/engine-core/flovo-bpm-engine.md` §4.4).
 
 **Süreç Bitişi'nden (§3.17) farkı:** Alt süreç bağımsız ve yardımcı bir koldur; **kimseyi onayda bekletmez** ve
 **geri-taşıma / re-open** yoktur. Bu yüzden Süreç Bitişi'nin bitiş-sonrası erişim ayarları (`processViewProfileId` /

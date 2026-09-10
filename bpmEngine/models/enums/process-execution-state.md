@@ -3,7 +3,7 @@
 > **Kullanan model:** [`../processInstances/process-instance.md`](../processInstances/process-instance.md) — alan `executionState`, tip **ProcessExecutionState**
 > **Amaç:** Bir `ProcessInstance`'ın **motor yürütme durumunu** belirtir — motorun iç konumu. Kullanıcının gördüğü **iş durumu**
 > (`Instance.statusId`) ile **karıştırılmaz**; ikisi bağımsız evrilir. `workflow_events` (append-only) log'undan **türetilen
-> projeksiyondur** (hızlı sorgu: "koşan / bekleyen / hatalı süreçler"). Runtime mimarisi → [`../../engine-runtime.md`](../../engine-runtime.md) §1.
+> projeksiyondur** (hızlı sorgu: "koşan / bekleyen / hatalı süreçler"). Runtime mimarisi → [`../../architectures/engine-runtime/engine-runtime.md`](../../architectures/engine-runtime/engine-runtime.md) §1.
 
 ## Değerler
 | Değer | Anlam | Ne için |

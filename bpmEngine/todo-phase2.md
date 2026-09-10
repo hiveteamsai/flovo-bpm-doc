@@ -130,7 +130,7 @@
   doğrulanacak. _(flovo-customer-api §3 · models/processInstances/process-instance.md · process-step-instance.md)_
   - **Bağlantılar:** toplu senkron ucu (§4) bu API'nin yazma yüzeyine bağlı · `ApiKey` modeli MVP'de yalnız **iskelet** (3 FK'yi bağlar; motor planı F1.E.1),
     detay burada · motor planı **F2.I.2** (request/response şemaları) ve **F2.I.3** (search sorgu dili hizalama) ⏭️ işaretlendi ·
-    doküman [`flovo-customer-api.md`](./flovo-customer-api.md) (🟡 TASLAK) MVP-sonrası olarak işaretlendi.
+    doküman [`flovo-customer-api.md`](./architectures/api/flovo-customer-api.md) (🟡 TASLAK) MVP-sonrası olarak işaretlendi.
   - **MVP'de kalan (Customer API değildir):** frontend'in kullandığı **motor runtime uçları** — `POST /instances/{id}/actions/{code}` (F1.E.3) · `GET /instances/{id}` (F2.G.2) ·
     servis instance listesi (F2.G.3) · iş kuralı instance-fetch ucu (`business-rule-endpoints.md`).
   - **Açık (kapsam, v0.47):** Webhook aksiyonunun **dış tetikleme ucu** (`process-step-action` §3.6; örnek `sampleProcess/createPdfAsync`) Customer API yüzeyinde

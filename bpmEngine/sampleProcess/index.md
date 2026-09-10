@@ -6,7 +6,7 @@
 > iyileştirmek** için kullanırız.
 >
 > **Tasarım dokümanları:** adımlar → `../service-settings/process-step.md` · aksiyonlar → `../service-settings/process-step-action.md` / `../organization-settings/action.md` ·
-> alanlar → `../service-settings/properties.md` · motor → `../flovo-bpm-engine.md`.
+> alanlar → `../service-settings/properties.md` · motor → `../architectures/engine-core/flovo-bpm-engine.md`.
 >
 > **Durum notu (v0.33):** Bu örnekler **geçici/örnekleyici**dir. **Tasarım dokümanları tamamlanınca** örnekler **baştan, eksiksiz**
 > yeniden oluşturulacaktır; bu nedenle örnek-düzeyi tutarsızlıklar (ör. aksiyon **kod adı** tutarlılığı) ayrı bir **açık soru olarak
@@ -33,7 +33,7 @@
 1. ✅ **Processing `showLoading`** — `../service-settings/process-step.md` §3.18'e **işlendi:** bu adımda formun **detayı/değerleri**
    görünmesin isteniyorsa **aktif** edilir (frontend "yükleniyor" gösterir, girişi engeller). `false` = normal görünüm
    (+ genelde durum güncelleme). _(→ açık soru merkezi listede: Processing durum değişimi, ../todo.md)_
-2. ✅ **Aksiyonu tetikleyen HTTP isteğine response** — `../flovo-bpm-engine.md` **§6.3**'e işlendi: süreç **Kullanıcı /
+2. ✅ **Aksiyonu tetikleyen HTTP isteğine response** — `../architectures/engine-core/flovo-bpm-engine.md` **§6.3**'e işlendi: süreç **Kullanıcı /
    Kullanıcı Grubu / Processing / Süreç Bitişi** adımlarına geldiğinde **form bilgileri** tetikleme isteğinin response'unda döner.
 3. ✅ **Bildirim kanalları + parametre** — `../service-settings/process-step.md` **§3.6**'ya işlendi: **3 kanal** (Mail / Bildirim-Push / Toast);
    **parametre yalnız Push ve Toast**'ta (UI'da görünmez, runtime veri güncelleme). Mail'de parametre yok.
@@ -43,11 +43,11 @@
    aksiyon `parameters`'ı ile eşleşip alanlara initial değer atanır.
 6. **`response.action` zinciri** (scanBarcode): custom kodlar (`createForm`/`yonlendir`) → aynı kodlu aksiyon → her
    aksiyonun **`targetProcessStepId`**'si hedef adıma götürür. §1.2 modelini doğrular. _(zaten modelde — onay.)_
-7. ✅ **Flovo Customer API** — **`../flovo-customer-api.md`** oluşturuldu (endpoint listesi + teorik iş özeti; müşteri
+7. ✅ **Flovo Customer API** — **`../architectures/api/flovo-customer-api.md`** oluşturuldu (endpoint listesi + teorik iş özeti; müşteri
    sunucusundaki custom code'un Flovo formlarını okuyup/yazıp **Webhook** tetiklemesi için).
 8. ✅ **`mergeParameter` (parametre birikimi)** (referred) — `../service-settings/process-step-action.md` **§2.1**'e +
    model alanına işlendi: `mergeParameter = true` olan aksiyon, hedefe **gelen (`in`) + ürettiği (`out`)** parametreleri
-   birlikte taşır (**`out` çakışmada ezer**); yönlendirme/döngü kollarında bağlamı korur. Motor döngüsü `../flovo-bpm-engine.md` §4.4.
+   birlikte taşır (**`out` çakışmada ezer**); yönlendirme/döngü kollarında bağlamı korur. Motor döngüsü `../architectures/engine-core/flovo-bpm-engine.md` §4.4.
 
 ## Açık Noktalar
 

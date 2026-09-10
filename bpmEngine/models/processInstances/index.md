@@ -26,8 +26,8 @@
 | [`propertyValuesTemplates/`](./propertyValuesTemplates/index.md) | **Değer şablonları (property tipine göre)** — her `propertyType` için `data` içindeki JSONB şekli + `projectToAttr` projeksiyon eşlemesi; **core `labeled-value.md`** (etiketli değer şekli) bu klasördedir. |
 
 ### Motor yürütme (event sourcing — runtime state machine) · 📝 TASLAK v0.44, onay bekliyor
-> Davranış → [`../../engine-runtime.md`](../../engine-runtime.md) · hata → [`../../engine-runtime-errors.md`](../../engine-runtime-errors.md) · zamanlayıcı →
-> [`../../engine-runtime-scheduler.md`](../../engine-runtime-scheduler.md) · saklama → [`../../engine-runtime-retention.md`](../../engine-runtime-retention.md) · kararlar/açık sorular → [`../../engine-runtime-plan.md`](../../engine-runtime-plan.md).
+> Davranış → [`../../architectures/engine-runtime/engine-runtime.md`](../../architectures/engine-runtime/engine-runtime.md) · hata → [`../../architectures/engine-runtime/engine-runtime-errors.md`](../../architectures/engine-runtime/engine-runtime-errors.md) · zamanlayıcı →
+> [`../../architectures/engine-runtime/engine-runtime-scheduler.md`](../../architectures/engine-runtime/engine-runtime-scheduler.md) · saklama → [`../../architectures/engine-runtime/engine-runtime-retention.md`](../../architectures/engine-runtime/engine-runtime-retention.md) · kararlar/açık sorular → [`../../architectures/engine-runtime/engine-runtime-plan.md`](../../architectures/engine-runtime/engine-runtime-plan.md).
 
 | Döküman | Özet |
 |---|---|

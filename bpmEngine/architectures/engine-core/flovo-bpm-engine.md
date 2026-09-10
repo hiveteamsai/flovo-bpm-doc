@@ -1,7 +1,7 @@
 # Flovo BPM Motoru — Çalışma Prensibi (Tasarım Dokümanı)
 
 > **Durum:** 🟢 DETAYLANIYOR — temel kavramlar / çalışma prensibi / yürütme algoritması dolduruldu; **§3 veri modeli = koleksiyon-tabanlı (v0.30) + §3.1 değer yazma/okuma yolu & JSON Schema kapısı (v0.31)**; bazı bölümler (§2.2, §7, §8, §10, §11) founder/teknik girdi bekliyor.
-> **Uygulama durumu →** [`implementation-status.md`](./implementation-status.md) — Bölüm-1 (design-time) **inşa edildi + pilot dağıtıldı** (Azure Container Apps + Vercel + Azure-PG + Keycloak); **Motor runtime = tasarım** (henüz inşa edilmedi).
+> **Uygulama durumu →** [`implementation-status.md`](../../implementation-status.md) — Bölüm-1 (design-time) **inşa edildi + pilot dağıtıldı** (Azure Container Apps + Vercel + Azure-PG + Keycloak); **Motor runtime = tasarım** (henüz inşa edilmedi).
 > **Amaç:** Yeni Flovo'nun **BPM motorunun** nasıl çalışacağını (mimari + yürütme prensibi) tanımlamak.
 > Bu doküman "hangi adımlar var" değil (→ `service-settings/process-step.md`), "adımlar ne yapar" değil (→ `service-settings/process-step-action.md`);
 > **"motor bu adımları nasıl çalıştırır"** sorusunu cevaplar.
@@ -91,13 +91,13 @@ Bir servis **yedi yapı taşından** oluşur ve bunlar **iki katmana** ayrılır
 > **[Hedef]** Bu sırayı **şablon + görsel akış editörü** ile **teknik-olmayan kullanıcıya** açmak; elle bağlama yükünü azaltmak (→ §1.4).
 
 ### 2.2 — Orkestrasyon vs Yürütme (çalışma zamanı mimarisi) — ÇÖZÜLDÜ (v0.40)
-> **Tam spesifikasyon → [`engine-runtime.md`](engine-runtime.md)** (senkron §4.4 döngüsünün event-driven state machine'e çevrimi).
+> **Tam spesifikasyon → [`engine-runtime.md`](../engine-runtime/engine-runtime.md)** (senkron §4.4 döngüsünün event-driven state machine'e çevrimi).
 - **Mimari:** *durum DB'de, kuyruk yalnız iş/olay taşır, worker'lar durumsuz* (n8n dersi 1–2). Süreç bir process değil,
   **Postgres'te duran durum + NATS'ta akan olaylar**dır → engine-runtime §0/§1.
 - **Bileşenler:** durumsuz **Go worker** (step-ready işi çeker, **tek adım** koşar, sonrakini enqueue eder) + mantıksal
   **orkestratör** (aksiyon→adım çevirimi · uyandırma · at-most-once) + **NATS JetStream** (job/olay) + **PostgreSQL**
   (`workflow_events` append-only + durum) + lider-seçimli **scheduler** (timer) → engine-runtime §2/§3.
-- **Bulut + on-prem hibrit:** K8s/Helm + Keycloak federasyon → [`tech-stack/`](tech-stack/index.md).
+- **Bulut + on-prem hibrit:** K8s/Helm + Keycloak federasyon → [`tech-stack/`](../../tech-stack/index.md).
 
 ---
 
@@ -155,7 +155,7 @@ tekil-kayıt) · **fihrist** `InstanceAttr`/`InstanceListItem` (**rapor/filtre/s
 
 > **İki-katman notu (v0.43):** İş kuralı (frontend) bir değeri hesaplayıp atadığında, bu değer **`changeList` → yazma kapısı →
 > `InstanceValue`** yoluyla **kalıcılaşır;** motor süreç adımları **sonra kaynak-hakikat DB değerini** okuyup işler (geçici frontend
-> değerine bakmaz). Katman sınırının tüm kararları → [`service-settings/business-rule.md`](service-settings/business-rule.md) §0.1.
+> değerine bakmaz). Katman sınırının tüm kararları → [`service-settings/business-rule.md`](../../service-settings/business-rule.md) §0.1.
 
 ---
 
@@ -277,7 +277,7 @@ while adım bir BİTİŞ düğümü değilse:                   # Süreç Bitiş
 ### 4.5 — Paralel dallanma / join — KARAR (v0.40)
 - 🟩 **MVP = tek aktif kol:** bir `ProcessInstance`'ta aynı anda **tek aktif adım** ilerler (her aksiyon → tek hedef). Eşzamanlılık
   **ayrı `ProcessInstance`'larla** sağlanır: **Form List** alt-servisleri ServiceTrigger/`subProcessStart` ile **bağımsız süreçler**
-  olarak koşar (§5.3). Tam gerekçe → [`engine-runtime.md`](engine-runtime.md) §8.
+  olarak koşar (§5.3). Tam gerekçe → [`engine-runtime.md`](../engine-runtime/engine-runtime.md) §8.
 - 🟦 **ERTELENDİ:** bir adımın aynı anda **birden çok** sonraki adımı tetiklemesi (fork) + **join/senkronizasyon** (n8n çok-girdili
   birleştirme muadili) — MVP'de **yok** (→ `todo.md`). Bu karar state machine'i **tek-konum** tutar.
 
@@ -352,7 +352,7 @@ verirse → `onFail`; HTTP Request başarısız olursa → `onFail`). Yani hata,
 bir koda** yönlendirilir. Bu, n8n'in "hata-çıkış dalı"nın (n8n dersi 9) Flovo karşılığıdır — ama burada **isimli
 bir aksiyon kodu** olarak modellenir (`default` ↔ `onFail`).
 
-### 7.2 — Hata modeli (özet) — 📝 tam spesifikasyon → [`engine-runtime-errors.md`](engine-runtime-errors.md) (v0.44, onay bekliyor)
+### 7.2 — Hata modeli (özet) — 📝 tam spesifikasyon → [`engine-runtime-errors.md`](../engine-runtime/engine-runtime-errors.md) (v0.44, onay bekliyor)
 - **Hata sınıfı adımdan çıkar:** her deneme ya başarı ya `stepFailed{errorClass}` olayıdır — `transient` (geçici: HTTP 5xx/timeout) · `permanent` (kalıcı: 4xx, ifade
   hatası, atama çözülemedi) · `design` (tasarım bozuk) · `inDoubt` (yan etki şüpheli) · `guard` (döngü/derinlik sınırı). **Sessiz yutma yoktur.**
 - **Retry yalnız `transient`:** BPM-düzeyi backoff timer'ı (varsayılan 5 deneme · 10 s ×3 · üst 10 dk — öneri); adım-bazlı `retryPolicy` ile değiştirilebilir (öneri).
@@ -363,16 +363,16 @@ bir aksiyon kodu** olarak modellenir (`default` ↔ `onFail`).
 - **Süreç-seviye global hata adımı** ve **compensation/telafi** **post-MVP** (iskeletleri tanımlı). **Denetim izi** = `workflow_events` (→ §8).
 - **Korumalar:** aksiyon zinciri sonsuz döngüsü (ardışık 200 otomatik adım) · toplam adım · alt süreç derinliği · ServiceTrigger kaskadı → `failed(guard)`.
 
-> _(Kararlar/açık noktalar → [`engine-runtime-plan.md`](engine-runtime-plan.md) R8–R12, R17 · Q7–Q13, Q21; kesinleşince `todo.md`.)_
+> _(Kararlar/açık noktalar → [`engine-runtime-plan.md`](../engine-runtime/engine-runtime-plan.md) R8–R12, R17 · Q7–Q13, Q21; kesinleşince `todo.md`.)_
 
 ---
 
 ## 8. Kalıcılık, Durum ve Denetim
 - **Süreç geçmişi:** adımlar/aksiyonlar geçmişte tutulur — `showInHistory` (öğe **geçmişte görünür** mü); aksiyon tamamlanınca kullanıcıya tarihçeyi **otomatik gösterme** = `showHistory` (ayrı alan).
 - **Çoklu dil:** metin alanları çeviri destekli; bildirimler TR/EN ayrı.
-> **Kalıcılık / durum / yaşam-döngüsü tam spesifikasyonu → [`engine-runtime.md`](engine-runtime.md) §9** (ne saklanır tablosu +
+> **Kalıcılık / durum / yaşam-döngüsü tam spesifikasyonu → [`engine-runtime.md`](../engine-runtime/engine-runtime.md) §9** (ne saklanır tablosu +
 > `new/running/waiting/failed/done` yaşam döngüsü + `workflow_events` Partial Event Sourcing + kaynak↔projeksiyon). **Açık:**
-> tamamlanan süreçlerin **saklama/pruning + KVKK** → todo. **Dosya/binary** → [`tech-stack/minio.md`](./tech-stack/minio.md).
+> tamamlanan süreçlerin **saklama/pruning + KVKK** → todo. **Dosya/binary** → [`tech-stack/minio.md`](../../tech-stack/minio.md).
 
 ---
 
@@ -398,7 +398,7 @@ bir aksiyon kodu** olarak modellenir (`default` ↔ `onFail`).
 ## 12. Açık Kararlar / Çözülecek Sorular
 
 > **Açık sorular tek yerde:** Bu dokümanın açık kararları/soruları, tutarsızlığı önlemek için **yalnız** merkezi
-> [`todo.md`](todo.md) dosyasında toplanır (önceliklendirilmiş tüm-doküman listesi). İlgili maddeler orada `(flovo-bpm-engine §..)`
+> [`todo.md`](../../todo.md) dosyasında toplanır (önceliklendirilmiş tüm-doküman listesi). İlgili maddeler orada `(flovo-bpm-engine §..)`
 > atfıyla bulunur; verilen kararlar bu dokümanın **gövdesinde** anlatılır.
 
 ---

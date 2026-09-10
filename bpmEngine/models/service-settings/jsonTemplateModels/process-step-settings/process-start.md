@@ -11,7 +11,7 @@
 
 > **`userGroupId` kısıtının davranışı (KARAR) — manuel ↔ webhook farkı:**
 > - **Manuel (frontend) başlatma:** **görünürlük = tetikleme yetkisi.** `userGroupId` **dolu** ise başlangıç aksiyonları **yalnız o gruptaki** kullanıcıların "başlatılabilir" listesinde **görünür**; **grup dışı kullanıcı bu aksiyonları görmez** (ayrı "görür ama tetikleyemez" durumu **yoktur**). **Boş** ise herkes görür ve başlatır.
-> - **Webhook / Customer API başlatma:** Kısıt **yalnız manuel** başlatıma özgüdür. Dış tetikleme bir kullanıcı değil **`ApiKey`** ile kimliklendirildiğinden `userGroupId` **uygulanmaz** — dış erişim yetkisi **ayrı katmandadır** (→ [`../../../../flovo-customer-api.md`](../../../../flovo-customer-api.md)). Başlatan → `ProcessInstance.createdByApiKeyId`.
+> - **Webhook / Customer API başlatma:** Kısıt **yalnız manuel** başlatıma özgüdür. Dış tetikleme bir kullanıcı değil **`ApiKey`** ile kimliklendirildiğinden `userGroupId` **uygulanmaz** — dış erişim yetkisi **ayrı katmandadır** (→ [`../../../../architectures/api/flovo-customer-api.md`](../../../../architectures/api/flovo-customer-api.md)). Başlatan → `ProcessInstance.createdByApiKeyId`.
 
 > **Akış yönlendirme `settings`'te DEĞİL:** Süreci hangi başlangıç aksiyonunun ilerlettiği (manuel aksiyon veya webhook) ve o aksiyonun hedefi, adıma bağlı `ProcessStepAction`'lardadır (`targetProcessStepId`) → [`../../process-step-action.md`](../../process-step-action.md). Süreç Başlangıcı **1'den fazla** başlangıç aksiyonu barındırabilir (manuel ve/veya webhook).
 

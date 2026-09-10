@@ -5,7 +5,7 @@
 > nasıl** okunup yazıldığını **eksiksiz ve örnekli** toplamak. Depolama kararı **en sonda** bu senaryolara göre verilecek.
 >
 > **İlgili:** `../../service-settings/properties.md` · `../../service-settings/process-step-action.md` §2 (`changeList`) ·
-> `../../organization-settings/translation.md` (dil çözümleme) · `../../flovo-bpm-engine.md` · `../../flovo-customer-api.md` · `../../todo.md`.
+> `../../organization-settings/translation.md` (dil çözümleme) · `../../architectures/engine-core/flovo-bpm-engine.md` · `../../architectures/api/flovo-customer-api.md` · `../../todo.md`.
 >
 > **Konum notu:** Bu dosya `research/property-value-storage/` altına taşındı (depolama araştırmasıyla birlikte); `form_attr` uygunluk
 > değerlendirmesi [`form_attr_questions.md`](./form_attr_questions.md), mimari öneri [`index.md`](./index.md).

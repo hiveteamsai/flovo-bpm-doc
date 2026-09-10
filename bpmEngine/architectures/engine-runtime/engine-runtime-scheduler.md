@@ -3,8 +3,8 @@
 > **Durum:** 📝 TASLAK v0.44 — **onay bekliyor**. Kararlar **R7, R14**, açık sorular **Q14–Q16, Q20** → [`engine-runtime-plan.md`](./engine-runtime-plan.md).
 > **Kapsam:** [`engine-runtime.md`](./engine-runtime.md) §7'nin tam spesifikasyonu; `flovo-bpm-engine.md` §5.2/§6.2, `process-step.md` §3.7–§3.9 (Timer ailesi) ve
 > §3.15/§3.16/§3.22 `timeout` bloğu, `service-trigger.md` `timer` (cron) runtime karşılığı.
-> **Modeller:** [`WorkflowTimer`](./models/processInstances/workflow-timer.md) · [`WorkflowEvent`](./models/processInstances/workflow-event.md) (`timerFired`) ·
-> [`WorkflowProjection`](./models/processInstances/workflow-projection.md) · enum [`WorkflowTimerKind`](./models/enums/workflow-timer-kind.md) / [`WorkflowTimerStatus`](./models/enums/workflow-timer-status.md).
+> **Modeller:** [`WorkflowTimer`](../../models/processInstances/workflow-timer.md) · [`WorkflowEvent`](../../models/processInstances/workflow-event.md) (`timerFired`) ·
+> [`WorkflowProjection`](../../models/processInstances/workflow-projection.md) · enum [`WorkflowTimerKind`](../../models/enums/workflow-timer-kind.md) / [`WorkflowTimerStatus`](../../models/enums/workflow-timer-status.md).
 
 ---
 
@@ -109,7 +109,7 @@ arada kaçan tetikler **üretilmez** (10 saat kesintide "her saat" trigger'ı 10
 `cronExpression` kaydetme anında (settings-api) doğrulanır; **en sık 1 dk** (saniye alanı yok); `*/1 * * * *`'e izin verilip verilmeyeceği yük politikası (Q15).
 
 ## 6. Süre hesabı (`stepTimer` · `taskTimeout`) — `ProcessStepTimerSettings`
-→ Şema [`timer.md`](./models/service-settings/jsonTemplateModels/process-step-settings/timer.md).
+→ Şema [`timer.md`](../../models/service-settings/jsonTemplateModels/process-step-settings/timer.md).
 - **`workCalendar`:** referans an = kurulum anı; organizasyonun **`WorkingSchedule`** (gün/saat) + **`VacationDay`** üzerinden yalnız çalışma zamanı sayılarak `value` ilerletilir.
   Çalışma dışı ana denk gelen sonuç **sonraki çalışma başlangıcına** yuvarlanır.
 - **`normalCalendar`:** `day` takvim günü + `workTimeSelection` (`atWorkStart`/`atWorkEnd`) + `postponing` (`hoursBefore`/`hoursAfter` × `postponingHour`).

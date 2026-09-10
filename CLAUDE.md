@@ -30,11 +30,11 @@ Yeni BPM motoru tasarım dökümanları **doğrudan `bpmEngine/` altındadır.**
 
 | Öğe | İçerik |
 |---|---|
-| `flovo-bpm-engine.md` · `flovo-customer-api.md` | Motor çalışma prensibi · Customer API. |
+| `architectures/` | **Mimari tasarım dokümanları** (konu klasörleri; indeks `architectures/index.md`, her alt klasörde `index.md`): `engine-core/` (motor çalışma prensibi) · `engine-runtime/` (runtime mimarisi · hata · zamanlayıcı · saklama · runtime planı) · `login-auth/` (login akışı · auth/token mekanizması) · `api/` (Settings API · Customer API). |
 | `organization-settings/` | Tüm servislerde kullanılan ayarlar (**action** · **style** · **status** · **translation** · **organization** · **permissions**). |
 | `service-settings/` | Servise bağlı ayarlar (**process-step** · **process-step-action** · **properties** · **business-rule** · **view-profile**). |
 | `models/` | **Veri modelleri (şema referansı)** — model dizini + ilişki haritası (`models/index.md`) + her model için alan-düzeyi dosya + **`enums/`** (enum tanımları). |
-| `todo.md` | **Açık kararlar/sorular** — tüm dokümanların **önceliklendirilmiş** tek listesi (Tier 0–3). |
+| `todo.md` · `todo-phase2.md` | **Açık kararlar/sorular** — `todo.md` = **MVP** kapsamı (Tier 0–3, önceliklendirilmiş tek liste) · `todo-phase2.md` = **MVP-sonrası** konular. Kökte kalır. |
 | `sampleProcess/` | Uçtan uca **örnek süreçler** (görselli, self-servis). |
 | `research/` | **BPM referansları + karşılaştırmalar:** `current-flovo-bpm-engine/` (mevcut/eski Flovo BPM) · `n8n/` (referans analizleri) · `compare/` (**new-vs-current** · **new-vs-current-names** [isim değişiklikleri] · **new-vs-n8n** farkları + başarılı/başarısız). |
 

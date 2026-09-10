@@ -2,9 +2,9 @@
 
 > **Kullanan model:** [`../processInstances/workflow-event.md`](../processInstances/workflow-event.md) — alan `eventType`, tip **WorkflowEventType**
 > **Amaç:** Bir `ProcessInstance`'ın yürütme günlüğündeki (`workflow_events`) **geçiş türünü** belirtir. Her değer, motorun
-> state machine'inde (→ [`../../engine-runtime.md`](../../engine-runtime.md) §1) **bir kenara** karşılık gelir; payload şekli
+> state machine'inde (→ [`../../architectures/engine-runtime/engine-runtime.md`](../../architectures/engine-runtime/engine-runtime.md) §1) **bir kenara** karşılık gelir; payload şekli
 > değer-başına tanımlıdır (→ `workflow-event.md` §2).
-> **Durum:** 📝 TASLAK v0.44 — onay bekliyor (→ [`../../engine-runtime-plan.md`](../../engine-runtime-plan.md)).
+> **Durum:** 📝 TASLAK v0.44 — onay bekliyor (→ [`../../architectures/engine-runtime/engine-runtime-plan.md`](../../architectures/engine-runtime/engine-runtime-plan.md)).
 
 ## Değerler
 | Değer | Anlam | Ne zaman yazılır | `executionState` etkisi |
@@ -27,7 +27,7 @@
   `stepCompleted → stepStarted | suspended | ended` · `suspended → actionTaken | timerFired | cancelled` · `actionTaken | timerFired | stepSkipped | recovered → stepStarted | suspended | ended` ·
   `stepFailed → suspended(retry) | stepStarted(onFail hedefi) | failed` · `failed → recovered | cancelled`. Kural dışı geçiş = motor hatası (yazılmaz, alarm).
 - **`stepStarted` neden ayrı olay:** worker yan etki (HTTP çağrısı) **ürettikten sonra** çökerse redelivery aynı adımı ikinci kez koşar;
-  `stepStarted` var + `stepCompleted` yok = **şüpheli (in-doubt)** deneme → adım tipine göre güvenli-tekrar / hata (→ [`../../engine-runtime-errors.md`](../../engine-runtime-errors.md) §3).
+  `stepStarted` var + `stepCompleted` yok = **şüpheli (in-doubt)** deneme → adım tipine göre güvenli-tekrar / hata (→ [`../../architectures/engine-runtime/engine-runtime-errors.md`](../../architectures/engine-runtime/engine-runtime-errors.md) §3).
 - **`retryScheduled` ayrı değer değildir:** retry bilgisi `stepFailed.payload.nextRetryAt` + ardından gelen `suspended(waitReason=retry)` ile ifade edilir.
 - **Realtime/NATS eşlemesi:** `stepCompleted → step_completed.v1` · `suspended → suspended.v1` · `failed → failed.v1`; `step_ready`/`resume` **job**'ları olay değil, olayın `dispatch`'idir (→ `workflow-event.md` §3).
 

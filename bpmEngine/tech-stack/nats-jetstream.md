@@ -51,7 +51,7 @@ Bu, [`../research/property-value-storage/`](../research/property-value-storage/i
 - **NATS erişilemezse:** Kayıtlar etkilenmez (outbox Postgres'te birikir); NATS dönünce relay boşaltır.
 - **Cache ile sınır:** Kalıcı kuyruk/olay = **NATS**; ephemeral cache (bildirim sayacı vb.) = **Redis**. İkisi karışmaz.
 
-### BPM motoru kullanımı (📝 v0.44 — onay bekliyor; tam spec → [`../engine-runtime.md`](../engine-runtime.md) §3/§5 · [`../engine-runtime-errors.md`](../engine-runtime-errors.md) §2.3)
+### BPM motoru kullanımı (📝 v0.44 — onay bekliyor; tam spec → [`../architectures/engine-runtime/engine-runtime.md`](../architectures/engine-runtime/engine-runtime.md) §3/§5 · [`../architectures/engine-runtime/engine-runtime-errors.md`](../architectures/engine-runtime/engine-runtime-errors.md) §2.3)
 - **Subject'ler:** `flovo.workflow.step_ready.v1` (job: worker'a adım) · `resume.v1` (uyandırma: API/scheduler → worker) · `step_completed.v1` · `suspended.v1` · `failed.v1` (dinleyiciler/realtime).
 - **Outbox-in-event:** BPM için ayrı outbox tablosu **yok** — yayınlanacak mesaj `workflow_events.dispatch`'te durur, commit sonrası yayınlanır, kaçarsa relay sweep
   (`publishedAt IS NULL`) yeniden yayınlar → [`../models/processInstances/workflow-event.md`](../models/processInstances/workflow-event.md) §3.5. `InstanceValueOutbox` ile aynı ilke.

@@ -34,7 +34,7 @@ _(açık madde yok — kapananlar alt bölümde: ✅ → 📦 konsolide edilen �
     (SOA-ready). → [`tech-stack/`](./tech-stack/index.md) · [`./research/tech-stack/tech_rating.md`](./research/tech-stack/tech_rating.md)
   - **Motor-içi orkestrasyon↔yürütme — ÇÖZÜLDÜ (v0.40):** senkron §4.4 döngüsü → **event-driven state machine**
     (worker/orkestratör/scheduler · `workflow_events` Partial Event Sourcing · suspend/resume · `executionState`) →
-    [`engine-runtime.md`](./engine-runtime.md). **Kalan:** `workflow_events`/`workflow_projection` **model dosyaları** · scheduler
+    [`engine-runtime.md`](./architectures/engine-runtime/engine-runtime.md). **Kalan:** `workflow_events`/`workflow_projection` **model dosyaları** · scheduler
     **lider-seçim** mekanizması (NATS KV ↔ Postgres advisory lock) · retry politika değerleri + **global hata yakalayıcı** +
     compensation · **fork/join** (ertelendi) · `workflow_events` **pruning/KVKK** · optimistic-concurrency çakışma UX'i. _(engine-runtime §11)_
 - [ ] **Veri modeli** — **temsil/akış ÇÖZÜLDÜ (v0.30): koleksiyon-tabanlı.** Adımlar arası veri, `InstanceValue` ile **ortak
@@ -72,7 +72,7 @@ _(açık madde yok — kapananlar alt bölümde: ✅ → 📦 konsolide edilen �
 - [ ] **AI entegrasyon modeli** — deterministik "AI adımı" vs otonom "ajan"; takılabilir strateji (model/memory/araç);
   "herhangi bir adım = araç" + MCP? _(flovo-bpm-engine §11)_
   - 🧱 **Tech-stack:** AI **substratı** = **Python AI Service** (🟡 post-MVP) + **pgvector**; entegrasyon **MODELİ** açık. → [`./tech-stack/python-ai-service.md`](./tech-stack/python-ai-service.md)
-- [ ] **Settings API (tasarım-zamanı ayar CRUD) — açık noktalar** — yüzey tasarlandı ([`settings-api.md`](./settings-api.md)); kalan:
+- [ ] **Settings API (tasarım-zamanı ayar CRUD) — açık noktalar** — yüzey tasarlandı ([`settings-api.md`](./architectures/api/settings-api.md)); kalan:
   **ortak hata sözleşmesi** · **ortamlar-arası (env) kopya/promote** · `settings`/`configuration` **referans bütünlüğü +
   silme koruması** kesin kuralları · **yetki granülaritesi** (hangi rol hangi kaynağı yazar). _(settings-api §5–§9)_ ⏭️ Toplu senkron ucu + ayar-değişiklik loglama → **Faz 2** ([`todo-phase2.md`](./todo-phase2.md) §3–§4).
   - **Pilotta inşa edildi (v0.41-1):** **draft/publish + servis versiyonlama** (`ServiceVersion` · `currentVersion` ·
@@ -138,6 +138,29 @@ _(açık madde yok — kapananlar alt bölümde: ✅ → 📦 konsolide edilen �
     - **Not (v0.43, S4 paritesi):** ifade dili + operatör kataloğu **çapraz-katman ORTAK** olmalı — aynı fonksiyon/operatör motor (Go) ve
       frontend (JS+Dart) için **aynı çıktıyı** üretir; katalog kesin kapsamı bu parite gereğiyle tanımlanacak (yalnız iş kuralı değil,
       **Değer Atama `fromCalculation` + Karşılaştırma** adımlarını da kapsar).
+
+- [ ] **Login / Auth — teknik gerçekleştirme kararları + kalan model işleri (v0.48; eski `login-register-plan.md` §6/§5'ten taşındı)** —
+  işlevsel kararlar L1–L13 **kesin** (→ `architectures/login-auth/flovo-identity-access.md` §3.2/§9 · `flovo-auth-mechanism.md` §10); dokümanlardaki **🟦 VARSAYIM**
+  etiketleri aşağıdaki kararlarla kesinleşir (öneriler yazılı; "önerilerin uygun" → varsayılanlar kalır):
+  - **K2 Provisioning (User ↔ Keycloak):** (a) `User` oluşturulunca Keycloak'a Admin API ile **push** (kimlik yoksa oluştur, varsa bağla) + günlük mutabakat ·
+    (b) ilk OTP'de Keycloak **JIT**. → *Öneri (a); kimlik tek kaynak = Flovo `User`.* **K2b** kullanıcı ekleme aktörü: yalnız Flovo mu, **org yöneticisi de** mi
+    (`settings-api.md` §4)? → *Öneri: org yöneticisi de.* **K2c** kimlik alanı (`email`/`phone`) değişikliği tüm organizasyonlardaki `User`'larda birlikte ve yalnız
+    platform yetkisiyle mi? → *Öneri: evet.*
+  - **K3 OTP'yi kim üretir/doğrular:** (a) Keycloak **şifresiz OTP authenticator** (custom Authenticator SPI; e-posta/SMS) · (b) Flovo-native OTP + Flovo JWT
+    (Keycloak devre dışı — tech-stack kararıyla çelişir). → *Öneri (a).*
+  - **K4 Org-kapsamlı token mekanizması:** (a) Keycloak **Organizations** (26.x; `organization:<code>` scope → claim; **25→26 yükseltme**) · (b) mevcut Custom Token
+    Mapper + kimlik oturumunda "aktif organizasyon" niteliği + refresh · (c) token exchange. → *Öneri (a) yükseltme kabulse, değilse (b).* O6 (`organizationId`
+    ↔ `organizationCode` token'da) burada bağlanır.
+  - **K7 SSO / MFA / AD-LDAP / QR giriş:** MVP = yalnız OTP; hepsi MVP-sonrası mı? → *Öneri: evet; `tech-stack/keycloak.md` "AD/LDAP Enterprise'da zorunlu" notu
+    "MVP-sonrası" yapılır.*
+  - **K8 OTP politikası:** kod ömrü · deneme sınırı · yeniden gönderim · hız sınırı · kanal sağlayıcısı (SMS gateway / e-posta servisi — tech-stack'te yok).
+    → *Öneri: 6 hane · 3 dk · 5 deneme → 15 dk kilit · 60 sn · 5 kod/saat/kimlik; sağlayıcı tech-stack kararı.*
+  - **K9 Kimlik normalizasyonu + giriş alanı:** e-posta küçük harf/trim · telefon E.164 (+ varsayılan ülke kodu) · UI tek alan + otomatik algılama mı? → *Öneri: tek alan.*
+  - **K12 Refresh penceresi:** 30 gün **mutlak** (ilk OTP'den) mı, **kayan** (her yenileme +30 gün) mı? → *Öneri: mutlak.*
+  - **Kalan model/doküman işleri:** `models/organization-settings/user.md` — kimlik normalizasyon kuralı + Keycloak bağ alanı (`externalSubject`) + "kimlik
+    org-üstü / `User` org-içi" notu · `organization.md` — organizasyon listesi alanları (gerekirse) · yeni enum `verification-channel` (`email` · `sms`) ·
+    `models/index.md` ilişki haritası · `tech-stack/keycloak.md` ↔ login dokümanları çapraz link + OTP/org-scoped token kararlarının işlenmesi ·
+    `research/compare/new-vs-current.md`'ye auth farkı (tek hesap + şifre dalları → çoklu-organizasyon + yalnız OTP + org-scoped token). _(architectures/login-auth/*)_
 
 ---
 

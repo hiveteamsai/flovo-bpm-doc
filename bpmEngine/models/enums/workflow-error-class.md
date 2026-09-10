@@ -2,7 +2,7 @@
 
 > **Kullanan model:** [`../processInstances/workflow-event.md`](../processInstances/workflow-event.md) — `stepFailed.payload.errorClass` · [`../processInstances/workflow-projection.md`](../processInstances/workflow-projection.md) — `lastError.errorClass`
 > **Amaç:** Bir adım hatasının **retry edilebilir olup olmadığını** ve yönlendirmesini belirleyen sınıf. Sınıflandırma kuralları
-> (HTTP status → sınıf, ifade hatası → sınıf …) → [`../../engine-runtime-errors.md`](../../engine-runtime-errors.md) §1.
+> (HTTP status → sınıf, ifade hatası → sınıf …) → [`../../architectures/engine-runtime/engine-runtime-errors.md`](../../architectures/engine-runtime/engine-runtime-errors.md) §1.
 > **Durum:** 📝 TASLAK v0.44 — onay bekliyor.
 
 ## Değerler

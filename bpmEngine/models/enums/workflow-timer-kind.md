@@ -2,7 +2,7 @@
 
 > **Kullanan model:** [`../processInstances/workflow-timer.md`](../processInstances/workflow-timer.md) — alan `kind`, tip **WorkflowTimerKind**
 > **Amaç:** Bir `WorkflowTimer` kaydının **hangi mekanizma adına** kurulduğunu belirtir; scheduler süre dolunca türe göre farklı
-> uyandırma uygular (→ [`../../engine-runtime-scheduler.md`](../../engine-runtime-scheduler.md) §3–§4).
+> uyandırma uygular (→ [`../../architectures/engine-runtime/engine-runtime-scheduler.md`](../../architectures/engine-runtime/engine-runtime-scheduler.md) §3–§4).
 > **Durum:** 📝 TASLAK v0.44 — onay bekliyor.
 
 ## Değerler

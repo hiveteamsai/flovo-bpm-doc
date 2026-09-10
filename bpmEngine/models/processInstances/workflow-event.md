@@ -1,8 +1,8 @@
 # Model — WorkflowEvent (`workflow_events` — süreç yürütme günlüğü, append-only)
 
-> **Durum:** 📝 TASLAK v0.44 — **onay bekliyor** (kararlar + açık noktalar → [`../../engine-runtime-plan.md`](../../engine-runtime-plan.md) §2/§3).
-> **Yeni model.** Runtime davranış → [`../../engine-runtime.md`](../../engine-runtime.md) §1/§4/§5 · hata/retry → [`../../engine-runtime-errors.md`](../../engine-runtime-errors.md) ·
-> zamanlayıcı → [`../../engine-runtime-scheduler.md`](../../engine-runtime-scheduler.md) · saklama/KVKK → [`../../engine-runtime-retention.md`](../../engine-runtime-retention.md).
+> **Durum:** 📝 TASLAK v0.44 — **onay bekliyor** (kararlar + açık noktalar → [`../../architectures/engine-runtime/engine-runtime-plan.md`](../../architectures/engine-runtime/engine-runtime-plan.md) §2/§3).
+> **Yeni model.** Runtime davranış → [`../../architectures/engine-runtime/engine-runtime.md`](../../architectures/engine-runtime/engine-runtime.md) §1/§4/§5 · hata/retry → [`../../architectures/engine-runtime/engine-runtime-errors.md`](../../architectures/engine-runtime/engine-runtime-errors.md) ·
+> zamanlayıcı → [`../../architectures/engine-runtime/engine-runtime-scheduler.md`](../../architectures/engine-runtime/engine-runtime-scheduler.md) · saklama/KVKK → [`../../architectures/engine-runtime/engine-runtime-retention.md`](../../architectures/engine-runtime/engine-runtime-retention.md).
 > **Amaç:** Bir `ProcessInstance`'ın **her yürütme geçişini** (başlatma · adım başladı/bitti · askı · aksiyon · timer · hata · bitiş)
 > **değiştirilemez ve sıralı** kayıt olarak tutan **kaynak-hakikat** (Partial Event Sourcing). `ProcessInstance.executionState`,
 > [`WorkflowProjection`](./workflow-projection.md) ve `ProcessStepInstance`'ın motor alanları bu günlükten **türetilir / yeniden kurulabilir**.
@@ -124,6 +124,6 @@ yayınlar. Çift yayın **zararsızdır** (tüketici `messageId` ile atlar). `In
 - **`stepStarted` iki-TX modeli (öneri R4)** → §3.2.
 - **Outbox-in-event (öneri R5)** → §3.5.
 - **Açık:** fiziksel ad (Q1) · partition stratejisi (Q2) · `payload.detail` boyut sınırı ve ham gövde için MinIO eşiği (Q3) · `correlationId` alt süreçlerde
-  **tetikleyen** mi **host** mu (şu an host zinciri = `parentProcessInstanceId`; Q4). → [`../../engine-runtime-plan.md`](../../engine-runtime-plan.md) §3.
+  **tetikleyen** mi **host** mu (şu an host zinciri = `parentProcessInstanceId`; Q4). → [`../../architectures/engine-runtime/engine-runtime-plan.md`](../../architectures/engine-runtime/engine-runtime-plan.md) §3.
 
 *Oluşturma: 2026-08-31.*

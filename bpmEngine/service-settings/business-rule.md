@@ -16,7 +16,7 @@ etkilemez.** İki **ayrı katman** vardır:
 | Katman | Nerede çalışır | Ne yapar | Doküman |
 |---|---|---|---|
 | **Form-mantığı** = **İş Kuralları** | **Frontend, realtime** (form açıkken) | Açık formda anlık UX: alan göster/gizle, anlık validasyon, anlık değer/stil | **bu dosya** |
-| **Akış-mantığı** = **BPM Motoru** | **Backend / motor** (adım geçişleri) | Süreç adımları arası ilerleme, aksiyon kodu yönlendirmesi, durum değişimi | `../flovo-bpm-engine.md` |
+| **Akış-mantığı** = **BPM Motoru** | **Backend / motor** (adım geçişleri) | Süreç adımları arası ilerleme, aksiyon kodu yönlendirmesi, durum değişimi | `../architectures/engine-core/flovo-bpm-engine.md` |
 
 > **Çalışma yeri (KARAR):** İş kuralları **tam frontend** çalışır — kurallar **servise gömülü** gelir (ayrı istek yok), her client
 > kendi motorunu yürütür. Form açılır açılmaz kurallar ek tur beklemeden çalışabilir. İş kuralı, kullanıcı form üzerinde
@@ -29,7 +29,7 @@ Değer atama & karşılaştırma **her iki katmanda** da bulunur (iş kuralı: `
 - **Kısıt yok — ikisi de çalışır:** No-code platform olduğundan "yalnız bir katmanda yap" kısıtı **yoktur.** Bir iş hem iş kuralı hem
   süreç adımı olarak ayarlandıysa **ikisi de çalışır;** hangi kombinasyonun kurulacağı **süreç tasarımcısının** senaryosuna kalmıştır.
 - **Değer akışı & bütünlük:** İş kuralının hesapladığı/atadığı değer **`changeList` ile iletilir → kaydedilir** (`InstanceValue`, yazma
-  kapısı → [`../flovo-bpm-engine.md`](../flovo-bpm-engine.md) §3.1). Süreç adımları **sonra DB'de kayıtlı güncel veri** üzerinden
+  kapısı → [`../architectures/engine-core/flovo-bpm-engine.md`](../architectures/engine-core/flovo-bpm-engine.md) §3.1). Süreç adımları **sonra DB'de kayıtlı güncel veri** üzerinden
   hesap/işlem yapar — motor **geçici frontend değerine değil, kalıcılaşmış** değere bakar.
 - **Frontend'den geçmeyen instance'lar:** İş kuralları yalnız frontend'de koştuğundan, **API/webhook** ile (frontend olmadan)
   başlatılan süreçlerde iş kuralı mantığı çalışmaz. Bunu telafi edecek motor-tarafı adımların kurulması **süreç tasarımcısının

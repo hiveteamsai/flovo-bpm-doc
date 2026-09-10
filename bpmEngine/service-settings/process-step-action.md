@@ -2,7 +2,7 @@
 
 > **Durum:** 🟢 DETAYLANIYOR
 > **Amaç:** Bir süreç adımında **tetiklenebilen** aksiyonları, taşıdıkları veriyi ve görünümlerini tanımlamak.
-> (Adım **tipleri** → `process-step.md`; motorun bunları **nasıl çalıştırdığı** → `../flovo-bpm-engine.md`;
+> (Adım **tipleri** → `process-step.md`; motorun bunları **nasıl çalıştırdığı** → `../architectures/engine-core/flovo-bpm-engine.md`;
 > aksiyon **şablonu** → `../organization-settings/action.md`.)
 >
 > **Terim:** Bir **aksiyon (action)** = bir süreç adımında **tetiklenebilen** işlem. Tetiklendiğinde süreci ilerletir
@@ -16,7 +16,7 @@
 - **Aksiyon kodu (action code):** Her aksiyonun bir **kod**u vardır; bir adım, ilerleyeceği aksiyonu bu **koda göre**
   seçer (örn. HTTP Request response'undaki `action` koduyla aynı kodlu aksiyon; Switch'te alandaki değere eşleşen kod;
   Karşılaştırma'da `true`/`false`). **Ayrılmış kodlar:** **`default`** = eşleşme yoksa / async / başarılı varsayılan
-  ilerleme; **`onFail`** = adımda **hata** oluşunca → adım-seviyesi hata yönlendirmesi (`../flovo-bpm-engine.md` §7).
+  ilerleme; **`onFail`** = adımda **hata** oluşunca → adım-seviyesi hata yönlendirmesi (`../architectures/engine-core/flovo-bpm-engine.md` §7).
 
 ---
 
@@ -74,7 +74,7 @@ Bir aksiyon tetiklendiğinde taşıdığı veri modeli **3 alandan** oluşur. **
 }
 ```
 
-> **`changeList`**, her adım **iş yapmadan ÖNCE** forma uygulanır (evrensel giriş kuralı → `../flovo-bpm-engine.md` §4.2):
+> **`changeList`**, her adım **iş yapmadan ÖNCE** forma uygulanır (evrensel giriş kuralı → `../architectures/engine-core/flovo-bpm-engine.md` §4.2):
 > `InstanceValue.data = data || changeList` (**doğrudan JSONB merge**).
 
 ### 2.1 — Parametre birleştirme (`mergeParameter`)
@@ -98,7 +98,7 @@ zincirinde başlatıcı/atanan/aktarım-hedefi bilgisinin hop'tan hop'a taşınm
 > taşınan **geçici** veridir (forma yazılmaz). `mergeParameter` yalnız **`parameters`**'ı ilgilendirir.
 
 ### 2.2 — Değer modeli (ortak değer dili)
-Motor **koleksiyon-tabanlıdır** (→ `../flovo-bpm-engine.md` §3): hem `changeList` hem `parameters` içindeki değerler,
+Motor **koleksiyon-tabanlıdır** (→ `../architectures/engine-core/flovo-bpm-engine.md` §3): hem `changeList` hem `parameters` içindeki değerler,
 **`InstanceValue.data` ile aynı değer-modelini** kullanır — yani **`propertyValuesTemplates`** şekilleri (skaler ·
 `LabeledValue {value, display, translationCode}` · user-ref `{userId, nameSurname}` · phone `{countryCode, number}` ·
 list-of-model …). Böylece bir değer **kayıpsız** akar: forma yazmak = düz JSONB merge, adıma taşımak = aynı objeyi geçirmek.
@@ -160,7 +160,7 @@ ilerletir — async HTTP Request'in (→ `process-step.md` §3.2) **geri-dönü�
 >   oradaki webhook o adıma bağlı **`default`** aksiyonuna dönüşür (aksiyonun bağlanacağı bir adım olmama sorunu böyle çözülür).
 >
 > Üç durumda da webhook **bir süreç adımına** bağlıdır → `ProcessStepInstance.processStepId` sorunsuz atılır. Örn.
-> `../sampleProcess/createPdfAsync` (bağımsız alt süreç), `../sampleProcess/integration`. İlgili: **`../flovo-customer-api.md`**.
+> `../sampleProcess/createPdfAsync` (bağımsız alt süreç), `../sampleProcess/integration`. İlgili: **`../architectures/api/flovo-customer-api.md`**.
 > _(Detaylandırılacak: webhook URL/secret, payload → `parameters`/`changeList` eşlemesi, güvenlik, idempotency.)_
 
 ### 3.7 — `autoAction` (Autoaction)
@@ -193,9 +193,9 @@ varlıktır (aksiyon, durum) ve **ayrı dokümanda** tanımlanır → **`../orga
 > credential → "Güvenlik" · yetki/rol → "Yetkilendirme").
 - **İfade (expression) motoru** — alanları dinamik doldurma, önceki adıma erişim
 - **Veri eşleme (sürükle-bırak)**
-- **Yeniden deneme (retry on fail)** — 📝 **spec yazıldı (v0.44, onay bekliyor)** → [`../engine-runtime-errors.md`](../engine-runtime-errors.md) §2:
+- **Yeniden deneme (retry on fail)** — 📝 **spec yazıldı (v0.44, onay bekliyor)** → [`../architectures/engine-runtime/engine-runtime-errors.md`](../architectures/engine-runtime/engine-runtime-errors.md) §2:
   yalnız `transient` hata retry edilir; varsayılan `5 deneme · 10 s ×3 · üst 600 s · jitter`; adım-bazlı override **`ProcessStep.retryPolicy`** (ortak JSONB kolon, öneri Q7).
-- **Hata davranışı** — `onFail` aksiyonu (§0) — 📝 **spec yazıldı** → [`../engine-runtime-errors.md`](../engine-runtime-errors.md) §4: **opsiyonel**; kalıcı hata / retry
+- **Hata davranışı** — `onFail` aksiyonu (§0) — 📝 **spec yazıldı** → [`../architectures/engine-runtime/engine-runtime-errors.md`](../architectures/engine-runtime/engine-runtime-errors.md) §4: **opsiyonel**; kalıcı hata / retry
   tükendi → `onFail` (hata bilgisi `ActionTransfer.parameters.error` rezerve anahtarıyla taşınır) → yoksa süreç `failed` (admin kurtarma: retry/skip/cancel).
 - **Koşullu çalışma** — adım yalnız X koşulunda çalışsın
 - **Yetki/rol kısıtı** — aksiyonu kim yürütebilir (`authorizationLevel`, `actionDisplayAuthorizedUserGroupId`)

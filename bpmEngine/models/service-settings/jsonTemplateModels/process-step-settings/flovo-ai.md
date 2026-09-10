@@ -12,7 +12,7 @@
 | `fileSourceType` | enum (`thumbnail`·`fileProperty`) | evet | — | AI'ın işleyeceği **dosyanın kaynağı**: `thumbnail` → formun thumbnail dosyası · `fileProperty` → bir **file** alanındaki dosya (→ [`../property-settings/file.md`](../property-settings/file.md)). **Ayrı bir enum dosyasına yükseltilmesi açık** (şimdilik iki-değerli satır-içi enum) → [`../../../../todo.md`](../../../../todo.md). |
 | `fileSourcePropertyId` | int? | koşullu | — | `fileSourceType = fileProperty` iken AI'a verilecek dosyayı taşıyan **file property**. `thumbnail` iken kullanılmaz. **`settings` içi referans id** — DB FK'si değil, uygulama-katmanı doğrulaması (§3 not). |
 
-> **Akış yönlendirme `settings`'te DEĞİL:** AI **başarıyla** çalışıp parametre üretince **`default`** kodlu, **hata** durumunda **`onFail`** kodlu `ProcessStepAction` tetiklenir (üretilen parametreler `default` aksiyonla taşınır) → [`../../process-step-action.md`](../../process-step-action.md), motor tarafı [`../../../../flovo-bpm-engine.md`](../../../../flovo-bpm-engine.md) §7.
+> **Akış yönlendirme `settings`'te DEĞİL:** AI **başarıyla** çalışıp parametre üretince **`default`** kodlu, **hata** durumunda **`onFail`** kodlu `ProcessStepAction` tetiklenir (üretilen parametreler `default` aksiyonla taşınır) → [`../../process-step-action.md`](../../process-step-action.md), motor tarafı [`../../../../architectures/engine-core/flovo-bpm-engine.md`](../../../../architectures/engine-core/flovo-bpm-engine.md) §7.
 
 ## 2. Alt-model
 - Yok. `aiSettings` **serbest** bir nesnedir (seçilen AI'a göre şekillenir; ortak alt-model tanımlanmaz).

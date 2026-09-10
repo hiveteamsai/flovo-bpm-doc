@@ -275,7 +275,7 @@ Ana sürecin giriş düğümü; **kimlerin süreci başlatabileceğini** kısıt
 >   (ayrı "görür ama tetikleyemez" durumu **yoktur**). **Boş** ise herkes görür ve başlatır.
 > - **Webhook / Customer API başlatma:** Kısıt **yalnız kullanıcı (manuel)** başlatımına özgüdür. Dış tetikleme bir **kullanıcı
 >   değil `ApiKey`** ile kimliklendirildiğinden `userGroupId` **uygulanmaz** — dış erişim yetkisi **ayrı katmandadır**
->   (→ [`../../flovo-customer-api.md`](../../flovo-customer-api.md); başlatan → `../processInstances/process-instance.md` `createdByApiKeyId`).
+>   (→ [`../../architectures/api/flovo-customer-api.md`](../../architectures/api/flovo-customer-api.md); başlatan → `../processInstances/process-instance.md` `createdByApiKeyId`).
 
 ### 3.15 Instance Deleter — `ProcessStepInstanceDeleterSettings` (`stepType = instanceDeleter`)
 Formu (ve seçime göre ilişkili formları) siler (davranış → `../../service-settings/process-step.md §3.10`).

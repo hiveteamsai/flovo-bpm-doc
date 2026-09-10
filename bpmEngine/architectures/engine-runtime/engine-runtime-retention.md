@@ -16,9 +16,9 @@ bir **tombstone** kullanıcıya çevirir (`pseudonymization`) — süreç geçmi
 ## 1. Veri sınıfları (motor runtime)
 | Tablo | Rol | Kişisel veri | Yeniden kurulabilir mi | Saklama sınıfı |
 |---|---|---|---|---|
-| [`workflow_events`](./models/processInstances/workflow-event.md) | **kaynak-hakikat** (audit + replay) | `actor*` kolonları · `payload` içinde user-ref (`{userId, nameSurname}`) · `awaiting[].userId` | — (kaynak) | **A — uzun** (yasal denetim) |
-| [`workflow_projection`](./models/processInstances/workflow-projection.md) | türetilmiş imleç | dolaylı (yok) | evet (replay) | **B — süreç yaşadığı sürece**; `done`/`cancelled` + 90 gün sonra silinebilir (liste ihtiyacı `ProcessInstance.executionState`'ten) |
-| [`workflow_timer`](./models/processInstances/workflow-timer.md) | uyandırma kaydı | yok | evet (armed set replay) | **C — kısa**: `fired`/`cancelled` 30 gün |
+| [`workflow_events`](../../models/processInstances/workflow-event.md) | **kaynak-hakikat** (audit + replay) | `actor*` kolonları · `payload` içinde user-ref (`{userId, nameSurname}`) · `awaiting[].userId` | — (kaynak) | **A — uzun** (yasal denetim) |
+| [`workflow_projection`](../../models/processInstances/workflow-projection.md) | türetilmiş imleç | dolaylı (yok) | evet (replay) | **B — süreç yaşadığı sürece**; `done`/`cancelled` + 90 gün sonra silinebilir (liste ihtiyacı `ProcessInstance.executionState`'ten) |
+| [`workflow_timer`](../../models/processInstances/workflow-timer.md) | uyandırma kaydı | yok | evet (armed set replay) | **C — kısa**: `fired`/`cancelled` 30 gün |
 | `ProcessStepInstance` | adım çalıştırma kaydı (iş + motor alanları) | `atUserId` · `atDelegateUserId` | motor alanları evet; `instanceId` bağı **iş verisi** | **A** (form tarihçesi kullanıcıya gösterilir — `showInHistory`) |
 | `InstanceAwaitingUser` | canlı bekleyen seti | `userId` | evet | **yaşam = bekleme**; süreç ilerleyince zaten silinir |
 | `InstanceValueOutbox` | değer-değişim outbox | yok | — | **C**: `processedDate` dolu > 7 gün → sil |

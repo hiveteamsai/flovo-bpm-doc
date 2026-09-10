@@ -1,7 +1,7 @@
 # Model — WorkflowProjection (`workflow_projection` — türetilmiş yürütme durumu / motor imleci)
 
-> **Durum:** 📝 TASLAK v0.44 — **onay bekliyor** (→ [`../../engine-runtime-plan.md`](../../engine-runtime-plan.md) §2 **R6**).
-> **Yeni model.** Kaynak → [`workflow-event.md`](./workflow-event.md) · runtime → [`../../engine-runtime.md`](../../engine-runtime.md) §1/§9.
+> **Durum:** 📝 TASLAK v0.44 — **onay bekliyor** (→ [`../../architectures/engine-runtime/engine-runtime-plan.md`](../../architectures/engine-runtime/engine-runtime-plan.md) §2 **R6**).
+> **Yeni model.** Kaynak → [`workflow-event.md`](./workflow-event.md) · runtime → [`../../architectures/engine-runtime/engine-runtime.md`](../../architectures/engine-runtime/engine-runtime.md) §1/§9.
 > **Amaç:** Her `ProcessInstance` için **tek satırlık, sık güncellenen** "motor imleci": son olay sürümü, yürütme durumu + bekleme sebebi, aktif adım,
 > deneme sayacı, sonraki retry zamanı, döngü-koruma sayaçları ve son hata özeti. Worker/scheduler/API **her turda** bu satırı okur
 > (`lastVersion` → optimistic concurrency) ve aynı TX'te günceller. `workflow_events`'ten **tamamen yeniden kurulabilir**.

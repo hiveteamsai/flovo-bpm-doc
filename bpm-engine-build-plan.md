@@ -64,7 +64,7 @@ dökümanlar eksik ve hangi sırayla yazılmalı"** sorusunu iki faza bölerek y
 
 **Yürütme mekanizması (motor "nasıl koşar"):**
 - **Yürütme durum makinesi** — `new/running/waiting/failed/done` + geçişler tanımlı; iş-durumu (`Instance.statusId`) ile ayrık.
-  → [`bpmEngine/engine-runtime.md`](bpmEngine/engine-runtime.md) §1 · [`process-execution-state.md`](bpmEngine/models/enums/process-execution-state.md)
+  → [`bpmEngine/architectures/engine-runtime/engine-runtime.md`](bpmEngine/architectures/engine-runtime/engine-runtime.md) §1 · [`process-execution-state.md`](bpmEngine/models/enums/process-execution-state.md)
 - **Suspend / resume** — atananı çöz → `InstanceAwaitingUser` senkronla → `waiting` (worker serbest); external event → doğrula → `running`. Günlerce bekleme kaynak tutmaz. → engine-runtime §4.3/§4.4
 - **Kontrol-akışı / ilerleme** — **22 adım tipinin** her biri için "işini yapınca hangi aksiyon koduyla ilerler" tanımlı (Karşılaştırma→`true`/`false`, Switch→eşleşen/default, HTTP→`response.action`, terminal→break). → [`bpmEngine/service-settings/process-step.md`](bpmEngine/service-settings/process-step.md) §3 · flovo-bpm-engine §4.3
 - **ActionTransfer veri akışı** — `parameters`/`changeList`/`action` + `mergeParameter` birleştirme sırası + forma JSONB merge + `ProcessStepInstance` kaydı. → [`bpmEngine/service-settings/process-step-action.md`](bpmEngine/service-settings/process-step-action.md) §2
@@ -224,8 +224,8 @@ FAZ 2  H (DTO / seçici aktarım)  ◄── önce karar, sonra uçlar
 
 ## 7. İlgili dosyalar / kaynaklar
 
-- **Motor:** [`bpmEngine/engine-runtime.md`](bpmEngine/engine-runtime.md) · [`bpmEngine/flovo-bpm-engine.md`](bpmEngine/flovo-bpm-engine.md)
-- **API:** [`bpmEngine/settings-api.md`](bpmEngine/settings-api.md) · [`bpmEngine/flovo-customer-api.md`](bpmEngine/flovo-customer-api.md) · [`bpmEngine/service-settings/business-rule-endpoints.md`](bpmEngine/service-settings/business-rule-endpoints.md)
+- **Motor:** [`bpmEngine/architectures/engine-runtime/engine-runtime.md`](bpmEngine/architectures/engine-runtime/engine-runtime.md) · [`bpmEngine/architectures/engine-core/flovo-bpm-engine.md`](bpmEngine/architectures/engine-core/flovo-bpm-engine.md)
+- **API:** [`bpmEngine/architectures/api/settings-api.md`](bpmEngine/architectures/api/settings-api.md) · [`bpmEngine/architectures/api/flovo-customer-api.md`](bpmEngine/architectures/api/flovo-customer-api.md) · [`bpmEngine/service-settings/business-rule-endpoints.md`](bpmEngine/service-settings/business-rule-endpoints.md)
 - **Davranış:** [`process-step.md`](bpmEngine/service-settings/process-step.md) · [`process-step-action.md`](bpmEngine/service-settings/process-step-action.md) · [`view-profile.md`](bpmEngine/service-settings/view-profile.md)
 - **Modeller:** [`models/index.md`](bpmEngine/models/index.md) · [`processInstances/`](bpmEngine/models/processInstances/index.md) (runtime) · [`instance-value.md`](bpmEngine/models/processInstances/instance-value.md) · [`process-instance.md`](bpmEngine/models/processInstances/process-instance.md) · [`service-trigger.md`](bpmEngine/models/service-settings/service-trigger.md) · [`scheduler-job.md`](bpmEngine/models/organization-settings/scheduler-job.md)
 - **Ayar şemaları:** [`process-step-settings/`](bpmEngine/models/service-settings/jsonTemplateModels/process-step-settings/index.md) · [`property-settings/`](bpmEngine/models/service-settings/jsonTemplateModels/property-settings/index.md)
@@ -241,6 +241,6 @@ FAZ 2  H (DTO / seçici aktarım)  ◄── önce karar, sonra uçlar
 - **📝 v0.44 (2026-08-31) — Faz 1 Grup A/B/C dokümanları TASLAK olarak yazıldı, kullanıcı incelemesi bekliyor:** F1.A.1 `workflow-event.md` · F1.A.2 `workflow-projection.md` ·
   F1.B.1–B.4 `engine-runtime-errors.md` (+ engine-runtime §5.2 çakışma sözleşmesi) · F1.C.1 `engine-runtime-scheduler.md` + `workflow-timer.md` (lider seçimi **gereksiz** — claim modeli;
   §6.4 önerisinin yerine geçer) · retention `engine-runtime-retention.md`. §6.3 (compensation post-MVP) ve §6.5 (`onFail` opsiyonel) önerileri **doğrultusunda** yazıldı.
-  Kararlar/açık sorular ve bu konunun adım planı → **[`bpmEngine/engine-runtime-plan.md`](bpmEngine/engine-runtime-plan.md)**; inceleme bitince buradaki `[ ]`'ler ve §2.0 panosu güncellenir.
+  Kararlar/açık sorular ve bu konunun adım planı → **[`bpmEngine/architectures/engine-runtime/engine-runtime-plan.md`](bpmEngine/architectures/engine-runtime/engine-runtime-plan.md)**; inceleme bitince buradaki `[ ]`'ler ve §2.0 panosu güncellenir.
 
 *Oluşturma: 2026-08-31. Bu plan dosyası ana dizindedir; motor geliştirmesine dönünce buradan başla.*

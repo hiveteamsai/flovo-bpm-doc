@@ -89,4 +89,4 @@ kullanıcıya iletilir ve o form açılır. Bu kol burada **biter** (kullanıcı
 ---
 
 > İlgili tasarım: `response.action` → `../../service-settings/process-step-action.md` §1.2 · Form Yönlendirme →
-> `../../service-settings/process-step.md` §3.19 · API → `../../flovo-customer-api.md`.
+> `../../service-settings/process-step.md` §3.19 · API → `../../architectures/api/flovo-customer-api.md`.

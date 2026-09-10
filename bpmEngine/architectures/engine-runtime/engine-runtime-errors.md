@@ -1,11 +1,11 @@
 # Flovo BPM Motoru — Hata & Dayanıklılık (retry · onFail · dead-letter · kurtarma · korumalar · compensation)
 
 > **Durum:** 📝 TASLAK v0.44 — **onay bekliyor**. Kararlar/öneriler **R8–R12, R17**, açık sorular **Q7–Q13, Q21** → [`engine-runtime-plan.md`](./engine-runtime-plan.md).
-> **Kapsam:** [`engine-runtime.md`](./engine-runtime.md) §6'nın tam spesifikasyonu; [`flovo-bpm-engine.md`](./flovo-bpm-engine.md) §7 (`onFail`) ve
-> [`service-settings/process-step-action.md`](./service-settings/process-step-action.md) §5 (retry/onFail satırları) buraya delege eder.
-> **Modeller:** [`WorkflowEvent`](./models/processInstances/workflow-event.md) (`stepFailed`/`failed`/`recovered`/`cancelled`) ·
-> [`WorkflowProjection`](./models/processInstances/workflow-projection.md) (`attempt`/`lastError`/`autoStepRun`) · [`WorkflowTimer`](./models/processInstances/workflow-timer.md) (`retry`) ·
-> [`WorkflowErrorClass`](./models/enums/workflow-error-class.md).
+> **Kapsam:** [`engine-runtime.md`](./engine-runtime.md) §6'nın tam spesifikasyonu; [`flovo-bpm-engine.md`](../engine-core/flovo-bpm-engine.md) §7 (`onFail`) ve
+> [`service-settings/process-step-action.md`](../../service-settings/process-step-action.md) §5 (retry/onFail satırları) buraya delege eder.
+> **Modeller:** [`WorkflowEvent`](../../models/processInstances/workflow-event.md) (`stepFailed`/`failed`/`recovered`/`cancelled`) ·
+> [`WorkflowProjection`](../../models/processInstances/workflow-projection.md) (`attempt`/`lastError`/`autoStepRun`) · [`WorkflowTimer`](../../models/processInstances/workflow-timer.md) (`retry`) ·
+> [`WorkflowErrorClass`](../../models/enums/workflow-error-class.md).
 > **Kapsam dışı:** iş-kuralı (frontend) hata görünürlüğü → `service-settings/business-rule-engine.md`; sistem logları (Loki/OTel) → todo "denetim izi/loglama".
 
 ---
@@ -17,7 +17,7 @@ veya sınıf kalıcıysa **adımın `onFail` aksiyonu** varsa akış o dala dön
 (dead-letter) olur — motor durur, **admin kurtarır** (`retry` / `skip` / `cancel`). Her şey **olay**dır; sessiz yutma yoktur.
 
 ## 1. Hata sınıflandırması (adım yürütücüsü karar verir)
-Sınıf → [`WorkflowErrorClass`](./models/enums/workflow-error-class.md). Adım tipine göre **tespit kuralları**:
+Sınıf → [`WorkflowErrorClass`](../../models/enums/workflow-error-class.md). Adım tipine göre **tespit kuralları**:
 
 | Adım tipi | `transient` | `permanent` | `design` |
 |---|---|---|---|

@@ -1,18 +1,18 @@
 # Flovo BPM Motoru — Runtime Mimarisi (orkestrasyon ↔ yürütme · durum · kalıcılık)
 
 > **Durum:** 🟢 Tasarım (v0.40) · 📝 **v0.44 güncellemesi — onay bekliyor** (iki-TX adım · outbox-in-event · 409 sözleşmesi · projeksiyon/timer modelleri;
-> kararlar/açık sorular → [`engine-runtime-plan.md`](./engine-runtime-plan.md)). **Amaç:** Motorun **sistem olarak nasıl koştuğunu** tanımlar — [`flovo-bpm-engine.md`](./flovo-bpm-engine.md)
+> kararlar/açık sorular → [`engine-runtime-plan.md`](./engine-runtime-plan.md)). **Amaç:** Motorun **sistem olarak nasıl koştuğunu** tanımlar — [`flovo-bpm-engine.md`](../engine-core/flovo-bpm-engine.md)
 > §4.4'teki **senkron** yürütme döngüsünü, karar verilen yığın üzerinde (**Go stateless worker + NATS JetStream + PostgreSQL Partial
 > Event Sourcing**) **event-driven, kalıcı, kaldığı yerden devam eden** bir mimariye çevirir. Bu doküman `flovo-bpm-engine.md`
 > **§2.2 (orkestrasyon↔yürütme)** · **§8 (kalıcılık/durum)** · **§4.5 (paralel dallanma)** bölümlerini **doldurur**.
 >
 > **Doküman ailesi (v0.44):** bu dosya = **ana spec**; ayrıntı alt-dokümanlar → [`engine-runtime-errors.md`](./engine-runtime-errors.md) (hata · retry · onFail · kurtarma · guard) ·
 > [`engine-runtime-scheduler.md`](./engine-runtime-scheduler.md) (timer · timeout · cron · uyandırma) · [`engine-runtime-retention.md`](./engine-runtime-retention.md) (saklama · KVKK).
-> **Modeller:** [`WorkflowEvent`](./models/processInstances/workflow-event.md) (`workflow_events`) · [`WorkflowProjection`](./models/processInstances/workflow-projection.md) ·
-> [`WorkflowTimer`](./models/processInstances/workflow-timer.md) · enum [`WorkflowEventType`](./models/enums/workflow-event-type.md).
+> **Modeller:** [`WorkflowEvent`](../../models/processInstances/workflow-event.md) (`workflow_events`) · [`WorkflowProjection`](../../models/processInstances/workflow-projection.md) ·
+> [`WorkflowTimer`](../../models/processInstances/workflow-timer.md) · enum [`WorkflowEventType`](../../models/enums/workflow-event-type.md).
 >
-> **Yığın:** [`tech-stack/go.md`](./tech-stack/go.md) (Hexagonal, goroutine) · [`tech-stack/nats-jetstream.md`](./tech-stack/nats-jetstream.md)
-> (job/olay omurgası) · [`tech-stack/postgresql.md`](./tech-stack/postgresql.md) (`workflow_events` append-only + durum).
+> **Yığın:** [`tech-stack/go.md`](../../tech-stack/go.md) (Hexagonal, goroutine) · [`tech-stack/nats-jetstream.md`](../../tech-stack/nats-jetstream.md)
+> (job/olay omurgası) · [`tech-stack/postgresql.md`](../../tech-stack/postgresql.md) (`workflow_events` append-only + durum).
 > **Semantik (değişmeyen):** yürütme algoritması → `flovo-bpm-engine.md` §4 · veri akışı → §3 · bekle/devam → §6.
 
 ---
@@ -44,13 +44,13 @@ Her `ProcessInstance` bir **yürütme durumu** taşır (form iş-durumu `Instanc
 ```
 
 - **`ProcessInstance.executionState`** (YENİ alan) = `new` · `running` · `waiting` · `failed` · `done` · **`cancelled`** (📝 v0.44 öneri — admin iptali; → plan Q6)
-  (→ [`models/enums/process-execution-state.md`](./models/enums/process-execution-state.md)). Bu, **`workflow_events`'ten türetilen bir
+  (→ [`models/enums/process-execution-state.md`](../../models/enums/process-execution-state.md)). Bu, **`workflow_events`'ten türetilen bir
   projeksiyondur** (hızlı sorgu: "koşan/bekleyen/hatalı süreçler"); kaynak-hakikat olay log'udur.
-- **Motor imleci** = [`WorkflowProjection`](./models/processInstances/workflow-projection.md) (süreç başına 1 satır): `lastVersion` (optimistic concurrency) ·
-  `executionState` + **`waitReason`** (`humanTask`/`processing`/`timer`/`retry`/`subProcess` → [`WorkflowWaitReason`](./models/enums/workflow-wait-reason.md)) ·
+- **Motor imleci** = [`WorkflowProjection`](../../models/processInstances/workflow-projection.md) (süreç başına 1 satır): `lastVersion` (optimistic concurrency) ·
+  `executionState` + **`waitReason`** (`humanTask`/`processing`/`timer`/`retry`/`subProcess` → [`WorkflowWaitReason`](../../models/enums/workflow-wait-reason.md)) ·
   aktif adım · `attempt` · guard sayaçları · `lastError`. `ProcessInstance.executionState` bunun **kopyası**dır (liste sorguları join'siz; aynı TX).
 - **Mevcut konum** = o instance'ın **en güncel aktif `ProcessStepInstance`**'ı (`processStepId` = aktif adım; projeksiyonda `activeProcessStepInstanceId`).
-- **Askı kaydı** = `waiting` iken **`InstanceAwaitingUser`** (kim aksiyon alabilir) + timer/timeout/retry bekleniyorsa **[`WorkflowTimer`](./models/processInstances/workflow-timer.md)** (`armed`, `dueAt`).
+- **Askı kaydı** = `waiting` iken **`InstanceAwaitingUser`** (kim aksiyon alabilir) + timer/timeout/retry bekleniyorsa **[`WorkflowTimer`](../../models/processInstances/workflow-timer.md)** (`armed`, `dueAt`).
 - **Biriken parametreler** = son `ProcessStepInstance.processStepActionParameter` (**`ActionTransfer`** JSON: `parameters`/`changeList`/`action`) —
   kaynak kopya `workflow_events.payload`'dadır (stepCompleted/actionTaken snapshot; → workflow-event §2).
 
@@ -63,7 +63,7 @@ Her `ProcessInstance` bir **yürütme durumu** taşır (form iş-durumu `Instanc
 | **Worker** (Go, goroutine havuzu) | JetStream'den **step-ready** iş çeker, **tek adımı** koşar, durum yazar, sonrakini enqueue eder | **Durumsuz** (yatay ölçek) |
 | **Orkestratör** (mantıksal) | Aksiyon→sonraki-adım çevirimi, **uyandırma** (timer/olay), **at-most-once** (idempotency), retry/backoff | Worker içinde + scheduler |
 | **NATS JetStream** | İş kuyruğu + olay omurgası (`FLOVO_EVENTS`, durable consumer, `Nats-Msg-Id`) | Kalıcı, sıralı, replay |
-| **PostgreSQL** | [`workflow_events`](./models/processInstances/workflow-event.md) (append-only kaynak **+ outbox-in-event**) + [`workflow_projection`](./models/processInstances/workflow-projection.md) (imleç) + [`workflow_timer`](./models/processInstances/workflow-timer.md) + `ProcessInstance`/`ProcessStepInstance`/`InstanceAwaitingUser` + `InstanceValue` | Kaynak-hakikat |
+| **PostgreSQL** | [`workflow_events`](../../models/processInstances/workflow-event.md) (append-only kaynak **+ outbox-in-event**) + [`workflow_projection`](../../models/processInstances/workflow-projection.md) (imleç) + [`workflow_timer`](../../models/processInstances/workflow-timer.md) + `ProcessInstance`/`ProcessStepInstance`/`InstanceAwaitingUser` + `InstanceValue` | Kaynak-hakikat |
 | **Scheduler** (durumsuz, **yatay ölçeklenir**) | `workflow_timer`'da dolan kayıtları **Postgres'te claim eder** (`FOR UPDATE SKIP LOCKED`), `timerFired` yazar, `resume.v1` yayınlar; **lider seçimi gerekmez** (📝 v0.44 R7); advisory lock yalnız housekeeping | Replica-N (→ [`engine-runtime-scheduler.md`](./engine-runtime-scheduler.md)) |
 | **Outbox relay** (housekeeping) | Commit edilmiş ama yayınlanamamış `dispatch`'leri yeniden yayınlar (`publishedAt IS NULL`) | Tekil (advisory lock), zararsız çoğaltılabilir |
 
@@ -93,9 +93,9 @@ Worker bir `step_ready` işini çeker ve **tek adımı** koşar — **iki TX** (
 1. **Yükle + idempotency:** `WorkflowProjection` (`lastVersion`, `attempt`) + `ProcessInstance` + aktif adım tasarımı (`ProcessStep.settings`) + form değeri (`InstanceValue`) +
    gelen `ActionTransfer`. Job'ın `messageId`'si `workflow_events`'te varsa → **zaten işlendi, ACK ve atla** (§5.1). `stepStarted` var ama sonucu yoksa → **in-doubt** (→ errors §3).
 2. **TX-A — `stepStarted`:** `version+1` · `ProcessStepInstance` (executionDate) · **evrensel giriş kuralı:** gelen `changeList` boş değilse forma **merge**
-   (write-path → §3.1 · [`tech-stack/postgresql.md`](./tech-stack/postgresql.md)) + `InstanceValueOutbox` · projeksiyon (`attempt`, `autoStepRun++`, `totalSteps++`). **Commit.**
+   (write-path → §3.1 · [`tech-stack/postgresql.md`](../../tech-stack/postgresql.md)) + `InstanceValueOutbox` · projeksiyon (`attempt`, `autoStepRun++`, `totalSteps++`). **Commit.**
 3. **İşi yap:** adım tipine göre (HTTP Request, Karşılaştırma, Switch, Değer Atama, Timer…) — tipe-özel `settings` şeması →
-   [`models/service-settings/jsonTemplateModels/process-step-settings/`](./models/service-settings/jsonTemplateModels/process-step-settings/index.md). Yan etki **burada**; süre sınırı 60 s (guard).
+   [`models/service-settings/jsonTemplateModels/process-step-settings/`](../../models/service-settings/jsonTemplateModels/process-step-settings/index.md). Yan etki **burada**; süre sınırı 60 s (guard).
 4. **Aksiyon seç:** sonucu bir **aksiyon koduna** eşle (`true`/`false`/`default`/response.action) → o kodlu `ProcessStepAction`. Hata → sınıflandır (→ errors §1).
 5. **TX-B — `stepCompleted` | `stepFailed`:** `version+1` · `ProcessStepInstance` (üretilen `processStepActionParameter`) · **`dispatch`** = sonraki `step_ready`
    (outbox-in-event) · projeksiyon · hata ise retry timer / onFail seçimi (→ errors §2/§4). **Commit** → publish (`publishedAt`).
@@ -116,7 +116,7 @@ Adım **Kullanıcı / Kullanıcı Grubu / Üst Form Kullanıcı** ise (veya **Pr
 
 ### 4.4 Devam (RESUME)
 Bir **dış olay** süreci uyandırır:
-- **Kullanıcı aksiyonu:** `POST /instances/{id}/actions/{code}` (→ [`flovo-customer-api.md`](./flovo-customer-api.md)) → aktör
+- **Kullanıcı aksiyonu:** `POST /instances/{id}/actions/{code}` (→ [`flovo-customer-api.md`](../api/flovo-customer-api.md)) → aktör
   **`InstanceAwaitingUser`'a karşı doğrulanır** (grup üyeliği okuma-anı; ilk aksiyon ilerletir — grup eşiği yok).
 - **Timer:** scheduler süre dolunca `resume.v1` yayınlar (§7).
 - **Webhook/Processing:** dış çağrı `resume.v1` tetikler.
@@ -139,7 +139,7 @@ erişebilir/geri-taşıyabilir (`processEnd.userGroupIds`); alt süreçte geri-t
 - **Publish tarafı:** commit sonrası publish kaçarsa **relay** `dispatch`'i yeniden yayınlar; çift yayın yukarıdaki kurallarla zararsızdır (→ workflow-event §3.5).
 
 ### 5.2 API tarafı — kullanıcı aksiyonu çakışma sözleşmesi (📝 v0.44 R15 · Q17)
-`POST /instances/{id}/actions/{code}` (+ header **`Idempotency-Key`**, FE her tıklamada UUID; Customer API'de zorunlu — → [`flovo-customer-api.md`](./flovo-customer-api.md)):
+`POST /instances/{id}/actions/{code}` (+ header **`Idempotency-Key`**, FE her tıklamada UUID; Customer API'de zorunlu — → [`flovo-customer-api.md`](../api/flovo-customer-api.md)):
 
 | Durum | Tespit | Yanıt | FE davranışı |
 |---|---|---|---|
@@ -155,7 +155,7 @@ erişebilir/geri-taşıyabilir (`processEnd.userGroupIds`); alt süreçte geri-t
 
 ## 6. Hata & retry (flovo-bpm-engine §7 tie-in) — 📝 tam spec: [`engine-runtime-errors.md`](./engine-runtime-errors.md)
 - **Sınıflandırma:** her deneme `stepCompleted` **ya da** `stepFailed{errorClass}` üretir — `transient` · `permanent` · `design` · `inDoubt` · `guard`
-  (→ [`WorkflowErrorClass`](./models/enums/workflow-error-class.md)). Yalnız **`transient`** yeniden denenir.
+  (→ [`WorkflowErrorClass`](../../models/enums/workflow-error-class.md)). Yalnız **`transient`** yeniden denenir.
 - **Retry:** BPM-düzeyi **`WorkflowTimer(kind=retry)`** + `suspended(waitReason=retry)` (JetStream NAK değil); varsayılan `5 deneme · 10 s ×3 · cap 600 s · jitter` (öneri Q7);
   adım-bazlı `retryPolicy` override (öneri). JetStream `MaxDeliver` yalnız worker crash-loop koruması.
 - **`onFail` (opsiyonel):** kalıcı hata / retry tükendi → adımın `onFail` aksiyonu (hata `parameters.error` ile taşınır) → yoksa **`failed`** (dead-letter, `failed.v1`,
@@ -164,14 +164,14 @@ erişebilir/geri-taşıyabilir (`processEnd.userGroupIds`); alt süreçte geri-t
 - **Guard'lar:** ardışık otomatik adım 200 · toplam adım 10 000 · alt süreç derinliği 8 · senkron bekleme 3 · ServiceTrigger kaskadı 20 · worker turu 60 s → `failed(guard)` (Q13).
 
 ## 7. Timer & uyandırma — 📝 tam spec: [`engine-runtime-scheduler.md`](./engine-runtime-scheduler.md)
-- **Zaman = tablo:** uyanması gereken her şey [`WorkflowTimer`](./models/processInstances/workflow-timer.md)'da `armed` satırdır — `stepTimer` (Timer adımı / `timerStart`) ·
+- **Zaman = tablo:** uyanması gereken her şey [`WorkflowTimer`](../../models/processInstances/workflow-timer.md)'da `armed` satırdır — `stepTimer` (Timer adımı / `timerStart`) ·
   `taskTimeout` (insan adımı timeout) · `retry` (backoff) · `serviceTriggerCron` (cron sonraki tetik).
 - **Scheduler (durumsuz, replica-N):** her saniye dolan satırları **`FOR UPDATE SKIP LOCKED`** ile claim eder → aynı TX'te `timerFired` (+ `dispatch resume.v1`) → publish.
   **Lider seçimi gerekmez** (R7; at-most-once = satır kilidi + `messageId=timer:{id}`); advisory lock yalnız housekeeping (relay sweep · stuck detector · pruning).
 - **Uygulama kuralı (R14):** timer yalnız süreç **`waiting`** iken uygulanır; `running` → `deferred (+30 s)`; `done` → `cancelled`. Tek aktif kol korunur.
   `timerStart` ile kurulmuş Timer, süreç **başka insan adımında** beklerken dolarsa o beklemeyi **kapatır** (preemption) ve Timer'ın `default` hedefine gider.
 - **ServiceTrigger:** `timer` (cron) → scheduler saat dilimi (`FLOVO_SCHEDULER_TZ`, vars. `Europe/Istanbul` — org timezone alanı yok) ile önceden hesaplanmış `dueAt`;
-  kaçırılan tetik **bir kez** yakalanır (Q15). `associate` → alt-süreç (→ [`models/service-settings/service-trigger.md`](./models/service-settings/service-trigger.md));
+  kaçırılan tetik **bir kez** yakalanır (Q15). `associate` → alt-süreç (→ [`models/service-settings/service-trigger.md`](../../models/service-settings/service-trigger.md));
   `async=false` runtime karşılığı **öneri:** tetikleyen süreç `waiting(subProcess)`, alt sürecin `ended`'i uyandırır (Q9).
 
 ## 8. Paralel dallanma & join (flovo-bpm-engine §4.5) — KARAR
@@ -185,11 +185,11 @@ erişebilir/geri-taşıyabilir (`processEnd.userGroupIds`); alt süreçte geri-t
 **Ne saklanır:**
 | Katman | Nesne | İçerik |
 |---|---|---|
-| Süreç tanımı | `Service`/`ProcessStep`/`ProcessStepAction`/… | Tasarım (design-time; → [`settings-api.md`](./settings-api.md)) |
+| Süreç tanımı | `Service`/`ProcessStep`/`ProcessStepAction`/… | Tasarım (design-time; → [`settings-api.md`](../api/settings-api.md)) |
 | Yürütme kaydı | `ProcessInstance` (+ `executionState`) · `ProcessStepInstance` zinciri | Kim/ne zaman/hangi adım/hangi aksiyon + biriken `ActionTransfer` |
-| **Olay log (kaynak)** | **[`workflow_events`](./models/processInstances/workflow-event.md)** (append-only, aylık RANGE partition) | Her geçiş (12 tip → [`WorkflowEventType`](./models/enums/workflow-event-type.md)) + `version` + `messageId` + `dispatch` → replay + audit + idempotency + outbox |
-| **Motor imleci (türetilmiş)** | [`workflow_projection`](./models/processInstances/workflow-projection.md) (1–1) | `lastVersion` · `executionState`/`waitReason` · aktif adım · `attempt` · guard sayaçları · `lastError` |
-| **Zamanlayıcı** | [`workflow_timer`](./models/processInstances/workflow-timer.md) | `armed` uyandırma kayıtları (timer/timeout/retry/cron); fired/cancelled 30 gün |
+| **Olay log (kaynak)** | **[`workflow_events`](../../models/processInstances/workflow-event.md)** (append-only, aylık RANGE partition) | Her geçiş (12 tip → [`WorkflowEventType`](../../models/enums/workflow-event-type.md)) + `version` + `messageId` + `dispatch` → replay + audit + idempotency + outbox |
+| **Motor imleci (türetilmiş)** | [`workflow_projection`](../../models/processInstances/workflow-projection.md) (1–1) | `lastVersion` · `executionState`/`waitReason` · aktif adım · `attempt` · guard sayaçları · `lastError` |
+| **Zamanlayıcı** | [`workflow_timer`](../../models/processInstances/workflow-timer.md) | `armed` uyandırma kayıtları (timer/timeout/retry/cron); fired/cancelled 30 gün |
 | Askı kaydı | `InstanceAwaitingUser` | `waiting(humanTask)` iken kim aksiyon alabilir (dinamik grup) |
 | Form değeri | `InstanceValue` (+ `InstanceAttr` projeksiyon) | Alan değerleri (§3.1) |
 | İş durumu | `Instance.statusId` | Kullanıcının gördüğü durum (motordan ayrı) |
@@ -203,11 +203,11 @@ erişebilir/geri-taşıyabilir (`processEnd.userGroupIds`); alt süreçte geri-t
 - **Yatay ölçek:** worker'lar durumsuz → JetStream consumer'ları **eklenerek** ölçeklenir (lag büyürse worker ekle).
 - **İzolasyon:** her tablo `organizationId` + **RLS** (Pattern B v2); NATS **tenant-bazlı account**; partition `HASH(service_id)`
   (postgresql.md). Bir kiracının yükü diğerini görmez.
-- **On-prem/bulut:** K8s/Helm; worker `Deployment` (replica-N), scheduler `Deployment` (replica-N, Postgres claim — lider yok). → [`tech-stack/kubernetes-helm.md`](./tech-stack/kubernetes-helm.md).
+- **On-prem/bulut:** K8s/Helm; worker `Deployment` (replica-N), scheduler `Deployment` (replica-N, Postgres claim — lider yok). → [`tech-stack/kubernetes-helm.md`](../../tech-stack/kubernetes-helm.md).
 
 ## 11. Açık noktalar
 📝 **v0.44:** bu konunun tüm kararları (R1–R17) ve açık soruları (Q1–Q22) **inceleme süresince** → [`engine-runtime-plan.md`](./engine-runtime-plan.md);
-kesinleşince kalanlar [`todo.md`](./todo.md)'ye taşınır. Bu turda **dokümanla karşılanan** eski açık noktalar: `workflow_events`/`workflow_projection` model dosyaları ·
+kesinleşince kalanlar [`todo.md`](../../todo.md)'ye taşınır. Bu turda **dokümanla karşılanan** eski açık noktalar: `workflow_events`/`workflow_projection` model dosyaları ·
 retry politika değerleri · global hata yakalayıcı (post-MVP kararı) · compensation (post-MVP iskelet) · scheduler lider-seçim (claim modeliyle gereksiz) ·
 `timer` DST/TZ · `async` kaskad derinlik sınırı (guard) · pruning/KVKK · optimistic-concurrency çakışma UX'i. **Fork/join** ertelendi (Q22 teyit).
 

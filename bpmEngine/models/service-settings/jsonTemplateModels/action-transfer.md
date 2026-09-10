@@ -47,7 +47,7 @@ değer şablonları → [`../../processInstances/propertyValuesTemplates/index.m
   `Instance.creatorUserId`'yi **opsiyonel** set etmek için. _(process-step-action §2 · process-step §3.12)_
 - 📝 **`parameters.error` rezerve anahtar (v0.44 öneri — plan R10):** bir adım `onFail` aksiyonuyla ilerlerken motor, hata bilgisini
   `parameters.error = { stepCode, errorClass, errorCode, message, httpStatus?, attempts, at }` olarak ekler (Değer Atama ile `parameters.error.message` okunabilir).
-  `mergeParameter=true` ise gelen parametreler korunur. Tasarımcı bu anahtarı kendi parametreleri için **kullanmaz**. → [`../../../engine-runtime-errors.md`](../../../engine-runtime-errors.md) §4.1.
+  `mergeParameter=true` ise gelen parametreler korunur. Tasarımcı bu anahtarı kendi parametreleri için **kullanmaz**. → [`../../../architectures/engine-runtime/engine-runtime-errors.md`](../../../architectures/engine-runtime/engine-runtime-errors.md) §4.1.
 - 📝 **Kalıcılık kaynağı (v0.44 — plan R2):** paketin **kaynak kopyası** `workflow_events.payload` (`stepCompleted.outgoingActionTransfer` / `actionTaken.actionTransfer`);
   `ProcessStepInstance.processStepActionParameter` **okuma kopyası**dır (aynı TX). → [`../../processInstances/workflow-event.md`](../../processInstances/workflow-event.md) §2.
 

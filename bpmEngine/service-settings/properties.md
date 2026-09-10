@@ -78,7 +78,7 @@ Tipe-özel ayarlar → §3.
 > ([`../models/processInstances/propertyValuesTemplates/`](../models/processInstances/propertyValuesTemplates/index.md)) ait
 > **JSON Schema** ile doğrulanır; yazılabilir alanlara `InstanceValue.data`'ya merge edilir (boş → `null`); `projectToAttr`
 > alanları fihriste (`InstanceAttr`/`InstanceListItem`) yansır. Okuma **tam değer** için `data`'dan, **rapor/filtre/sıra/isim-arama**
-> için fihristten yapılır; `live` yansıma alanları okuma anında join'le çözülür. Tam akış → [`../flovo-bpm-engine.md`](../flovo-bpm-engine.md) §3.1.
+> için fihristten yapılır; `live` yansıma alanları okuma anında join'le çözülür. Tam akış → [`../architectures/engine-core/flovo-bpm-engine.md`](../architectures/engine-core/flovo-bpm-engine.md) §3.1.
 
 > **Görünürlük/zorunluluk ayrımı:** **Zorunluluk (`required`) / görünürlük (`visible`) / düzenlenebilirlik (`enabled`)**
 > property'de **değil**, **görüntüleme profilinde** tutulur (→ `view-profile.md` §2): *alan = ne olduğu*, *profil = nerede nasıl göründüğü*.
@@ -301,7 +301,7 @@ dolu** (key boş değil, value seçili) olması zorunludur.
   metadata'sı çekirdek kolonda kalır (→ §3 karar notu · `../models/service-settings/property.md` §2).
 - [x] **Değer yazma/okuma yolu — ÇÖZÜLDÜ (v0.31):** yazımlar (form · `changeList` · API/iş kuralı) tek **JSON Schema
   doğrulama kapısından** geçer → `InstanceValue.data`'ya merge → `projectToAttr` fihriste yansır; okuma tam değer/fihrist
-  ayrımıyla (→ §2.3 not · `../flovo-bpm-engine.md` §3.1).
+  ayrımıyla (→ §2.3 not · `../architectures/engine-core/flovo-bpm-engine.md` §3.1).
 - [x] **Genişletilebilirlik (alan seti) — ÇÖZÜLDÜ (v0.30):** `propertyType` **sabit / kapalı settir**; plugin/SDK ile yeni
   alan tipi **eklenemez**; ayarları, değer şeması ve davranışı **Flovo** geliştirir/bakar (→ §3 karar notu · `process-step.md` §1).
 - [x] **Form List ayarlarının profil bazında değişmesi** — **KARAR (B2):** profil-bazlı override `ProcessViewProfilePropertySetting {key,value}`

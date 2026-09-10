@@ -53,7 +53,7 @@ değişince bu binding güncellenmez, binding değişince Action etkilenmez. _(`
 ## Notlar / açık noktalar
 - **`changeList`/`parameters` değer modeli — ÇÖZÜLDÜ (v0.30):** motor **koleksiyon-tabanlı**; `changeList` = **obje-map**
   `{ Property.code: value }` (değer `propertyValuesTemplates` şeklinde, `InstanceValue` ile ortak) → forma **doğrudan JSONB merge**;
-  `parameters` = aynı değer şekli + **serbest anahtar** (forma yazılmaz). → `../../service-settings/process-step-action.md` §2.2 · `../../flovo-bpm-engine.md` §3.
+  `parameters` = aynı değer şekli + **serbest anahtar** (forma yazılmaz). → `../../service-settings/process-step-action.md` §2.2 · `../../architectures/engine-core/flovo-bpm-engine.md` §3.
 - `action` nesnesi şekli, `action` zinciri döngü koruması → `../../todo.md`.
 
 *Oluşturma: 2026-07-02.*

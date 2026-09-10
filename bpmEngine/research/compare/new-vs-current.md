@@ -3,7 +3,7 @@
 > **Amaç:** Mevcut (eski) Flovo BPM tarafı ile **yeni proje tasarımı** arasındaki farkları tek yerde toplamak —
 > **neler eklendi, neler çıkarıldı, neler yeniden adlandırıldı / taşındı** — ve sonda **başarılı/başarısız değerlendirmesi.**
 >
-> **Kaynak:** Tasarım dokümanları (`../../flovo-bpm-engine.md`, `../../service-settings/*`, `../../organization-settings/*`) ·
+> **Kaynak:** Tasarım dokümanları (`../../architectures/engine-core/flovo-bpm-engine.md`, `../../service-settings/*`, `../../organization-settings/*`) ·
 > Mevcut proje referansı → `../current-flovo-bpm-engine/`.
 >
 > **Not:** Bu **canlı özet**tir; her maddenin gerekçesi/detayı ilgili tasarım dosyasındadır. Çakışınca **ilgili doküman esastır.**
@@ -37,7 +37,7 @@
 
 ---
 
-## 1. Motor / Mimari (`../../flovo-bpm-engine.md`)
+## 1. Motor / Mimari (`../../architectures/engine-core/flovo-bpm-engine.md`)
 **➕ Eklendi**
 - **Aksiyon-kodu tabanlı aksiyon seçimi:** adım sonucu → **kod** (`default`/`onFail`/`true`/`false`/switch) → o kodlu aksiyon; seçilen aksiyonun **`targetProcessStepId`**'si sonraki adıma yönlendirir.
 - **`parameters` / `changeList` / `action`** veri aktarım modeli (niyetli/explicit).

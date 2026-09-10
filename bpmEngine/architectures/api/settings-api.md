@@ -6,21 +6,21 @@
 > **Sınır (üç API'yi karıştırma):**
 > - **Bu doküman** = tasarım-zamanı **ayar** CRUD'u (service/property/step/view-profile/business-rule + org ayarları).
 > - **Runtime veri** (instance oku/yaz, webhook, dosya) = dış müşteri API'si → [`flovo-customer-api.md`](./flovo-customer-api.md).
-> - **İş kuralı motoru** runtime uçları + kural CRUD'u → [`service-settings/business-rule-endpoints.md`](./service-settings/business-rule-endpoints.md) (§7 CRUD bu dokümanın deseninin özel hâli).
+> - **İş kuralı motoru** runtime uçları + kural CRUD'u → [`service-settings/business-rule-endpoints.md`](../../service-settings/business-rule-endpoints.md) (§7 CRUD bu dokümanın deseninin özel hâli).
 >
-> **Sözleşme kaynağı:** [`tech-stack/api-contract.md`](./tech-stack/api-contract.md) (Protobuf → iç gRPC + dış grpc-gateway REST + OpenAPI).
+> **Sözleşme kaynağı:** [`tech-stack/api-contract.md`](../../tech-stack/api-contract.md) (Protobuf → iç gRPC + dış grpc-gateway REST + OpenAPI).
 > Aşağıdaki path'ler **dış REST** yüzeyidir (FE designer tüketir); iç modüller aynı proto'dan gRPC ile çağırır.
 
 ---
 
 ## 0. Ne zaman bu API?
-Tasarımcı bir süreç kurarken/düzenlerken (→ [`flovo-bpm-engine.md`](./flovo-bpm-engine.md) §2.1 tasarım-zamanı sırası). Yazılan
+Tasarımcı bir süreç kurarken/düzenlerken (→ [`flovo-bpm-engine.md`](../engine-core/flovo-bpm-engine.md) §2.1 tasarım-zamanı sırası). Yazılan
 her şey **konfigürasyondur** (instance/veri değil); düşük hacim, **id ile** yüklenir, **RLS** ile kiracıya izole.
 
 ## 1. Ortak sözleşme
 - **Kimlik:** `Authorization: Bearer <token>` (Keycloak OIDC); token'daki **`organizationId`** claim'i ile **PostgreSQL RLS**
-  (Pattern B v2) → [`tech-stack/keycloak.md`](./tech-stack/keycloak.md). Tasarım-zamanı yazma **yetki** gerektirir (admin/designer rolü;
-  yetki modeli → [`organization-settings/permissions.md`](./organization-settings/permissions.md)).
+  (Pattern B v2) → [`tech-stack/keycloak.md`](../../tech-stack/keycloak.md). Tasarım-zamanı yazma **yetki** gerektirir (admin/designer rolü;
+  yetki modeli → [`organization-settings/permissions.md`](../../organization-settings/permissions.md)).
 - **Protokol:** dış REST/JSON (grpc-gateway); iç gRPC. `Content-Type: application/json` · `Accept-Language` (çok-dilli metin).
 - **Kaynak adları:** `code` **dış/iş kimliği**, `id` iç PK. **`Property.code` (ve `Service.code` …) immutable** — ilk instance
   oluştuktan sonra değişmez (dış API + JSONB anahtarı kimliği; → api-contract.md · property.md §1.1). Rename yalnız `translation`'da.
@@ -47,7 +47,7 @@ Path'ler bu ağaca göre **iç içe** (nested) verilir; her alt-kaynak üstünü
 |---|---|---|
 | GET | `/solutions` | Organizasyonun çözümlerini listele |
 | GET · POST | `/solutions` · `/solutions/{id}` | Oku / oluştur / güncelle / sil |
-Model → [`models/service-settings/solution.md`](./models/service-settings/solution.md).
+Model → [`models/service-settings/solution.md`](../../models/service-settings/solution.md).
 
 ### 3.2 Service
 | Method | Path | Amaç |
@@ -57,7 +57,7 @@ Model → [`models/service-settings/solution.md`](./models/service-settings/solu
 | GET · PUT · PATCH · DELETE | `/services/{id}` | Servis oku/güncelle/sil |
 | GET | `/services/{id}/definition` | **Servisin TAM tanımı** (property+step+action+view-profile+rule+trigger tek pakette — designer yükleme + export) |
 | PUT | `/services/{id}/definition` | **Toplu güncelle** (tüm servis tanımını bir dokümanla; §6) |
-Model → [`models/service-settings/service.md`](./models/service-settings/service.md). `formType`: form/parameter/eventForm.
+Model → [`models/service-settings/service.md`](../../models/service-settings/service.md). `formType`: form/parameter/eventForm.
 
 ### 3.3 Property (+ `settings` doğrulama)
 | Method | Path | Amaç |
@@ -68,7 +68,7 @@ Model → [`models/service-settings/service.md`](./models/service-settings/servi
 | GET · POST | `/properties/{id}/items` | **PropertyItem** (statik seçenek) listele/ekle |
 | PUT · DELETE | `/property-items/{id}` | Öğe güncelle/sil |
 - **🟩 `settings` doğrulama kapısı (KARAR):** POST/PUT'ta `settings` JSONB'si, `propertyType`'a ait **JSON Schema** ile doğrulanır
-  → [`models/service-settings/jsonTemplateModels/property-settings/`](./models/service-settings/jsonTemplateModels/property-settings/index.md)
+  → [`models/service-settings/jsonTemplateModels/property-settings/`](../../models/service-settings/jsonTemplateModels/property-settings/index.md)
   (`<propertyType>.md`). Uymayan yazım **reddedilir** (`additionalProperties:false`). `settings` içi referans id'ler (`dataSourceId`…)
   ve çekirdek FK'ler (`associatedServiceId`/`childServiceId`…) **uygulama-katmanı** doğrulaması (§5).
 - **`code` kilidi:** ilk instance sonrası `code` değişmez (draft penceresi → property.md §1.1).
@@ -82,7 +82,7 @@ Model → [`models/service-settings/service.md`](./models/service-settings/servi
 | GET · POST | `/process-steps/{id}/actions` | **ProcessStepAction** (binding) listele/ekle — `Action` şablonu kopyalanır |
 | PUT · DELETE | `/process-step-actions/{id}` | Aksiyon-binding güncelle/sil (`targetProcessStepId` = graf kenarı) |
 - **🟩 `settings` doğrulama kapısı:** `settings`, `stepType`'a ait **JSON Schema** ile doğrulanır
-  → [`models/service-settings/jsonTemplateModels/process-step-settings/`](./models/service-settings/jsonTemplateModels/process-step-settings/index.md)
+  → [`models/service-settings/jsonTemplateModels/process-step-settings/`](../../models/service-settings/jsonTemplateModels/process-step-settings/index.md)
   (`<stepType>.md`). `settings` içi referans id'ler (`propertyId`/`userGroupId`/`targetProcessStepId`…) uygulama-katmanı doğrulaması (§5).
 - **Graf bütünlüğü:** akış topolojisi `ProcessStepAction.targetProcessStepId`'de (settings'te değil); kenar hedefi aynı servis
   içinde olmalı (→ process-step.md §2).
@@ -94,17 +94,17 @@ Model → [`models/service-settings/service.md`](./models/service-settings/servi
 | GET · PUT · DELETE | `/view-profiles/{id}` | Profil oku/güncelle/sil |
 | PUT | `/view-profiles/{id}/properties` | Profildeki alan ayarları (görünür/düzenlenebilir/zorunlu/sıra) — toplu |
 | PUT | `/view-profile-properties/{id}/settings` | Alan **profil-bazlı override** (`ProcessViewProfilePropertySetting` key/value) |
-Model → [`models/service-settings/view-profile.md`](./models/service-settings/view-profile.md) ailesi.
+Model → [`models/service-settings/view-profile.md`](../../models/service-settings/view-profile.md) ailesi.
 
 ### 3.6 BusinessRule · ServiceTrigger
 | Method | Path | Amaç |
 |---|---|---|
-| — | `/services/{serviceId}/business-rules` (CRUD) | **İş kuralı CRUD** → mevcut [`service-settings/business-rule-endpoints.md`](./service-settings/business-rule-endpoints.md) §7 (bu desenle aynı; `configuration` JSONB `businessRuleActionType` şemasıyla doğrulanır) |
+| — | `/services/{serviceId}/business-rules` (CRUD) | **İş kuralı CRUD** → mevcut [`service-settings/business-rule-endpoints.md`](../../service-settings/business-rule-endpoints.md) §7 (bu desenle aynı; `configuration` JSONB `businessRuleActionType` şemasıyla doğrulanır) |
 | GET · POST | `/services/{serviceId}/service-triggers` | **ServiceTrigger** (olay/zaman tetikleyici) |
 | GET · PUT · DELETE | `/service-triggers/{id}` | Tetikleyici oku/güncelle/sil (`serviceTriggerType` + invariant'lar → service-trigger.md) |
 
 ## 4. Organizasyon-ayarı kaynakları (design-time CRUD)
-Servise değil **organizasyona** bağlı, servisler-arası paylaşılan ayarlar (→ [`organization-settings/index.md`](./organization-settings/index.md)).
+Servise değil **organizasyona** bağlı, servisler-arası paylaşılan ayarlar (→ [`organization-settings/index.md`](../../organization-settings/index.md)).
 Aynı CRUD deseni (`GET/POST/PUT/DELETE`, RLS, soft-delete).
 
 | Kaynak | Path kökü | Model |
@@ -118,7 +118,7 @@ Aynı CRUD deseni (`GET/POST/PUT/DELETE`, RLS, soft-delete).
 
 > **Not:** Bu org-veri uçlarının **okuma (GET)** tarafı iş kuralı motorunun `organizationData` kaynağıyla ortaktır
 > (→ business-rule-endpoints §3); burada **yazma (POST/PUT/DELETE)** tarafı eklenir (tasarım-zamanı). `synchronizationStatus`
-> (→ [`models/enums/sync-status.md`](./models/enums/sync-status.md)) harici ERP senkronunu izler; **toplu senkron ucu** → §6.
+> (→ [`models/enums/sync-status.md`](../../models/enums/sync-status.md)) harici ERP senkronunu izler; **toplu senkron ucu** → §6.
 
 ## 5. `settings` doğrulama & referans bütünlüğü (çapraz-kesen)
 - **Şekil (JSON Schema):** `Property.settings` / `ProcessStep.settings` her yazımda **ayrımlayıcıya** (`propertyType`/`stepType`)
@@ -136,8 +136,8 @@ Aynı CRUD deseni (`GET/POST/PUT/DELETE`, RLS, soft-delete).
   **yok** (todo ön-koşulu); tasarım/senkron katmanı olarak buraya eklenir; her kaydın `synchronizationStatus`'u güncellenir.
 
 ## 7. Draft / yayınlama & versiyonlama (pilotta inşa edildi)
-> **Durum:** 🟢 Pilotta inşa edildi (v0.41-1) → [`implementation-status.md`](./implementation-status.md); model →
-> [`models/service-settings/service.md`](./models/service-settings/service.md) "Versiyonlama & yayınlama".
+> **Durum:** 🟢 Pilotta inşa edildi (v0.41-1) → [`implementation-status.md`](../../implementation-status.md); model →
+> [`models/service-settings/service.md`](../../models/service-settings/service.md) "Versiyonlama & yayınlama".
 
 - **Akış = `draft → publish`:** Designer değişiklikleri doğrudan canlıya gitmez → `Service.hasUnpublishedChanges = true`. **Publish**,
   taslağı yeni bir **versiyon** olarak sabitler (`currentVersion`↑ · `lastPublishedAt` · `ServiceVersion` snapshot; `hasUnpublishedChanges=false`).
@@ -150,9 +150,9 @@ Aynı CRUD deseni (`GET/POST/PUT/DELETE`, RLS, soft-delete).
 
 ## 8. Denetim / loglama (açık)
 - 🟦 **AÇIK:** Ayar-değişiklik **denetim izi** (kim, ne, ne zaman) — plan hazır (`SettingsLog`/`SettingsLogBatch` →
-  [`research/settings-log/index.md`](./research/settings-log/index.md)), karar bekliyor; KVKK/saklama → todo.
+  [`research/settings-log/index.md`](../../research/settings-log/index.md)), karar bekliyor; KVKK/saklama → todo.
 
-## 9. Açık noktalar (→ [`todo.md`](./todo.md))
+## 9. Açık noktalar (→ [`todo.md`](../../todo.md))
 Ortak **hata sözleşmesi** · **ortamlar-arası kopya/promote** (env modeli — *draft/publish + versiyonlama + arşivleme pilotta inşa edildi
 → §7*) · **toplu senkron** ucu (Customer API ön-koşulu) · ayar-değişiklik **loglama** (SettingsLog) · `settings` **referans bütünlüğü +
 silme koruması** kesin kuralları · yetki granülaritesi (hangi rol hangi kaynağı yazar).

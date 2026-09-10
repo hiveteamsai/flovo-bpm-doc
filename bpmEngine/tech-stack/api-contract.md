@@ -44,4 +44,4 @@ Flovo'da **üç istemci sınıfı** var: (1) iç Go modülleri (workflow, form, 
 
 - **Webhook / `parameters` value taşıma** (form-value §9-27) sözleşmesi ayrıca tanımlanmalı.
 - **Versiyonlama:** `v1` proto namespace ile başlandı; ileride `v2` yayınlandığında geçiş/deprecation politikası netleştirilmeli.
-- **Custom code API'si** ([`../flovo-customer-api.md`](../flovo-customer-api.md)) bu sözleşmenin dış yüzüdür — endpoint kapsamı orada detaylanır.
+- **Custom code API'si** ([`../architectures/api/flovo-customer-api.md`](../architectures/api/flovo-customer-api.md)) bu sözleşmenin dış yüzüdür — endpoint kapsamı orada detaylanır.

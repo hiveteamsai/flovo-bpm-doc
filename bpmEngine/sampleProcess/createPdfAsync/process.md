@@ -88,14 +88,14 @@ gelen `pdfUrl` ile dinamik üretilir; `parameters: { instanceId, pdfUrl }` front
 **Görev:** Bağımsız bildirim kolunu **açık bir bitiş düğümüyle** sonlandırmak (ana sürecin Süreç Bitişi'nin alt-süreç
 karşılığı → `../../service-settings/process-step.md` §3.21).
 **Bu adıma gelen parametre:** `parameters: { instanceId, pdfUrl }`.
-**Ayarlar ve çalışma:** — (**ayarsız**). Motor bu adıma ulaşınca alt süreç yürütmesi sonlanır (→ `../../flovo-bpm-engine.md` §4.4).
+**Ayarlar ve çalışma:** — (**ayarsız**). Motor bu adıma ulaşınca alt süreç yürütmesi sonlanır (→ `../../architectures/engine-core/flovo-bpm-engine.md` §4.4).
 **Aksiyonlar:** — (terminal; alt süreç burada biter).
 
 ---
 
 > Senkron karşılığı: `../createPdf/process.md` (HTTP Request `async = false`, beklemeli).
 > İlgili tasarım: Alt Süreç Başlangıcı → `../../service-settings/process-step.md` §3.20 · Webhook aksiyonu →
-> `../../service-settings/process-step-action.md` §3.6 · API → `../../flovo-customer-api.md`.
+> `../../service-settings/process-step-action.md` §3.6 · API → `../../architectures/api/flovo-customer-api.md`.
 >
 > **✅ Çözüldü (v0.6):** Önceki tasarımda `pdfReady` bir **Webhook aksiyonu** idi ve bağlanacağı bir süreç adımı olmadığından
 > `ProcessStepInstance.processStepId` doğru atılamıyordu. Artık bağımsız alt süreç bir **Alt Süreç Başlangıcı** adımıyla

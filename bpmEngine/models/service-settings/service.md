@@ -60,7 +60,7 @@ Enum tanımı → [`../enums/form-type.md`](../enums/form-type.md). Bir servis, 
   **kopyalanır**; durum `ProcessStepAction.changeStatusId` ile atanır).
 
 ## İzolasyon
-Çalışma zamanı kayıt izolasyonu **üç başlık**: `organizationId` · `solutionId` · `serviceId` (→ `../../flovo-bpm-engine.md` §9).
+Çalışma zamanı kayıt izolasyonu **üç başlık**: `organizationId` · `solutionId` · `serviceId` (→ `../../architectures/engine-core/flovo-bpm-engine.md` §9).
 
 ## Versiyonlama & yayınlama (draft / publish)
 > **Durum:** 🟢 Pilotta inşa edildi (v0.41-1) → [`../../implementation-status.md`](../../implementation-status.md).
@@ -72,7 +72,7 @@ Servis ayarları **taslak → yayınla (draft/publish)** akışıyla yönetilir:
 - **Versiyon geçmişi = `ServiceVersion`** (fiziksel `service_version`): her yayın bir satır; yayınlanan servis tanımının **anlık
   görüntüsü (snapshot)**. Çalışan instance'lar **başlatıldıkları versiyonun** tanımını kullanır (yayın sonrası eski instance'lar etkilenmez).
 - **Kod kilidi (code-lock):** bir kaynak **yayınlandıktan** sonra `code` **değişmez** (taslak penceresi dışında rename yok →
-  [`../../settings-api.md`](../../settings-api.md) §5 · [`property.md`](./property.md) §1.1).
+  [`../../architectures/api/settings-api.md`](../../architectures/api/settings-api.md) §5 · [`property.md`](./property.md) §1.1).
 
 **`ServiceVersion` modeli (özet):**
 | Alan | Tip | Anahtar | Açıklama |

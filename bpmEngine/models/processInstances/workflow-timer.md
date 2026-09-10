@@ -1,7 +1,7 @@
 # Model — WorkflowTimer (`workflow_timer` — zamanlanmış uyandırma kaydı)
 
-> **Durum:** 📝 TASLAK v0.44 — **onay bekliyor** (→ [`../../engine-runtime-plan.md`](../../engine-runtime-plan.md) §2 **R7**).
-> **Yeni model.** Davranış → [`../../engine-runtime-scheduler.md`](../../engine-runtime-scheduler.md) · kaynak olay → [`workflow-event.md`](./workflow-event.md) (`timerFired`).
+> **Durum:** 📝 TASLAK v0.44 — **onay bekliyor** (→ [`../../architectures/engine-runtime/engine-runtime-plan.md`](../../architectures/engine-runtime/engine-runtime-plan.md) §2 **R7**).
+> **Yeni model.** Davranış → [`../../architectures/engine-runtime/engine-runtime-scheduler.md`](../../architectures/engine-runtime/engine-runtime-scheduler.md) · kaynak olay → [`workflow-event.md`](./workflow-event.md) (`timerFired`).
 > **Amaç:** Motorun **"şu anda uyan"** kayıtları — Timer adımı süresi · insan-görev **timeout**'u · **retry** backoff'u · ServiceTrigger **cron**
 > sonraki tetiği. Scheduler yalnız `armed` + `dueAt <= now()` satırlarını **Postgres'te claim eder** (`FOR UPDATE SKIP LOCKED`) → aynı TX'te
 > `timerFired` olayı yazar → `resume.v1` yayınlar. Süreç günlerce beklerken **hiçbir worker kaynak tutmaz**; uyanma bu tablodan gelir.
