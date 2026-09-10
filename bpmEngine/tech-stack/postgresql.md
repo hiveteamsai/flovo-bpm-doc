@@ -46,10 +46,26 @@ GIN'i ile çözülür.
 ## Konfigürasyon / desen notları
 
 - **RLS Pattern B v2:** her tenant-tabloda `organizationId` + RLS politikası; sorgu-zamanı tenant context ile satır izolasyonu
-  (application filtresine güvenilmez, DB garanti eder). Multi-tenancy'nin **kritik** bileşeni. **"v2" = GUC-native:** backend her
+  (**tasarım gereği application filtresine güvenilmez, izolasyonu DB zorlar**). Multi-tenancy'nin **kritik** bileşeni. **"v2" = GUC-native:** backend her
   istekte **tenant GUC**'unu set eder, RLS politikası bunu **`active_tenant_id()`** fonksiyonuyla okur; **branch-siz** (tenant için
   ayrı şema/bağlantı-dalı yok) → **insan kullanıcı ile AI-agent aynı tenant/RLS yolunu kullanır** ("agent parity" by-construction).
-  Pilotta Azure-PG üzerinde doğrulandı → [`../implementation-status.md`](../implementation-status.md).
+  Pilotta Azure-PG üzerinde tasarım/kod katmanları hazır → [`../implementation-status.md`](../implementation-status.md).
+  - ⚠️ **Pilot durumu (2026-09-09 ölçümü · #410):** bu zorlama pilotta HENÜZ ETKİN DEĞİL. Ürün
+    `flovo_admin` ile bağlanıyor; bu rol public şemadaki 69 tablonun tamamının sahibi ve
+    `rolbypassrls = TRUE` → RLS politikaları onun için uygulanmıyor (`FORCE ROW LEVEL SECURITY`
+    hiçbir tabloda açık değil: 0/69). Ölçüm: kiracı bağlamı verilmeden `property` sorgusu 238
+    satırın tamamını döndürüyor; kiracı-B token'ıyla kiracı-A'nın kaydı token → interceptor →
+    handler → app → repo → SQL zincirinin tamamından okunabiliyor. Bugün yalıtımı fiilen sağlayan
+    katman yoktur — uygulama katmanı da tasarım gereği kiracı yüklemi taşımaz. Kapatma planı ve
+    kabul ölçütleri → #410.
+    - **Ölçümün adresi** (origin/main `e6136a75` · 2026-09-10): mevcut "Pilotta doğrulandı"
+      beyanının dayanağı `tests/migrations/property_rls.spec.ts:59 ⊕ :73` (`set role app_user`) —
+      ve desen tek dosyaya ait değil: `tests/**` altında 46 dosya · 84 geçiş, `apps/api-go/**`
+      altında 8 dosya · 16 geçiş. ⚠️ O 16'nın **2'si yorum satırıdır** ve #410'un kendi rung'unda
+      kusuru TARİF eder (`tenant_isolation_owner_principal_integration_test.go`), yani fiilî
+      kullanım **14**. #410'un çıkış noktası Go tarafıdır: testler migration sahibiyle açılıp
+      `app_user` rolüne geçiyor, üretim ise `flovo_admin` ile bağlanıyor → süit, ürünün fiilen
+      koştuğu özneyi hiçbir yerde ölçmüyor.
 - **Partition — `HASH(service_id)`:** `instance_value`/`instance_attr`/`instance_list_item` partition'lı; her sorgu `service_id` (mümkünse
   `organizationId`) filtresi taşır → partition pruning. Dominant tenant sıcak-nokta olursa alt-`HASH(organizationId)` (S9, P9).
 - **Partition — `RANGE(occurredAt)` aylık (📝 v0.44, öneri):** `workflow_events` **zamanla yaşlanan** append-only tablo → saklama = partition **detach/drop**
