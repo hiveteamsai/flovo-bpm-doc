@@ -27,7 +27,7 @@ reposundan (`flovo-ibpm-v2`) türetilmiştir. Pilot kapsamı **Bölüm-1 = tasar
 - **FE:** Next.js / TypeScript — **Vercel** (`flovo-ibpm-fe-pilot`); BFF route-handler'lar bearer'ı
   **sunucu-tarafında** enjekte eder (secret istemciye çıkmaz).
 - **DB:** **Azure PostgreSQL** (yönetilen, plain PG) — GUC-native RLS **"Pattern-B v2"**
-  (`active_tenant_id()`, **branch-siz** → human + agent parity by-construction).
+  (`active_tenant_id()`, **branch-siz** → human + agent parity by-construction). — ⚠️ politikalar tanımlı ve GUC yazılıyor; ancak ürünün bağlandığı rol (`flovo_admin`) sahiplik ⊕ `rolbypassrls` yoluyla RLS'ten muaf → izolasyon pilotta zorlanmıyor (#410).
 - **Kimlik:** **Keycloak** OIDC (`Authorization: Bearer`; token → tenant GUC → RLS).
 
 ## 🟡 Henüz dağıtılmadı (yalnız tasarım hedefi)

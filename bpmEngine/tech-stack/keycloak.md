@@ -23,6 +23,7 @@ Flovo bir **çok-kiracılı (multi-tenant) kurumsal** BPM platformu; müşterile
 - **Kimlik akışı:** FE (Next.js) → Keycloak OIDC login → access token (JWT). FE bu token'ı Flovo API'ye taşır; Go backend token'ı doğrular.
 - **Tenant kimliği token'da:** Custom Token Mapper SPI, JWT'ye **`organizationId`** ve **rol/yetki claim'leri** ekler. Böylece "kullanıcı hangi organizasyona ait" bilgisi her istekte token'dan gelir — ayrı sorgu gerekmez.
 - **DB tenant izolasyonuyla bağ (kritik):** Token'daki `organizationId`, PostgreSQL **RLS Pattern B v2**'yi besler — backend, her istekte **tenant GUC**'una token'daki değeri yazar; RLS politikası bunu **`active_tenant_id()`** ile okuyup satır bazında yalnız o organizasyonun verisini döndürür (**GUC-native, branch-siz** → insan + AI-agent aynı tenant/RLS yolunu kullanır). Detay → [`./postgresql.md`](./postgresql.md).
+  - ⚠️ **Pilot durumu (2026-09-09 · #410):** token → GUC zinciri ÇALIŞIYOR (interceptor her istekte yazıyor · `adapter/grpc/server.go:104`), ancak RLS politikaları ürünün bağlandığı rol için uygulanmadığı için DB-seviyesi izolasyon pilotta henüz etkin değil. Detay → [`./postgresql.md`](./postgresql.md) ⊕ #410.
 - **Yetkilendirme:** Kimlik-doğrulama Keycloak'ta; ancak **iş yetkileri organizasyon bazında** Flovo tarafında yönetilir (bkz. `organization.md` — yetkiler Organization'da, admin + grup-bazlı). Keycloak rolleri kaba erişim (ör. admin/user), ince yetki Flovo modeli.
 
 ## Konfigürasyon / desen notları
