@@ -35,8 +35,28 @@
 | `workerLevelId` | int? | FK → `worker-level.md` | Çalışan seviyesi. |
 | `workingScheduleId` | int? | FK → `working-schedule.md` | Çalışma takvimi. |
 | `companyIds` | List\<int\> (boş olabilir) | FK → `company.md` (N–N) | İlişkili şirketler. |
+| `primaryCompanyId` | uuid? | FK → `company.md` (**bileşik**: `(userId, primaryCompanyId)` → `user_company`) | **Kullanıcının "1. şirketi"** — `companyIds` üyeliklerinden **biri**. Üyelik dışından değer atanamaz (garanti **deklaratif**: bileşik FK; uygulama kontrolü değil). Üyelik kaldırılırsa alan **NULL**'a düşer (`ON DELETE SET NULL`). |
 
 > **Tüm organizasyon bağlantıları opsiyoneldir** (nullable); kullanıcı bunların hiçbirine bağlı olmadan da tanımlanabilir.
+
+> **⚠️ Durum (2026-09-10) · `primaryCompanyId`:** bu alan ÜRÜNE HENÜZ İNMEDİ. Yukarıdaki satır **tasarımı** anlatır. Göç ve bileşik FK taslak PR'da (#353/AC-2); **#408 göç kapısı ⊕ iş sahibi ack'i** bekliyor. Bugün ürün veritabanında ne `primary_company_id` sütunu ne o FK vardır — *"üyelik dışından değer atanamaz"* ve *"üyelik kaldırılırsa NULL'a düşer"* ifadeleri **tasarım gereğidir, yürürlükte olan bir garanti değildir.** Yürürlüğe girdiğinde bu not kalkar.
+>
+> **Ölçümün adresi — ✅ bugün `origin/main`'de doğrulanabilir:**
+> `org_users.id` UUID ⟹ `supabase/migrations/20260820110000_org_users.sql:30` ·
+> `org_companies.id` UUID ⟹ `20260706120000_org_companies.sql:15` ·
+> `user_company` ⟹ `20260820110000_org_users.sql:83-88` (`:84` user_id UUID→org_users(id) ·
+> `:85` company_id UUID→org_companies(id) · `:87` **PRIMARY KEY (user_id, company_id)** — bileşik
+> FK'nın hedefi olabilmesinin şartı).
+>
+> **⚠️ Yalnız taslak PR'da (bugün main'de YOK):** `feat/353-ac2-primary-company` ⟹
+> `supabase/migrations/20260909180000_org_users_primary_company.sql:47` (ADD COLUMN … UUID) ⊕
+> **`:58-61`** (kısıt adı · `FOREIGN KEY (id, primary_company_id)` · `REFERENCES user_company
+> (user_id, company_id)` · `ON DELETE SET NULL (primary_company_id)`) — kolon **listeli** SET NULL;
+> listesiz hâli `id`'yi de NULL'lamaya çalışırdı ⊕ ⚠️ PG 15+ gerektirir (pilot 16.15).
+
+> **⚠️ `primaryCompanyId` `isDefaultCompany` ile AYNI ŞEY DEĞİLDİR ve ona fallback YAPILMAZ.** `company.md`'deki `isDefaultCompany` **organizasyon** seviyesinde bir varsayılandır; `primaryCompanyId` **kullanıcı** seviyesindedir. `primaryCompanyId` boşsa **boş görünür** — organizasyon varsayılanına düşmez. *(Karşılaştırma: `position.md`'de `companyId` boş bırakılırsa varsayılan şirket kullanılır; **burada o desen kasıtlı olarak izlenmez** — "boş" bir cevaptır, "bilinmiyor"un yerine bir değer konmaz.)*
+
+> **Neden kullanıcı seviyesinde:** `userInfo` değer-seçicisinde "Şirket" anahtarı, süreç çalışırken kullanıcının **kendi** birincil şirketini vermek zorundadır; organizasyon varsayılanı çok-şirketli bir kullanıcıda yanlış cevap üretir. (İş sahibi onayı: 2026-09-08 · #353)
 
 ## Alt modeller
 ### UserSolution (çözüm erişimi)
