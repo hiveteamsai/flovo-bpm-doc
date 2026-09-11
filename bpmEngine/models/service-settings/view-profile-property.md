@@ -14,9 +14,37 @@
 | `enabled` | bool | — | Alan düzenlenebilir mi (salt-okunur değil). |
 | `required` | bool | — | Alan zorunlu mu. |
 | `order` | int | — | Sıralama (sürükle-bırak). |
+| `displayWidth` | int | — | **Masaüstü** genişliği, 12-grid span (1..12, vars. 12). Profil satırı açılırken `Property.displayWidth`'ten tohumlanır. |
+| `mobileDisplayWidth` | int | — | **Mobil** genişliği (1..12, vars. 12). Satır açılırken **masaüstü değerini devralır**. |
+| `widthMode` | WidthMode | — | **Masaüstü** genişlik modu (`fraction` \| `fill`, vars. `fraction`) → `../enums/width-mode.md`. |
+| `mobileWidthMode` | WidthMode | — | **Mobil** genişlik modu (`fraction` \| `fill`, vars. `fraction`). |
 
 > **Neden burada?** `visible`/`enabled`/`required` alanın kendisinde (`Property`) değil, **profilde** tutulur:
 > *alan = ne olduğu*, *profil = nerede nasıl göründüğü*.
+
+## Genişlik — katman semantiği
+
+Bir alan için görüntüleme-profili satırı yazıldığında **tüm** yerleşim alanları
+(`displayWidth`, `mobileDisplayWidth`, `widthMode`, `mobileWidthMode`) o satırdan okunur (**replace-all**).
+Bu katman *"seçilmedi"* durumunu **taşımaz**; her değer açıktır. Taban değer, profil satırı **oluşurken**
+geçerlidir ve satıra tohumlanır; sonrasında profil bağımsızdır — tabandaki sonraki bir değişiklik
+mevcut profil satırlarına **yayılmaz**.
+
+Masaüstü ve Mobil **bağımsız** düzenlenir. Çözüm (hangi cihazın değerinin geçerli olduğu) **çağıranda**
+yapılır; yerleşim motoru cihazı bilmez.
+
+*(Kaynak: `supabase/migrations/20260904130000_viewprofile_property_breakpoint_width.sql` :4 no sentinel · :7 `SetProperties/MatrixEntry` C2 matrix REPLACE-ALL — app-repo `f942a3c`.)*
+
+**Sözleşmenin şekli.** Genişlik sözleşmesi `(genişlik, mod) × cihaz`'dır: dört kolon **iki çifttir** — masaüstü (`displayWidth`, `widthMode`) ve mobil (`mobileDisplayWidth`, `mobileWidthMode`).
+
+**İki yönlü bağımsızlık garantisi.** Mobil düzenlendiğinde **yalnız mobil kolonları** yazılır; masaüstü değeri **kasıtlı korunur**. Tersi de geçerlidir: masaüstü düzenlemesi mobil değerini değiştirmez.
+
+**Çözümleme.** Çağıran, aktif cihaza göre çifti çözer ve çözülmüş `(genişlik, mod)` ikilisini çalışma-zamanı şemasına yazar; yerleşim motoru cihazı bilmez. *(Taşıma paylaşılır, politika çağıranda kalır.)*
+
+**Yerleşim semantiği:** alanlar bir satır kabında soldan sağa dizilir, sığmayınca alt satıra sarar.
+`fraction` → genişlik `displayWidth/12` (boşluk payı düşülür; yoksa 6+6 bir satıra sığmaz).
+`fill` → satırdaki kalan boşluğu alır; birden çok `fill` kalanı **eşit** böler.
+Genişlik bilgisi **olmayan** eski şemalar → `12` + `fraction` (bugünkü "alt alta" görünüm korunur).
 
 ## İlişkiler
 - **N – 1** → `ProcessViewProfile` (`viewProfileId`), `Property` (`propertyId`).
